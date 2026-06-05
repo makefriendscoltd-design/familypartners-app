@@ -961,6 +961,11 @@ class Handler(BaseHTTPRequestHandler):
 
 
 def serve(port: int = 8000) -> None:
-    srv = ThreadingHTTPServer(("127.0.0.1", port), Handler)
-    print(f"운영 대시보드: http://localhost:{port}  (Ctrl+C 로 종료)")
+    # 배포 시: 환경변수 HOST=0.0.0.0 (외부 공개), PORT=8080 등으로 지정.
+    # 로컬은 기본 127.0.0.1 (이 PC에서만).
+    host = os.environ.get("HOST", "127.0.0.1")
+    port = int(os.environ.get("PORT", port))
+    srv = ThreadingHTTPServer((host, port), Handler)
+    where = "0.0.0.0 (외부 공개)" if host == "0.0.0.0" else "localhost"
+    print(f"운영 대시보드: http://{where}:{port}  (Ctrl+C 로 종료)")
     srv.serve_forever()
