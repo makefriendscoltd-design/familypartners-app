@@ -1,0 +1,138 @@
+"""SQLite 저장소 - 파트너 / 제출 / 운영 이벤트.
+
+표준 라이브러리(sqlite3)만 사용. 설치 불필요.
+DB 경로는 환경변수 FP_DB 로 바꿀 수 있고, 기본값은 data/challenge.db.
+"""
+from __future__ import annotations
+
+import os
+import sqlite3
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+DEFAULT_DB = ROOT / "data" / "challenge.db"
+
+
+def db_path() -> Path:
+    return Path(os.environ.get("FP_DB", str(DEFAULT_DB)))
+
+
+def connect() -> sqlite3.Connection:
+    p = db_path()
+    p.parent.mkdir(parents=True, exist_ok=True)
+    conn = sqlite3.connect(str(p))
+    conn.row_factory = sqlite3.Row
+    conn.execute("PRAGMA foreign_keys = ON")
+    return conn
+
+
+SCHEMA = """
+CREATE TABLE IF NOT EXISTS partners (
+    id           INTEGER PRIMARY KEY AUTOINCREMENT,
+    name         TEXT NOT NULL UNIQUE,
+    handle       TEXT,                       -- 스레드 @핸들
+    contact      TEXT,                       -- 카톡/전화 등 연락 채널
+    referral_code TEXT UNIQUE,               -- 개인별 수익 추적용(쿠폰코드/UTM값 등)
+    status       TEXT NOT NULL DEFAULT 'active',  -- active / paused / kicked
+    joined_date  TEXT NOT NULL,              -- YYYY-MM-DD (챌린지 시작일)
+    kicked_date  TEXT,
+    portal_token TEXT,                       -- 파트너 포털 비밀 링크 토큰
+    sales_url    TEXT                         -- 운영진이 개별 발급한 판매 페이지 링크
+);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_partner_token ON partners(portal_token);
+
+CREATE TABLE IF NOT EXISTS submissions (
+    id           INTEGER PRIMARY KEY AUTOINCREMENT,
+    partner_id   INTEGER NOT NULL REFERENCES partners(id) ON DELETE CASCADE,
+    post_url     TEXT NOT NULL,
+    channel      TEXT NOT NULL DEFAULT 'threads',
+    post_date    TEXT NOT NULL,              -- YYYY-MM-DD (이 제출이 인정되는 날짜)
+    submitted_at TEXT NOT NULL,              -- ISO 타임스탬프(접수 시각)
+    note         TEXT,
+    valid        INTEGER NOT NULL DEFAULT 1, -- 1=유효(출석인정) / 0=무효(검수 탈락)
+    void_reason  TEXT                        -- 무효 처리 사유
+);
+CREATE INDEX IF NOT EXISTS idx_sub_partner_date ON submissions(partner_id, post_date);
+
+CREATE TABLE IF NOT EXISTS events (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    partner_id INTEGER REFERENCES partners(id) ON DELETE CASCADE,
+    type       TEXT NOT NULL,               -- kick / pause / reactivate / join / forfeit
+    date       TEXT NOT NULL,               -- YYYY-MM-DD (forfeit 은 YYYY-MM)
+    reason     TEXT
+);
+
+-- 일일 글감/소스 배포 (운영자가 매일 등록 → 파트너에게 방송)
+CREATE TABLE IF NOT EXISTS drops (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    drop_date  TEXT NOT NULL,               -- YYYY-MM-DD
+    dtype      TEXT NOT NULL DEFAULT 'ai',  -- ai / marketing / evergreen
+    title      TEXT NOT NULL,
+    body       TEXT,                        -- 글감 본문/캡션
+    assets     TEXT,                        -- 다운로드 경로/URL, 줄바꿈 구분
+    created_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_drops_date ON drops(drop_date);
+
+-- 설정 (관리자 비밀번호 해시 등 key-value)
+CREATE TABLE IF NOT EXISTS settings (
+    key   TEXT PRIMARY KEY,
+    value TEXT
+);
+
+-- 자료실 (글감용 사진·영상·파일 저장소 — 파트너가 다운로드)
+CREATE TABLE IF NOT EXISTS library (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    kind        TEXT NOT NULL DEFAULT 'file',  -- file(업로드) / link(Drive 등 외부)
+    title       TEXT NOT NULL,
+    category    TEXT,                          -- 분류(선택)
+    stored_name TEXT,                          -- file: 디스크 저장 파일명
+    orig_name   TEXT,                          -- file: 원본 파일명(다운로드명)
+    url         TEXT,                          -- link: 외부 URL
+    size        INTEGER,
+    created_at  TEXT NOT NULL
+);
+
+-- 운영 공지 (글감과 별도 — 일정 변경·안내 등 운영 메시지)
+CREATE TABLE IF NOT EXISTS notices (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    notice_date TEXT NOT NULL,              -- YYYY-MM-DD
+    title       TEXT NOT NULL,
+    body        TEXT,
+    active      INTEGER NOT NULL DEFAULT 1, -- 1=게시중 / 0=내림
+    created_at  TEXT NOT NULL
+);
+
+-- 개인별 매출 (수익 어트리뷰션 → 월 정산)
+CREATE TABLE IF NOT EXISTS sales (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    partner_id  INTEGER NOT NULL REFERENCES partners(id) ON DELETE CASCADE,
+    product_key TEXT NOT NULL,
+    amount      INTEGER NOT NULL,           -- 결제 금액(원)
+    sale_date   TEXT NOT NULL,              -- YYYY-MM-DD
+    order_ref   TEXT,                       -- 주문번호 등
+    note        TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_sales_partner ON sales(partner_id, sale_date);
+"""
+
+
+def init_db() -> None:
+    conn = connect()
+    try:
+        conn.executescript(SCHEMA)
+        # 기존 DB 마이그레이션: portal_token 컬럼이 없으면 추가
+        cols = {r["name"] for r in conn.execute("PRAGMA table_info(partners)")}
+        if "portal_token" not in cols:
+            conn.execute("ALTER TABLE partners ADD COLUMN portal_token TEXT")
+            conn.execute("CREATE UNIQUE INDEX IF NOT EXISTS idx_partner_token "
+                         "ON partners(portal_token)")
+        if "sales_url" not in cols:
+            conn.execute("ALTER TABLE partners ADD COLUMN sales_url TEXT")
+        scols = {r["name"] for r in conn.execute("PRAGMA table_info(submissions)")}
+        if "valid" not in scols:
+            conn.execute("ALTER TABLE submissions ADD COLUMN valid INTEGER NOT NULL DEFAULT 1")
+            conn.execute("ALTER TABLE submissions ADD COLUMN void_reason TEXT")
+        conn.commit()
+    finally:
+        conn.close()

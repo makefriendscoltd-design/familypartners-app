@@ -1,0 +1,38 @@
+{
+  "_comment": "상품 카탈로그. base(랜딩/결제 URL)와 share(쉐어 비율)만 실제 값으로 수정하세요. price 0 = 가격 비표시. link_template 의 {code}=파트너 추적코드, {base}=상품 base.",
+  "link_template": "{base}?ref={code}",
+  "products": [
+    {
+      "key": "ai-familyday",
+      "name": "AI 패밀리데이",
+      "price": 30000,
+      "share": 0.30,
+      "base": "https://makefriends.example/ai-familyday",
+      "desc": "매월 마지막 주 토요일 AI 실전 강의"
+    },
+    {
+      "key": "aimax-startup",
+      "name": "AIMAX 창업프로그램 2기",
+      "price": 0,
+      "share": 0.40,
+      "base": "https://makefriends.example/aimax-startup",
+      "desc": "AI 직원을 만들고 판매하는 창업 프로그램"
+    },
+    {
+      "key": "second-brain",
+      "name": "제2의 뇌 비서 만들기",
+      "price": 300000,
+      "share": 0.30,
+      "base": "https://makefriends.example/second-brain",
+      "desc": "AI 비서 만들기 프로젝트 · 총 18챕터"
+    },
+    {
+      "key": "membership",
+      "name": "패밀리 회원권",
+      "price": 1590000,
+      "share": 0.30,
+      "base": "https://makefriends.example/membership",
+      "desc": "평생 무제한 강의 수강 + 오프라인 모임 무료 참석"
+    }
+  ]
+}
