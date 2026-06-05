@@ -548,18 +548,13 @@ def view_library(qs) -> str:
     items = core.list_library(conn)
     conn.close()
     upload = (
-        "<div class=card><h2>자료 올리기</h2>"
-        "<form method=post action=/op/library-upload enctype='multipart/form-data'>"
-        "<input name=title placeholder='제목(예: 6월 캠페인 썸네일)'>"
-        "<input name=category placeholder='분류(선택, 예: 사진/영상)'>"
-        "<input type=file name=file required>"
-        "<button>① 파일 업로드</button></form>"
-        "<p class=empty>※ 큰 영상은 업로드보다 아래 'Drive 링크 추가'가 빠릅니다.</p>"
+        "<div class=card><h2>자료 링크 추가</h2>"
+        "<p class=empty>사진·영상은 <b>구글드라이브(또는 카톡방)</b>에 올리고, 그 공유 링크를 여기에 등록하세요.</p>"
         "<form method=post action=/op/library-link>"
-        "<input name=title placeholder='제목' required>"
-        "<input name=category placeholder='분류(선택)'>"
-        "<input name=url placeholder='https://drive... 공유 링크' required style=flex:1>"
-        "<button>② Drive 링크 추가</button></form></div>"
+        "<input name=title placeholder='제목(예: 6월 캠페인 썸네일)' required>"
+        "<input name=category placeholder='분류(선택, 예: 사진/영상)'>"
+        "<input name=url placeholder='https://drive.google.com/... 공유 링크' required style=flex:1>"
+        "<button>링크 추가</button></form></div>"
     )
     rows = []
     for it in items:
