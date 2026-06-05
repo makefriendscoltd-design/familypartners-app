@@ -15,7 +15,13 @@ DEFAULT_DB = ROOT / "data" / "challenge.db"
 
 def database_url() -> str:
     # Vercel/배포 시 Postgres 연결 문자열. 없으면 로컬 SQLite 사용.
-    return os.environ.get("DATABASE_URL") or os.environ.get("POSTGRES_URL") or ""
+    # 서버리스 + pg8000 안정성을 위해 non-pooling(직접 연결) 우선.
+    for key in ("DATABASE_URL_UNPOOLED", "POSTGRES_URL_NON_POOLING",
+                "DATABASE_URL", "POSTGRES_URL"):
+        v = os.environ.get(key)
+        if v:
+            return v
+    return ""
 
 
 def is_postgres() -> bool:
@@ -39,10 +45,10 @@ def _translate(sql: str) -> str:
 
 
 class _PgCursor:
-    def __init__(self, raw, conn):
+    def __init__(self, raw, lastid=None):
         self._c = raw
-        self._conn = conn
         self._cols = [d[0] for d in raw.description] if raw.description else []
+        self._lastid = lastid
 
     def _row(self, t):
         return dict(zip(self._cols, t)) if t is not None else None
@@ -59,9 +65,7 @@ class _PgCursor:
 
     @property
     def lastrowid(self):
-        cur = self._conn._raw.cursor()
-        cur.execute("SELECT lastval()")
-        return cur.fetchone()[0]
+        return self._lastid
 
 
 class _PgConn:
@@ -69,9 +73,17 @@ class _PgConn:
         self._raw = raw
 
     def execute(self, sql, params=()):
+        sql2 = _translate(sql)
+        upper = sql2.upper()
         cur = self._raw.cursor()
-        cur.execute(_translate(sql), tuple(params))
-        return _PgCursor(cur, self)
+        # 자동증가 id는 INSERT ... RETURNING id 로 즉시 회수(풀러/세션 안전)
+        if (upper.lstrip().startswith("INSERT")
+                and "RETURNING" not in upper and "ON CONFLICT" not in upper):
+            cur.execute(sql2 + " RETURNING id", tuple(params))
+            r = cur.fetchone()
+            return _PgCursor(cur, r[0] if r else None)
+        cur.execute(sql2, tuple(params))
+        return _PgCursor(cur)
 
     def executescript(self, sql):
         for stmt in sql.split(";"):

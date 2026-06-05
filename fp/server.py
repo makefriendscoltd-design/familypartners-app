@@ -961,18 +961,18 @@ class Handler(BaseHTTPRequestHandler):
                         "<p class=empty>링크를 다시 확인하거나 <a class=lk href=/join>여기서 등록</a>하세요.</p></div>"), 404)
                 return self._send(page)
             if u.path == "/wall":
-                if not db.db_path().exists():
+                if not db.is_postgres() and not db.db_path().exists():
                     return self._send(shell_portal("인증 보드", "", _no_db()))
                 return self._send(view_wall())
             if u.path == "/files":
-                if not db.db_path().exists():
+                if not db.is_postgres() and not db.db_path().exists():
                     return self._send(shell_portal("자료실", "", _no_db()))
                 return self._send(view_files())
             if u.path.startswith("/dl/"):
                 return self._download(u.path[4:])
 
             # 운영자 대시보드
-            if not db.db_path().exists() and u.path != "/favicon.ico":
+            if not db.is_postgres() and not db.db_path().exists() and u.path != "/favicon.ico":
                 body = shell("패밀리 파트너스", _no_db())
             elif u.path == "/":
                 body = shell("대시보드", view_dashboard(qs))
