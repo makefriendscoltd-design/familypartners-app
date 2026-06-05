@@ -497,10 +497,16 @@ def view_me(qs) -> bytes | None:
         "placeholder='내 오픈톡방 초대 링크' style=flex:1>"
         "<button>저장</button></form></div>")
     step3 = (
-        f"<div class=card style='border-color:{'var(--grn)' if n_links else 'var(--ln)'}'>"
-        f"<h2>{ck(n_links > 0)} STEP 3. 판매 링크 3개 받기 <span class=pill>{n_links}/3</span></h2>"
-        "<p>운영자에게 카톡으로 <b>“링크 3개 발급 요청합니다”</b> 라고 보내세요. "
-        "발급되면 <b>위 STEP 2 공지에 자동으로 채워집니다.</b> (아래 '내 판매 링크'에서 확인)</p></div>")
+        f"<div class=card style='border-color:{'var(--grn)' if n_links == 3 else 'var(--ln)'}'>"
+        f"<h2>{ck(n_links == 3)} STEP 3. 판매 링크 3개 넣기 <span class=pill>{n_links}/3</span></h2>"
+        "<p>운영자에게 카톡으로 <b>“링크 3개 발급 요청합니다”</b> → 받은 링크 3개를 아래에 넣고 저장하면 "
+        "<b>위 STEP 2 공지에 자동으로 채워집니다.</b></p>"
+        "<form method=post action=/me/save>"
+        f"<input type=hidden name=t value='{esc(token)}'>"
+        f"<input name=link_familyday value='{esc(p['link_familyday'] or '')}' placeholder='① 패밀리데이 링크' style=flex:1>"
+        f"<input name=link_aimax value='{esc(p['link_aimax'] or '')}' placeholder='② AIMAX 창업 링크' style=flex:1>"
+        f"<input name=link_secondbrain value='{esc(p['link_secondbrain'] or '')}' placeholder='③ 제2의 뇌 링크' style=flex:1>"
+        "<button>저장</button></form></div>")
     step4 = (
         "<div class=card><h2>⬜ STEP 4. 콘텐츠 올리고 매일 제출</h2>"
         "<p>자료실에서 사진·영상·글감을 받아 콘텐츠로 만들어 올리고, 고객을 <b>내 오픈톡방</b>으로 모으세요. "
@@ -977,10 +983,13 @@ class Handler(BaseHTTPRequestHandler):
                 if p:
                     return self._redirect(f"/me?t={p['portal_token']}")
                 return self._redirect("/find?nf=1")
-            if u.path == "/me/save":  # 파트너 세팅 입력(스레드 아이디·오픈톡방)
+            if u.path == "/me/save":  # 파트너 세팅 입력(스레드·오픈톡방·판매링크 3개)
                 token = (f.get("t") or "").strip()
+                links = {"familyday": f.get("link_familyday"),
+                         "aimax": f.get("link_aimax"),
+                         "secondbrain": f.get("link_secondbrain")}
                 conn = db.connect()
-                core.update_self(conn, token, f.get("handle"), f.get("openchat"))
+                core.update_self(conn, token, f.get("handle"), f.get("openchat"), links)
                 conn.close()
                 return self._redirect(f"/me?t={token}&saved2=1")
             if u.path == "/reject":  # 운영자 제출 무효 처리

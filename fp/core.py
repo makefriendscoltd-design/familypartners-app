@@ -142,14 +142,20 @@ def find_for_login(conn, name, contact):
     ).fetchone()
 
 
-def update_self(conn, token, handle=None, openchat=None) -> bool:
-    """파트너가 자기 작업실에서 스레드 아이디·오픈톡방 링크 입력(세팅)."""
+def update_self(conn, token, handle=None, openchat=None, links=None) -> bool:
+    """파트너가 자기 작업실에서 스레드 아이디·오픈톡방·판매링크 3개 입력(세팅)."""
     p = find_by_token(conn, token)
     if not p:
         return False
+    links = links or {}
     h = (handle or "").strip().lstrip("@") or p["handle"]
     oc = (openchat or "").strip() or p["openchat_url"]
-    conn.execute("UPDATE partners SET handle=?, openchat_url=? WHERE id=?", (h, oc, p["id"]))
+    lf = (links.get("familyday") or "").strip() or p["link_familyday"]
+    la = (links.get("aimax") or "").strip() or p["link_aimax"]
+    ls = (links.get("secondbrain") or "").strip() or p["link_secondbrain"]
+    conn.execute(
+        "UPDATE partners SET handle=?, openchat_url=?, link_familyday=?, "
+        "link_aimax=?, link_secondbrain=? WHERE id=?", (h, oc, lf, la, ls, p["id"]))
     conn.commit()
     return True
 
