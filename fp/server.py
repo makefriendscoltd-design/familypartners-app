@@ -8,11 +8,15 @@
 """
 from __future__ import annotations
 
+import hashlib
+import hmac
 import html
+import io
 import mimetypes
 import os
 import re
 import secrets
+from http.client import HTTPMessage
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, quote, urlparse
 
@@ -21,9 +25,16 @@ from . import core, db, messages, onboard, products
 LIB_DIR = db.ROOT / "assets" / "library"
 GUIDE_DIR = db.ROOT / "assets" / "guide"
 
-# 관리자 세션 (메모리) — 서버 재시작 시 재로그인
-_SESSIONS = set()
+# 관리자 인증 — 서명 쿠키 (서버리스/멀티인스턴스 안전, 메모리 세션 불필요)
 COOKIE = "fp_admin"
+
+
+def _secret() -> bytes:
+    return (os.environ.get("FP_SECRET") or "fp-local-dev-secret-change-me").encode()
+
+
+def _admin_token() -> str:
+    return hmac.new(_secret(), b"admin-v1", hashlib.sha256).hexdigest()
 # 로그인 없이 접근 가능한 경로
 PUBLIC_GET = {"/login", "/logout", "/join", "/me", "/wall", "/files",
               "/guide", "/favicon.ico"}
@@ -686,7 +697,7 @@ class Handler(BaseHTTPRequestHandler):
         return out
 
     def _admin_ok(self) -> bool:
-        return self._cookies().get(COOKIE) in _SESSIONS
+        return hmac.compare_digest(self._cookies().get(COOKIE, ""), _admin_token())
 
     def _send(self, body: bytes, code: int = 200):
         self.send_response(code)
@@ -758,11 +769,10 @@ class Handler(BaseHTTPRequestHandler):
                     conn.close()
                     if not ok:
                         return self._send(view_login(False, "비밀번호가 틀렸습니다."))
-                tok = secrets.token_urlsafe(24)
-                _SESSIONS.add(tok)
                 self.send_response(303)
                 self.send_header("Location", "/")
-                self.send_header("Set-Cookie", f"{COOKIE}={tok}; HttpOnly; Path=/; SameSite=Lax")
+                self.send_header("Set-Cookie",
+                                 f"{COOKIE}={_admin_token()}; HttpOnly; Path=/; SameSite=Lax")
                 self.end_headers()
                 return
             # 관리자 게이트 — 공개 POST 외 전부 로그인 필요
@@ -953,6 +963,68 @@ class Handler(BaseHTTPRequestHandler):
         except Exception as e:  # 화면 깨지지 않게
             body = shell("오류", f"<div class=card><h2>오류</h2><pre>{esc(e)}</pre></div>")
         self._send(body)
+
+
+# =========================================================================== #
+# WSGI 진입점 (Vercel/서버리스) — 기존 Handler 라우팅을 소켓 없이 재사용
+# =========================================================================== #
+_SKIP_HEADERS = {"date", "server", "connection", "transfer-encoding"}
+
+
+def _emit_via_handler(method, full_path, headers, body):
+    h = Handler.__new__(Handler)
+    h.command = method
+    h.path = full_path
+    h.request_version = "HTTP/1.1"
+    h.requestline = f"{method} {full_path} HTTP/1.1"
+    h.client_address = ("127.0.0.1", 0)
+    h.rfile = io.BytesIO(body or b"")
+    h.wfile = io.BytesIO()
+    h._headers_buffer = []
+    msg = HTTPMessage()
+    for k, v in headers.items():
+        msg[k] = v
+    h.headers = msg
+    (h.do_POST if method == "POST" else h.do_GET)()
+    raw = h.wfile.getvalue()
+    head, _, resp_body = raw.partition(b"\r\n\r\n")
+    lines = head.split(b"\r\n")
+    status = "200 OK"
+    if lines and b" " in lines[0]:
+        status = lines[0].decode("latin1").split(" ", 1)[1]
+    out_headers = []
+    for line in lines[1:]:
+        if b":" in line:
+            k, v = line.split(b":", 1)
+            k = k.decode("latin1").strip()
+            if k.lower() not in _SKIP_HEADERS:
+                out_headers.append((k, v.decode("latin1").strip()))
+    return status, out_headers, resp_body
+
+
+def wsgi_app(environ, start_response):
+    method = environ.get("REQUEST_METHOD", "GET")
+    path = environ.get("PATH_INFO", "/") or "/"
+    qs = environ.get("QUERY_STRING", "")
+    full = path + (("?" + qs) if qs else "")
+    try:
+        length = int(environ.get("CONTENT_LENGTH") or 0)
+    except ValueError:
+        length = 0
+    body = environ["wsgi.input"].read(length) if length else b""
+    headers = {}
+    if environ.get("CONTENT_TYPE"):
+        headers["Content-Type"] = environ["CONTENT_TYPE"]
+    if length:
+        headers["Content-Length"] = str(length)
+    if environ.get("HTTP_COOKIE"):
+        headers["Cookie"] = environ["HTTP_COOKIE"]
+    status, out_headers, resp_body = _emit_via_handler(method, full, headers, body)
+    start_response(status, out_headers)
+    return [resp_body]
+
+
+app = wsgi_app  # WSGI/Vercel 진입점
 
 
 def serve(port: int = 8000) -> None:

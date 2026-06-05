@@ -13,11 +13,106 @@ ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_DB = ROOT / "data" / "challenge.db"
 
 
+def database_url() -> str:
+    # Vercel/배포 시 Postgres 연결 문자열. 없으면 로컬 SQLite 사용.
+    return os.environ.get("DATABASE_URL") or os.environ.get("POSTGRES_URL") or ""
+
+
+def is_postgres() -> bool:
+    return bool(database_url())
+
+
 def db_path() -> Path:
     return Path(os.environ.get("FP_DB", str(DEFAULT_DB)))
 
 
-def connect() -> sqlite3.Connection:
+# --------------------------------------------------------------------------- #
+# Postgres 어댑터 — sqlite3 와 동일한 사용법(conn.execute(...).fetchone(), row["col"],
+# cur.lastrowid, conn.commit())을 제공해서 core/server 코드를 그대로 쓰게 한다.
+# --------------------------------------------------------------------------- #
+def _pg_schema() -> str:
+    return SCHEMA.replace("INTEGER PRIMARY KEY AUTOINCREMENT", "SERIAL PRIMARY KEY")
+
+
+def _translate(sql: str) -> str:
+    return sql.replace("?", "%s")
+
+
+class _PgCursor:
+    def __init__(self, raw, conn):
+        self._c = raw
+        self._conn = conn
+        self._cols = [d[0] for d in raw.description] if raw.description else []
+
+    def _row(self, t):
+        return dict(zip(self._cols, t)) if t is not None else None
+
+    def fetchone(self):
+        return self._row(self._c.fetchone())
+
+    def fetchall(self):
+        return [self._row(t) for t in self._c.fetchall()]
+
+    def __iter__(self):
+        for t in self._c.fetchall():
+            yield self._row(t)
+
+    @property
+    def lastrowid(self):
+        cur = self._conn._raw.cursor()
+        cur.execute("SELECT lastval()")
+        return cur.fetchone()[0]
+
+
+class _PgConn:
+    def __init__(self, raw):
+        self._raw = raw
+
+    def execute(self, sql, params=()):
+        cur = self._raw.cursor()
+        cur.execute(_translate(sql), tuple(params))
+        return _PgCursor(cur, self)
+
+    def executescript(self, sql):
+        for stmt in sql.split(";"):
+            if stmt.strip():
+                self._raw.cursor().execute(stmt)
+        self._raw.commit()
+
+    def commit(self):
+        self._raw.commit()
+
+    def close(self):
+        try:
+            self._raw.close()
+        except Exception:
+            pass
+
+
+def _pg_connect():
+    import ssl
+    import urllib.parse
+
+    import pg8000.dbapi
+
+    u = urllib.parse.urlparse(database_url())
+    ctx = ssl.create_default_context()
+    ctx.check_hostname = False
+    ctx.verify_mode = ssl.CERT_NONE
+    raw = pg8000.dbapi.connect(
+        user=urllib.parse.unquote(u.username or ""),
+        password=urllib.parse.unquote(u.password or ""),
+        host=u.hostname or "localhost",
+        port=u.port or 5432,
+        database=(u.path or "/").lstrip("/").split("?")[0] or "postgres",
+        ssl_context=ctx,
+    )
+    return _PgConn(raw)
+
+
+def connect():
+    if is_postgres():
+        return _pg_connect()
     p = db_path()
     p.parent.mkdir(parents=True, exist_ok=True)
     conn = sqlite3.connect(str(p))
@@ -120,19 +215,23 @@ CREATE INDEX IF NOT EXISTS idx_sales_partner ON sales(partner_id, sale_date);
 def init_db() -> None:
     conn = connect()
     try:
-        conn.executescript(SCHEMA)
-        # 기존 DB 마이그레이션: portal_token 컬럼이 없으면 추가
-        cols = {r["name"] for r in conn.execute("PRAGMA table_info(partners)")}
-        if "portal_token" not in cols:
-            conn.execute("ALTER TABLE partners ADD COLUMN portal_token TEXT")
-            conn.execute("CREATE UNIQUE INDEX IF NOT EXISTS idx_partner_token "
-                         "ON partners(portal_token)")
-        if "sales_url" not in cols:
-            conn.execute("ALTER TABLE partners ADD COLUMN sales_url TEXT")
-        scols = {r["name"] for r in conn.execute("PRAGMA table_info(submissions)")}
-        if "valid" not in scols:
-            conn.execute("ALTER TABLE submissions ADD COLUMN valid INTEGER NOT NULL DEFAULT 1")
-            conn.execute("ALTER TABLE submissions ADD COLUMN void_reason TEXT")
-        conn.commit()
+        if is_postgres():
+            conn.executescript(_pg_schema())   # 새 Postgres: 스키마에 모든 컬럼 포함
+            conn.commit()
+        else:
+            conn.executescript(SCHEMA)
+            # 기존 SQLite DB 마이그레이션: 누락 컬럼 추가
+            cols = {r["name"] for r in conn.execute("PRAGMA table_info(partners)")}
+            if "portal_token" not in cols:
+                conn.execute("ALTER TABLE partners ADD COLUMN portal_token TEXT")
+                conn.execute("CREATE UNIQUE INDEX IF NOT EXISTS idx_partner_token "
+                             "ON partners(portal_token)")
+            if "sales_url" not in cols:
+                conn.execute("ALTER TABLE partners ADD COLUMN sales_url TEXT")
+            scols = {r["name"] for r in conn.execute("PRAGMA table_info(submissions)")}
+            if "valid" not in scols:
+                conn.execute("ALTER TABLE submissions ADD COLUMN valid INTEGER NOT NULL DEFAULT 1")
+                conn.execute("ALTER TABLE submissions ADD COLUMN void_reason TEXT")
+            conn.commit()
     finally:
         conn.close()
