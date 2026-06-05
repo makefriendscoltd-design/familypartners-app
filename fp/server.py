@@ -452,27 +452,65 @@ def view_me(qs) -> bytes | None:
     wall_link = ("<div class=card><a class=lk href='/wall'>🏆 전체 인증 보드 보기 — "
                  "동료들이 지금 얼마나 달리고 있는지 →</a></div>")
 
-    # 처음 세팅 가이드 + 내 정보 입력(스레드 아이디·오픈톡방) → 운영자 화면에 반영
-    kit_text = onboard.build_kit(p["name"], p["referral_code"], token,
-                                 p["handle"], onboard.links_of(p), p["openchat_url"])
+    # 처음 세팅 가이드 — STEP 1~4 단계별 카드 (각 단계에서 본인이 만든 정보 입력)
+    links = onboard.links_of(p)
+    profile = onboard.profile_text(p["name"], p["handle"])
+    notice = onboard.notice_text(links)
+    has_handle = bool((p["handle"] or "").strip())
+    has_oc = bool((p["openchat_url"] or "").strip())
+    n_links = sum(1 for k in ("familyday", "aimax", "secondbrain") if (links.get(k) or "").strip())
+    def ck(done):
+        return "✅" if done else "⬜"
     saved2 = ("<div class=card style='border-color:var(--grn)'>"
-              "<b class=b-grn>저장됐습니다. 운영자 화면에 반영됩니다.</b></div>") if qs.get("saved2") else ""
-    setup_card = (
-        "<div class=card style='border-color:var(--yel)'>"
-        "<h2 class=b-yel>📋 처음 세팅 가이드 (한 번만)</h2>"
-        "<details><summary style='cursor:pointer;color:var(--acc)'>펼쳐서 STEP 1~4 순서대로 따라하기 ▾</summary>"
-        f"<pre>{esc(kit_text)}</pre></details>"
+              "<b class=b-grn>저장됐습니다. 운영자 화면에 바로 반영됩니다.</b></div>") if qs.get("saved2") else ""
+
+    intro = (f"<div class=card style='border-color:var(--acc)'><h2>📋 처음 세팅 (STEP 1~4 · 한 번만)</h2>"
+             f"<p class=empty>위에서부터 <b>순서대로</b> 따라하세요. ✅ = 완료된 단계입니다.</p></div>")
+    step1 = (
+        f"<div class=card style='border-color:{'var(--grn)' if has_handle else 'var(--yel)'}'>"
+        f"<h2>{ck(has_handle)} STEP 1. 스레드 계정 만들기</h2>"
+        "<p>① 스레드(Threads) 앱에서 <b>새 계정</b>을 만드세요. 아이디는 "
+        "<b>aimax_ 뒤에 본인 닉네임</b> (예: <code>aimax_gildong</code>). "
+        "<b>자동으로 안 만들어집니다 — 직접 정해서 만드세요.</b></p>"
+        "<p>② 프로필 소개글은 아래 그대로 복붙:</p>"
+        f"<pre>{esc(profile)}</pre>"
+        "<p>③ <b>만든 스레드 아이디</b>를 입력하고 저장:</p>"
         "<form method=post action=/me/save>"
         f"<input type=hidden name=t value='{esc(token)}'>"
-        f"<input name=handle value='{esc(p['handle'] or '')}' placeholder='내 스레드 아이디(만든 것)'>"
-        f"<input name=openchat value='{esc(p['openchat_url'] or '')}' placeholder='내 오픈톡방 링크' style=flex:1>"
-        "<button>내 정보 저장</button></form>"
-        "<p class=empty>스레드 계정·오픈톡방을 만든 뒤 여기에 입력하면 운영자 화면에 바로 반영됩니다.</p></div>")
+        f"<input name=handle value='{esc(p['handle'] or '')}' "
+        "placeholder='내가 만든 스레드 아이디 (예: aimax_gildong)' style=flex:1>"
+        "<button>저장</button></form></div>")
+    step2 = (
+        f"<div class=card style='border-color:{'var(--grn)' if has_oc else 'var(--ln)'}'>"
+        f"<h2>{ck(has_oc)} STEP 2. 오픈톡방 개설</h2>"
+        "<p>① 카카오톡 <b>오픈채팅(그룹) 3,000명</b>으로 개설. 내 방 프로필 닉네임은 "
+        "<b>AIMAX 매니저</b>로 설정.</p>"
+        "<p>② 방 제목·소개(통일):</p>"
+        f"<pre>[제목] {esc(onboard.OPENCHAT_TITLE)}\n\n[소개]\n{esc(onboard.OPENCHAT_INTRO)}</pre>"
+        "<p>③ 아래 공지를 방 공지에 그대로 복붙 (판매 링크 3개는 STEP 3에서 자동으로 채워짐):</p>"
+        "<details><summary style='cursor:pointer;color:var(--acc)'>공지 전문 펼치기 ▾</summary>"
+        f"<pre>{esc(notice)}</pre></details>"
+        "<p>④ <b>만든 오픈톡방 링크</b>를 입력하고 저장:</p>"
+        "<form method=post action=/me/save>"
+        f"<input type=hidden name=t value='{esc(token)}'>"
+        f"<input name=openchat value='{esc(p['openchat_url'] or '')}' "
+        "placeholder='내 오픈톡방 초대 링크' style=flex:1>"
+        "<button>저장</button></form></div>")
+    step3 = (
+        f"<div class=card style='border-color:{'var(--grn)' if n_links else 'var(--ln)'}'>"
+        f"<h2>{ck(n_links > 0)} STEP 3. 판매 링크 3개 받기 <span class=pill>{n_links}/3</span></h2>"
+        "<p>운영자에게 카톡으로 <b>“링크 3개 발급 요청합니다”</b> 라고 보내세요. "
+        "발급되면 <b>위 STEP 2 공지에 자동으로 채워집니다.</b> (아래 '내 판매 링크'에서 확인)</p></div>")
+    step4 = (
+        "<div class=card><h2>⬜ STEP 4. 콘텐츠 올리고 매일 제출</h2>"
+        "<p>자료실에서 사진·영상·글감을 받아 콘텐츠로 만들어 올리고, 고객을 <b>내 오픈톡방</b>으로 모으세요. "
+        "<b>매일 1건 발행 후 아래에서 링크 제출 = 출석</b>입니다.</p></div>")
+    setup = intro + step1 + step2 + step3 + step4
     find_note = ("<div class=card><p class=empty>💡 이 작업실 링크는 북마크하세요. 잃어버려도 "
                  "<a class=lk href='/find'>내 작업실 찾기</a>(성함+연락처)로 다시 들어올 수 있습니다.</p></div>")
 
     conn.close()
-    body = (notice_card + saved2 + ok_banner + status_card + setup_card + submit +
+    body = (notice_card + saved2 + ok_banner + status_card + setup + submit +
             drop_card + files_link + hist_card + link_card + wall_link + find_note)
     return shell_portal(name, f"{esc(name)}님의 작업실", body)
 

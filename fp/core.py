@@ -87,8 +87,7 @@ def gen_handle() -> str:
 
 def add_partner(conn, name, handle=None, contact=None, code=None, joined=None,
                 sales_url=None) -> int:
-    if not handle:                      # 핸들 미입력 시 자동 발급(파트너가 만들 계정 아이디)
-        handle = gen_handle()
+    handle = (handle or "").strip().lstrip("@") or None  # 자동생성 X — 본인이 만든 ID를 직접 입력
     j = iso(parse_date(joined))
     cur = conn.execute(
         "INSERT INTO partners(name, handle, contact, referral_code, joined_date, "

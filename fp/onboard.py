@@ -34,9 +34,8 @@ def _read(name: str) -> str:
 
 
 def _account_id(code: str | None) -> str:
-    # aimax_OOOO (oo에 랜덤값) — 제안값. 중복 시 파트너가 직접 조정.
-    suffix = "".join(random.choices("0123456789", k=4))
-    return f"aimax_{suffix}"
+    # 자동생성 X — 본인이 직접 정해서 만들고 입력. 형식만 안내.
+    return "aimax_본인닉네임 (직접 정해서 만드세요)"
 
 
 def links_of(row) -> dict:
@@ -127,3 +126,36 @@ def build_kit(name: str, code: str | None, token: str | None = None,
 - **매일 1건 발행 — 주말·공휴일 예외 없음.**
 - **1회라도 누락하면 즉시 강퇴 + 그 달 수익은 몰수됩니다.** (사정 봐주기 없음)
 """
+
+
+# 오픈톡방 통일 설정값(가이드북)
+OPENCHAT_TITLE = "AIMAX, 24시간 일하는 직원을 만듭니다"
+OPENCHAT_INTRO = ("AIMAX, 24시간 일하는 직원을 만듭니다\n"
+                  "AI로 나만의 시스템 만드는 방법을 공유합니다.")
+
+
+def profile_text(name: str, handle: str | None = None, openchat: str | None = None) -> str:
+    """STEP 1용 — 스레드 소개글(통일)."""
+    account_id = (handle or "").lstrip("@") or _account_id(None)
+    oc = (openchat or "").strip() or "[본인 오픈톡방 링크를 여기에]"
+    return (_read("sns_profile.txt")
+            .replace("{{NICKNAME}}", name)
+            .replace("{{ACCOUNT_ID}}", account_id)
+            .replace("{{OPENCHAT}}", oc))
+
+
+def notice_text(links: dict | None = None) -> str:
+    """STEP 2용 — 단톡방 공지(상품 링크 3개 자동삽입)."""
+    links = links or {}
+    slot_map = [
+        ("{{LINK_FAMILYDAY}}", links.get("familyday"),
+         "(이번달 패밀리데이 모집링크 — 운영진에게 받아 넣기)"),
+        ("{{LINK_AIMAX}}", links.get("aimax"),
+         "(AIMAX 창업프로그램 사전예약 링크 — 운영진에게 받아 넣기)"),
+        ("{{LINK_SECONDBRAIN}}", links.get("secondbrain"),
+         "(제2의 뇌 신청링크 — 운영진에게 받아 넣기)"),
+    ]
+    notice = _read("kakao_notice.txt")
+    for tok, val, label in slot_map:
+        notice = notice.replace(tok, (val or "").strip() or label)
+    return notice
