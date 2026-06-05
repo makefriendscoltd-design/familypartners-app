@@ -657,6 +657,11 @@ def view_partner(qs) -> str:
             f"{'발행 ✅' if d['posted_today'] else '미발행 ⏳'} · 🔥 {d['streak']}일 연속</span></div>"
             f"<div class=row><span class=hd>제출</span><span class=meta>"
             f"유효 {d['total_valid']}건 / 무효 {d['total_void']}건</span></div>"
+            f"<div class=row><span class=hd>판매링크</span><span class=meta>"
+            f"패밀리데이 {'✅' if (r['link_familyday'] or '').strip() else '—'} · "
+            f"AIMAX {'✅' if (r['link_aimax'] or '').strip() else '—'} · "
+            f"제2의뇌 {'✅' if (r['link_secondbrain'] or '').strip() else '—'} "
+            f"<span class=pill>파트너가 STEP 3에서 입력</span></span></div>"
             f"<div class=row><span class=hd>작업실</span><span class=meta>"
             f"<a class=lk href='/me?t={esc(r['portal_token'] or '')}' target=_blank>"
             f"🔗 참여자가 보는 화면 열기</a></span></div></div>")
@@ -679,11 +684,8 @@ def view_partner(qs) -> str:
             f"<input name=handle value='{esc(r['handle'] or '')}' placeholder='스레드 아이디'>"
             f"<input name=contact value='{esc(r['contact'] or '')}' placeholder='연락처'>"
             f"<input name=openchat value='{esc(r['openchat_url'] or '')}' placeholder='오픈톡방 링크' style=flex:1>"
-            f"<input name=link_familyday value='{esc(r['link_familyday'] or '')}' placeholder='판매링크: 패밀리데이' style=flex:1>"
-            f"<input name=link_aimax value='{esc(r['link_aimax'] or '')}' placeholder='판매링크: AIMAX 창업' style=flex:1>"
-            f"<input name=link_secondbrain value='{esc(r['link_secondbrain'] or '')}' placeholder='판매링크: 제2의뇌' style=flex:1>"
             f"<button>저장</button></form>"
-            f"<p class=empty>스레드 아이디·오픈톡방·판매링크 3개를 여기서 바꾸면 키트에 바로 반영됩니다.</p></div>")
+            f"<p class=empty>판매링크 3개는 파트너가 작업실 STEP 3에서 직접 넣습니다(여기선 위에 표시만).</p></div>")
     return head + edit + sub_card + ev_card
 
 
@@ -1050,14 +1052,10 @@ class Handler(BaseHTTPRequestHandler):
                 pid = (f.get("id") or "").strip()
                 conn = db.connect()
                 conn.execute(
-                    "UPDATE partners SET handle=?, contact=?, openchat_url=?, "
-                    "link_familyday=?, link_aimax=?, link_secondbrain=? WHERE id=?",
+                    "UPDATE partners SET handle=?, contact=?, openchat_url=? WHERE id=?",
                     ((f.get("handle") or "").strip() or None,
                      (f.get("contact") or "").strip() or None,
-                     (f.get("openchat") or "").strip() or None,
-                     (f.get("link_familyday") or "").strip() or None,
-                     (f.get("link_aimax") or "").strip() or None,
-                     (f.get("link_secondbrain") or "").strip() or None, int(pid)))
+                     (f.get("openchat") or "").strip() or None, int(pid)))
                 conn.commit(); conn.close()
                 return self._redirect(f"/partner?id={pid}")
             if u.path == "/op/enforce":  # 운영자: 강퇴 집행
