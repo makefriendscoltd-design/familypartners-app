@@ -351,6 +351,30 @@ def find_partner(conn, ident: str) -> sqlite3.Row | None:
     ).fetchone()
 
 
+def all_partners(conn) -> list:
+    return conn.execute(
+        "SELECT * FROM partners ORDER BY status, joined_date DESC, name"
+    ).fetchall()
+
+
+def delete_partner(conn, pid) -> None:
+    # 자식(제출·이벤트·매출)은 ON DELETE CASCADE 로 함께 삭제
+    conn.execute("DELETE FROM partners WHERE id=?", (pid,))
+    conn.commit()
+
+
+def reset_all(conn) -> None:
+    """전체 초기화 — 모든 데이터+관리자 비번 삭제(첫 로그인 때 비번 재설정)."""
+    if db.is_postgres():
+        conn.execute("TRUNCATE partners, submissions, events, drops, sales, "
+                     "library, notices, settings RESTART IDENTITY CASCADE")
+    else:
+        for t in ("submissions", "events", "drops", "sales", "library",
+                  "notices", "settings", "partners"):
+            conn.execute(f"DELETE FROM {t}")
+    conn.commit()
+
+
 def set_status(conn, pid, status, when=None, reason=None) -> None:
     d = iso(parse_date(when))
     if status == "kicked":

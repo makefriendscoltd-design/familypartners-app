@@ -119,9 +119,10 @@ def esc(s) -> str:
 
 
 def shell(title: str, body: str) -> bytes:
-    nav = ('<a href="/">대시보드</a><a href="/review">검수</a>'
-           '<a href="/board">랭킹</a><a href="/library">자료실</a>'
-           '<a href="/onboard">온보딩</a><a href="/wall">인증보드</a>'
+    nav = ('<a href="/">대시보드</a><a href="/people">인원</a>'
+           '<a href="/review">검수</a><a href="/board">랭킹</a>'
+           '<a href="/library">자료실</a><a href="/onboard">온보딩</a>'
+           '<a href="/wall">인증보드</a>'
            '<a href="/logout" style="margin-left:auto">로그아웃</a>')
     doc = (f"<!doctype html><html lang=ko><head><meta charset=utf-8>"
            f"<meta name=viewport content='width=device-width,initial-scale=1'>"
@@ -294,6 +295,10 @@ def view_join(qs) -> bytes:
     elif qs.get("blocked"):
         err = ("<div class=card style='border-color:var(--red)'>"
                "<b class=b-red>강퇴 이력이 있어 재참여가 불가합니다.</b></div>")
+    elif qs.get("dup"):
+        err = ("<div class=card style='border-color:var(--red)'>"
+               "<b class=b-red>이미 등록된 성함입니다.</b> 본인이면 운영자에게 작업실 링크를 요청하세요. "
+               "동명이인이면 성함 뒤에 구분을 붙여 등록하세요(예: 박상철A).</div>")
     rules = (
         "<div class=card style='border-color:var(--yel)'>"
         "<h2 class=b-yel>📢 버는 만큼 빡셉니다</h2>"
@@ -510,6 +515,43 @@ def view_board(qs) -> str:
             f"<span class=hd>{esc(r['handle'] or '-')}</span>"
             f"<span class=meta>🔥 {r['streak']}일 · 오늘 {today} · 누적 {r['total']}건</span></div>")
     return f"<div class=card><h2>활동 랭킹 <span class=pill>연속일 순</span></h2>{''.join(rows)}</div>"
+
+
+def view_people(qs) -> str:
+    flash = ""
+    if qs.get("msg"):
+        flash = (f"<div class=card style='border-color:var(--grn)'>"
+                 f"<b class=b-grn>{esc(qs['msg'][0])}</b></div>")
+    conn = db.connect()
+    rows = core.all_partners(conn)
+    conn.close()
+    items = []
+    for r in rows:
+        st_cls = {"active": "b-grn", "kicked": "b-red", "paused": "b-yel"}.get(r["status"], "")
+        items.append(
+            f"<div class=row>"
+            f"<a class='nm lk' href='/partner?id={r['id']}'>{esc(r['name'])}</a>"
+            f"<span class=hd>{esc(r['handle'] or '-')}</span>"
+            f"<span class='pill {st_cls}' style='min-width:54px'>{r['status']}</span>"
+            f"<span class=meta>{esc(r['contact'] or '-')} · "
+            f"<form method=post action=/op/delete style='display:inline;margin:0' "
+            f"onsubmit=\"return confirm('{esc(r['name'])} 삭제할까요? 되돌릴 수 없습니다.')\">"
+            f"<input type=hidden name=id value='{r['id']}'>"
+            f"<button style='padding:3px 9px;border-color:var(--red);color:var(--red)'>삭제</button>"
+            f"</form></span></div>")
+    listing = (f"<div class=card><h2>전체 인원 ({len(rows)})</h2>"
+               f"<p class=empty>이름 클릭=상세. <b>강퇴</b>=출석 규칙용(명단 유지), "
+               f"<b>삭제</b>=명단에서 완전 제거(되돌릴 수 없음).</p>"
+               f"{''.join(items) or '<div class=empty>아직 없음</div>'}</div>")
+    reset = ("<div class=card style='border-color:var(--red)'>"
+             "<h2 class=b-red>전체 초기화 (테스트 정리)</h2>"
+             "<p class=empty>모든 인원·기록·관리자 비번을 삭제합니다. 되돌릴 수 없습니다. "
+             "확인란에 <b>초기화</b> 입력 후 실행하면, 다음 로그인 때 비번을 새로 설정합니다.</p>"
+             "<form method=post action=/op/reset "
+             "onsubmit=\"return confirm('정말 전체 초기화할까요? 되돌릴 수 없습니다.')\">"
+             "<input name=confirm placeholder='초기화' required>"
+             "<button style='border-color:var(--red);color:var(--red)'>전체 초기화</button></form></div>")
+    return flash + listing + reset
 
 
 def view_partner(qs) -> str:
@@ -739,6 +781,7 @@ class Handler(BaseHTTPRequestHandler):
         self.send_response(code)
         self.send_header("Content-Type", "text/html; charset=utf-8")
         self.send_header("Content-Length", str(len(body)))
+        self.send_header("Cache-Control", "no-store")  # 항상 최신(참여자 즉시 반영)
         self.end_headers()
         self.wfile.write(body)
 
@@ -823,8 +866,15 @@ class Handler(BaseHTTPRequestHandler):
                 if core.is_rejoin_blocked(conn, name, contact):
                     conn.close()
                     return self._redirect("/join?blocked=1")
-                row = core.self_register(conn, name, None, contact or None)
-                token = row["portal_token"]
+                if core.find_partner(conn, name):
+                    conn.close()
+                    return self._redirect("/join?dup=1")
+                try:
+                    row = core.self_register(conn, name, None, contact or None)
+                    token = row["portal_token"]
+                except Exception:
+                    conn.close()
+                    return self._redirect("/join?dup=1")
                 conn.close()
                 return self._redirect(f"/me?t={token}&ok=1")
             if u.path == "/submit":
@@ -876,6 +926,21 @@ class Handler(BaseHTTPRequestHandler):
                 core.add_drop(conn, title, (f.get("body") or "").strip() or None, [], "marketing")
                 conn.close()
                 return self._redirect("/?msg=" + _q(f"오늘 글감 등록: {title}"))
+            if u.path == "/op/delete":  # 운영자: 파트너 완전 삭제
+                conn = db.connect()
+                row = conn.execute("SELECT name FROM partners WHERE id=?",
+                                   (int(f.get("id", 0)),)).fetchone()
+                core.delete_partner(conn, int(f.get("id", 0)))
+                conn.close()
+                nm = row["name"] if row else ""
+                return self._redirect("/people?msg=" + _q(f"삭제됨: {nm}"))
+            if u.path == "/op/reset":  # 운영자: 전체 초기화(확인어구 필요)
+                if (f.get("confirm") or "").strip() == "초기화":
+                    conn = db.connect()
+                    core.reset_all(conn)
+                    conn.close()
+                    return self._redirect("/login")
+                return self._redirect("/people?msg=" + _q("초기화하려면 확인어구를 정확히 입력하세요"))
             if u.path == "/op/edit":  # 운영자: 파트너 핸들/연락처 수정
                 pid = (f.get("id") or "").strip()
                 conn = db.connect()
@@ -984,6 +1049,8 @@ class Handler(BaseHTTPRequestHandler):
                 body = shell("제출 검수", view_review(qs))
             elif u.path == "/board":
                 body = shell("활동 랭킹", view_board(qs))
+            elif u.path == "/people":
+                body = shell("인원", view_people(qs))
             elif u.path == "/library":
                 body = shell("자료실", view_library(qs))
             elif u.path == "/partner":
