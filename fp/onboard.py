@@ -63,9 +63,6 @@ def build_kit(name: str, code: str | None, token: str | None = None,
     step4 = (f"내 판매 페이지 링크 (STEP 2 공지에 이미 삽입됨):\n{sales}" if sales else
              "판매 페이지 링크는 운영진이 개별로 보내드립니다. 받으면 STEP 2 공지의 안내 자리에 넣으세요.")
     return f"""# {name}님 패밀리 파트너스 세팅 키트
-내 작업실(매일 제출): {portal_url}
-
-> 비밀번호 없습니다 — 작업실 링크 자체가 본인 인증이니 남에게 공유하지 마세요.
 
 아래 STEP 1~4 순서대로 세팅하세요.
 
@@ -76,7 +73,7 @@ def build_kit(name: str, code: str | None, token: str | None = None,
 ```
 {profile}
 ```
-→ **매일 1건 발행(주말 없음)**. 발행 후 작업실에 게시물 링크 제출 = 출석.
+→ **매일 1건 발행(주말 없음)**. 발행 후 운영방(카톡)에 게시물 링크를 보내세요 = 출석.
 ※ 계정 id 는 제안값입니다. 이미 있으면 끝자리만 바꿔서 쓰세요. 오픈톡방 링크는 본인 것으로 교체.
 
 ---
@@ -91,8 +88,7 @@ def build_kit(name: str, code: str | None, token: str | None = None,
 ---
 
 ## STEP 3. 관심 고객 모으기
-자료실에서 **사진·영상·자료집·글감**을 받아 콘텐츠로 만들어 고객을 모으세요.
-자료실: {files_url}
+글에 쓸 **사진·영상·자료집·글감**은 운영진이 카톡으로 보내드립니다. 받아서 콘텐츠로 만들어 고객을 모으세요.
 
 ---
 
