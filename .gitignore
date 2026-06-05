@@ -13,3 +13,5 @@ __pycache__/
 # 기타
 nohup.out
 *.log
+
+.vercel

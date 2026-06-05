@@ -1,0 +1,10 @@
+data/
+out/
+assets/library/
+__pycache__/
+*.pyc
+*.db
+deploy/
+start.bat
+tunnel.bat
+seed_demo.py
