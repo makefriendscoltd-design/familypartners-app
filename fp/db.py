@@ -144,8 +144,11 @@ CREATE TABLE IF NOT EXISTS partners (
     joined_date  TEXT NOT NULL,              -- YYYY-MM-DD (챌린지 시작일)
     kicked_date  TEXT,
     portal_token TEXT,                       -- 파트너 포털 비밀 링크 토큰
-    sales_url    TEXT,                        -- 운영진이 개별 발급한 판매 페이지 링크
-    openchat_url TEXT                         -- 본인 오픈톡방 링크(세팅 시 파트너가 입력)
+    sales_url    TEXT,                        -- (구) 단일 판매링크 — 미사용
+    openchat_url TEXT,                        -- 본인 오픈톡방 링크(세팅 시 파트너가 입력)
+    link_familyday   TEXT,                    -- 상품별 판매링크: 패밀리데이
+    link_aimax       TEXT,                    -- AIMAX 창업프로그램
+    link_secondbrain TEXT                     -- 제2의 뇌
 );
 CREATE UNIQUE INDEX IF NOT EXISTS idx_partner_token ON partners(portal_token);
 
@@ -231,8 +234,9 @@ def init_db() -> None:
         if is_postgres():
             conn.executescript(_pg_schema())   # 새 Postgres: 스키마에 모든 컬럼 포함
             # 기존 테이블 컬럼 추가(있으면 무시)
-            conn.execute("ALTER TABLE partners ADD COLUMN IF NOT EXISTS sales_url TEXT")
-            conn.execute("ALTER TABLE partners ADD COLUMN IF NOT EXISTS openchat_url TEXT")
+            for col in ("sales_url", "openchat_url", "link_familyday",
+                        "link_aimax", "link_secondbrain"):
+                conn.execute(f"ALTER TABLE partners ADD COLUMN IF NOT EXISTS {col} TEXT")
             conn.commit()
         else:
             conn.executescript(SCHEMA)
@@ -244,8 +248,9 @@ def init_db() -> None:
                              "ON partners(portal_token)")
             if "sales_url" not in cols:
                 conn.execute("ALTER TABLE partners ADD COLUMN sales_url TEXT")
-            if "openchat_url" not in cols:
-                conn.execute("ALTER TABLE partners ADD COLUMN openchat_url TEXT")
+            for col in ("openchat_url", "link_familyday", "link_aimax", "link_secondbrain"):
+                if col not in cols:
+                    conn.execute(f"ALTER TABLE partners ADD COLUMN {col} TEXT")
             scols = {r["name"] for r in conn.execute("PRAGMA table_info(submissions)")}
             if "valid" not in scols:
                 conn.execute("ALTER TABLE submissions ADD COLUMN valid INTEGER NOT NULL DEFAULT 1")

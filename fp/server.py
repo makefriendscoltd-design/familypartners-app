@@ -146,9 +146,9 @@ def quick_actions() -> str:
     return (
         "<div class=card><h2>빠른 작업 <span class=pill>터미널 없이 여기서</span></h2>"
         f"<form method=post action=/op/partner>{_ipt('name','파트너 이름',True)}"
-        f"{_ipt('handle','@핸들(비우면 자동발급)')}{_ipt('contact','연락처')}"
-        f"{_ipt('sales_url','판매 페이지 링크',False,True)}"
+        f"{_ipt('handle','@핸들(비우면 자동발급)')}{_ipt('contact','연락처',False,True)}"
         f"<button>① 파트너 등록</button></form>"
+        "<p class=empty>판매링크 3개는 등록 후 <b>인원→상세→정보 수정</b>에서 넣으면 키트에 자동 삽입됩니다.</p>"
         f"<form method=post action=/op/submit>{_ipt('who','이름/@핸들',True)}"
         f"{_ipt('url','게시물 링크',True,True)}<button>② 제출 입력(출석)</button></form>"
         "<p class=empty style='margin-top:10px'>"
@@ -264,7 +264,7 @@ def view_onboard(qs) -> str:
         p = core.find_partner(conn, who)
         if p:
             kit = onboard.build_kit(p["name"], p["referral_code"], p["portal_token"],
-                                    p["handle"], p["sales_url"], p["openchat_url"])
+                                    p["handle"], onboard.links_of(p), p["openchat_url"])
             kit_html = f"<div class=card><pre>{esc(kit)}</pre></div>"
         else:
             kit_html = "<div class=card><div class=empty>파트너를 찾을 수 없음</div></div>"
@@ -415,15 +415,17 @@ def view_me(qs) -> bytes | None:
     else:
         drop_card = "<div class=card><h2>오늘의 글감</h2><div class=empty>아직 등록 전입니다.</div></div>"
 
-    # 내 판매 링크 (운영진이 개별 발급한 판매 페이지)
-    sales_url = (p["sales_url"] or "").strip()
-    if sales_url:
-        link_card = (f"<div class=card><h2>내 판매 링크</h2>"
-                     f"<div class=row><a class='lk' href='{esc(sales_url)}' target=_blank>{esc(sales_url)}</a></div>"
-                     f"<p class=empty>단톡방 공지에 이 링크를 넣으세요. 이 링크로 들어온 결제가 내 실적입니다.</p></div>")
-    else:
-        link_card = ("<div class=card><h2>내 판매 링크</h2>"
-                     "<div class=empty>운영진이 개별로 보내드린 판매 링크를 사용하세요.</div></div>")
+    # 내 판매 링크 3개 (상품별 — 운영진이 발급, 공지에 자동삽입)
+    linkrows = [("패밀리데이", p["link_familyday"]), ("AIMAX 창업", p["link_aimax"]),
+                ("제2의 뇌", p["link_secondbrain"])]
+    lk_items = "".join(
+        f"<div class=row><span class=hd>{nm}</span>"
+        + (f"<a class='lk meta' style='margin-left:0' href='{esc(v)}' target=_blank>{esc(v)}</a>"
+           if (v or '').strip() else "<span class=meta>운영진 발급 대기</span>")
+        + "</div>"
+        for nm, v in linkrows)
+    link_card = (f"<div class=card><h2>내 판매 링크 (상품별)</h2>{lk_items}"
+                 "<p class=empty>이 링크들이 단톡방 공지에 자동으로 들어갑니다. 이 링크로 들어온 결제가 내 실적입니다.</p></div>")
 
     # 운영 공지 배너
     notices = core.active_notices(conn)
@@ -452,7 +454,7 @@ def view_me(qs) -> bytes | None:
 
     # 처음 세팅 가이드 + 내 정보 입력(스레드 아이디·오픈톡방) → 운영자 화면에 반영
     kit_text = onboard.build_kit(p["name"], p["referral_code"], token,
-                                 p["handle"], p["sales_url"], p["openchat_url"])
+                                 p["handle"], onboard.links_of(p), p["openchat_url"])
     saved2 = ("<div class=card style='border-color:var(--grn)'>"
               "<b class=b-grn>저장됐습니다. 운영자 화면에 반영됩니다.</b></div>") if qs.get("saved2") else ""
     setup_card = (
@@ -633,8 +635,11 @@ def view_partner(qs) -> str:
             f"<input name=handle value='{esc(r['handle'] or '')}' placeholder='스레드 아이디'>"
             f"<input name=contact value='{esc(r['contact'] or '')}' placeholder='연락처'>"
             f"<input name=openchat value='{esc(r['openchat_url'] or '')}' placeholder='오픈톡방 링크' style=flex:1>"
+            f"<input name=link_familyday value='{esc(r['link_familyday'] or '')}' placeholder='판매링크: 패밀리데이' style=flex:1>"
+            f"<input name=link_aimax value='{esc(r['link_aimax'] or '')}' placeholder='판매링크: AIMAX 창업' style=flex:1>"
+            f"<input name=link_secondbrain value='{esc(r['link_secondbrain'] or '')}' placeholder='판매링크: 제2의뇌' style=flex:1>"
             f"<button>저장</button></form>"
-            f"<p class=empty>핸들(실제 만든 스레드 아이디)·판매 링크를 여기서 바꾸면 키트에 바로 반영됩니다.</p></div>")
+            f"<p class=empty>스레드 아이디·오픈톡방·판매링크 3개를 여기서 바꾸면 키트에 바로 반영됩니다.</p></div>")
     return head + edit + sub_card + ev_card
 
 
@@ -997,10 +1002,15 @@ class Handler(BaseHTTPRequestHandler):
             if u.path == "/op/edit":  # 운영자: 파트너 핸들/연락처 수정
                 pid = (f.get("id") or "").strip()
                 conn = db.connect()
-                conn.execute("UPDATE partners SET handle=?, contact=?, openchat_url=? WHERE id=?",
-                             ((f.get("handle") or "").strip() or None,
-                              (f.get("contact") or "").strip() or None,
-                              (f.get("openchat") or "").strip() or None, int(pid)))
+                conn.execute(
+                    "UPDATE partners SET handle=?, contact=?, openchat_url=?, "
+                    "link_familyday=?, link_aimax=?, link_secondbrain=? WHERE id=?",
+                    ((f.get("handle") or "").strip() or None,
+                     (f.get("contact") or "").strip() or None,
+                     (f.get("openchat") or "").strip() or None,
+                     (f.get("link_familyday") or "").strip() or None,
+                     (f.get("link_aimax") or "").strip() or None,
+                     (f.get("link_secondbrain") or "").strip() or None, int(pid)))
                 conn.commit(); conn.close()
                 return self._redirect(f"/partner?id={pid}")
             if u.path == "/op/enforce":  # 운영자: 강퇴 집행
