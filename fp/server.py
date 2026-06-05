@@ -283,18 +283,54 @@ def shell_portal(title: str, sub: str, body: str) -> bytes:
     return doc.encode("utf-8")
 
 
+NOTION_URL = "https://makefriends.notion.site/372b31f1da558017943ce42c44793754"
+
+
 def view_join(qs) -> bytes:
-    err = ("<div class=card style='border-color:var(--red)'>"
-           "<b class=b-red>이름은 필수입니다.</b></div>") if qs.get("e") else ""
-    body = (f"{err}<div class=card><h2>패밀리 파트너스 합류</h2>"
-            "<p class=empty>카톡방에 입장하셨다면 아래 정보로 등록하세요. "
-            "등록하면 <b>나만의 비밀 링크</b>가 생성됩니다 — 그 링크가 곧 내 작업실입니다.</p>"
-            "<form method=post action=/join>"
-            "<input name=name placeholder='이름 (필수)' required>"
-            "<input name=handle placeholder='스레드 핸들 @아이디'>"
-            "<input name=contact placeholder='연락처(카톡/전화)'>"
-            "<button>등록하고 내 링크 받기</button></form></div>")
-    return shell_portal("합류", "신규 등록", body)
+    err = ""
+    if qs.get("e"):
+        err = ("<div class=card style='border-color:var(--red)'>"
+               "<b class=b-red>성함은 필수입니다.</b></div>")
+    elif qs.get("blocked"):
+        err = ("<div class=card style='border-color:var(--red)'>"
+               "<b class=b-red>강퇴 이력이 있어 재참여가 불가합니다.</b></div>")
+    rules = (
+        "<div class=card style='border-color:var(--yel)'>"
+        "<h2 class=b-yel>📢 버는 만큼 빡셉니다</h2>"
+        "<p class=empty>참여비 없는 자율 프로그램입니다. 시작 전에 꼭 읽어주세요.</p></div>"
+
+        "<div class=card><h2>1. 매일 업로드 해야 합니다</h2>"
+        "<p>· 누락 시 <b class=b-red>즉시 강퇴</b>됩니다.</p>"
+        "<p>· 개인 사정 안 봐드립니다.</p>"
+        "<p>· 강퇴되면 다시 참여 불가합니다.</p></div>"
+
+        "<div class=card><h2>2. 할 일은 단순합니다</h2>"
+        "<p>· 스레드 아이디를 만든다</p>"
+        "<p>· 올리라는 콘텐츠를 올린다 <span class=empty>(콘텐츠 소스 다 드립니다)</span></p>"
+        "<p>· 본인 카톡방으로 유입시킨다 <span class=empty>(공지 설정 다 해드립니다)</span></p>"
+        "<p>· 질의에 답변만 해준다 <span class=empty>(모르면 대신 답변해드립니다)</span></p>"
+        "<p>· 판매되면 정산받는다</p></div>"
+
+        "<div class=card><h2>3. 주마다 피드백합니다</h2>"
+        "<p>· 라이브 콘텐츠 피드백 · 자세한 일정은 추후 공지</p></div>"
+
+        "<div class=card><h2>4. 매월 정산합니다</h2>"
+        "<p>· 월초마다 판매된 만큼 정산</p>"
+        f"<p>· 정산 비율은 <a class=lk href='{NOTION_URL}' target=_blank>여기(노션 페이지)</a>에 기재</p></div>"
+    )
+    form = (
+        f"{err}<div class=card style='border-color:var(--acc)'><h2>참여 등록</h2>"
+        "<p class=empty>카톡방에 입장하셨다면 아래로 등록하세요. 등록하면 "
+        "<b>나만의 작업실 링크</b>(비번 없는 개인 페이지)가 생깁니다 — 매일 거기서 글을 제출합니다.</p>"
+        "<form method=post action=/join>"
+        "<input name=name placeholder='성함 (필수)' required>"
+        "<input name=contact placeholder='연락처 (필수)' required style=flex:1>"
+        "<button>등록하고 내 작업실 링크 받기</button></form>"
+        "<p class=empty>※ 스레드 아이디는 등록 후 안내에 따라 만들면 됩니다(자동 배정).<br>"
+        "※ 운영 단톡방 닉네임은 <b>성함+연락처 뒤 4자리</b>로 변경해주세요. (예: 홍길동5678)</p></div>"
+    )
+    closing = ("<div class=card><p class=empty>안 하실 분은 나가셔도 됩니다. 감사합니다.</p></div>")
+    return shell_portal("합류", "참여 안내", rules + form + closing)
 
 
 def view_me(qs) -> bytes | None:
@@ -780,12 +816,14 @@ class Handler(BaseHTTPRequestHandler):
                 return self._redirect("/login")
             if u.path == "/join":
                 name = (f.get("name") or "").strip()
+                contact = (f.get("contact") or "").strip()
                 if not name:
                     return self._redirect("/join?e=1")
                 conn = db.connect()
-                row = core.self_register(conn, name,
-                                         (f.get("handle") or "").strip() or None,
-                                         (f.get("contact") or "").strip() or None)
+                if core.is_rejoin_blocked(conn, name, contact):
+                    conn.close()
+                    return self._redirect("/join?blocked=1")
+                row = core.self_register(conn, name, None, contact or None)
                 token = row["portal_token"]
                 conn.close()
                 return self._redirect(f"/me?t={token}&ok=1")

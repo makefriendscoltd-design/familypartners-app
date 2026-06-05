@@ -110,6 +110,20 @@ def self_register(conn, name, handle=None, contact=None) -> sqlite3.Row:
     return conn.execute("SELECT * FROM partners WHERE name=?", (name,)).fetchone()
 
 
+def is_rejoin_blocked(conn, name, contact) -> bool:
+    """강퇴자 재참여 차단 — 이름 또는 연락처가 강퇴 명단과 일치하면 True."""
+    name = (name or "").strip()
+    contact = (contact or "").strip()
+    if not name and not contact:
+        return False
+    for r in conn.execute("SELECT name, contact FROM partners WHERE status='kicked'"):
+        if name and r["name"] == name:
+            return True
+        if contact and (r["contact"] or "") == contact:
+            return True
+    return False
+
+
 def find_by_token(conn, token: str) -> sqlite3.Row | None:
     if not token:
         return None

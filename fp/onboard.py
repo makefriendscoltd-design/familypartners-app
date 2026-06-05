@@ -62,7 +62,8 @@ def build_kit(name: str, code: str | None, token: str | None = None,
     files_url = f"{portal_base()}/files"
     base = portal_base()
     is_local = base.startswith("http://localhost") or base.startswith("http://127.")
-    header_portal = "" if is_local else f"내 작업실(매일 제출 — 북마크): {portal_url}\n\n"
+    header_portal = "" if is_local else (
+        f"내 작업실(매일 글 올린 뒤 링크를 제출하는 나만의 페이지 — 북마크 필수):\n{portal_url}\n\n")
     step1_submit = ("→ **매일 1건 발행(주말 없음)**. 발행 후 운영방(카톡)에 게시물 링크를 보내세요 = 출석."
                     if is_local else
                     "→ **매일 1건 발행(주말 없음)**. 발행 후 작업실에 게시물 링크를 제출하세요 = 출석.")
