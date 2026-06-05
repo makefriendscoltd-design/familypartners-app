@@ -37,8 +37,8 @@ def _admin_token() -> str:
     return hmac.new(_secret(), b"admin-v1", hashlib.sha256).hexdigest()
 # 로그인 없이 접근 가능한 경로
 PUBLIC_GET = {"/login", "/logout", "/join", "/me", "/wall", "/files",
-              "/guide", "/favicon.ico"}
-PUBLIC_POST = {"/login", "/join", "/submit"}
+              "/guide", "/find", "/favicon.ico"}
+PUBLIC_POST = {"/login", "/join", "/submit", "/find", "/me/save"}
 
 
 def guide_img(name: str, caption: str) -> str:
@@ -264,7 +264,7 @@ def view_onboard(qs) -> str:
         p = core.find_partner(conn, who)
         if p:
             kit = onboard.build_kit(p["name"], p["referral_code"], p["portal_token"],
-                                    p["handle"], p["sales_url"])
+                                    p["handle"], p["sales_url"], p["openchat_url"])
             kit_html = f"<div class=card><pre>{esc(kit)}</pre></div>"
         else:
             kit_html = "<div class=card><div class=empty>파트너를 찾을 수 없음</div></div>"
@@ -334,8 +334,24 @@ def view_join(qs) -> bytes:
         "<p class=empty>※ 스레드 아이디는 등록 후 안내에 따라 만들면 됩니다(자동 배정).<br>"
         "※ 운영 단톡방 닉네임은 <b>성함+연락처 뒤 4자리</b>로 변경해주세요. (예: 홍길동5678)</p></div>"
     )
-    closing = ("<div class=card><p class=empty>안 하실 분은 나가셔도 됩니다. 감사합니다.</p></div>")
+    closing = ("<div class=card><p class=empty>안 하실 분은 나가셔도 됩니다. 감사합니다.<br>"
+               "이미 등록했는데 작업실 링크를 잃어버렸다면 → "
+               "<a class=lk href='/find'>내 작업실 찾기</a></p></div>")
     return shell_portal("합류", "참여 안내", rules + form + closing)
+
+
+def view_find(qs) -> bytes:
+    nf = ("<div class=card style='border-color:var(--red)'>"
+          "<b class=b-red>일치하는 정보가 없습니다.</b> 등록 시 넣은 성함·연락처를 확인하거나 "
+          "운영자에게 문의하세요.</div>") if qs.get("nf") else ""
+    body = (nf + "<div class=card><h2>내 작업실 찾기</h2>"
+            "<p class=empty>작업실 링크를 잃어버렸나요? 등록한 <b>성함과 연락처</b>로 다시 들어갈 수 있습니다. "
+            "(비밀번호 없음)</p>"
+            "<form method=post action=/find>"
+            "<input name=name placeholder='성함' required>"
+            "<input name=contact placeholder='연락처(등록 시 입력한 것)' required style=flex:1>"
+            "<button>내 작업실 열기</button></form></div>")
+    return shell_portal("내 작업실 찾기", "재로그인", body)
 
 
 def view_me(qs) -> bytes | None:
@@ -434,9 +450,28 @@ def view_me(qs) -> bytes | None:
     wall_link = ("<div class=card><a class=lk href='/wall'>🏆 전체 인증 보드 보기 — "
                  "동료들이 지금 얼마나 달리고 있는지 →</a></div>")
 
+    # 처음 세팅 가이드 + 내 정보 입력(스레드 아이디·오픈톡방) → 운영자 화면에 반영
+    kit_text = onboard.build_kit(p["name"], p["referral_code"], token,
+                                 p["handle"], p["sales_url"], p["openchat_url"])
+    saved2 = ("<div class=card style='border-color:var(--grn)'>"
+              "<b class=b-grn>저장됐습니다. 운영자 화면에 반영됩니다.</b></div>") if qs.get("saved2") else ""
+    setup_card = (
+        "<div class=card style='border-color:var(--yel)'>"
+        "<h2 class=b-yel>📋 처음 세팅 가이드 (한 번만)</h2>"
+        "<details><summary style='cursor:pointer;color:var(--acc)'>펼쳐서 STEP 1~4 순서대로 따라하기 ▾</summary>"
+        f"<pre>{esc(kit_text)}</pre></details>"
+        "<form method=post action=/me/save>"
+        f"<input type=hidden name=t value='{esc(token)}'>"
+        f"<input name=handle value='{esc(p['handle'] or '')}' placeholder='내 스레드 아이디(만든 것)'>"
+        f"<input name=openchat value='{esc(p['openchat_url'] or '')}' placeholder='내 오픈톡방 링크' style=flex:1>"
+        "<button>내 정보 저장</button></form>"
+        "<p class=empty>스레드 계정·오픈톡방을 만든 뒤 여기에 입력하면 운영자 화면에 바로 반영됩니다.</p></div>")
+    find_note = ("<div class=card><p class=empty>💡 이 작업실 링크는 북마크하세요. 잃어버려도 "
+                 "<a class=lk href='/find'>내 작업실 찾기</a>(성함+연락처)로 다시 들어올 수 있습니다.</p></div>")
+
     conn.close()
-    body = (notice_card + ok_banner + status_card + submit + drop_card +
-            files_link + hist_card + link_card + wall_link)
+    body = (notice_card + saved2 + ok_banner + status_card + setup_card + submit +
+            drop_card + files_link + hist_card + link_card + wall_link + find_note)
     return shell_portal(name, f"{esc(name)}님의 작업실", body)
 
 
@@ -568,7 +603,8 @@ def view_partner(qs) -> str:
     st_cls = {"active": "b-grn", "kicked": "b-red", "paused": "b-yel"}.get(r["status"], "")
     head = (f"<div class=card><h2>{esc(r['name'])} "
             f"<span class='pill {st_cls}'>{r['status']}</span></h2>"
-            f"<div class=row><span class=hd>핸들</span><span class=meta>{esc(r['handle'] or '-')}</span></div>"
+            f"<div class=row><span class=hd>스레드 아이디</span><span class=meta>{esc(r['handle'] or '-')}</span></div>"
+            f"<div class=row><span class=hd>오픈톡방</span><span class=meta>{esc(r['openchat_url'] or '-')}</span></div>"
             f"<div class=row><span class=hd>연락처</span><span class=meta>{esc(r['contact'] or '-')}</span></div>"
             f"<div class=row><span class=hd>가입일</span><span class=meta>{esc(r['joined_date'])}</span></div>"
             f"<div class=row><span class=hd>오늘</span><span class=meta>"
@@ -594,9 +630,9 @@ def view_partner(qs) -> str:
     edit = (f"<div class=card><h2>정보 수정</h2>"
             f"<form method=post action=/op/edit>"
             f"<input type=hidden name=id value='{r['id']}'>"
-            f"<input name=handle value='{esc(r['handle'] or '')}' placeholder='@핸들(계정 아이디)'>"
+            f"<input name=handle value='{esc(r['handle'] or '')}' placeholder='스레드 아이디'>"
             f"<input name=contact value='{esc(r['contact'] or '')}' placeholder='연락처'>"
-            f"<input name=sales_url value='{esc(r['sales_url'] or '')}' placeholder='판매 페이지 링크' style=flex:1>"
+            f"<input name=openchat value='{esc(r['openchat_url'] or '')}' placeholder='오픈톡방 링크' style=flex:1>"
             f"<button>저장</button></form>"
             f"<p class=empty>핸들(실제 만든 스레드 아이디)·판매 링크를 여기서 바꾸면 키트에 바로 반영됩니다.</p></div>")
     return head + edit + sub_card + ev_card
@@ -891,6 +927,19 @@ class Handler(BaseHTTPRequestHandler):
                                         (f.get("channel") or "threads"))
                 conn.close()
                 return self._redirect(f"/me?t={token}&ok=1")
+            if u.path == "/find":  # 파트너 재로그인(성함+연락처)
+                conn = db.connect()
+                p = core.find_for_login(conn, f.get("name"), f.get("contact"))
+                conn.close()
+                if p:
+                    return self._redirect(f"/me?t={p['portal_token']}")
+                return self._redirect("/find?nf=1")
+            if u.path == "/me/save":  # 파트너 세팅 입력(스레드 아이디·오픈톡방)
+                token = (f.get("t") or "").strip()
+                conn = db.connect()
+                core.update_self(conn, token, f.get("handle"), f.get("openchat"))
+                conn.close()
+                return self._redirect(f"/me?t={token}&saved2=1")
             if u.path == "/reject":  # 운영자 제출 무효 처리
                 conn = db.connect()
                 core.reject_submission(conn, int(f.get("id", 0)), (f.get("reason") or "").strip() or None)
@@ -948,10 +997,10 @@ class Handler(BaseHTTPRequestHandler):
             if u.path == "/op/edit":  # 운영자: 파트너 핸들/연락처 수정
                 pid = (f.get("id") or "").strip()
                 conn = db.connect()
-                conn.execute("UPDATE partners SET handle=?, contact=?, sales_url=? WHERE id=?",
+                conn.execute("UPDATE partners SET handle=?, contact=?, openchat_url=? WHERE id=?",
                              ((f.get("handle") or "").strip() or None,
                               (f.get("contact") or "").strip() or None,
-                              (f.get("sales_url") or "").strip() or None, int(pid)))
+                              (f.get("openchat") or "").strip() or None, int(pid)))
                 conn.commit(); conn.close()
                 return self._redirect(f"/partner?id={pid}")
             if u.path == "/op/enforce":  # 운영자: 강퇴 집행
@@ -1021,6 +1070,8 @@ class Handler(BaseHTTPRequestHandler):
             # 파트너 포털(공개) — DB 유무와 무관하게 동작
             if u.path == "/join":
                 return self._send(view_join(qs))
+            if u.path == "/find":
+                return self._send(view_find(qs))
             if u.path == "/me":
                 page = view_me(qs)
                 if page is None:

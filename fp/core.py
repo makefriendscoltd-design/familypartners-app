@@ -132,6 +132,29 @@ def find_by_token(conn, token: str) -> sqlite3.Row | None:
     ).fetchone()
 
 
+def find_for_login(conn, name, contact):
+    """파트너 재로그인 — 성함+연락처로 본인 찾기(비번 없는 토큰 방식 보완)."""
+    name = (name or "").strip()
+    contact = (contact or "").strip()
+    if not name or not contact:
+        return None
+    return conn.execute(
+        "SELECT * FROM partners WHERE name=? AND contact=?", (name, contact)
+    ).fetchone()
+
+
+def update_self(conn, token, handle=None, openchat=None) -> bool:
+    """파트너가 자기 작업실에서 스레드 아이디·오픈톡방 링크 입력(세팅)."""
+    p = find_by_token(conn, token)
+    if not p:
+        return False
+    h = (handle or "").strip().lstrip("@") or p["handle"]
+    oc = (openchat or "").strip() or p["openchat_url"]
+    conn.execute("UPDATE partners SET handle=?, openchat_url=? WHERE id=?", (h, oc, p["id"]))
+    conn.commit()
+    return True
+
+
 def posted_today(conn, pid, as_of: date) -> bool:
     return iso(as_of) in covered_dates(conn, pid)
 

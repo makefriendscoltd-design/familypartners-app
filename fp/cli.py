@@ -187,7 +187,7 @@ def cmd_onboard(args):
     if not p:
         _p(f"파트너를 찾을 수 없음: {args.who}"); sys.exit(1)
     kit = onboard.build_kit(p["name"], p["referral_code"], p["portal_token"],
-                            p["handle"], p["sales_url"])
+                            p["handle"], p["sales_url"], p["openchat_url"])
     out_dir = Path(core.db.ROOT) / "out"
     out_dir.mkdir(exist_ok=True)
     fp = out_dir / f"onboard_{p['name']}.md"

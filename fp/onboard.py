@@ -40,24 +40,28 @@ def _account_id(code: str | None) -> str:
 
 
 def build_kit(name: str, code: str | None, token: str | None = None,
-              handle: str | None = None, sales_url: str | None = None) -> str:
-    plist = products.products()
+              handle: str | None = None, sales_url: str | None = None,
+              openchat: str | None = None) -> str:
     portal_url = f"{portal_base()}/me?t={token}" if token else "(포털 토큰 없음)"
-    sales = (sales_url or "").strip()
-    slot = sales or "(운영진이 보내드린 판매 링크를 여기에 넣으세요)"
 
-    # 단톡방 공지: 판매링크 슬롯 = 등록 시 입력한 판매페이지 링크
+    # 단톡방 공지: 상품별 판매링크 슬롯 (상품마다 링크가 다름 — 운영진에게 받아 넣기)
+    slot_labels = {
+        "{{LINK_FAMILYDAY}}": "(이번달 패밀리데이 모집링크 — 운영진에게 받아 넣기)",
+        "{{LINK_AIMAX}}": "(AIMAX 창업프로그램 사전예약 링크 — 운영진에게 받아 넣기)",
+        "{{LINK_SECONDBRAIN}}": "(제2의 뇌 신청링크 — 운영진에게 받아 넣기)",
+    }
     notice = _read("kakao_notice.txt")
-    for token, key in NOTICE_SLOTS.items():
-        notice = notice.replace(token, slot)
+    for tok, label in slot_labels.items():
+        notice = notice.replace(tok, label)
 
     # SNS 프로필
     account_id = (handle or "").lstrip("@") or _account_id(code)
+    oc = (openchat or "").strip() or "[본인 오픈톡방 링크를 여기에]"
     profile = _read("sns_profile.txt")
     profile = (profile
                .replace("{{NICKNAME}}", name)
                .replace("{{ACCOUNT_ID}}", account_id)
-               .replace("{{OPENCHAT}}", "[본인 오픈톡방 링크를 여기에]"))
+               .replace("{{OPENCHAT}}", oc))
 
     files_url = f"{portal_base()}/files"
     base = portal_base()
@@ -70,8 +74,8 @@ def build_kit(name: str, code: str | None, token: str | None = None,
     step3_body = ("글에 쓸 **사진·영상·자료집·글감**은 운영진이 카톡으로 보내드립니다. 받아서 콘텐츠로 만들어 고객을 모으세요."
                   if is_local else
                   f"자료실에서 **사진·영상·자료집·글감**을 받아 콘텐츠로 만들어 고객을 모으세요.\n자료실: {files_url}")
-    step4 = (f"내 판매 페이지 링크 (STEP 2 공지에 이미 삽입됨):\n{sales}" if sales else
-             "판매 페이지 링크는 운영진이 개별로 보내드립니다. 받으면 STEP 2 공지의 안내 자리에 넣으세요.")
+    step4 = ("판매 링크는 **상품마다 다릅니다.** 운영진에게 카톡으로 '링크 3개 발급 요청' 하고,\n"
+             "받은 3개(패밀리데이·AIMAX 창업·제2의 뇌)를 STEP 2 공지의 해당 자리에 각각 넣으세요.")
     return f"""# {name}님 패밀리 파트너스 세팅 키트
 {header_portal}아래 STEP 1~4 순서대로 세팅하세요.
 
@@ -89,7 +93,7 @@ def build_kit(name: str, code: str | None, token: str | None = None,
 
 ## STEP 2. 본인 단톡방 운영
 1) 카카오톡 단톡방을 만들고, **내 닉네임을 `AIMAX 매니저` 로 설정**하세요.
-2) 아래 공지를 방에 **그대로 복붙** (개별 상품링크는 이미 내 것으로 들어 있음):
+2) 아래 공지를 방에 **그대로 복붙** (상품 링크 3개는 운영진에게 받아 표시된 자리에 각각 넣으세요):
 ```
 {notice}
 ```
