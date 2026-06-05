@@ -60,11 +60,19 @@ def build_kit(name: str, code: str | None, token: str | None = None,
                .replace("{{OPENCHAT}}", "[본인 오픈톡방 링크를 여기에]"))
 
     files_url = f"{portal_base()}/files"
+    base = portal_base()
+    is_local = base.startswith("http://localhost") or base.startswith("http://127.")
+    header_portal = "" if is_local else f"내 작업실(매일 제출 — 북마크): {portal_url}\n\n"
+    step1_submit = ("→ **매일 1건 발행(주말 없음)**. 발행 후 운영방(카톡)에 게시물 링크를 보내세요 = 출석."
+                    if is_local else
+                    "→ **매일 1건 발행(주말 없음)**. 발행 후 작업실에 게시물 링크를 제출하세요 = 출석.")
+    step3_body = ("글에 쓸 **사진·영상·자료집·글감**은 운영진이 카톡으로 보내드립니다. 받아서 콘텐츠로 만들어 고객을 모으세요."
+                  if is_local else
+                  f"자료실에서 **사진·영상·자료집·글감**을 받아 콘텐츠로 만들어 고객을 모으세요.\n자료실: {files_url}")
     step4 = (f"내 판매 페이지 링크 (STEP 2 공지에 이미 삽입됨):\n{sales}" if sales else
              "판매 페이지 링크는 운영진이 개별로 보내드립니다. 받으면 STEP 2 공지의 안내 자리에 넣으세요.")
     return f"""# {name}님 패밀리 파트너스 세팅 키트
-
-아래 STEP 1~4 순서대로 세팅하세요.
+{header_portal}아래 STEP 1~4 순서대로 세팅하세요.
 
 ---
 
@@ -73,7 +81,7 @@ def build_kit(name: str, code: str | None, token: str | None = None,
 ```
 {profile}
 ```
-→ **매일 1건 발행(주말 없음)**. 발행 후 운영방(카톡)에 게시물 링크를 보내세요 = 출석.
+{step1_submit}
 ※ 계정 id 는 제안값입니다. 이미 있으면 끝자리만 바꿔서 쓰세요. 오픈톡방 링크는 본인 것으로 교체.
 
 ---
@@ -88,7 +96,7 @@ def build_kit(name: str, code: str | None, token: str | None = None,
 ---
 
 ## STEP 3. 관심 고객 모으기
-글에 쓸 **사진·영상·자료집·글감**은 운영진이 카톡으로 보내드립니다. 받아서 콘텐츠로 만들어 고객을 모으세요.
+{step3_body}
 
 ---
 

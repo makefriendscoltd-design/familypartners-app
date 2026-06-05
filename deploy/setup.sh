@@ -22,6 +22,11 @@ echo "==> python3: $PY ($($PY --version))"
 echo "==> DB 초기화(빈 장부)"
 cd "$APP_DIR" && "$PY" -m fp init
 
+# 공개 주소(키트의 작업실/자료실 링크가 이 주소를 사용)
+IP="$(curl -s ifconfig.me 2>/dev/null || echo '')"
+PORTAL_BASE="${FP_PORTAL_BASE:-http://$IP:$PORT}"
+echo "==> 공개 주소(FP_PORTAL_BASE): $PORTAL_BASE"
+
 echo "==> systemd 서비스 등록 (familypartners)"
 sudo tee /etc/systemd/system/familypartners.service >/dev/null <<UNIT
 [Unit]
@@ -34,6 +39,7 @@ User=$USER_NAME
 WorkingDirectory=$APP_DIR
 Environment=HOST=0.0.0.0
 Environment=PORT=$PORT
+Environment=FP_PORTAL_BASE=$PORTAL_BASE
 ExecStart=$PY -m fp serve
 Restart=always
 RestartSec=3
