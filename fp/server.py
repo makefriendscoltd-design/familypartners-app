@@ -533,7 +533,8 @@ def view_people(qs) -> str:
             f"<a class='nm lk' href='/partner?id={r['id']}'>{esc(r['name'])}</a>"
             f"<span class=hd>{esc(r['handle'] or '-')}</span>"
             f"<span class='pill {st_cls}' style='min-width:54px'>{r['status']}</span>"
-            f"<span class=meta>{esc(r['contact'] or '-')} · "
+            f"<span class=meta>"
+            f"<a class=lk href='/me?t={esc(r['portal_token'] or '')}' target=_blank>작업실</a> · "
             f"<form method=post action=/op/delete style='display:inline;margin:0' "
             f"onsubmit=\"return confirm('{esc(r['name'])} 삭제할까요? 되돌릴 수 없습니다.')\">"
             f"<input type=hidden name=id value='{r['id']}'>"
@@ -573,7 +574,10 @@ def view_partner(qs) -> str:
             f"<div class=row><span class=hd>오늘</span><span class=meta>"
             f"{'발행 ✅' if d['posted_today'] else '미발행 ⏳'} · 🔥 {d['streak']}일 연속</span></div>"
             f"<div class=row><span class=hd>제출</span><span class=meta>"
-            f"유효 {d['total_valid']}건 / 무효 {d['total_void']}건</span></div></div>")
+            f"유효 {d['total_valid']}건 / 무효 {d['total_void']}건</span></div>"
+            f"<div class=row><span class=hd>작업실</span><span class=meta>"
+            f"<a class=lk href='/me?t={esc(r['portal_token'] or '')}' target=_blank>"
+            f"🔗 참여자가 보는 화면 열기</a></span></div></div>")
     subs = []
     for s in d["submissions"][:30]:
         mark = "" if s["valid"] else f" <span class=b-red>✗{esc(s['void_reason'] or '무효')}</span>"
@@ -999,7 +1003,6 @@ class Handler(BaseHTTPRequestHandler):
                 conn = db.connect(); first = not core.admin_is_set(conn); conn.close()
                 return self._send(view_login(first))
             if u.path == "/logout":
-                _SESSIONS.discard(self._cookies().get(COOKIE))
                 self.send_response(303)
                 self.send_header("Location", "/login")
                 self.send_header("Set-Cookie", f"{COOKIE}=; Path=/; Max-Age=0")
