@@ -619,12 +619,20 @@ def view_people(qs) -> str:
     items = []
     for r in rows:
         st_cls = {"active": "b-grn", "kicked": "b-red", "paused": "b-yel"}.get(r["status"], "")
+        handle = (r["handle"] or "").strip()
+        oc = (r["openchat_url"] or "").strip()
+        handle_html = (
+            f"<a class='hd lk' href='https://www.threads.net/@{esc(handle)}' target=_blank>"
+            f"@{esc(handle)} ↗</a>" if handle else "<span class=hd>계정 미입력</span>")
+        oc_html = (f"<a class=lk href='{esc(oc)}' target=_blank>💬 톡방</a> · "
+                   if oc else "<span class=empty>톡방 미입력</span> · ")
         items.append(
             f"<div class=row>"
             f"<a class='nm lk' href='/partner?id={r['id']}'>{esc(r['name'])}</a>"
-            f"<span class=hd>{esc(r['handle'] or '-')}</span>"
+            f"{handle_html}"
             f"<span class='pill {st_cls}' style='min-width:54px'>{r['status']}</span>"
             f"<span class=meta>"
+            f"{oc_html}"
             f"<a class=lk href='/me?t={esc(r['portal_token'] or '')}' target=_blank>작업실</a> · "
             f"<form method=post action=/op/delete style='display:inline;margin:0' "
             f"onsubmit=\"return confirm('{esc(r['name'])} 삭제할까요? 되돌릴 수 없습니다.')\">"
@@ -632,8 +640,9 @@ def view_people(qs) -> str:
             f"<button style='padding:3px 9px;border-color:var(--red);color:var(--red)'>삭제</button>"
             f"</form></span></div>")
     listing = (f"<div class=card><h2>전체 인원 ({len(rows)})</h2>"
-               f"<p class=empty>이름 클릭=상세. <b>강퇴</b>=출석 규칙용(명단 유지), "
-               f"<b>삭제</b>=명단에서 완전 제거(되돌릴 수 없음).</p>"
+               f"<p class=empty>이름=상세 · <b>@아이디</b>=스레드 계정 열기 · "
+               f"<b>💬톡방</b>=오픈톡방 열기 · <b>작업실</b>=참여자 화면. "
+               f"강퇴는 상세에서, 삭제는 완전 제거.</p>"
                f"{''.join(items) or '<div class=empty>아직 없음</div>'}</div>")
     reset = ("<div class=card style='border-color:var(--red)'>"
              "<h2 class=b-red>전체 초기화 (테스트 정리)</h2>"
@@ -664,8 +673,12 @@ def view_partner(qs) -> str:
             f"<span class='pill {st_cls}'>{r['status']}</span></h2>"
             f"<div class=row><span class=hd>유형</span><span class=meta>"
             f"{esc(onboard.type_label(r['partner_type']))}</span></div>"
-            f"<div class=row><span class=hd>스레드 아이디</span><span class=meta>{esc(r['handle'] or '-')}</span></div>"
-            f"<div class=row><span class=hd>오픈톡방</span><span class=meta>{esc(r['openchat_url'] or '-')}</span></div>"
+            f"<div class=row><span class=hd>스레드 아이디</span><span class=meta>"
+            + (f"<a class=lk href='https://www.threads.net/@{esc((r['handle'] or '').strip())}' target=_blank>@{esc(r['handle'])} ↗</a>"
+               if (r['handle'] or '').strip() else '-') + "</span></div>"
+            f"<div class=row><span class=hd>오픈톡방</span><span class=meta>"
+            + (f"<a class=lk href='{esc((r['openchat_url'] or '').strip())}' target=_blank>💬 {esc(r['openchat_url'])} ↗</a>"
+               if (r['openchat_url'] or '').strip() else '-') + "</span></div>"
             f"<div class=row><span class=hd>연락처</span><span class=meta>{esc(r['contact'] or '-')}</span></div>"
             f"<div class=row><span class=hd>가입일</span><span class=meta>{esc(r['joined_date'])}</span></div>"
             f"<div class=row><span class=hd>오늘</span><span class=meta>"
