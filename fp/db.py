@@ -199,10 +199,11 @@ CREATE TABLE IF NOT EXISTS library (
     kind        TEXT NOT NULL DEFAULT 'file',  -- file(업로드) / link(Drive 등 외부)
     title       TEXT NOT NULL,
     category    TEXT,                          -- 분류(선택)
-    stored_name TEXT,                          -- file: 디스크 저장 파일명
+    stored_name TEXT,                          -- file: 디스크 저장 파일명(로컬)
     orig_name   TEXT,                          -- file: 원본 파일명(다운로드명)
     url         TEXT,                          -- link: 외부 URL
     size        INTEGER,
+    data_b64    TEXT,                          -- file: 내용(base64) — 서버리스/Vercel 영구 보존
     created_at  TEXT NOT NULL
 );
 
@@ -241,6 +242,7 @@ def init_db() -> None:
                 conn.execute(f"ALTER TABLE partners ADD COLUMN IF NOT EXISTS {col} TEXT")
             conn.execute("ALTER TABLE partners ADD COLUMN IF NOT EXISTS "
                          "partner_type TEXT DEFAULT 'family'")
+            conn.execute("ALTER TABLE library ADD COLUMN IF NOT EXISTS data_b64 TEXT")
             conn.commit()
         else:
             conn.executescript(SCHEMA)
@@ -258,6 +260,9 @@ def init_db() -> None:
                     conn.execute(f"ALTER TABLE partners ADD COLUMN {col} TEXT")
             if "partner_type" not in cols:
                 conn.execute("ALTER TABLE partners ADD COLUMN partner_type TEXT DEFAULT 'family'")
+            lcols = {r["name"] for r in conn.execute("PRAGMA table_info(library)")}
+            if "data_b64" not in lcols:
+                conn.execute("ALTER TABLE library ADD COLUMN data_b64 TEXT")
             scols = {r["name"] for r in conn.execute("PRAGMA table_info(submissions)")}
             if "valid" not in scols:
                 conn.execute("ALTER TABLE submissions ADD COLUMN valid INTEGER NOT NULL DEFAULT 1")

@@ -8,6 +8,7 @@
 """
 from __future__ import annotations
 
+import base64
 import hashlib
 import hmac
 import html
@@ -15,7 +16,6 @@ import io
 import mimetypes
 import os
 import re
-import secrets
 from http.client import HTTPMessage
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, quote, urlparse
@@ -24,6 +24,18 @@ from . import core, db, messages, onboard, products
 
 LIB_DIR = db.ROOT / "assets" / "library"
 GUIDE_DIR = db.ROOT / "assets" / "guide"
+
+# Vercel 서버리스 요청 본문 한도(4.5MB)보다 약간 아래로 — 초과 시 업로드 거부.
+MAX_UPLOAD = 4_000_000
+
+
+def save_upload(conn, title, category, fname, data) -> int:
+    """업로드 파일을 DB(base64)에 저장하고 library id 반환 — 서버리스에서도 영구 보존.
+
+    로컬에서도 동일하게 DB 저장(디스크 의존 X). 큰 파일은 호출 전에 거른다.
+    """
+    b64 = base64.b64encode(data).decode("ascii")
+    return core.add_library_file(conn, title, category, None, fname, len(data), b64)
 
 # 관리자 인증 — 서명 쿠키 (서버리스/멀티인스턴스 안전, 메모리 세션 불필요)
 COOKIE = "fp_admin"
@@ -36,7 +48,7 @@ def _secret() -> bytes:
 def _admin_token() -> str:
     return hmac.new(_secret(), b"admin-v1", hashlib.sha256).hexdigest()
 # 로그인 없이 접근 가능한 경로
-PUBLIC_GET = {"/login", "/logout", "/join", "/me", "/wall", "/files",
+PUBLIC_GET = {"/login", "/logout", "/join", "/me", "/wall", "/files", "/feed",
               "/guide", "/find", "/favicon.ico"}
 PUBLIC_POST = {"/login", "/join", "/submit", "/find", "/me/save", "/me/links"}
 
@@ -57,7 +69,10 @@ def _q(s: str) -> str:
 
 
 def parse_multipart(raw: bytes, boundary: str):
-    """multipart/form-data 최소 파서 (텍스트 필드 + 단일 파일). 표준 라이브러리만."""
+    """multipart/form-data 최소 파서 (텍스트 필드 + 다중 파일). 표준 라이브러리만.
+
+    files 는 {필드명: [(파일명, 데이터), ...]} — 같은 이름으로 여러 파일(multiple) 허용.
+    """
     fields, files = {}, {}
     delim = b"--" + boundary.encode()
     for chunk in raw.split(delim):
@@ -76,7 +91,8 @@ def parse_multipart(raw: bytes, boundary: str):
             continue
         fn = re.search(r'filename="([^"]*)"', h)
         if fn:
-            files[nm.group(1)] = (fn.group(1), data)
+            if fn.group(1):  # 빈 파일 입력(선택 안 함)은 건너뜀
+                files.setdefault(nm.group(1), []).append((fn.group(1), data))
         else:
             fields[nm.group(1)] = data.decode("utf-8", "replace")
     return fields, files
@@ -114,6 +130,16 @@ button{color:#fff;background:var(--acc);border-color:var(--acc);cursor:pointer;f
 button:hover{filter:brightness(1.08)}
 form{display:flex;gap:8px;margin-top:10px}a.lk{color:var(--acc);text-decoration:none}
 a.lk:hover{text-decoration:underline}
+textarea{font:14px inherit;background:#fff;color:var(--txt);border:1px solid var(--ln);
+border-radius:7px;padding:8px 10px;width:100%;resize:vertical}
+.media-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-top:12px}
+.media-grid.solo{grid-template-columns:1fr}
+img.media,video.media{width:100%;border-radius:10px;border:1px solid var(--ln);
+background:#000;display:block;max-height:520px;object-fit:contain}
+.video-wrap{position:relative;padding-top:56.25%;border-radius:10px;overflow:hidden;border:1px solid var(--ln)}
+.video-wrap iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.feed-date{font-size:13px;color:var(--acc);font-weight:600}
+button.ghost{background:#fff;color:var(--acc);border:1px solid var(--ln);padding:5px 12px;font-size:13px}
 """
 
 
@@ -124,13 +150,14 @@ def esc(s) -> str:
 def shell(title: str, body: str) -> bytes:
     nav = ('<a href="/">대시보드</a><a href="/people">인원</a>'
            '<a href="/review">검수</a><a href="/board">랭킹</a>'
-           '<a href="/library">자료실</a><a href="/onboard">온보딩</a>'
-           '<a href="/wall">인증보드</a>'
+           '<a href="/library">자료실</a><a href="/feed">글감피드</a>'
+           '<a href="/onboard">온보딩</a><a href="/wall">인증보드</a>'
            '<a href="/logout" style="margin-left:auto">로그아웃</a>')
     doc = (f"<!doctype html><html lang=ko><head><meta charset=utf-8>"
            f"<meta name=viewport content='width=device-width,initial-scale=1'>"
            f"<title>{esc(title)}</title><style>{CSS}</style></head><body>"
-           f"<header><h1>🏠 패밀리 파트너스</h1><nav>{nav}</nav></header>"
+           f"<header><a href='/' style='text-decoration:none'><h1>🏠 패밀리 파트너스</h1></a>"
+           f"<nav>{nav}</nav></header>"
            f"<main>{body}</main></body></html>")
     return doc.encode("utf-8")
 
@@ -162,6 +189,28 @@ def quick_actions() -> str:
     )
 
 
+def drop_form() -> str:
+    """대시보드: 오늘 글감 등록(본문 + 사진·영상 직접 업로드 + 외부 링크)."""
+    return (
+        "<div class=card><h2>📝 오늘 글감 올리기 <span class=pill>피드에 바로 게시</span></h2>"
+        "<form method=post action=/op/drop enctype='multipart/form-data' "
+        "style='flex-direction:column;align-items:stretch'>"
+        "<input name=title placeholder='제목 (예: 6/8 가족여행 후기 글감)' required>"
+        "<textarea name=body rows=6 placeholder='본문/캡션 — 파트너가 복사해서 베끼거나 변형해 씁니다'></textarea>"
+        "<label class=empty style='margin-top:4px'>📷 사진·짧은 영상 직접 첨부(여러 개 · "
+        "<b>개당 4MB 이하</b>)</label>"
+        "<input type=file name=media accept='image/*,video/*' multiple>"
+        "<textarea name=urls rows=2 placeholder='긴 영상은 여기에 링크 — 유튜브·드라이브 등 한 줄에 하나'></textarea>"
+        "<div style='display:flex;gap:8px;align-items:center;margin-top:8px'>"
+        "<select name=dtype><option value=marketing>마케팅 자료</option>"
+        "<option value=ai>AI 콘텐츠</option><option value=evergreen>상시 자료</option></select>"
+        "<input name=drop_date placeholder='날짜 YYYY-MM-DD (비우면 오늘)' style='flex:1'>"
+        "<button>글감 게시</button></div></form>"
+        "<p class=empty>게시 즉시 <a class=lk href='/feed'>글감 피드</a>에 올라가고, 늦게 들어온 분도 전부 봅니다. "
+        "사진·영상은 자료실에도 자동 저장됩니다.</p></div>"
+    )
+
+
 def view_dashboard(qs) -> str:
     flash = ""
     if qs.get("msg"):
@@ -182,26 +231,40 @@ def view_dashboard(qs) -> str:
                        f"<span class=meta>{meta_fn(s)}</span></div>")
         return "".join(out)
 
+    # 오늘(자정~다음날 자정, KST) 기준 단일 판정:
+    #   완료 = 오늘 제출함(=미션완료) / 미이행 = 오늘 안 한 활성자 전체
+    done_list = b["done"]
+    undone_list = b["at_risk"] + b["kick"]   # 오늘 미제출 활성자 전부
+    kick_n = len(b["kick"])                   # 그중 어제도 빵꾸(강퇴 대상)
+
     kpi = (f"<div class=kpi>"
-           f"<div class=card><div class='big b-grn'>{len(b['done'])}</div><div class=lb>오늘 완료</div></div>"
-           f"<div class=card><div class='big b-yel'>{len(b['at_risk'])}</div><div class=lb>위험군</div></div>"
-           f"<div class=card><div class='big b-red'>{len(b['kick'])}</div><div class=lb>강퇴 후보</div></div>"
-           f"<div class=card><div class=big>{b['active_count']}</div><div class=lb>활성 파트너</div></div>"
+           f"<div class=card><div class='big b-grn'>{len(done_list)}</div>"
+           f"<div class=lb>오늘 완료(미션완료)</div></div>"
+           f"<div class=card><div class='big b-yel'>{len(undone_list)}</div>"
+           f"<div class=lb>미이행자</div></div>"
+           f"<div class=card><div class=big>{b['active_count']}</div>"
+           f"<div class=lb>활성 파트너</div></div>"
            f"</div>")
 
-    done = rows(b["done"], "b-grn", lambda s: f"🔥 {s.streak}일 연속")
-    risk = rows(b["at_risk"], "b-yel", lambda s: f"{s.streak}일 연속 · 마감 전 독려")
-    kick = rows(b["kick"], "b-red", lambda s: esc(s.row["contact"] or "-"))
+    def undone_meta(s):
+        badge = " <span class=b-red>⚠️어제 빵꾸</span>" if s.missed_yesterday else ""
+        tgt = esc(s.row["contact"] or s.handle or "-")
+        return f"{s.streak}일 연속 · {tgt}{badge}"
+
+    done = rows(done_list, "b-grn", lambda s: f"🔥 {s.streak}일 연속")
+    undone = rows(undone_list, "b-yel", undone_meta)
     conn.close()
 
-    enforce_note = ("" if not b["kick"] else
-                    "<p class=empty>강퇴 집행: 터미널에서 <code>python -m fp enforce --yes</code></p>")
-    return (flash + quick_actions() +
-            f"<p class=pill>{b['date']} 기준</p>{kpi}"
-            f"<div class=card><h2>✅ 오늘 완료</h2>{done}</div>"
-            f"<div class=card><h2>⏳ 위험군 — 오늘 아직 미제출</h2>{risk}"
-            f"<p class=empty>리마인더 문구: <code>python -m fp reminders</code></p></div>"
-            f"<div class=card><h2>⛔ 강퇴 후보 — 어제 빵꾸</h2>{kick}{enforce_note}</div>")
+    enforce_note = ("" if not kick_n else
+                    f"<p class=empty>⚠️ 어제 빵꾸 {kick_n}명(강퇴 대상) — "
+                    "<a class=lk href='/enforce'>강퇴 집행</a> 또는 터미널 "
+                    "<code>python -m fp enforce --yes</code></p>")
+    return (flash + quick_actions() + drop_form() +
+            f"<p class=pill>{b['date']} 기준 (자정~다음날 자정, KST)</p>{kpi}"
+            f"<div class=card><h2>✅ 오늘 완료(미션완료) — {len(done_list)}명</h2>{done}</div>"
+            f"<div class=card><h2>⏳ 미이행자 — 오늘 아직 미제출 {len(undone_list)}명</h2>{undone}"
+            f"{enforce_note}"
+            f"<p class=empty>리마인더 문구: <code>python -m fp reminders</code></p></div>")
 
 
 def view_settle(qs) -> str:
@@ -229,25 +292,112 @@ def view_settle(qs) -> str:
     return f"<div class=card><h2>{m} 월 정산</h2>{''.join(body)}</div>"
 
 
+IMG_EXT = {".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp", ".heic", ".avif"}
+VID_EXT = {".mp4", ".mov", ".webm", ".m4v", ".ogv"}
+
+
+def _youtube_id(url: str):
+    m = re.search(r"(?:youtu\.be/|youtube\.com/(?:watch\?v=|embed/|shorts/|live/))([\w-]{6,})", url)
+    return m.group(1) if m else None
+
+
+def render_asset(conn, a: str) -> str:
+    """글감 첨부 1줄 → HTML. `m:<libid>`=업로드 미디어, 그 외=외부 URL(유튜브/드라이브 등)."""
+    a = (a or "").strip()
+    if not a:
+        return ""
+    if a.startswith("m:") and a[2:].isdigit():
+        row = core.get_library(conn, int(a[2:]))
+        if not row or row["kind"] != "file":
+            return ""
+        ext = os.path.splitext((row["orig_name"] or "").lower())[1]
+        src = f"/m/{row['id']}"
+        if ext in IMG_EXT:
+            return f"<img class=media src='{src}' loading=lazy alt='{esc(row['orig_name'])}'>"
+        if ext in VID_EXT:
+            return f"<video class=media src='{src}' controls preload=metadata></video>"
+        return (f"<a class=lk href='/dl/{row['id']}'>⬇ {esc(row['orig_name'])} "
+                f"({core.human_size(row['size'])})</a>")
+    yt = _youtube_id(a)
+    if yt:
+        return (f"<div class=video-wrap><iframe src='https://www.youtube.com/embed/{esc(yt)}' "
+                f"allowfullscreen allow='accelerometer;encrypted-media;picture-in-picture'></iframe></div>")
+    ext = os.path.splitext(a.lower().split("?")[0])[1]
+    if ext in IMG_EXT:
+        return f"<img class=media src='{esc(a)}' loading=lazy>"
+    if ext in VID_EXT:
+        return f"<video class=media src='{esc(a)}' controls preload=metadata></video>"
+    label = "🔗 드라이브 열기" if "drive.google" in a or "docs.google" in a else "🔗 첨부 열기"
+    return f"<a class=lk href='{esc(a)}' target=_blank>{label}</a>"
+
+
+COPY_JS = (
+    "<script>function fpCopy(b){var t=b.parentNode.querySelector('pre');"
+    "if(!t)return;var s=t.innerText;"
+    "(navigator.clipboard?navigator.clipboard.writeText(s):Promise.reject())"
+    ".then(function(){b.textContent='✅ 복사됨'},function(){"
+    "var r=document.createRange();r.selectNodeContents(t);"
+    "var sel=getSelection();sel.removeAllRanges();sel.addRange(r);"
+    "try{document.execCommand('copy');b.textContent='✅ 복사됨'}catch(e){}});"
+    "setTimeout(function(){b.textContent='📋 본문 복사'},1800)}</script>"
+)
+
+DROP_TYPE = {"ai": "AI 콘텐츠", "marketing": "마케팅 자료", "evergreen": "상시 자료"}
+
+
+def view_feed(qs) -> bytes:
+    """공개 글감 피드 — 지난 콘텐츠 전체(최신순). 로그인 없이 누구나 열람."""
+    conn = db.connect()
+    rows = core.all_drops(conn, 365)
+    cards = []
+    for r in rows:
+        media = ""
+        if r["assets"]:
+            parts = [render_asset(conn, a) for a in r["assets"].splitlines()]
+            parts = [p for p in parts if p]
+            if parts:
+                solo = " solo" if len(parts) == 1 else ""
+                media = f"<div class='media-grid{solo}'>{''.join(parts)}</div>"
+        body = (f"<pre>{esc(r['body'])}</pre>"
+                "<button type=button class=ghost onclick=fpCopy(this)>📋 본문 복사</button>"
+                ) if (r["body"] or "").strip() else ""
+        cards.append(
+            f"<div class=card><h2>{esc(r['title'])}"
+            f"<span class=pill>{esc(DROP_TYPE.get(r['dtype'], r['dtype']))}</span></h2>"
+            f"<div class=feed-date>📅 {esc(r['drop_date'])}</div>"
+            f"{body}{media}</div>")
+    conn.close()
+    if not cards:
+        cards = ["<div class=card><div class=empty>아직 올라온 글감이 없습니다.</div></div>"]
+    intro = ("<div class=card style='border-color:var(--acc)'><h2>📚 글감 피드</h2>"
+             "<p class=empty>매일 올라오는 콘텐츠 보관함입니다. <b>늦게 들어와도 1일차부터 전부</b> 볼 수 있어요. "
+             "글은 <b>복사</b> 버튼으로 가져가 베끼거나 변형해서 쓰고, 사진·영상은 눌러서 받으세요.</p></div>")
+    token = (qs.get("t", [None])[0])
+    return shell_portal("글감 피드", "매일 콘텐츠 보관함",
+                        COPY_JS + intro + "".join(cards), token)
+
+
 def view_drop(qs) -> str:
     conn = db.connect()
     d = core.parse_date(qs.get("date", [None])[0])
     rows = core.drops_on(conn, d)
-    conn.close()
     if not rows:
+        conn.close()
         return (f"<div class=card><h2>오늘의 글감 — {core.iso(d)}</h2>"
-                f"<div class=empty>등록된 글감 없음. <code>python -m fp drop add ...</code></div></div>")
-    TYPE = {"ai": "AI 콘텐츠", "marketing": "마케팅 자료", "evergreen": "상시 자료"}
+                f"<div class=empty>등록된 글감 없음 — 대시보드에서 ‘📝 오늘 글감 올리기’로 등록하세요.</div></div>")
     out = []
     for r in rows:
-        assets = ""
+        media = ""
         if r["assets"]:
-            items = "".join(f"<li><a class=lk href='{esc(a)}'>{esc(a)}</a></li>"
-                            for a in r["assets"].splitlines())
-            assets = f"<p class=pill>첨부(다운로드)</p><ul>{items}</ul>"
+            parts = [render_asset(conn, a) for a in r["assets"].splitlines()]
+            parts = [p for p in parts if p]
+            if parts:
+                solo = " solo" if len(parts) == 1 else ""
+                media = f"<div class='media-grid{solo}'>{''.join(parts)}</div>"
         out.append(f"<div class=card><h2>{esc(r['title'])}"
-                   f"<span class=pill>{r['drop_date']} · {TYPE.get(r['dtype'], r['dtype'])}</span></h2>"
-                   f"<pre>{esc(r['body'] or '')}</pre>{assets}</div>")
+                   f"<span class=pill>{r['drop_date']} · {DROP_TYPE.get(r['dtype'], r['dtype'])}</span></h2>"
+                   f"<pre>{esc(r['body'] or '')}</pre>{media}</div>")
+    conn.close()
     return "".join(out)
 
 
@@ -278,11 +428,23 @@ def view_onboard(qs) -> str:
 # =========================================================================== #
 # 파트너 포털 (토큰 링크 · 비번 없음 · 포털에서 직접 제출)
 # =========================================================================== #
-def shell_portal(title: str, sub: str, body: str) -> bytes:
+def shell_portal(title: str, sub: str, body: str, token: str | None = None) -> bytes:
+    # 토큰이 있으면(=내 작업실에서 온 경우) 작업실 링크가 토큰을 유지하도록 함
+    t = ("?t=" + _q(token)) if token else ""
+    home = f"/me{t}" if token else "/feed"
+    me_link = (f"<a href='/me{t}'>🏠 내 작업실</a>" if token
+               else "<a href='/find'>🏠 내 작업실 찾기</a>")
+    nav = (me_link
+           + f"<a href='/feed{t}'>📚 글감 피드</a>"
+           + f"<a href='/files{t}'>📁 자료실</a>"
+           + f"<a href='/wall{t}'>🏆 인증보드</a>")
     doc = (f"<!doctype html><html lang=ko><head><meta charset=utf-8>"
            f"<meta name=viewport content='width=device-width,initial-scale=1'>"
            f"<title>{esc(title)}</title><style>{CSS}</style></head><body>"
-           f"<header><h1>🤝 패밀리 파트너스</h1><span class=pill>{esc(sub)}</span></header>"
+           f"<header><a href='{home}' style='text-decoration:none'>"
+           f"<h1>🤝 패밀리 파트너스</h1></a>"
+           f"<span class=pill>{esc(sub)}</span>"
+           f"<nav style='margin-left:auto'>{nav}</nav></header>"
            f"<main>{body}</main></body></html>")
     return doc.encode("utf-8")
 
@@ -409,20 +571,29 @@ def view_me(qs) -> bytes | None:
 
     # 오늘 글감
     drops = core.drops_on(conn, as_of)
+    feed_link = f"<a class=lk href='/feed?t={esc(token)}'>📚 지난 글감 전체보기 →</a>"
     if drops:
-        TYPE = {"ai": "AI 콘텐츠", "marketing": "마케팅 자료", "evergreen": "상시 자료"}
         items = []
         for r in drops:
-            assets = ""
+            media = ""
             if r["assets"]:
-                li = "".join(f"<li><a class=lk href='{esc(a)}'>{esc(a)}</a></li>"
-                             for a in r["assets"].splitlines())
-                assets = f"<p class=pill>첨부(다운로드)</p><ul>{li}</ul>"
-            items.append(f"<h2>{esc(r['title'])}<span class=pill>{TYPE.get(r['dtype'], r['dtype'])}</span></h2>"
-                         f"<pre>{esc(r['body'] or '')}</pre>{assets}")
-        drop_card = f"<div class=card><h2>오늘의 글감</h2>{''.join(items)}</div>"
+                parts = [render_asset(conn, a) for a in r["assets"].splitlines()]
+                parts = [p for p in parts if p]
+                if parts:
+                    solo = " solo" if len(parts) == 1 else ""
+                    media = f"<div class='media-grid{solo}'>{''.join(parts)}</div>"
+            body_html = (f"<pre>{esc(r['body'])}</pre>"
+                         "<button type=button class=ghost onclick=fpCopy(this)>📋 본문 복사</button>"
+                         ) if (r["body"] or "").strip() else ""
+            items.append(f"<h2>{esc(r['title'])}"
+                         f"<span class=pill>{DROP_TYPE.get(r['dtype'], r['dtype'])}</span></h2>"
+                         f"{body_html}{media}")
+        drop_card = (COPY_JS + f"<div class=card><h2>오늘의 글감</h2>{''.join(items)}"
+                     f"<p class=empty style='margin-top:10px'>{feed_link}</p></div>")
     else:
-        drop_card = "<div class=card><h2>오늘의 글감</h2><div class=empty>아직 등록 전입니다.</div></div>"
+        drop_card = ("<div class=card><h2>오늘의 글감</h2>"
+                     "<div class=empty>아직 등록 전입니다.</div>"
+                     f"<p class=empty>{feed_link}</p></div>")
 
     # 내 판매 링크 (유형별 상품 — 운영진이 발급, 공지에 자동삽입)
     plinks = onboard.links_of(p)
@@ -456,9 +627,9 @@ def view_me(qs) -> bytes | None:
     hist_card = (f"<div class=card><h2>내 제출 이력</h2>"
                  f"{hist or '<div class=empty>아직 없음</div>'}</div>")
 
-    files_link = ("<div class=card><a class=lk href='/files'>📁 자료실 — "
+    files_link = (f"<div class=card><a class=lk href='/files?t={esc(token)}'>📁 자료실 — "
                   "글감에 쓸 사진·영상 다운로드 →</a></div>")
-    wall_link = ("<div class=card><a class=lk href='/wall'>🏆 전체 인증 보드 보기 — "
+    wall_link = (f"<div class=card><a class=lk href='/wall?t={esc(token)}'>🏆 전체 인증 보드 보기 — "
                  "동료들이 지금 얼마나 달리고 있는지 →</a></div>")
 
     # 처음 세팅 가이드 — STEP 1~4 단계별 카드 (각 단계에서 본인이 만든 정보 입력)
@@ -534,10 +705,10 @@ def view_me(qs) -> bytes | None:
     conn.close()
     body = (notice_card + saved2 + ok_banner + status_card + setup + submit +
             drop_card + files_link + hist_card + link_card + wall_link + find_note)
-    return shell_portal(name, f"{esc(name)}님의 작업실", body)
+    return shell_portal(name, f"{esc(name)}님의 작업실", body, token)
 
 
-def view_wall() -> bytes:
+def view_wall(qs=None) -> bytes:
     conn = db.connect()
     s = core.wall_summary(conn, core.today())
     conn.close()
@@ -559,7 +730,8 @@ def view_wall() -> bytes:
     body = (f"<p class=pill>{core.iso(core.today())} · 모두의 실행을 투명하게 공개합니다</p>{kpi}"
             f"<div class=card><h2>오늘의 실행 랭킹</h2>{''.join(rows) or '<div class=empty>없음</div>'}"
             f"<p class=empty>혼자 가면 빠를 수 있습니다. 함께 가면 훨씬 크게 갈 수 있습니다.</p></div>")
-    return shell_portal("인증 보드", "함께 성장하는 파트너", body)
+    token = (qs or {}).get("t", [None])[0]
+    return shell_portal("인증 보드", "함께 성장하는 파트너", body, token)
 
 
 def view_review(qs) -> str:
@@ -736,7 +908,7 @@ def view_partner(qs) -> str:
     return head + edit + sub_card + ev_card
 
 
-def view_files() -> bytes:
+def view_files(qs=None) -> bytes:
     """자료실 — 파트너/모두가 보는 다운로드 목록."""
     conn = db.connect()
     items = core.list_library(conn)
@@ -762,7 +934,8 @@ def view_files() -> bytes:
     body = ("<div class=card><h2>📁 자료실</h2>"
             "<p class=empty>글감에 쓸 사진·영상을 받아서 본인 콘텐츠에 활용하세요.</p></div>"
             + "".join(cards))
-    return shell_portal("자료실", "사진·영상 다운로드", body)
+    token = (qs or {}).get("t", [None])[0]
+    return shell_portal("자료실", "사진·영상 다운로드", body, token)
 
 
 def view_library(qs) -> str:
@@ -941,21 +1114,53 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(data)
 
+    def _file_bytes(self, row):
+        """library 행에서 실제 바이트를 얻는다 — DB(base64) 우선, 없으면 디스크."""
+        if row["data_b64"]:
+            try:
+                return base64.b64decode(row["data_b64"])
+            except Exception:
+                return None
+        if row["stored_name"]:
+            path = LIB_DIR / row["stored_name"]
+            if path.exists():
+                return path.read_bytes()
+        return None
+
     def _download(self, lid: str):
         conn = db.connect()
         row = core.get_library(conn, int(lid)) if lid.isdigit() else None
         conn.close()
-        if not row or row["kind"] != "file" or not row["stored_name"]:
+        if not row or row["kind"] != "file":
             return self._send(shell_portal("없음", "", "<div class=card>파일을 찾을 수 없음</div>"), 404)
-        path = LIB_DIR / row["stored_name"]
-        if not path.exists():
-            return self._send(shell_portal("없음", "", "<div class=card>파일이 디스크에 없음</div>"), 404)
-        data = path.read_bytes()
+        data = self._file_bytes(row)
+        if data is None:
+            return self._send(shell_portal("없음", "", "<div class=card>파일 내용이 없습니다</div>"), 404)
         self.send_response(200)
         ctype = mimetypes.guess_type(row["orig_name"] or "")[0] or "application/octet-stream"
         self.send_header("Content-Type", ctype)
         self.send_header("Content-Disposition",
                          "attachment; filename*=UTF-8''" + _q(row["orig_name"] or "file"))
+        self.send_header("Content-Length", str(len(data)))
+        self.end_headers()
+        self.wfile.write(data)
+
+    def _media(self, lid: str):
+        """업로드 미디어를 인라인(다운로드 강제 X)으로 — 이미지·영상 임베드용. 공개."""
+        conn = db.connect()
+        row = core.get_library(conn, int(lid)) if lid.isdigit() else None
+        conn.close()
+        if not row or row["kind"] != "file":
+            return self._send(shell_portal("없음", "", "<div class=card>파일 없음</div>"), 404)
+        data = self._file_bytes(row)
+        if data is None:
+            return self._send(shell_portal("없음", "", "<div class=card>파일 내용이 없습니다</div>"), 404)
+        self.send_response(200)
+        ctype = mimetypes.guess_type(row["orig_name"] or "")[0] or "application/octet-stream"
+        self.send_header("Content-Type", ctype)
+        self.send_header("Content-Disposition",
+                         "inline; filename*=UTF-8''" + _q(row["orig_name"] or "file"))
+        self.send_header("Cache-Control", "public, max-age=86400")
         self.send_header("Content-Length", str(len(data)))
         self.end_headers()
         self.wfile.write(data)
@@ -1077,14 +1282,39 @@ class Handler(BaseHTTPRequestHandler):
                     m = f"파트너를 찾을 수 없음: {who}"
                 conn.close()
                 return self._redirect("/?msg=" + _q(m))
-            if u.path == "/op/drop":  # 운영자: 글감 등록
+            if u.path == "/op/drop":  # 운영자: 글감 등록(본문 + 사진·영상 업로드 + 외부링크)
                 title = (f.get("title") or "").strip()
                 if not title:
                     return self._redirect("/?msg=" + _q("글감 제목을 입력하세요"))
+                assets = []
+                skipped = 0
                 conn = db.connect()
-                core.add_drop(conn, title, (f.get("body") or "").strip() or None, [], "marketing")
+                for fname, data in (files.get("media") or []):
+                    if not fname or not data:
+                        continue
+                    if len(data) > MAX_UPLOAD:
+                        skipped += 1
+                        continue
+                    lid = save_upload(conn, title, "글감", fname, data)
+                    assets.append(f"m:{lid}")
+                for line in (f.get("urls") or "").splitlines():
+                    line = line.strip()
+                    if line:
+                        assets.append(line)
+                dtype = (f.get("dtype") or "marketing").strip() or "marketing"
+                dd = (f.get("drop_date") or "").strip() or None
+                core.add_drop(conn, title, (f.get("body") or "").strip() or None,
+                              assets, dtype, dd)
                 conn.close()
-                return self._redirect("/?msg=" + _q(f"오늘 글감 등록: {title}"))
+                msg = f"글감 등록: {title} (첨부 {len(assets)}개)"
+                if skipped:
+                    msg += f" · {skipped}개는 4MB 초과로 제외 — 유튜브/드라이브 링크로 올려주세요"
+                return self._redirect("/?msg=" + _q(msg))
+            if u.path == "/op/drop-del":  # 운영자: 글감 삭제
+                conn = db.connect()
+                core.delete_drop(conn, int(f.get("id", 0)))
+                conn.close()
+                return self._redirect("/feed")
             if u.path == "/op/delete":  # 운영자: 파트너 완전 삭제
                 conn = db.connect()
                 row = conn.execute("SELECT name FROM partners WHERE id=?",
@@ -1120,17 +1350,16 @@ class Handler(BaseHTTPRequestHandler):
                 return self._redirect(f"/enforce?done={len(done)}")
             if u.path == "/op/library-upload":  # 자료실: 파일 업로드
                 title = (f.get("title") or "").strip()
-                fname, data = files.get("file", (None, None))
+                flist = files.get("file") or []
+                fname, data = flist[0] if flist else (None, None)
                 if not fname or not data:
                     return self._redirect("/library?msg=" + _q("파일을 선택하세요"))
-                ext = os.path.splitext(fname)[1][:12]
-                stored = secrets.token_hex(8) + ext
-                LIB_DIR.mkdir(parents=True, exist_ok=True)
-                (LIB_DIR / stored).write_bytes(data)
+                if len(data) > MAX_UPLOAD:
+                    return self._redirect("/library?msg=" + _q(
+                        "파일이 너무 큽니다(4MB 초과). 영상 등 큰 파일은 유튜브/드라이브 링크로 올려주세요."))
                 conn = db.connect()
-                core.add_library_file(conn, title or fname,
-                                      (f.get("category") or "").strip() or None,
-                                      stored, fname, len(data))
+                save_upload(conn, title or fname,
+                            (f.get("category") or "").strip() or None, fname, data)
                 conn.close()
                 return self._redirect("/library?msg=" + _q(f"업로드 완료: {title or fname}"))
             if u.path == "/op/library-link":  # 자료실: 외부 링크 추가
@@ -1175,7 +1404,7 @@ class Handler(BaseHTTPRequestHandler):
                 return self._send(view_landing())   # 비로그인 메인 = 랜딩
             # 관리자 영역 게이트 — 공개 경로 외에는 로그인 필요
             if (u.path not in PUBLIC_GET and not u.path.startswith("/dl/")
-                    and not self._admin_ok()):
+                    and not u.path.startswith("/m/") and not self._admin_ok()):
                 return self._redirect("/login")
             # 파트너 포털(공개) — DB 유무와 무관하게 동작
             if u.path == "/join":
@@ -1192,13 +1421,19 @@ class Handler(BaseHTTPRequestHandler):
             if u.path == "/wall":
                 if not db.is_postgres() and not db.db_path().exists():
                     return self._send(shell_portal("인증 보드", "", _no_db()))
-                return self._send(view_wall())
+                return self._send(view_wall(qs))
             if u.path == "/files":
                 if not db.is_postgres() and not db.db_path().exists():
                     return self._send(shell_portal("자료실", "", _no_db()))
-                return self._send(view_files())
+                return self._send(view_files(qs))
             if u.path.startswith("/dl/"):
                 return self._download(u.path[4:])
+            if u.path.startswith("/m/"):
+                return self._media(u.path[3:])
+            if u.path == "/feed":
+                if not db.is_postgres() and not db.db_path().exists():
+                    return self._send(shell_portal("글감 피드", "", _no_db()))
+                return self._send(view_feed(qs))
 
             # 운영자 대시보드
             if not db.is_postgres() and not db.db_path().exists() and u.path != "/favicon.ico":

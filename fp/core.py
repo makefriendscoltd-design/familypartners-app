@@ -13,9 +13,13 @@ import hashlib
 import secrets
 import sqlite3
 from dataclasses import dataclass
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 
 from . import db
+
+# 한국 표준시(UTC+9, DST 없음) — 모든 날짜/시각 판정 기준.
+# Vercel 서버리스는 UTC라서 이걸 안 쓰면 한국 자정과 9시간 어긋난다.
+KST = timezone(timedelta(hours=9))
 
 
 # --------------------------------------------------------------------------- #
@@ -57,8 +61,17 @@ def check_admin_password(conn, pw: str) -> bool:
     return secrets.compare_digest(_hash_pw(pw, salt), h)
 
 
+def now() -> datetime:
+    return datetime.now(KST)
+
+
+def now_iso() -> str:
+    """저장용 타임스탬프(KST) — 오프셋 없이 기존 형식 유지."""
+    return now().replace(tzinfo=None).isoformat(timespec="seconds")
+
+
 def today() -> date:
-    return date.today()
+    return now().date()
 
 
 def parse_date(s: str | None) -> date:
@@ -282,12 +295,15 @@ def partner_detail(conn, row, as_of: date) -> dict:
 # --------------------------------------------------------------------------- #
 # 자료실
 # --------------------------------------------------------------------------- #
-def add_library_file(conn, title, category, stored_name, orig_name, size) -> int:
+def add_library_file(conn, title, category, stored_name, orig_name, size,
+                     data_b64=None) -> int:
+    """파일 자료 등록. data_b64 가 있으면 DB에 내용 저장(서버리스/Vercel 영구 보존),
+    없으면 stored_name(디스크 저장 파일명)으로 처리(로컬)."""
     cur = conn.execute(
-        "INSERT INTO library(kind, title, category, stored_name, orig_name, size, created_at) "
-        "VALUES ('file',?,?,?,?,?,?)",
-        (title, category, stored_name, orig_name, size,
-         datetime.now().isoformat(timespec="seconds")),
+        "INSERT INTO library(kind, title, category, stored_name, orig_name, size, "
+        "data_b64, created_at) VALUES ('file',?,?,?,?,?,?,?)",
+        (title, category, stored_name, orig_name, size, data_b64,
+         now_iso()),
     )
     conn.commit()
     return cur.lastrowid
@@ -297,7 +313,7 @@ def add_library_link(conn, title, category, url) -> int:
     cur = conn.execute(
         "INSERT INTO library(kind, title, category, url, created_at) "
         "VALUES ('link',?,?,?,?)",
-        (title, category, url, datetime.now().isoformat(timespec="seconds")),
+        (title, category, url, now_iso()),
     )
     conn.commit()
     return cur.lastrowid
@@ -337,7 +353,7 @@ def human_size(n) -> str:
 def add_notice(conn, title, body=None, when=None) -> int:
     cur = conn.execute(
         "INSERT INTO notices(notice_date, title, body, created_at) VALUES (?,?,?,?)",
-        (iso(parse_date(when)), title, body, datetime.now().isoformat(timespec="seconds")),
+        (iso(parse_date(when)), title, body, now_iso()),
     )
     conn.commit()
     return cur.lastrowid
@@ -451,7 +467,7 @@ def add_submission(conn, pid, url, channel="threads", post_date=None, note=None)
     cur = conn.execute(
         "INSERT INTO submissions(partner_id, post_url, channel, post_date, submitted_at, note) "
         "VALUES (?,?,?,?,?,?)",
-        (pid, url, channel, pd, datetime.now().isoformat(timespec="seconds"), note),
+        (pid, url, channel, pd, now_iso(), note),
     )
     conn.commit()
     return cur.lastrowid
@@ -536,7 +552,7 @@ def add_drop(conn, title, body=None, assets=None, dtype="ai", drop_date=None) ->
     cur = conn.execute(
         "INSERT INTO drops(drop_date, dtype, title, body, assets, created_at) "
         "VALUES (?,?,?,?,?,?)",
-        (d, dtype, title, body, asset_text, datetime.now().isoformat(timespec="seconds")),
+        (d, dtype, title, body, asset_text, now_iso()),
     )
     conn.commit()
     return cur.lastrowid
@@ -546,6 +562,20 @@ def drops_on(conn, d: date) -> list[sqlite3.Row]:
     return conn.execute(
         "SELECT * FROM drops WHERE drop_date=? ORDER BY id", (iso(d),)
     ).fetchall()
+
+
+def all_drops(conn, limit: int = 365) -> list[sqlite3.Row]:
+    """전체 글감 — 최신 날짜부터(피드/아카이브용)."""
+    return conn.execute(
+        "SELECT * FROM drops ORDER BY drop_date DESC, id DESC LIMIT ?", (limit,)
+    ).fetchall()
+
+
+def delete_drop(conn, drop_id: int) -> sqlite3.Row | None:
+    row = conn.execute("SELECT * FROM drops WHERE id=?", (drop_id,)).fetchone()
+    conn.execute("DELETE FROM drops WHERE id=?", (drop_id,))
+    conn.commit()
+    return row
 
 
 # --------------------------------------------------------------------------- #
