@@ -72,11 +72,17 @@ https://cafe.naver.com/f-e/cafes/26321967/menus/163
 -블로그 자동화 팀
 {{B_BLOGAUTO}}
 
--상세페이지 자동화팀
-{{B_DETAIL}}
+-오피스매니저 지은씨
+{{B_JIEUN}}
 
--카드뉴스 제작팀
-{{B_CARDNEWS}}
+-판서쌤 나경씨
+{{B_NAKYUNG}}
+
+-스크립트 작가 윤미씨
+{{B_YUNMI}}
+
+-자료조사원 송이씨
+{{B_SONGI}}
 
 
 ■기타 문의■
