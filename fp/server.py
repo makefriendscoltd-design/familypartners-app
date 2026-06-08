@@ -148,7 +148,8 @@ def esc(s) -> str:
 
 
 def shell(title: str, body: str) -> bytes:
-    nav = ('<a href="/">대시보드</a><a href="/people">인원</a>'
+    nav = ('<a href="/">대시보드</a><a href="/#글감"><b>✍️글감쓰기</b></a>'
+           '<a href="/people">인원</a>'
            '<a href="/review">검수</a><a href="/board">랭킹</a>'
            '<a href="/library">자료실</a><a href="/feed">글감피드</a>'
            '<a href="/onboard">온보딩</a><a href="/wall">인증보드</a>'
@@ -192,7 +193,8 @@ def quick_actions() -> str:
 def drop_form() -> str:
     """대시보드: 오늘 글감 등록(본문 + 사진·영상 직접 업로드 + 외부 링크)."""
     return (
-        "<div class=card><h2>📝 오늘 글감 올리기 <span class=pill>피드에 바로 게시</span></h2>"
+        "<div class=card id=글감 style='border:2px solid var(--acc)'>"
+        "<h2>📝 오늘 글감 올리기 <span class=pill>여기에 매일 콘텐츠 작성 → 피드에 게시</span></h2>"
         "<form method=post action=/op/drop enctype='multipart/form-data' "
         "style='flex-direction:column;align-items:stretch'>"
         "<input name=title placeholder='제목 (예: 6/8 가족여행 후기 글감)' required>"
@@ -274,7 +276,7 @@ def view_dashboard(qs) -> str:
                     f"<p class=empty>⚠️ 어제 빵꾸 {kick_n}명(강퇴 대상) — "
                     "<a class=lk href='/enforce'>강퇴 집행</a> 또는 터미널 "
                     "<code>python -m fp enforce --yes</code></p>")
-    return (flash + quick_actions() + drop_form() +
+    return (flash + drop_form() + quick_actions() +
             f"<p class=pill>{b['date']} 기준 (자정~다음날 자정, KST)</p>{kpi}"
             f"<div class=card><h2>✅ 오늘 완료(미션완료) — {len(done_list)}명</h2>{done}</div>"
             f"<div class=card><h2>⏳ 미이행자 — 오늘 아직 미제출 {len(undone_list)}명</h2>{undone}"
