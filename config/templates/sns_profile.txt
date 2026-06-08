@@ -1,4 +1,4 @@
-프로필명: AIMAX {{NICKNAME}}
+프로필명: (자유롭게 정하세요)
 계정 id : {{ACCOUNT_ID}}
 
 소개글:
