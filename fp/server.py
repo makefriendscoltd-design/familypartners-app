@@ -83,17 +83,17 @@ def parse_multipart(raw: bytes, boundary: str):
 
 
 CSS = """
-:root{--bg:#0f1115;--card:#1a1d24;--mut:#8b93a1;--ln:#272b34;
---grn:#3fb950;--yel:#d29922;--red:#f85149;--txt:#e6edf3;--acc:#58a6ff}
+:root{--bg:#eef3fb;--card:#ffffff;--mut:#5d6b80;--ln:#dce5f2;
+--grn:#15a34a;--yel:#b45309;--red:#dc2626;--txt:#0f2440;--acc:#2563eb}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--txt);
 font:15px/1.55 -apple-system,BlinkMacSystemFont,"Malgun Gothic",sans-serif}
 header{padding:18px 24px;border-bottom:1px solid var(--ln);display:flex;
-align-items:center;gap:18px;position:sticky;top:0;background:var(--bg);z-index:2}
-header h1{font-size:17px;margin:0}nav a{color:var(--mut);text-decoration:none;
+align-items:center;gap:18px;position:sticky;top:0;background:var(--card);z-index:2}
+header h1{font-size:17px;margin:0;color:var(--acc)}nav a{color:var(--mut);text-decoration:none;
 margin-right:16px;font-size:14px}nav a:hover{color:var(--acc)}
 main{max-width:920px;margin:0 auto;padding:24px}
 .card{background:var(--card);border:1px solid var(--ln);border-radius:12px;
-padding:18px 20px;margin-bottom:18px}
+padding:18px 20px;margin-bottom:18px;box-shadow:0 1px 3px rgba(15,36,64,.05)}
 .card h2{margin:0 0 12px;font-size:15px;display:flex;justify-content:space-between}
 .pill{font-size:12px;color:var(--mut)}
 .row{display:flex;align-items:center;gap:10px;padding:7px 0;border-top:1px solid var(--ln)}
@@ -104,13 +104,16 @@ padding:18px 20px;margin-bottom:18px}
 table{width:100%;border-collapse:collapse;font-size:14px}
 td,th{text-align:left;padding:7px 8px;border-top:1px solid var(--ln)}
 th{color:var(--mut);font-weight:500}.num{text-align:right;font-variant-numeric:tabular-nums}
-pre{white-space:pre-wrap;background:#0d1017;border:1px solid var(--ln);border-radius:8px;
+pre{white-space:pre-wrap;background:#f3f7fd;border:1px solid var(--ln);border-radius:8px;
 padding:14px;font:13px/1.5 ui-monospace,Consolas,monospace;color:var(--txt)}
 .kpi{display:flex;gap:14px;margin-bottom:18px}.kpi .card{flex:1;text-align:center;margin:0}
-.kpi .big{font-size:30px;font-weight:700}.kpi .lb{color:var(--mut);font-size:13px}
-input,button,select{font:14px inherit;background:#0d1017;color:var(--txt);
+.kpi .big{font-size:30px;font-weight:700;color:var(--acc)}.kpi .lb{color:var(--mut);font-size:13px}
+input,button,select{font:14px inherit;background:#fff;color:var(--txt);
 border:1px solid var(--ln);border-radius:7px;padding:7px 10px}
+button{color:#fff;background:var(--acc);border-color:var(--acc);cursor:pointer;font-weight:600}
+button:hover{filter:brightness(1.08)}
 form{display:flex;gap:8px;margin-top:10px}a.lk{color:var(--acc);text-decoration:none}
+a.lk:hover{text-decoration:underline}
 """
 
 
@@ -616,11 +619,19 @@ def view_people(qs) -> str:
     conn = db.connect()
     rows = core.all_partners(conn)
     conn.close()
+    TYPE_BADGE = {
+        "family": ("패밀리", "#e8f0fe", "#2563eb"),
+        "aimax": ("AIMAX", "#e7f6ec", "#15803d"),
+        "both": ("통합", "#fdf0e3", "#b45309"),
+    }
     items = []
     for r in rows:
         st_cls = {"active": "b-grn", "kicked": "b-red", "paused": "b-yel"}.get(r["status"], "")
         handle = (r["handle"] or "").strip()
         oc = (r["openchat_url"] or "").strip()
+        tlabel, tbg, tfg = TYPE_BADGE.get(r["partner_type"], TYPE_BADGE["family"])
+        type_badge = (f"<span style='background:{tbg};color:{tfg};font-size:12px;font-weight:600;"
+                      f"padding:2px 9px;border-radius:10px;min-width:54px;text-align:center'>{tlabel}</span>")
         handle_html = (
             f"<a class='hd lk' href='https://www.threads.net/@{esc(handle)}' target=_blank>"
             f"@{esc(handle)} ↗</a>" if handle else "<span class=hd>계정 미입력</span>")
@@ -629,15 +640,16 @@ def view_people(qs) -> str:
         items.append(
             f"<div class=row>"
             f"<a class='nm lk' href='/partner?id={r['id']}'>{esc(r['name'])}</a>"
+            f"{type_badge}"
             f"{handle_html}"
-            f"<span class='pill {st_cls}' style='min-width:54px'>{r['status']}</span>"
+            f"<span class='pill {st_cls}' style='min-width:48px'>{r['status']}</span>"
             f"<span class=meta>"
             f"{oc_html}"
             f"<a class=lk href='/me?t={esc(r['portal_token'] or '')}' target=_blank>작업실</a> · "
             f"<form method=post action=/op/delete style='display:inline;margin:0' "
             f"onsubmit=\"return confirm('{esc(r['name'])} 삭제할까요? 되돌릴 수 없습니다.')\">"
             f"<input type=hidden name=id value='{r['id']}'>"
-            f"<button style='padding:3px 9px;border-color:var(--red);color:var(--red)'>삭제</button>"
+            f"<button style='padding:3px 9px;background:#fff;border-color:var(--red);color:var(--red)'>삭제</button>"
             f"</form></span></div>")
     listing = (f"<div class=card><h2>전체 인원 ({len(rows)})</h2>"
                f"<p class=empty>이름=상세 · <b>@아이디</b>=스레드 계정 열기 · "
@@ -651,7 +663,7 @@ def view_people(qs) -> str:
              "<form method=post action=/op/reset "
              "onsubmit=\"return confirm('정말 전체 초기화할까요? 되돌릴 수 없습니다.')\">"
              "<input name=confirm placeholder='초기화' required>"
-             "<button style='border-color:var(--red);color:var(--red)'>전체 초기화</button></form></div>")
+             "<button style='background:#fff;border-color:var(--red);color:var(--red)'>전체 초기화</button></form></div>")
     return flash + listing + reset
 
 
@@ -825,7 +837,7 @@ def view_enforce(qs) -> str:
             f"<h2 class=b-red>⛔ 강퇴 대상 ({len(targets)}명)</h2>{rows}"
             "<p class=empty>아래를 누르면 즉시 강퇴 + 그 달 수익 몰수됩니다. 되돌릴 수 없습니다.</p>"
             "<form method=post action=/op/enforce><button "
-            "style='background:#3a1414;border-color:var(--red);color:var(--red)'>"
+            "style='background:#fff;border-color:var(--red);color:var(--red)'>"
             "강퇴 집행</button></form></div>")
 
 
