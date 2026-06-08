@@ -38,7 +38,7 @@ def _admin_token() -> str:
 # 로그인 없이 접근 가능한 경로
 PUBLIC_GET = {"/login", "/logout", "/join", "/me", "/wall", "/files",
               "/guide", "/find", "/favicon.ico"}
-PUBLIC_POST = {"/login", "/join", "/submit", "/find", "/me/save"}
+PUBLIC_POST = {"/login", "/join", "/submit", "/find", "/me/save", "/me/links"}
 
 
 def guide_img(name: str, caption: str) -> str:
@@ -264,7 +264,7 @@ def view_onboard(qs) -> str:
         p = core.find_partner(conn, who)
         if p:
             kit = onboard.build_kit(p["name"], p["referral_code"], p["portal_token"],
-                                    p["handle"], onboard.links_of(p), p["openchat_url"])
+                                    p["handle"], onboard.links_of(p), p["openchat_url"], p["partner_type"])
             kit_html = f"<div class=card><pre>{esc(kit)}</pre></div>"
         else:
             kit_html = "<div class=card><div class=empty>파트너를 찾을 수 없음</div></div>"
@@ -326,12 +326,18 @@ def view_join(qs) -> bytes:
     form = (
         f"{err}<div class=card style='border-color:var(--acc)'><h2>참여 등록</h2>"
         "<p class=empty>카톡방에 입장하셨다면 아래로 등록하세요. 등록하면 "
-        "<b>나만의 작업실 링크</b>(비번 없는 개인 페이지)가 생깁니다 — 매일 거기서 글을 제출합니다.</p>"
-        "<form method=post action=/join>"
+        "<b>나만의 작업실 링크</b>(비번 없는 개인 페이지)가 생깁니다.</p>"
+        "<p class=empty><b>내 유형</b>을 골라주세요 — 수강한 프로그램에 따라 파는 상품이 달라요:</p>"
+        "<form method=post action=/join style='flex-wrap:wrap'>"
+        "<select name=ptype style=flex:1>"
+        "<option value=family>메이크패밀리 파트너스 — 기존 패밀리회원(강의 3종)</option>"
+        "<option value=aimax>AIMAX 파트너스 — 창업프로그램 수강생(AI 직원)</option>"
+        "<option value=both>둘 다 수강 — 통합(전부 판매)</option>"
+        "</select>"
         "<input name=name placeholder='성함 (필수)' required>"
         "<input name=contact placeholder='연락처 (필수)' required style=flex:1>"
         "<button>등록하고 내 작업실 링크 받기</button></form>"
-        "<p class=empty>※ 스레드 아이디는 등록 후 안내에 따라 만들면 됩니다(자동 배정).<br>"
+        "<p class=empty>※ 스레드 아이디는 등록 후 작업실 STEP 1에서 직접 만들어 입력합니다.<br>"
         "※ 운영 단톡방 닉네임은 <b>성함+연락처 뒤 4자리</b>로 변경해주세요. (예: 홍길동5678)</p></div>"
     )
     closing = ("<div class=card><p class=empty>안 하실 분은 나가셔도 됩니다. 감사합니다.<br>"
@@ -415,16 +421,16 @@ def view_me(qs) -> bytes | None:
     else:
         drop_card = "<div class=card><h2>오늘의 글감</h2><div class=empty>아직 등록 전입니다.</div></div>"
 
-    # 내 판매 링크 3개 (상품별 — 운영진이 발급, 공지에 자동삽입)
-    linkrows = [("패밀리데이", p["link_familyday"]), ("AIMAX 창업", p["link_aimax"]),
-                ("제2의 뇌", p["link_secondbrain"])]
+    # 내 판매 링크 (유형별 상품 — 운영진이 발급, 공지에 자동삽입)
+    plinks = onboard.links_of(p)
+    pslots = onboard.type_slots(p["partner_type"])
     lk_items = "".join(
-        f"<div class=row><span class=hd>{nm}</span>"
-        + (f"<a class='lk meta' style='margin-left:0' href='{esc(v)}' target=_blank>{esc(v)}</a>"
-           if (v or '').strip() else "<span class=meta>운영진 발급 대기</span>")
+        f"<div class=row><span class=hd>{esc(label)}</span>"
+        + (f"<a class='lk meta' style='margin-left:0' href='{esc(plinks.get(key))}' target=_blank>{esc(plinks.get(key))}</a>"
+           if (plinks.get(key) or '').strip() else "<span class=meta>발급 대기</span>")
         + "</div>"
-        for nm, v in linkrows)
-    link_card = (f"<div class=card><h2>내 판매 링크 (상품별)</h2>{lk_items}"
+        for key, label in pslots)
+    link_card = (f"<div class=card><h2>내 판매 링크 — {esc(onboard.type_label(p['partner_type']))}</h2>{lk_items}"
                  "<p class=empty>이 링크들이 단톡방 공지에 자동으로 들어갑니다. 이 링크로 들어온 결제가 내 실적입니다.</p></div>")
 
     # 운영 공지 배너
@@ -455,17 +461,20 @@ def view_me(qs) -> bytes | None:
     # 처음 세팅 가이드 — STEP 1~4 단계별 카드 (각 단계에서 본인이 만든 정보 입력)
     links = onboard.links_of(p)
     profile = onboard.profile_text(p["name"], p["handle"])
-    notice = onboard.notice_text(links)
+    notice = onboard.notice_text(p["partner_type"], links)
+    slots = onboard.type_slots(p["partner_type"])
     has_handle = bool((p["handle"] or "").strip())
     has_oc = bool((p["openchat_url"] or "").strip())
-    n_links = sum(1 for k in ("familyday", "aimax", "secondbrain") if (links.get(k) or "").strip())
+    n_links = sum(1 for k, _ in slots if (links.get(k) or "").strip())
+    need = len(slots)
     def ck(done):
         return "✅" if done else "⬜"
     saved2 = ("<div class=card style='border-color:var(--grn)'>"
               "<b class=b-grn>저장됐습니다. 운영자 화면에 바로 반영됩니다.</b></div>") if qs.get("saved2") else ""
 
     intro = (f"<div class=card style='border-color:var(--acc)'><h2>📋 처음 세팅 (STEP 1~4 · 한 번만)</h2>"
-             f"<p class=empty>위에서부터 <b>순서대로</b> 따라하세요. ✅ = 완료된 단계입니다.</p></div>")
+             f"<p class=empty>유형: <b>{esc(onboard.type_label(p['partner_type']))}</b> · "
+             f"위에서부터 <b>순서대로</b> 따라하세요. ✅ = 완료된 단계입니다.</p></div>")
     step1 = (
         f"<div class=card style='border-color:{'var(--grn)' if has_handle else 'var(--yel)'}'>"
         f"<h2>{ck(has_handle)} STEP 1. 스레드 계정 만들기</h2>"
@@ -486,7 +495,7 @@ def view_me(qs) -> bytes | None:
         "<b>AIMAX 매니저</b>로 설정.</p>"
         "<p>② 방 제목·소개(통일):</p>"
         f"<pre>[제목] {esc(onboard.OPENCHAT_TITLE)}\n\n[소개]\n{esc(onboard.OPENCHAT_INTRO)}</pre>"
-        "<p>③ 아래 공지를 방 공지에 그대로 복붙 (판매 링크 3개는 STEP 3에서 자동으로 채워짐):</p>"
+        "<p>③ 아래 공지를 방 공지에 그대로 복붙 (판매 링크는 STEP 3에서 넣으면 자동으로 채워짐):</p>"
         "<details><summary style='cursor:pointer;color:var(--acc)'>공지 전문 펼치기 ▾</summary>"
         f"<pre>{esc(notice)}</pre></details>"
         "<p>④ <b>만든 오픈톡방 링크</b>를 입력하고 저장:</p>"
@@ -495,16 +504,18 @@ def view_me(qs) -> bytes | None:
         f"<input name=openchat value='{esc(p['openchat_url'] or '')}' "
         "placeholder='내 오픈톡방 초대 링크' style=flex:1>"
         "<button>저장</button></form></div>")
+    link_inputs = "".join(
+        f"<input name='link_{esc(key)}' value='{esc(links.get(key) or '')}' "
+        f"placeholder='{esc(label)}' style=flex:1>"
+        for key, label in slots)
     step3 = (
-        f"<div class=card style='border-color:{'var(--grn)' if n_links == 3 else 'var(--ln)'}'>"
-        f"<h2>{ck(n_links == 3)} STEP 3. 판매 링크 3개 넣기 <span class=pill>{n_links}/3</span></h2>"
-        "<p>운영자에게 카톡으로 <b>“링크 3개 발급 요청합니다”</b> → 받은 링크 3개를 아래에 넣고 저장하면 "
+        f"<div class=card style='border-color:{'var(--grn)' if n_links == need else 'var(--ln)'}'>"
+        f"<h2>{ck(n_links == need)} STEP 3. 판매 링크 넣기 <span class=pill>{n_links}/{need}</span></h2>"
+        "<p>운영자에게 카톡으로 <b>“판매 링크 발급 요청합니다”</b> → 받은 링크를 아래에 넣고 저장하면 "
         "<b>위 STEP 2 공지에 자동으로 채워집니다.</b></p>"
-        "<form method=post action=/me/save>"
+        "<form method=post action=/me/links>"
         f"<input type=hidden name=t value='{esc(token)}'>"
-        f"<input name=link_familyday value='{esc(p['link_familyday'] or '')}' placeholder='① 패밀리데이 링크' style=flex:1>"
-        f"<input name=link_aimax value='{esc(p['link_aimax'] or '')}' placeholder='② AIMAX 창업 링크' style=flex:1>"
-        f"<input name=link_secondbrain value='{esc(p['link_secondbrain'] or '')}' placeholder='③ 제2의 뇌 링크' style=flex:1>"
+        f"{link_inputs}"
         "<button>저장</button></form></div>")
     step4 = (
         "<div class=card><h2>⬜ STEP 4. 콘텐츠 올리고 매일 제출</h2>"
@@ -646,8 +657,13 @@ def view_partner(qs) -> str:
     conn.close()
     r = d["row"]
     st_cls = {"active": "b-grn", "kicked": "b-red", "paused": "b-yel"}.get(r["status"], "")
+    pslots = onboard.type_slots(r["partner_type"])
+    plinks = onboard.links_of(r)
+    n_lk = sum(1 for k, _ in pslots if (plinks.get(k) or "").strip())
     head = (f"<div class=card><h2>{esc(r['name'])} "
             f"<span class='pill {st_cls}'>{r['status']}</span></h2>"
+            f"<div class=row><span class=hd>유형</span><span class=meta>"
+            f"{esc(onboard.type_label(r['partner_type']))}</span></div>"
             f"<div class=row><span class=hd>스레드 아이디</span><span class=meta>{esc(r['handle'] or '-')}</span></div>"
             f"<div class=row><span class=hd>오픈톡방</span><span class=meta>{esc(r['openchat_url'] or '-')}</span></div>"
             f"<div class=row><span class=hd>연락처</span><span class=meta>{esc(r['contact'] or '-')}</span></div>"
@@ -657,9 +673,7 @@ def view_partner(qs) -> str:
             f"<div class=row><span class=hd>제출</span><span class=meta>"
             f"유효 {d['total_valid']}건 / 무효 {d['total_void']}건</span></div>"
             f"<div class=row><span class=hd>판매링크</span><span class=meta>"
-            f"패밀리데이 {'✅' if (r['link_familyday'] or '').strip() else '—'} · "
-            f"AIMAX {'✅' if (r['link_aimax'] or '').strip() else '—'} · "
-            f"제2의뇌 {'✅' if (r['link_secondbrain'] or '').strip() else '—'} "
+            f"{n_lk}/{len(pslots)} 입력됨 "
             f"<span class=pill>파트너가 STEP 3에서 입력</span></span></div>"
             f"<div class=row><span class=hd>작업실</span><span class=meta>"
             f"<a class=lk href='/me?t={esc(r['portal_token'] or '')}' target=_blank>"
@@ -678,13 +692,19 @@ def view_partner(qs) -> str:
                    f"{' — ' + esc(e['reason']) if e['reason'] else ''}</span></div>")
     ev_card = f"<div class=card><h2>운영 이력</h2>{''.join(evs) or '<div class=empty>없음</div>'}</div>"
     edit = (f"<div class=card><h2>정보 수정</h2>"
-            f"<form method=post action=/op/edit>"
+            f"<form method=post action=/op/edit style='flex-wrap:wrap'>"
             f"<input type=hidden name=id value='{r['id']}'>"
+            f"<select name=ptype style=flex:1>"
+            f"<option value=family{' selected' if r['partner_type']=='family' else ''}>메이크패밀리 파트너스</option>"
+            f"<option value=aimax{' selected' if r['partner_type']=='aimax' else ''}>AIMAX 파트너스</option>"
+            f"<option value=both{' selected' if r['partner_type']=='both' else ''}>둘 다</option>"
+            f"</select>"
             f"<input name=handle value='{esc(r['handle'] or '')}' placeholder='스레드 아이디'>"
             f"<input name=contact value='{esc(r['contact'] or '')}' placeholder='연락처'>"
             f"<input name=openchat value='{esc(r['openchat_url'] or '')}' placeholder='오픈톡방 링크' style=flex:1>"
             f"<button>저장</button></form>"
-            f"<p class=empty>판매링크 3개는 파트너가 작업실 STEP 3에서 직접 넣습니다(여기선 위에 표시만).</p></div>")
+            f"<p class=empty>유형을 바꾸면 공지·판매링크 슬롯이 그 유형에 맞게 바뀝니다. "
+            f"판매링크는 파트너가 작업실 STEP 3에서 입력(여기선 위에 현황만).</p></div>")
     return head + edit + sub_card + ev_card
 
 
@@ -960,7 +980,8 @@ class Handler(BaseHTTPRequestHandler):
                     conn.close()
                     return self._redirect("/join?dup=1")
                 try:
-                    row = core.self_register(conn, name, None, contact or None)
+                    row = core.self_register(conn, name, None, contact or None,
+                                             partner_type=(f.get("ptype") or "family"))
                     token = row["portal_token"]
                 except Exception:
                     conn.close()
@@ -984,13 +1005,17 @@ class Handler(BaseHTTPRequestHandler):
                 if p:
                     return self._redirect(f"/me?t={p['portal_token']}")
                 return self._redirect("/find?nf=1")
-            if u.path == "/me/save":  # 파트너 세팅 입력(스레드·오픈톡방·판매링크 3개)
+            if u.path == "/me/save":  # 파트너 세팅 입력(스레드 아이디·오픈톡방)
                 token = (f.get("t") or "").strip()
-                links = {"familyday": f.get("link_familyday"),
-                         "aimax": f.get("link_aimax"),
-                         "secondbrain": f.get("link_secondbrain")}
                 conn = db.connect()
-                core.update_self(conn, token, f.get("handle"), f.get("openchat"), links)
+                core.update_self(conn, token, f.get("handle"), f.get("openchat"))
+                conn.close()
+                return self._redirect(f"/me?t={token}&saved2=1")
+            if u.path == "/me/links":  # 파트너 STEP3 판매링크(유형별 슬롯) 입력
+                token = (f.get("t") or "").strip()
+                links = {k[5:]: v for k, v in f.items() if k.startswith("link_")}
+                conn = db.connect()
+                core.update_links(conn, token, links)
                 conn.close()
                 return self._redirect(f"/me?t={token}&saved2=1")
             if u.path == "/reject":  # 운영자 제출 무효 처리
@@ -1050,11 +1075,14 @@ class Handler(BaseHTTPRequestHandler):
             if u.path == "/op/edit":  # 운영자: 파트너 핸들/연락처 수정
                 pid = (f.get("id") or "").strip()
                 conn = db.connect()
+                ptype = (f.get("ptype") or "family")
+                if ptype not in ("family", "aimax", "both"):
+                    ptype = "family"
                 conn.execute(
-                    "UPDATE partners SET handle=?, contact=?, openchat_url=? WHERE id=?",
+                    "UPDATE partners SET handle=?, contact=?, openchat_url=?, partner_type=? WHERE id=?",
                     ((f.get("handle") or "").strip() or None,
                      (f.get("contact") or "").strip() or None,
-                     (f.get("openchat") or "").strip() or None, int(pid)))
+                     (f.get("openchat") or "").strip() or None, ptype, int(pid)))
                 conn.commit(); conn.close()
                 return self._redirect(f"/partner?id={pid}")
             if u.path == "/op/enforce":  # 운영자: 강퇴 집행

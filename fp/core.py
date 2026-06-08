@@ -86,13 +86,15 @@ def gen_handle() -> str:
 
 
 def add_partner(conn, name, handle=None, contact=None, code=None, joined=None,
-                sales_url=None) -> int:
+                sales_url=None, partner_type="family") -> int:
     handle = (handle or "").strip().lstrip("@") or None  # 자동생성 X — 본인이 만든 ID를 직접 입력
+    if partner_type not in ("family", "aimax", "both"):
+        partner_type = "family"
     j = iso(parse_date(joined))
     cur = conn.execute(
         "INSERT INTO partners(name, handle, contact, referral_code, joined_date, "
-        "portal_token, sales_url) VALUES (?,?,?,?,?,?,?)",
-        (name, handle, contact, code, j, gen_token(), sales_url),
+        "portal_token, sales_url, partner_type) VALUES (?,?,?,?,?,?,?,?)",
+        (name, handle, contact, code, j, gen_token(), sales_url, partner_type),
     )
     pid = cur.lastrowid
     conn.execute(
@@ -103,9 +105,10 @@ def add_partner(conn, name, handle=None, contact=None, code=None, joined=None,
     return pid
 
 
-def self_register(conn, name, handle=None, contact=None) -> sqlite3.Row:
+def self_register(conn, name, handle=None, contact=None, partner_type="family") -> sqlite3.Row:
     """파트너 셀프 등록(포털). 추적코드 자동 발급, 가입일=오늘. 등록된 행 반환."""
-    add_partner(conn, name, handle, contact, code=gen_code(), joined=None)
+    add_partner(conn, name, handle, contact, code=gen_code(), joined=None,
+                partner_type=partner_type)
     return conn.execute("SELECT * FROM partners WHERE name=?", (name,)).fetchone()
 
 
@@ -142,22 +145,45 @@ def find_for_login(conn, name, contact):
     ).fetchone()
 
 
-def update_self(conn, token, handle=None, openchat=None, links=None) -> bool:
-    """파트너가 자기 작업실에서 스레드 아이디·오픈톡방·판매링크 3개 입력(세팅)."""
+def update_self(conn, token, handle=None, openchat=None) -> bool:
+    """파트너가 자기 작업실에서 스레드 아이디·오픈톡방 입력(STEP 1·2)."""
     p = find_by_token(conn, token)
     if not p:
         return False
-    links = links or {}
     h = (handle or "").strip().lstrip("@") or p["handle"]
     oc = (openchat or "").strip() or p["openchat_url"]
-    lf = (links.get("familyday") or "").strip() or p["link_familyday"]
-    la = (links.get("aimax") or "").strip() or p["link_aimax"]
-    ls = (links.get("secondbrain") or "").strip() or p["link_secondbrain"]
-    conn.execute(
-        "UPDATE partners SET handle=?, openchat_url=?, link_familyday=?, "
-        "link_aimax=?, link_secondbrain=? WHERE id=?", (h, oc, lf, la, ls, p["id"]))
+    conn.execute("UPDATE partners SET handle=?, openchat_url=? WHERE id=?", (h, oc, p["id"]))
     conn.commit()
     return True
+
+
+def update_links(conn, token, links: dict) -> bool:
+    """파트너가 STEP 3에서 유형별 판매링크 입력 → links_json 저장(빈값은 제거)."""
+    import json
+    p = find_by_token(conn, token)
+    if not p:
+        return False
+    try:
+        cur = json.loads(p["links_json"] or "{}") or {}
+    except Exception:
+        cur = {}
+    for k, v in (links or {}).items():
+        v = (v or "").strip()
+        if v:
+            cur[k] = v
+        else:
+            cur.pop(k, None)
+    conn.execute("UPDATE partners SET links_json=? WHERE id=?",
+                 (json.dumps(cur, ensure_ascii=False), p["id"]))
+    conn.commit()
+    return True
+
+
+def set_type(conn, pid, ptype) -> None:
+    if ptype not in ("family", "aimax", "both"):
+        ptype = "family"
+    conn.execute("UPDATE partners SET partner_type=? WHERE id=?", (ptype, pid))
+    conn.commit()
 
 
 def posted_today(conn, pid, as_of: date) -> bool:

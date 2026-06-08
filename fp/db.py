@@ -146,9 +146,11 @@ CREATE TABLE IF NOT EXISTS partners (
     portal_token TEXT,                       -- 파트너 포털 비밀 링크 토큰
     sales_url    TEXT,                        -- (구) 단일 판매링크 — 미사용
     openchat_url TEXT,                        -- 본인 오픈톡방 링크(세팅 시 파트너가 입력)
-    link_familyday   TEXT,                    -- 상품별 판매링크: 패밀리데이
-    link_aimax       TEXT,                    -- AIMAX 창업프로그램
-    link_secondbrain TEXT                     -- 제2의 뇌
+    link_familyday   TEXT,                    -- (구) 상품별 판매링크 — links_json 으로 대체
+    link_aimax       TEXT,
+    link_secondbrain TEXT,
+    partner_type TEXT DEFAULT 'family',       -- family / aimax / both (유형별 공지)
+    links_json   TEXT                         -- 유형별 판매링크 {슬롯키: url} JSON
 );
 CREATE UNIQUE INDEX IF NOT EXISTS idx_partner_token ON partners(portal_token);
 
@@ -235,8 +237,10 @@ def init_db() -> None:
             conn.executescript(_pg_schema())   # 새 Postgres: 스키마에 모든 컬럼 포함
             # 기존 테이블 컬럼 추가(있으면 무시)
             for col in ("sales_url", "openchat_url", "link_familyday",
-                        "link_aimax", "link_secondbrain"):
+                        "link_aimax", "link_secondbrain", "links_json"):
                 conn.execute(f"ALTER TABLE partners ADD COLUMN IF NOT EXISTS {col} TEXT")
+            conn.execute("ALTER TABLE partners ADD COLUMN IF NOT EXISTS "
+                         "partner_type TEXT DEFAULT 'family'")
             conn.commit()
         else:
             conn.executescript(SCHEMA)
@@ -248,9 +252,12 @@ def init_db() -> None:
                              "ON partners(portal_token)")
             if "sales_url" not in cols:
                 conn.execute("ALTER TABLE partners ADD COLUMN sales_url TEXT")
-            for col in ("openchat_url", "link_familyday", "link_aimax", "link_secondbrain"):
+            for col in ("openchat_url", "link_familyday", "link_aimax",
+                        "link_secondbrain", "links_json"):
                 if col not in cols:
                     conn.execute(f"ALTER TABLE partners ADD COLUMN {col} TEXT")
+            if "partner_type" not in cols:
+                conn.execute("ALTER TABLE partners ADD COLUMN partner_type TEXT DEFAULT 'family'")
             scols = {r["name"] for r in conn.execute("PRAGMA table_info(submissions)")}
             if "valid" not in scols:
                 conn.execute("ALTER TABLE submissions ADD COLUMN valid INTEGER NOT NULL DEFAULT 1")

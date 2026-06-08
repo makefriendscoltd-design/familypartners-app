@@ -38,31 +38,81 @@ def _account_id(code: str | None) -> str:
     return "(자유롭게 정하세요)"
 
 
+# 파트너 유형별: 공지 템플릿 + 판매링크 슬롯(키, 라벨)
+TYPE_REGISTRY = {
+    "family": {
+        "label": "메이크패밀리 파트너스",
+        "desc": "기존 패밀리회원(평생회원) · 강의 3종 판매",
+        "file": "kakao_notice.txt",
+        "slots": [
+            ("LINK_FAMILYDAY", "패밀리데이 모집링크"),
+            ("LINK_AIMAX", "AIMAX 창업프로그램 링크"),
+            ("LINK_SECONDBRAIN", "제2의 뇌 링크"),
+        ],
+    },
+    "aimax": {
+        "label": "AIMAX 파트너스",
+        "desc": "AIMAX 창업프로그램 수강생 · AI 직원/서비스 판매",
+        "file": "kakao_notice_aimax.txt",
+        "slots": [
+            ("AI_YERI", "블로그 직원 예리씨"),
+            ("AI_HYUNJU", "영업 사원 현주씨"),
+            ("AI_BLOGAUTO", "블로그 자동화 팀"),
+            ("AI_JIEUN", "오피스매니저 지은씨"),
+            ("AI_NAKYUNG", "판서쌤 나경씨"),
+            ("AI_YUNMI", "스크립트 작가 윤미씨"),
+            ("AI_SONGI", "자료조사원 송이씨"),
+        ],
+    },
+    "both": {
+        "label": "둘 다 (통합)",
+        "desc": "둘 다 수강 · 강의 + AI 직원 전부 판매",
+        "file": "kakao_notice_both.txt",
+        "slots": [
+            ("B_FAMILYDAY", "패밀리데이 모집링크"),
+            ("B_STARTUP", "AIMAX 창업프로그램 링크"),
+            ("B_SECONDBRAIN", "제2의 뇌 링크"),
+            ("B_YERI", "블로그 직원 예리씨"),
+            ("B_HYUNJU", "영업 사원 현주씨"),
+            ("B_BLOGAUTO", "블로그 자동화 팀"),
+            ("B_DETAIL", "상세페이지 자동화팀"),
+            ("B_CARDNEWS", "카드뉴스 제작팀"),
+        ],
+    },
+}
+
+
+def type_cfg(ptype: str | None) -> dict:
+    return TYPE_REGISTRY.get(ptype or "family", TYPE_REGISTRY["family"])
+
+
+def type_label(ptype: str | None) -> str:
+    return type_cfg(ptype)["label"]
+
+
+def type_slots(ptype: str | None) -> list:
+    return type_cfg(ptype)["slots"]
+
+
 def links_of(row) -> dict:
-    """파트너 행 → 상품별 판매링크 dict."""
-    return {"familyday": row["link_familyday"], "aimax": row["link_aimax"],
-            "secondbrain": row["link_secondbrain"]}
+    """파트너 행의 links_json → {슬롯키: url} dict."""
+    import json
+    try:
+        return json.loads(row["links_json"] or "{}") or {}
+    except Exception:
+        return {}
 
 
 def build_kit(name: str, code: str | None, token: str | None = None,
               handle: str | None = None, links: dict | None = None,
-              openchat: str | None = None) -> str:
+              openchat: str | None = None, ptype: str | None = "family") -> str:
     portal_url = f"{portal_base()}/me?t={token}" if token else "(포털 토큰 없음)"
     links = links or {}
 
-    # 단톡방 공지: 상품별 판매링크 슬롯 (저장된 링크 자동삽입, 없으면 안내문구)
-    slot_map = [
-        ("{{LINK_FAMILYDAY}}", links.get("familyday"),
-         "(이번달 패밀리데이 모집링크 — 운영진에게 받아 넣기)"),
-        ("{{LINK_AIMAX}}", links.get("aimax"),
-         "(AIMAX 창업프로그램 사전예약 링크 — 운영진에게 받아 넣기)"),
-        ("{{LINK_SECONDBRAIN}}", links.get("secondbrain"),
-         "(제2의 뇌 신청링크 — 운영진에게 받아 넣기)"),
-    ]
-    notice = _read("kakao_notice.txt")
-    for tok, val, label in slot_map:
-        notice = notice.replace(tok, (val or "").strip() or label)
-    has_links = any((links.get(k) or "").strip() for k in ("familyday", "aimax", "secondbrain"))
+    # 유형별 단톡방 공지(판매링크 슬롯 자동삽입)
+    notice = notice_text(ptype, links)
+    slots = type_slots(ptype)
+    has_links = any((links.get(k) or "").strip() for k, _ in slots)
 
     # SNS 프로필
     account_id = (handle or "").lstrip("@") or _account_id(code)
@@ -84,10 +134,10 @@ def build_kit(name: str, code: str | None, token: str | None = None,
     step3_body = ("글에 쓸 **사진·영상·자료집·글감**은 운영진이 카톡으로 보내드립니다. 받아서 콘텐츠로 만들어 고객을 모으세요."
                   if is_local else
                   f"자료실에서 **사진·영상·자료집·글감**을 받아 콘텐츠로 만들어 고객을 모으세요.\n자료실: {files_url}")
-    step4 = ("내 판매 링크 3개가 STEP 2 공지에 **이미 삽입돼 있습니다.** 그대로 쓰세요."
+    step4 = ("내 판매 링크가 STEP 2 공지에 **이미 삽입돼 있습니다.** 그대로 쓰세요."
              if has_links else
-             "판매 링크는 **상품마다 다릅니다.** 운영진에게 카톡으로 '링크 3개 발급 요청' 하면,\n"
-             "받은 3개가 STEP 2 공지의 해당 자리에 자동으로 채워집니다.")
+             "판매 링크는 **상품마다 별도 발급**입니다. 운영진에게 카톡으로 '링크 발급 요청' 하면,\n"
+             "받은 링크가 STEP 2 공지의 해당 자리에 자동으로 채워집니다.")
     return f"""# {name}님 패밀리 파트너스 세팅 키트
 {header_portal}아래 STEP 1~4 순서대로 세팅하세요.
 
@@ -144,18 +194,12 @@ def profile_text(name: str, handle: str | None = None, openchat: str | None = No
             .replace("{{OPENCHAT}}", oc))
 
 
-def notice_text(links: dict | None = None) -> str:
-    """STEP 2용 — 단톡방 공지(상품 링크 3개 자동삽입)."""
+def notice_text(ptype: str | None = "family", links: dict | None = None) -> str:
+    """STEP 2용 — 유형별 단톡방 공지(판매링크 슬롯 자동삽입)."""
     links = links or {}
-    slot_map = [
-        ("{{LINK_FAMILYDAY}}", links.get("familyday"),
-         "(이번달 패밀리데이 모집링크 — 운영진에게 받아 넣기)"),
-        ("{{LINK_AIMAX}}", links.get("aimax"),
-         "(AIMAX 창업프로그램 사전예약 링크 — 운영진에게 받아 넣기)"),
-        ("{{LINK_SECONDBRAIN}}", links.get("secondbrain"),
-         "(제2의 뇌 신청링크 — 운영진에게 받아 넣기)"),
-    ]
-    notice = _read("kakao_notice.txt")
-    for tok, val, label in slot_map:
-        notice = notice.replace(tok, (val or "").strip() or label)
+    cfg = type_cfg(ptype)
+    notice = _read(cfg["file"])
+    for key, label in cfg["slots"]:
+        val = (links.get(key) or "").strip() or "(별도 발급 — 운영진에게 받아 넣기)"
+        notice = notice.replace("{{" + key + "}}", val)
     return notice
