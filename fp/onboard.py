@@ -48,6 +48,7 @@ TYPE_REGISTRY = {
             ("LINK_FAMILYDAY", "패밀리데이 모집링크"),
             ("LINK_AIMAX", "AIMAX 창업프로그램 링크"),
             ("LINK_SECONDBRAIN", "제2의 뇌 링크"),
+            ("LINK_FAMILYMEMBER", "패밀리 회원 모집"),
         ],
     },
     "aimax": {
@@ -72,6 +73,7 @@ TYPE_REGISTRY = {
             ("B_FAMILYDAY", "패밀리데이 모집링크"),
             ("B_STARTUP", "AIMAX 창업프로그램 링크"),
             ("B_SECONDBRAIN", "제2의 뇌 링크"),
+            ("B_FAMILYMEMBER", "패밀리 회원 모집"),
             ("B_YERI", "블로그 직원 예리씨"),
             ("B_HYUNJU", "영업 사원 현주씨"),
             ("B_BLOGAUTO", "블로그 자동화 팀"),
