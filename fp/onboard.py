@@ -34,8 +34,8 @@ def _read(name: str) -> str:
 
 
 def _account_id(code: str | None) -> str:
-    # 자동생성 X — 본인이 직접 정해서 만들고 입력. 형식만 안내.
-    return "aimax_본인닉네임 (직접 정해서 만드세요)"
+    # 자동생성 X — 본인이 자유롭게 정해서 만들고 입력.
+    return "(자유롭게 정하세요)"
 
 
 def links_of(row) -> dict:

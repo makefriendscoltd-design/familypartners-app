@@ -470,15 +470,14 @@ def view_me(qs) -> bytes | None:
         f"<div class=card style='border-color:{'var(--grn)' if has_handle else 'var(--yel)'}'>"
         f"<h2>{ck(has_handle)} STEP 1. 스레드 계정 만들기</h2>"
         "<p>① 스레드(Threads) 앱에서 <b>새 계정</b>을 만드세요. 아이디는 "
-        "<b>aimax_ 뒤에 본인 닉네임</b> (예: <code>aimax_gildong</code>). "
-        "<b>자동으로 안 만들어집니다 — 직접 정해서 만드세요.</b></p>"
+        "<b>자유롭게</b> 정하면 됩니다. <b>자동으로 안 만들어지니 직접 만들어 주세요.</b></p>"
         "<p>② 프로필 소개글은 아래 그대로 복붙:</p>"
         f"<pre>{esc(profile)}</pre>"
         "<p>③ <b>만든 스레드 아이디</b>를 입력하고 저장:</p>"
         "<form method=post action=/me/save>"
         f"<input type=hidden name=t value='{esc(token)}'>"
         f"<input name=handle value='{esc(p['handle'] or '')}' "
-        "placeholder='내가 만든 스레드 아이디 (예: aimax_gildong)' style=flex:1>"
+        "placeholder='내가 만든 스레드 아이디' style=flex:1>"
         "<button>저장</button></form></div>")
     step2 = (
         f"<div class=card style='border-color:{'var(--grn)' if has_oc else 'var(--ln)'}'>"
