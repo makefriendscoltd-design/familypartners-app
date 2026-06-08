@@ -509,14 +509,14 @@ def view_me(qs) -> bytes | None:
         "<button>저장</button></form></div>")
     link_inputs = "".join(
         f"<input name='link_{esc(key)}' value='{esc(links.get(key) or '')}' "
-        f"placeholder='{esc(label)}' style=flex:1>"
+        f"placeholder='{esc(label)}' style='flex:1 1 200px;min-width:0'>"
         for key, label in slots)
     step3 = (
         f"<div class=card style='border-color:{'var(--grn)' if n_links == need else 'var(--ln)'}'>"
         f"<h2>{ck(n_links == need)} STEP 3. 판매 링크 넣기 <span class=pill>{n_links}/{need}</span></h2>"
         "<p>운영자에게 카톡으로 <b>“판매 링크 발급 요청합니다”</b> → 받은 링크를 아래에 넣고 저장하면 "
         "<b>위 STEP 2 공지에 자동으로 채워집니다.</b></p>"
-        "<form method=post action=/me/links>"
+        "<form method=post action=/me/links style='flex-wrap:wrap'>"
         f"<input type=hidden name=t value='{esc(token)}'>"
         f"{link_inputs}"
         "<button>저장</button></form></div>")
