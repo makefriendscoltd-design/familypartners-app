@@ -246,12 +246,27 @@ def view_dashboard(qs) -> str:
            f"<div class=lb>활성 파트너</div></div>"
            f"</div>")
 
+    # 오늘 제출한 콘텐츠 링크(파트너별, 유효 제출만) — 완료 명단에서 바로 열기
+    url_map = {}
+    for sub in core.submissions_on(conn, as_of):
+        if sub["valid"]:
+            url_map.setdefault(sub["partner_id"], []).append(sub["url"])
+
+    def done_meta(s):
+        urls = url_map.get(s.row["id"], [])
+        if not urls:
+            return f"🔥 {s.streak}일 연속"
+        extra = f" (+{len(urls) - 1})" if len(urls) > 1 else ""
+        link = (f"<a class=lk href='{esc(urls[-1])}' target=_blank rel=noopener>"
+                f"🔗 콘텐츠 열기{extra}</a>")
+        return f"🔥 {s.streak}일 연속 · {link}"
+
     def undone_meta(s):
         badge = " <span class=b-red>⚠️어제 빵꾸</span>" if s.missed_yesterday else ""
         tgt = esc(s.row["contact"] or s.handle or "-")
         return f"{s.streak}일 연속 · {tgt}{badge}"
 
-    done = rows(done_list, "b-grn", lambda s: f"🔥 {s.streak}일 연속")
+    done = rows(done_list, "b-grn", done_meta)
     undone = rows(undone_list, "b-yel", undone_meta)
     conn.close()
 

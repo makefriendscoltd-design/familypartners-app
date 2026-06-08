@@ -238,7 +238,8 @@ def submissions_on(conn, d: date) -> list[dict]:
     out = []
     for r in rows:
         out.append({
-            "id": r["id"], "name": r["name"], "handle": r["handle"],
+            "id": r["id"], "partner_id": r["partner_id"],
+            "name": r["name"], "handle": r["handle"],
             "url": r["post_url"], "channel": r["channel"],
             "valid": r["valid"], "void_reason": r["void_reason"],
             "submitted_at": r["submitted_at"],
