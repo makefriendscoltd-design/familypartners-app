@@ -140,6 +140,11 @@ background:#000;display:block;max-height:520px;object-fit:contain}
 .video-wrap iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
 .feed-date{font-size:13px;color:var(--acc);font-weight:600}
 button.ghost{background:#fff;color:var(--acc);border:1px solid var(--ln);padding:5px 12px;font-size:13px}
+.dl-cta{grid-column:1/-1;border:2px dashed var(--acc);border-radius:10px;padding:14px;text-align:center;background:#f3f7fd}
+.dl-btn{display:inline-block;background:var(--acc);color:#fff;padding:12px 20px;border-radius:9px;
+font-weight:700;text-decoration:none;font-size:15px}
+.dl-btn:hover{filter:brightness(1.08)}
+.dl-warn{margin:10px 0 0;color:var(--red);font-size:13px;font-weight:600}
 """
 
 
@@ -344,8 +349,12 @@ def render_asset(conn, a: str) -> str:
         return f"<img class=media src='{esc(a)}' loading=lazy>"
     if ext in VID_EXT:
         return f"<video class=media src='{esc(a)}' controls preload=metadata></video>"
-    label = "🔗 드라이브 열기" if "drive.google" in a or "docs.google" in a else "🔗 첨부 열기"
-    return f"<a class=lk href='{esc(a)}' target=_blank>{label}</a>"
+    is_drive = "drive.google" in a or "docs.google" in a
+    label = "드라이브 열어서 영상/사진 다운로드" if is_drive else "링크 열어서 다운로드"
+    return ("<div class=dl-cta>"
+            f"<a href='{esc(a)}' target=_blank rel=noopener class=dl-btn>⬇ {esc(label)}</a>"
+            "<p class=dl-warn>⚠️ <b>여기 눌러 드라이브 열고 영상(사진)을 꼭 다운로드</b>하세요. "
+            "텍스트만 베끼고 영상 안 올리면 안 됩니다!</p></div>")
 
 
 COPY_JS = (
@@ -586,29 +595,37 @@ def view_me(qs) -> bytes | None:
               f"<button>제출</button></form>"
               f"<p class=empty>제출이 곧 출석입니다.</p></div>")
 
-    # 오늘 글감
-    drops = core.drops_on(conn, as_of)
-    feed_link = f"<a class=lk href='/feed?t={esc(token)}'>📚 지난 글감 전체보기 →</a>"
-    if drops:
-        items = []
-        for r in drops:
-            media = ""
-            if r["assets"]:
-                parts = [render_asset(conn, a) for a in r["assets"].splitlines()]
-                parts = [p for p in parts if p]
-                if parts:
-                    solo = " solo" if len(parts) == 1 else ""
-                    media = f"<div class='media-grid{solo}'>{''.join(parts)}</div>"
-            body_html = (f"<pre>{esc(r['body'])}</pre>"
-                         "<button type=button class=ghost onclick=fpCopy(this)>📋 본문 복사</button>"
-                         ) if (r["body"] or "").strip() else ""
-            items.append(f"<h2>{esc(r['title'])}"
-                         f"<span class=pill>{DROP_TYPE.get(r['dtype'], r['dtype'])}</span></h2>"
-                         f"{body_html}{media}")
-        drop_card = (COPY_JS + f"<div class=card><h2>오늘의 글감</h2>{''.join(items)}"
-                     f"<p class=empty style='margin-top:10px'>{feed_link}</p></div>")
+    # 오늘 올릴 글감 — 최신 등록 1건만(어제 거 잘못 올리는 사고 방지). 나머지는 피드로.
+    recent = core.all_drops(conn, 30)
+    feed_link = (f"<a class=lk href='/feed?t={esc(token)}'>"
+                 "📚 지난 글감 전체보기 →</a>")
+    if recent:
+        r = recent[0]   # 가장 최근 등록한 글감
+        media = ""
+        if r["assets"]:
+            parts = [render_asset(conn, a) for a in r["assets"].splitlines()]
+            parts = [p for p in parts if p]
+            if parts:
+                solo = " solo" if len(parts) == 1 else ""
+                media = f"<div class='media-grid{solo}'>{''.join(parts)}</div>"
+        body_html = (f"<pre>{esc(r['body'])}</pre>"
+                     "<button type=button class=ghost onclick=fpCopy(this)>📋 본문 복사</button>"
+                     ) if (r["body"] or "").strip() else ""
+        more = (f"<p class=empty style='margin-top:10px'>"
+                f"📅 {esc(r['drop_date'])} 등록 · 이전 글감은 여기서 → {feed_link}</p>"
+                if len(recent) > 1 else
+                f"<p class=empty style='margin-top:10px'>{feed_link}</p>")
+        drop_card = (COPY_JS +
+                     "<div class=card style='border:2px solid var(--acc)'>"
+                     "<h2>📌 오늘 올릴 글감 <span class=pill>최신 1건만 — 이걸 올리세요</span></h2>"
+                     "<p class=empty style='margin:-4px 0 10px'>"
+                     "⚠️ <b>맨 위 이 글감을 올리세요.</b> 어제 거 올리면 안 됩니다. "
+                     "예전 글감을 보려면 아래 ‘지난 글감 전체보기’로만 들어가세요.</p>"
+                     f"<h2>{esc(r['title'])}"
+                     f"<span class=pill>{DROP_TYPE.get(r['dtype'], r['dtype'])}</span></h2>"
+                     f"{body_html}{media}{more}</div>")
     else:
-        drop_card = ("<div class=card><h2>오늘의 글감</h2>"
+        drop_card = ("<div class=card><h2>📌 오늘 올릴 글감</h2>"
                      "<div class=empty>아직 등록 전입니다.</div>"
                      f"<p class=empty>{feed_link}</p></div>")
 
