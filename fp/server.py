@@ -360,12 +360,13 @@ def render_asset(conn, a: str) -> str:
 COPY_JS = (
     "<script>function fpCopy(b){var t=b.parentNode.querySelector('pre');"
     "if(!t)return;var s=t.innerText;"
+    "var o=b.getAttribute('data-o');if(o===null){o=b.textContent;b.setAttribute('data-o',o);}"
+    "function ok(){b.textContent='✅ 복사됨';setTimeout(function(){b.textContent=o},1800);}"
     "(navigator.clipboard?navigator.clipboard.writeText(s):Promise.reject())"
-    ".then(function(){b.textContent='✅ 복사됨'},function(){"
+    ".then(ok,function(){"
     "var r=document.createRange();r.selectNodeContents(t);"
     "var sel=getSelection();sel.removeAllRanges();sel.addRange(r);"
-    "try{document.execCommand('copy');b.textContent='✅ 복사됨'}catch(e){}});"
-    "setTimeout(function(){b.textContent='📋 본문 복사'},1800)}</script>"
+    "try{document.execCommand('copy');ok();}catch(e){}});}</script>"
 )
 
 DROP_TYPE = {"ai": "AI 콘텐츠", "marketing": "마케팅 자료", "evergreen": "상시 자료"}
@@ -615,8 +616,7 @@ def view_me(qs) -> bytes | None:
                 f"📅 {esc(r['drop_date'])} 등록 · 이전 글감은 여기서 → {feed_link}</p>"
                 if len(recent) > 1 else
                 f"<p class=empty style='margin-top:10px'>{feed_link}</p>")
-        drop_card = (COPY_JS +
-                     "<div class=card style='border:2px solid var(--acc)'>"
+        drop_card = ("<div class=card style='border:2px solid var(--acc)'>"
                      "<h2>📌 오늘 올릴 글감 <span class=pill>최신 1건만 — 이걸 올리세요</span></h2>"
                      "<p class=empty style='margin:-4px 0 10px'>"
                      "⚠️ <b>맨 위 이 글감을 올리세요.</b> 어제 거 올리면 안 됩니다. "
@@ -702,13 +702,19 @@ def view_me(qs) -> bytes | None:
     step2 = (
         f"<div class=card style='border-color:{'var(--grn)' if has_oc else 'var(--ln)'}'>"
         f"<h2>{ck(has_oc)} STEP 2. 오픈톡방 개설</h2>"
-        "<p>① 카카오톡 <b>오픈채팅(그룹) 3,000명</b>으로 개설. 내 방 프로필 닉네임은 "
-        "<b>AIMAX 매니저</b>로 설정.</p>"
+        "<p>① 카카오톡 <b>오픈채팅(그룹) 3,000명</b>으로 개설.</p>"
+        "<p style='background:#fff7e6;border-left:3px solid var(--yel);padding:8px 10px;border-radius:6px'>"
+        "👤 <b>내 방 프로필 닉네임을 아래로 변경하세요</b> (예전엔 ‘AIMAX 매니저’로 통일했는데, "
+        "이제 <b>성함을 붙입니다</b>):</p>"
+        f"<pre>AIMAX 매니저 ({esc(name)})</pre>"
         "<p>② 방 제목·소개(통일):</p>"
         f"<pre>[제목] {esc(onboard.OPENCHAT_TITLE)}\n\n[소개]\n{esc(onboard.OPENCHAT_INTRO)}</pre>"
-        "<p>③ 아래 공지를 방 공지에 그대로 복붙 (판매 링크는 STEP 3에서 넣으면 자동으로 채워짐):</p>"
-        "<details><summary style='cursor:pointer;color:var(--acc)'>공지 전문 펼치기 ▾</summary>"
-        f"<pre>{esc(notice)}</pre></details>"
+        "<p>③ 아래 <b>공지를 복사</b>해서 <b>내 카톡방 ‘공지’에 직접 붙여넣으세요.</b></p>"
+        "<p style='background:#fdecec;border-left:3px solid var(--red);padding:8px 10px;border-radius:6px'>"
+        "⚠️ <b>카톡에 자동으로 안 올라갑니다.</b> 아래 [📋 공지 복사] 누르고 → 내 카톡방 공지에 붙여넣어야 해요. "
+        "(STEP 3에서 판매 링크를 넣으면 이 공지에 자동으로 채워지니, <b>링크 넣은 뒤 다시 복사</b>하세요.)</p>"
+        f"<div><pre>{esc(notice)}</pre>"
+        "<button type=button class=ghost onclick=fpCopy(this)>📋 공지 복사</button></div>"
         "<p>④ <b>만든 오픈톡방 링크</b>를 입력하고 저장:</p>"
         "<form method=post action=/me/save>"
         f"<input type=hidden name=t value='{esc(token)}'>"
@@ -729,15 +735,20 @@ def view_me(qs) -> bytes | None:
         f"{link_inputs}"
         "<button>저장</button></form></div>")
     step4 = (
-        "<div class=card><h2>⬜ STEP 4. 콘텐츠 올리고 매일 제출</h2>"
-        "<p>자료실에서 사진·영상·글감을 받아 콘텐츠로 만들어 올리고, 고객을 <b>내 오픈톡방</b>으로 모으세요. "
-        "<b>매일 1건 발행 후 아래에서 링크 제출 = 출석</b>입니다.</p></div>")
+        "<div class=card><h2>⬜ STEP 4. 매일 콘텐츠 올리고 제출</h2>"
+        "<p>① 아래 <b>‘오늘 올릴 글감’</b>에서 <b>본문은 복사</b>(그대로 또는 단어만 바꿔서), "
+        "<b>영상·사진은 꼭 다운로드</b>해서 함께 스레드에 올리세요. "
+        "<span class=b-red>텍스트만 올리고 영상 빼먹으면 반응 안 옵니다.</span></p>"
+        "<p>② <b>댓글·반응이 오면 → 내 오픈톡방 링크로 유도</b>하세요 "
+        "(대댓글로 방 초대링크 안내). 답변하기 어려우면 운영진이 대신 답변해드립니다.</p>"
+        "<p>③ <b>매일 1건 발행 후 아래 ‘오늘 글 제출’에 링크 제출 = 출석</b>입니다. "
+        "(카톡 말고 <b>여기 작업실에 제출</b>해야 출석 처리됩니다.)</p></div>")
     setup = intro + step1 + step2 + step3 + step4
     find_note = ("<div class=card><p class=empty>💡 이 작업실 링크는 북마크하세요. 잃어버려도 "
                  "<a class=lk href='/find'>내 작업실 찾기</a>(성함+연락처)로 다시 들어올 수 있습니다.</p></div>")
 
     conn.close()
-    body = (notice_card + saved2 + ok_banner + status_card + setup + submit +
+    body = (COPY_JS + notice_card + saved2 + ok_banner + status_card + setup + submit +
             drop_card + files_link + hist_card + link_card + wall_link + find_note)
     return shell_portal(name, f"{esc(name)}님의 작업실", body, token)
 
