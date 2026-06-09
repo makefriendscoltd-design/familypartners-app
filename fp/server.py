@@ -767,11 +767,16 @@ def view_me(qs) -> bytes | None:
     find_note = ("<div class=card><p class=empty>💡 이 작업실 링크는 북마크하세요. 잃어버려도 "
                  "<a class=lk href='/find'>내 작업실 찾기</a>(성함+연락처)로 다시 들어올 수 있습니다.</p></div>")
 
+    gvid = _youtube_id(GUIDE_VIDEO)
+    gembed = (f"<div class=video-wrap><iframe src='https://www.youtube.com/embed/{esc(gvid)}' "
+              "allowfullscreen allow='accelerometer;encrypted-media;picture-in-picture'></iframe></div>"
+              if gvid else
+              f"<a class=lk href='{esc(GUIDE_VIDEO)}' target=_blank>▶ 가이드 영상 열기</a>")
     guide_banner = (
-        "<div class=card style='border:2px solid var(--acc);text-align:center'>"
-        f"<a href='/guide?t={esc(token)}' class=lk style='font-size:16px;font-weight:700'>"
-        "📖 처음이세요? 사용법 가이드 보기 (캡처 따라하기) →</a>"
-        "<p class=empty style='margin:6px 0 0'>막히면 여기부터 — 가입·스레드·오픈톡방·공지·매일 제출 전부 그림으로 설명</p></div>")
+        "<div class=card style='border:2px solid var(--acc)'>"
+        "<h2>📖 사용법 가이드 영상 <span class=pill>막히면 이거부터</span></h2>"
+        "<p class=empty style='margin:0 0 10px'>가입부터 매일 올리는 것까지 이 영상에 다 있어요.</p>"
+        f"{gembed}</div>")
 
     conn.close()
     body = (COPY_JS + notice_card + saved2 + ok_banner + status_card + guide_banner +
