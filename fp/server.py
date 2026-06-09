@@ -737,7 +737,7 @@ def view_me(qs) -> bytes | None:
         f"placeholder='{esc(label)}' style='flex:1 1 200px;min-width:0'>"
         for key, label in slots)
     step3 = (
-        f"<div class=card id=공지 style='border-color:{'var(--grn)' if n_links == need else 'var(--ln)'}'>"
+        f"<div class=card id=notice style='border-color:{'var(--grn)' if n_links == need else 'var(--ln)'}'>"
         f"<h2>{ck(n_links == need)} STEP 3. 판매 링크 넣기 <span class=pill>{n_links}/{need}</span></h2>"
         "<p>운영자에게 카톡으로 <b>“판매 링크 발급 요청합니다”</b> → 받은 링크를 아래에 넣고 저장하세요. "
         "(이 링크로 들어온 결제가 내 실적)</p>"
@@ -1104,81 +1104,24 @@ def view_landing() -> bytes:
     return shell_portal("패밀리 파트너스", "함께 성장하는 파트너", body)
 
 
+GUIDE_VIDEO = "https://youtube.com/live/bqXinSUY9wo"
+
+
 def view_guide(qs=None) -> bytes:
     token = (qs or {}).get("t", [None])[0]
-    def step(title, lines, img=None, cap="", border=None):
-        body = "".join(f"<p style='margin:6px 0'>{l}</p>" for l in lines)
-        bs = f" style='border:2px solid {border}'" if border else ""
-        return (f"<div class=card{bs}><h2>{title}</h2>{body}"
-                + (guide_img(img, cap) if img else "") + "</div>")
-
-    intro = ("<div class=card style='border:2px solid var(--acc)'>"
-             "<h2>📖 패밀리 파트너스 사용법</h2>"
-             "<p class=empty>처음 <b>STEP 1~4</b>만 한 번 세팅하면, 그 다음부터는 "
-             "<b>매일 글감 1건 올리고 제출</b>하면 끝입니다. 화면 그대로 캡처해 뒀으니 따라만 하세요.</p></div>")
-
-    # 가장 많이 막히는 3가지 — 먼저 못 박기
-    pitfalls = (
-        "<div class=card style='border:2px solid var(--red)'>"
-        "<h2 class=b-red>⚠️ 제일 많이 틀리는 3가지 (꼭 먼저 읽기)</h2>"
-        "<p style='margin:6px 0'><b>1. 공지는 카톡에 자동으로 안 올라갑니다.</b> "
-        "작업실 공지를 <b>[📋 복사] → 내 카톡방 ‘공지’에 직접 붙여넣기</b> 해야 합니다.</p>"
-        "<p style='margin:6px 0'><b>2. STEP3에서 판매링크를 저장하면 공지 ‘내용’이 바뀝니다.</b> "
-        "<span class=b-red>바뀐 공지를 ‘다시 복사’해서 내 카톡방 공지를 교체하세요.</span> "
-        "카톡방 공지는 저절로 안 바뀝니다. (옛날 공지 그대로 두는 실수 제일 많음)</p>"
-        "<p style='margin:6px 0'><b>3. 영상은 꼭 다운로드해서 같이 올리세요.</b> "
-        "글(텍스트)만 베끼고 영상 빼먹으면 반응이 안 옵니다.</p></div>")
-
-    body = intro + pitfalls + (
-        step("0) 가입하고 ‘내 작업실’ 링크 저장",
-             ["운영진이 준 링크로 들어가 <b>성함·연락처·유형</b> 선택 후 가입하세요.",
-              "가입하면 <b>나만의 작업실</b>이 생깁니다. 그 주소를 <b>카톡 ‘나와의 채팅’에 저장(북마크)</b>하세요. "
-              "잃어버려도 ‘내 작업실 찾기’로 다시 들어옵니다."],
-             "g_join.png", "가입 화면")
-        + step("STEP 1. 스레드 계정 만들기",
-               ["<b>인스타그램을 먼저</b> 만들어야 스레드가 됩니다. 그다음 스레드 앱에서 새 계정 생성.",
-                "📷 <b>고화질 업로드 꼭 켜기:</b> 우측 상단 ☰ → 계정 → 미디어 → ‘고화질로 업로드’ 체크. (안 하면 영상 깨짐)",
-                "프로필 소개글을 <b>그대로 복붙</b>하고, 만든 <b>아이디를 입력 → 저장</b>."],
-               "g_step1.png", "STEP 1 화면")
-        + step("STEP 2. 오픈톡방 만들기 (제일 헷갈리는 단계)",
-               ["카톡 오픈채팅(그룹) 개설 → <b>방 프로필 닉네임을 ‘AIMAX 매니저 (성함)’</b>로 설정.",
-                "방 제목·소개를 그대로 복붙.",
-                "<b>[📋 공지 복사]</b> 누르고 → <b>내 카톡방 ‘공지’에 직접 붙여넣기.</b> "
-                "<span class=b-red>(카톡에 자동으로 안 올라갑니다!)</span>",
-                "만든 <b>오픈톡방 링크를 입력 → 저장</b>."],
-               "g_step2.png", "STEP 2 화면", border="var(--yel)")
-        + step("STEP 3. 판매 링크 넣기 + 공지 다시 복사 ★",
-               ["운영진에게 받은 <b>상품별 판매링크</b>를 입력하고 <b>저장</b>하세요. (이 링크로 들어온 결제가 내 정산)",
-                "저장하면 <b>STEP 2 공지에 링크가 자동으로 채워집니다.</b>",
-                "<span class=b-red><b>★ 그다음이 중요: 바뀐 공지를 ‘다시 복사’해서 내 카톡방 공지를 교체하세요.</b> "
-                "내 카톡방 공지는 저절로 안 바뀝니다.</span>"],
-               "g_step3.png", "STEP 3 화면", border="var(--red)")
-        + step("STEP 4. 매일 콘텐츠 올리고 제출",
-               ["‘오늘 올릴 글감’의 <b>본문 복사</b> + <b>영상/사진 다운로드</b> → 스레드에 함께 올리기.",
-                "<b>댓글·반응이 오면 → 내 오픈톡방 링크로 유도</b>(대댓글). 모르면 운영진이 대신 답변.",
-                "발행한 <b>링크를 ‘오늘 글 제출’에 붙여넣기 = 출석</b>. (카톡 말고 작업실에 제출!)"],
-               "g_step4.png", "STEP 4 화면")
-        + step("매일 루틴 — ‘오늘 올릴 글감’",
-               ["작업실 ‘오늘 올릴 글감’은 <b>최신 1건만</b> 뜹니다. <b>이걸 올리세요</b> (어제 거 올리면 안 됨).",
-                "예전 글감은 ‘지난 글감 전체보기’에서만 확인하세요."],
-               "g_drop.png", "오늘 올릴 글감 — 본문 복사 + 영상 다운로드")
-        + step("매일 루틴 — 출석(글 제출)",
-               ["스레드에 올린 <b>게시물 링크를 여기 붙여넣고 제출</b>하면 그날 출석 처리됩니다.",
-                "⚠️ <b>매일 1건, 주말 없음.</b> 한 번이라도 빠지면 자정에 강퇴됩니다."],
-               "g_submit.png", "오늘 글 제출")
-    )
-
-    faq = (
-        "<div class=card><h2>❓ 자주 묻는 질문</h2>"
-        "<p style='margin:6px 0'><b>Q. 쓸 글감이 어디 있어요?</b><br>작업실 ‘오늘 올릴 글감’ / 전체는 ‘지난 글감 전체보기’.</p>"
-        "<p style='margin:6px 0'><b>Q. 공지가 카톡에 안 올라가요.</b><br>자동 아님. 복사해서 내 방 공지에 직접 붙여넣기.</p>"
-        "<p style='margin:6px 0'><b>Q. 링크 저장했는데 카톡방 공지가 그대로예요.</b><br>저장하면 ‘작업실 공지’만 바뀝니다. "
-        "그걸 다시 복사해서 카톡방 공지를 직접 교체하세요.</p>"
-        "<p style='margin:6px 0'><b>Q. 드라이브 영상이 안 보여요.</b><br>‘열어서 다운로드’ 버튼 눌러 받으세요.</p>"
-        "<p style='margin:6px 0'><b>Q. 댓글 달렸는데 뭐 보내요?</b><br>내 오픈톡방 초대 링크.</p>"
-        "<p style='margin:6px 0'><b>Q. 인스타 안 만들어도 돼요?</b><br>안 됩니다. 인스타가 있어야 스레드가 생성돼요.</p>"
-        "<p style='margin:6px 0'><b>Q. 제출은 어디다 해요?</b><br>카톡 말고 작업실 ‘오늘 글 제출’.</p></div>")
-    return shell_portal("사용법", "처음 세팅 + 매일 루틴", body + faq, token)
+    vid = _youtube_id(GUIDE_VIDEO)
+    embed = (f"<div class=video-wrap><iframe src='https://www.youtube.com/embed/{esc(vid)}' "
+             "allowfullscreen allow='accelerometer;encrypted-media;picture-in-picture'></iframe></div>"
+             if vid else
+             f"<p><a class=lk href='{esc(GUIDE_VIDEO)}' target=_blank>▶ 가이드 영상 열기</a></p>")
+    body = ("<div class=card style='border:2px solid var(--acc)'>"
+            "<h2>📖 패밀리 파트너스 사용법 영상</h2>"
+            "<p class=empty style='margin-bottom:12px'>아래 영상 하나면 가입부터 매일 올리는 것까지 전부 나옵니다. "
+            "막히면 이 영상부터 보세요.</p>"
+            f"{embed}"
+            "<p class=empty style='margin-top:12px'>"
+            f"영상이 안 보이면 → <a class=lk href='{esc(GUIDE_VIDEO)}' target=_blank>유튜브에서 바로 보기</a></p></div>")
+    return shell_portal("사용법", "가이드 영상", body, token)
 
 
 def view_login(first_set: bool, err: str = "") -> bytes:
@@ -1221,6 +1164,11 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(body)
 
     def _redirect(self, location: str):
+        # Location 헤더는 latin-1만 허용 → 비ASCII(한글 등) 있으면 퍼센트 인코딩
+        try:
+            location.encode("latin-1")
+        except UnicodeEncodeError:
+            location = quote(location, safe="/?=&#%:")
         self.send_response(303)
         self.send_header("Location", location)
         self.end_headers()
@@ -1375,7 +1323,8 @@ class Handler(BaseHTTPRequestHandler):
                 core.update_links(conn, token, links)
                 conn.close()
                 # 링크 저장 → 공지가 바뀌었으니 '다시 복사' 안내 + STEP3 공지블록으로 이동
-                return self._redirect(f"/me?t={token}&saved2=links#공지")
+                # (앵커는 ASCII만 — Location 헤더는 latin-1만 허용, 한글이면 인코딩 에러)
+                return self._redirect(f"/me?t={token}&saved2=links#notice")
             if u.path == "/reject":  # 운영자 제출 무효 처리
                 conn = db.connect()
                 core.reject_submission(conn, int(f.get("id", 0)), (f.get("reason") or "").strip() or None)
