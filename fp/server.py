@@ -462,6 +462,7 @@ def shell_portal(title: str, sub: str, body: str, token: str | None = None) -> b
     me_link = (f"<a href='/me{t}'>🏠 내 작업실</a>" if token
                else "<a href='/find'>🏠 내 작업실 찾기</a>")
     nav = (me_link
+           + f"<a href='/guide{t}'>📖 사용법</a>"
            + f"<a href='/feed{t}'>📚 글감 피드</a>"
            + f"<a href='/files{t}'>📁 자료실</a>"
            + f"<a href='/wall{t}'>🏆 인증보드</a>")
@@ -677,8 +678,18 @@ def view_me(qs) -> bytes | None:
     need = len(slots)
     def ck(done):
         return "✅" if done else "⬜"
-    saved2 = ("<div class=card style='border-color:var(--grn)'>"
-              "<b class=b-grn>저장됐습니다. 운영자 화면에 바로 반영됩니다.</b></div>") if qs.get("saved2") else ""
+    saved2_flag = (qs.get("saved2") or [None])[0]
+    if saved2_flag == "links":
+        saved2 = ("<div class=card style='border:2px solid var(--red)'>"
+                  "<b class=b-red>✅ 링크 저장됨 — 아직 안 끝났어요!</b>"
+                  "<p style='margin:6px 0'>저장하면 <b>아래 STEP 3의 ‘카톡방 공지’ 내용이 바뀝니다.</b> "
+                  "<span class=b-red>바뀐 공지를 [📋 복사]해서 <b>내 카톡방 공지를 직접 교체</b>하세요.</span> "
+                  "(카톡방 공지는 저절로 안 바뀝니다.)</p></div>")
+    elif saved2_flag:
+        saved2 = ("<div class=card style='border-color:var(--grn)'>"
+                  "<b class=b-grn>저장됐습니다. 운영자 화면에 바로 반영됩니다.</b></div>")
+    else:
+        saved2 = ""
 
     intro = (f"<div class=card style='border-color:var(--acc)'><h2>📋 처음 세팅 (STEP 1~4 · 한 번만)</h2>"
              f"<p class=empty>유형: <b>{esc(onboard.type_label(p['partner_type']))}</b> · "
@@ -726,14 +737,23 @@ def view_me(qs) -> bytes | None:
         f"placeholder='{esc(label)}' style='flex:1 1 200px;min-width:0'>"
         for key, label in slots)
     step3 = (
-        f"<div class=card style='border-color:{'var(--grn)' if n_links == need else 'var(--ln)'}'>"
+        f"<div class=card id=공지 style='border-color:{'var(--grn)' if n_links == need else 'var(--ln)'}'>"
         f"<h2>{ck(n_links == need)} STEP 3. 판매 링크 넣기 <span class=pill>{n_links}/{need}</span></h2>"
-        "<p>운영자에게 카톡으로 <b>“판매 링크 발급 요청합니다”</b> → 받은 링크를 아래에 넣고 저장하면 "
-        "<b>위 STEP 2 공지에 자동으로 채워집니다.</b></p>"
+        "<p>운영자에게 카톡으로 <b>“판매 링크 발급 요청합니다”</b> → 받은 링크를 아래에 넣고 저장하세요. "
+        "(이 링크로 들어온 결제가 내 실적)</p>"
         "<form method=post action=/me/links style='flex-wrap:wrap'>"
         f"<input type=hidden name=t value='{esc(token)}'>"
         f"{link_inputs}"
-        "<button>저장</button></form></div>")
+        "<button>저장</button></form>"
+        # 저장하면 아래 공지가 바뀜 → 이걸 다시 복사해서 카톡방 공지 교체
+        "<p style='margin-top:16px;background:#fdecec;border-left:3px solid var(--red);"
+        "padding:8px 10px;border-radius:6px'>"
+        "⚠️ <b>저장하면 아래 ‘내 카톡방 공지’ 내용이 바뀝니다.</b> "
+        "<span class=b-red>바뀐 공지를 [📋 복사]해서 <b>내 카톡방 공지를 직접 교체</b>하세요. "
+        "카톡방 공지는 저절로 안 바뀝니다!</span></p>"
+        "<h2 style='margin-top:8px'>📢 지금 내 카톡방에 들어갈 공지 (링크 반영됨)</h2>"
+        f"<div><pre>{esc(notice)}</pre>"
+        "<button type=button class=ghost onclick=fpCopy(this)>📋 카톡방 공지 복사</button></div></div>")
     step4 = (
         "<div class=card><h2>⬜ STEP 4. 매일 콘텐츠 올리고 제출</h2>"
         "<p>① 아래 <b>‘오늘 올릴 글감’</b>에서 <b>본문은 복사</b>(그대로 또는 단어만 바꿔서), "
@@ -747,9 +767,16 @@ def view_me(qs) -> bytes | None:
     find_note = ("<div class=card><p class=empty>💡 이 작업실 링크는 북마크하세요. 잃어버려도 "
                  "<a class=lk href='/find'>내 작업실 찾기</a>(성함+연락처)로 다시 들어올 수 있습니다.</p></div>")
 
+    guide_banner = (
+        "<div class=card style='border:2px solid var(--acc);text-align:center'>"
+        f"<a href='/guide?t={esc(token)}' class=lk style='font-size:16px;font-weight:700'>"
+        "📖 처음이세요? 사용법 가이드 보기 (캡처 따라하기) →</a>"
+        "<p class=empty style='margin:6px 0 0'>막히면 여기부터 — 가입·스레드·오픈톡방·공지·매일 제출 전부 그림으로 설명</p></div>")
+
     conn.close()
-    body = (COPY_JS + notice_card + saved2 + ok_banner + status_card + setup + submit +
-            drop_card + files_link + hist_card + link_card + wall_link + find_note)
+    body = (COPY_JS + notice_card + saved2 + ok_banner + status_card + guide_banner +
+            setup + submit + drop_card + files_link + hist_card + link_card +
+            wall_link + find_note)
     return shell_portal(name, f"{esc(name)}님의 작업실", body, token)
 
 
@@ -1077,29 +1104,81 @@ def view_landing() -> bytes:
     return shell_portal("패밀리 파트너스", "함께 성장하는 파트너", body)
 
 
-def view_guide() -> bytes:
-    def step(title, lines, img=None, cap=""):
+def view_guide(qs=None) -> bytes:
+    token = (qs or {}).get("t", [None])[0]
+    def step(title, lines, img=None, cap="", border=None):
         body = "".join(f"<p style='margin:6px 0'>{l}</p>" for l in lines)
-        return (f"<div class=card><h2>{title}</h2>{body}"
+        bs = f" style='border:2px solid {border}'" if border else ""
+        return (f"<div class=card{bs}><h2>{title}</h2>{body}"
                 + (guide_img(img, cap) if img else "") + "</div>")
 
-    intro = ("<div class=card><h2>패밀리 파트너스 사용법</h2>"
-             "<p class=empty>운영진에게 받은 '내 작업실' 비밀 링크로 들어와 매일 활동합니다. "
-             "아래 3단계만 따라 하면 됩니다.</p></div>")
-    body = intro + (
-        step("1) 내 작업실에서 매일 글 제출",
-             ["운영진이 카톡으로 보내준 <b>내 작업실 링크</b>(…/me?t=…)를 누르고 <b>북마크</b>하세요. 비밀번호 없습니다.",
-              "스레드에 글 1건 발행 → 게시물 링크 복사 → 작업실 '오늘 글 제출' 칸에 붙여넣고 제출. <b>제출이 곧 출석.</b>",
-              "⚠️ 매일 1건, 주말 없음. 1회라도 빠지면 즉시 강퇴 + 그 달 수익 몰수."],
-             "p1.png", "내 작업실 — 오늘 상태·연속일·글 제출")
-        + step("2) 자료실에서 사진·영상 받기",
-               ["글에 쓸 사진·영상·자료집은 <b>📁 자료실</b>에서 다운로드해 본인 콘텐츠에 활용하세요."],
-               "p2.png", "자료실 — 사진·영상 다운로드")
-        + step("3) 인증보드로 동기부여",
-               ["<b>🏆 전체 인증 보드</b>에서 동료들이 며칠째 달리는지 투명하게 보입니다. 같이 달려요."],
-               "p3.png", "전체 인증 보드")
+    intro = ("<div class=card style='border:2px solid var(--acc)'>"
+             "<h2>📖 패밀리 파트너스 사용법</h2>"
+             "<p class=empty>처음 <b>STEP 1~4</b>만 한 번 세팅하면, 그 다음부터는 "
+             "<b>매일 글감 1건 올리고 제출</b>하면 끝입니다. 화면 그대로 캡처해 뒀으니 따라만 하세요.</p></div>")
+
+    # 가장 많이 막히는 3가지 — 먼저 못 박기
+    pitfalls = (
+        "<div class=card style='border:2px solid var(--red)'>"
+        "<h2 class=b-red>⚠️ 제일 많이 틀리는 3가지 (꼭 먼저 읽기)</h2>"
+        "<p style='margin:6px 0'><b>1. 공지는 카톡에 자동으로 안 올라갑니다.</b> "
+        "작업실 공지를 <b>[📋 복사] → 내 카톡방 ‘공지’에 직접 붙여넣기</b> 해야 합니다.</p>"
+        "<p style='margin:6px 0'><b>2. STEP3에서 판매링크를 저장하면 공지 ‘내용’이 바뀝니다.</b> "
+        "<span class=b-red>바뀐 공지를 ‘다시 복사’해서 내 카톡방 공지를 교체하세요.</span> "
+        "카톡방 공지는 저절로 안 바뀝니다. (옛날 공지 그대로 두는 실수 제일 많음)</p>"
+        "<p style='margin:6px 0'><b>3. 영상은 꼭 다운로드해서 같이 올리세요.</b> "
+        "글(텍스트)만 베끼고 영상 빼먹으면 반응이 안 옵니다.</p></div>")
+
+    body = intro + pitfalls + (
+        step("0) 가입하고 ‘내 작업실’ 링크 저장",
+             ["운영진이 준 링크로 들어가 <b>성함·연락처·유형</b> 선택 후 가입하세요.",
+              "가입하면 <b>나만의 작업실</b>이 생깁니다. 그 주소를 <b>카톡 ‘나와의 채팅’에 저장(북마크)</b>하세요. "
+              "잃어버려도 ‘내 작업실 찾기’로 다시 들어옵니다."],
+             "g_join.png", "가입 화면")
+        + step("STEP 1. 스레드 계정 만들기",
+               ["<b>인스타그램을 먼저</b> 만들어야 스레드가 됩니다. 그다음 스레드 앱에서 새 계정 생성.",
+                "📷 <b>고화질 업로드 꼭 켜기:</b> 우측 상단 ☰ → 계정 → 미디어 → ‘고화질로 업로드’ 체크. (안 하면 영상 깨짐)",
+                "프로필 소개글을 <b>그대로 복붙</b>하고, 만든 <b>아이디를 입력 → 저장</b>."],
+               "g_step1.png", "STEP 1 화면")
+        + step("STEP 2. 오픈톡방 만들기 (제일 헷갈리는 단계)",
+               ["카톡 오픈채팅(그룹) 개설 → <b>방 프로필 닉네임을 ‘AIMAX 매니저 (성함)’</b>로 설정.",
+                "방 제목·소개를 그대로 복붙.",
+                "<b>[📋 공지 복사]</b> 누르고 → <b>내 카톡방 ‘공지’에 직접 붙여넣기.</b> "
+                "<span class=b-red>(카톡에 자동으로 안 올라갑니다!)</span>",
+                "만든 <b>오픈톡방 링크를 입력 → 저장</b>."],
+               "g_step2.png", "STEP 2 화면", border="var(--yel)")
+        + step("STEP 3. 판매 링크 넣기 + 공지 다시 복사 ★",
+               ["운영진에게 받은 <b>상품별 판매링크</b>를 입력하고 <b>저장</b>하세요. (이 링크로 들어온 결제가 내 정산)",
+                "저장하면 <b>STEP 2 공지에 링크가 자동으로 채워집니다.</b>",
+                "<span class=b-red><b>★ 그다음이 중요: 바뀐 공지를 ‘다시 복사’해서 내 카톡방 공지를 교체하세요.</b> "
+                "내 카톡방 공지는 저절로 안 바뀝니다.</span>"],
+               "g_step3.png", "STEP 3 화면", border="var(--red)")
+        + step("STEP 4. 매일 콘텐츠 올리고 제출",
+               ["‘오늘 올릴 글감’의 <b>본문 복사</b> + <b>영상/사진 다운로드</b> → 스레드에 함께 올리기.",
+                "<b>댓글·반응이 오면 → 내 오픈톡방 링크로 유도</b>(대댓글). 모르면 운영진이 대신 답변.",
+                "발행한 <b>링크를 ‘오늘 글 제출’에 붙여넣기 = 출석</b>. (카톡 말고 작업실에 제출!)"],
+               "g_step4.png", "STEP 4 화면")
+        + step("매일 루틴 — ‘오늘 올릴 글감’",
+               ["작업실 ‘오늘 올릴 글감’은 <b>최신 1건만</b> 뜹니다. <b>이걸 올리세요</b> (어제 거 올리면 안 됨).",
+                "예전 글감은 ‘지난 글감 전체보기’에서만 확인하세요."],
+               "g_drop.png", "오늘 올릴 글감 — 본문 복사 + 영상 다운로드")
+        + step("매일 루틴 — 출석(글 제출)",
+               ["스레드에 올린 <b>게시물 링크를 여기 붙여넣고 제출</b>하면 그날 출석 처리됩니다.",
+                "⚠️ <b>매일 1건, 주말 없음.</b> 한 번이라도 빠지면 자정에 강퇴됩니다."],
+               "g_submit.png", "오늘 글 제출")
     )
-    return shell_portal("사용법", "단계별 안내", body)
+
+    faq = (
+        "<div class=card><h2>❓ 자주 묻는 질문</h2>"
+        "<p style='margin:6px 0'><b>Q. 쓸 글감이 어디 있어요?</b><br>작업실 ‘오늘 올릴 글감’ / 전체는 ‘지난 글감 전체보기’.</p>"
+        "<p style='margin:6px 0'><b>Q. 공지가 카톡에 안 올라가요.</b><br>자동 아님. 복사해서 내 방 공지에 직접 붙여넣기.</p>"
+        "<p style='margin:6px 0'><b>Q. 링크 저장했는데 카톡방 공지가 그대로예요.</b><br>저장하면 ‘작업실 공지’만 바뀝니다. "
+        "그걸 다시 복사해서 카톡방 공지를 직접 교체하세요.</p>"
+        "<p style='margin:6px 0'><b>Q. 드라이브 영상이 안 보여요.</b><br>‘열어서 다운로드’ 버튼 눌러 받으세요.</p>"
+        "<p style='margin:6px 0'><b>Q. 댓글 달렸는데 뭐 보내요?</b><br>내 오픈톡방 초대 링크.</p>"
+        "<p style='margin:6px 0'><b>Q. 인스타 안 만들어도 돼요?</b><br>안 됩니다. 인스타가 있어야 스레드가 생성돼요.</p>"
+        "<p style='margin:6px 0'><b>Q. 제출은 어디다 해요?</b><br>카톡 말고 작업실 ‘오늘 글 제출’.</p></div>")
+    return shell_portal("사용법", "처음 세팅 + 매일 루틴", body + faq, token)
 
 
 def view_login(first_set: bool, err: str = "") -> bytes:
@@ -1295,7 +1374,8 @@ class Handler(BaseHTTPRequestHandler):
                 conn = db.connect()
                 core.update_links(conn, token, links)
                 conn.close()
-                return self._redirect(f"/me?t={token}&saved2=1")
+                # 링크 저장 → 공지가 바뀌었으니 '다시 복사' 안내 + STEP3 공지블록으로 이동
+                return self._redirect(f"/me?t={token}&saved2=links#공지")
             if u.path == "/reject":  # 운영자 제출 무효 처리
                 conn = db.connect()
                 core.reject_submission(conn, int(f.get("id", 0)), (f.get("reason") or "").strip() or None)
@@ -1442,7 +1522,7 @@ class Handler(BaseHTTPRequestHandler):
                 self.end_headers()
                 return
             if u.path == "/guide":
-                return self._send(view_guide())
+                return self._send(view_guide(qs))
             if u.path.startswith("/guide-img/"):
                 return self._guide_img(u.path[len("/guide-img/"):])
             if u.path == "/" and not self._admin_ok():
