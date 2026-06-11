@@ -566,9 +566,28 @@ def drops_on(conn, d: date) -> list[sqlite3.Row]:
 
 
 def all_drops(conn, limit: int = 365) -> list[sqlite3.Row]:
-    """전체 글감 — 최신 날짜부터(피드/아카이브용)."""
+    """전체 글감 — 최신 날짜부터(관리자/아카이브용, 예약분 포함)."""
     return conn.execute(
         "SELECT * FROM drops ORDER BY drop_date DESC, id DESC LIMIT ?", (limit,)
+    ).fetchall()
+
+
+def published_drops(conn, as_of: date, limit: int = 365) -> list[sqlite3.Row]:
+    """공개된 글감만 — drop_date <= 오늘(최신순). 미래(예약) 글감 제외.
+
+    drop_date 는 'YYYY-MM-DD' 텍스트라 사전식 비교 = 날짜 비교(SQLite/PG 공통).
+    """
+    return conn.execute(
+        "SELECT * FROM drops WHERE drop_date <= ? ORDER BY drop_date DESC, id DESC LIMIT ?",
+        (iso(as_of), limit),
+    ).fetchall()
+
+
+def scheduled_drops(conn, as_of: date, limit: int = 365) -> list[sqlite3.Row]:
+    """예약 글감 — drop_date > 오늘(가까운 날짜부터). 관리자 큐용."""
+    return conn.execute(
+        "SELECT * FROM drops WHERE drop_date > ? ORDER BY drop_date ASC, id ASC LIMIT ?",
+        (iso(as_of), limit),
     ).fetchall()
 
 

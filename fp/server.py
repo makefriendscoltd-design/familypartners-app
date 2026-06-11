@@ -304,13 +304,42 @@ def view_dashboard(qs) -> str:
 
     done = rows(done_list, "b-grn", done_meta)
     undone = rows(undone_list, "b-yel", undone_meta)
+    scheduled = core.scheduled_drops(conn, as_of)
     conn.close()
+
+    # 예약된 글감 큐 — 미래 날짜로 등록된 글감(날짜 되면 자동 공개)
+    sched_card = ""
+    if scheduled:
+        items = []
+        for r in scheduled:
+            try:
+                dd = (core.parse_date(r["drop_date"]) - as_of).days
+            except Exception:
+                dd = 0
+            items.append(
+                f"<div class=row><span class=hd>📅 {esc(r['drop_date'])} "
+                f"<b class=b-yel>D-{dd}</b></span>"
+                f"<span class=nm style='min-width:0;margin-left:6px'>{esc(r['title'])}</span>"
+                f"<span class=pill style='margin-left:auto'>"
+                f"{DROP_TYPE.get(r['dtype'], r['dtype'])}</span>"
+                f"<form method=post action=/op/drop-del style='display:inline;margin:0 0 0 10px' "
+                f"onsubmit=\"return confirm('이 예약 글감을 삭제할까요?')\">"
+                f"<input type=hidden name=id value={r['id']}>"
+                f"<input type=hidden name=back value='/'>"
+                f"<button class=ghost style='color:var(--red)'>삭제</button></form></div>")
+        sched_card = (
+            "<div class=card style='border-color:var(--yel)'>"
+            f"<h2 class=b-yel>🗓️ 예약된 글감 — {len(scheduled)}건 "
+            "<span class=pill>날짜 되면 자동 공개</span></h2>"
+            "<p class=empty style='margin:-4px 0 8px'>미래 날짜로 등록된 글감입니다. "
+            "그 날짜 전까지는 피드·작업실에 <b>안 보이고</b>, 당일 자동으로 공개됩니다.</p>"
+            + "".join(items) + "</div>")
 
     enforce_note = ("" if not kick_n else
                     f"<p class=empty>⚠️ 어제 빵꾸 {kick_n}명(강퇴 대상) — "
                     "<a class=lk href='/enforce'>강퇴 집행</a> 또는 터미널 "
                     "<code>python -m fp enforce --yes</code></p>")
-    return (flash + drop_form() + quick_actions() +
+    return (flash + drop_form() + sched_card + quick_actions() +
             f"<p class=pill>{b['date']} 기준 (자정~다음날 자정, KST)</p>{kpi}"
             f"<div class=card><h2>✅ 오늘 완료(미션완료) — {len(done_list)}명</h2>{done}</div>"
             f"<div class=card><h2>⏳ 미이행자 — 오늘 아직 미제출 {len(undone_list)}명</h2>{undone}"
@@ -435,7 +464,7 @@ def _drop_thumb(conn, assets_text: str | None) -> str | None:
 def view_feed(qs) -> bytes:
     """공개 글감 피드 — 지난 콘텐츠 전체(최신순). 로그인 없이 누구나 열람."""
     conn = db.connect()
-    rows = core.all_drops(conn, 365)
+    rows = core.published_drops(conn, core.today(), 365)
     tiles, modals = [], []
     for r in rows:
         did = f"d{r['id']}"
@@ -681,8 +710,8 @@ def view_me(qs) -> bytes | None:
               f"<button>제출</button></form>"
               f"<p class=empty>제출이 곧 출석입니다.</p></div>")
 
-    # 오늘 올릴 글감 — 최신 등록 1건만(어제 거 잘못 올리는 사고 방지). 나머지는 피드로.
-    recent = core.all_drops(conn, 30)
+    # 오늘 올릴 글감 — 공개된 것 중 최신 1건만(미래 예약분은 그 날짜 전까지 숨김).
+    recent = core.published_drops(conn, core.today(), 30)
     feed_link = (f"<a class=lk href='/feed?t={esc(token)}'>"
                  "📚 지난 글감 전체보기 →</a>")
     if recent:
@@ -1533,7 +1562,7 @@ class Handler(BaseHTTPRequestHandler):
                 conn = db.connect()
                 core.delete_drop(conn, int(f.get("id", 0)))
                 conn.close()
-                return self._redirect("/feed")
+                return self._redirect(f.get("back") or "/feed")
             if u.path == "/op/delete":  # 운영자: 파트너 완전 삭제
                 conn = db.connect()
                 row = conn.execute("SELECT name FROM partners WHERE id=?",
