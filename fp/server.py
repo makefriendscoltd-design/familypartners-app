@@ -20,7 +20,7 @@ from http.client import HTTPMessage
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, quote, urlparse
 
-from . import core, db, messages, onboard, products
+from . import core, db, messages, onboard, ppurio, products
 
 LIB_DIR = db.ROOT / "assets" / "library"
 GUIDE_DIR = db.ROOT / "assets" / "guide"
@@ -145,6 +145,19 @@ button.ghost{background:#fff;color:var(--acc);border:1px solid var(--ln);padding
 font-weight:700;text-decoration:none;font-size:15px}
 .dl-btn:hover{filter:brightness(1.08)}
 .dl-warn{margin:10px 0 0;color:var(--red);font-size:13px;font-weight:600}
+.timeline{position:relative;margin-top:6px}
+.timeline::before{content:'';position:absolute;left:60px;top:8px;bottom:8px;width:2px;background:var(--ln)}
+.tl-item{position:relative;padding-left:84px;margin-bottom:20px}
+.tl-day{position:absolute;left:0;top:1px;width:50px;text-align:right;line-height:1.15}
+.tl-day .d{display:block;font-size:22px;font-weight:800;color:var(--txt)}
+.tl-day .m{display:block;font-size:12px;color:var(--mut);font-weight:600}
+.tl-day .w{display:block;font-size:11px;color:var(--mut)}
+.tl-dot{position:absolute;left:54px;top:6px;width:14px;height:14px;border-radius:50%;
+background:var(--acc);border:3px solid var(--bg);box-shadow:0 0 0 1px var(--ln)}
+.tl-dot.dot-ai{background:var(--grn)}.tl-dot.dot-eg{background:var(--yel)}
+.tl-body .card{margin-bottom:10px}.tl-body .card:last-child{margin-bottom:0}
+@media(max-width:560px){.timeline::before{left:44px}.tl-item{padding-left:64px}
+.tl-day{width:38px}.tl-day .d{font-size:19px}.tl-dot{left:38px}}
 """
 
 
@@ -370,38 +383,66 @@ COPY_JS = (
 )
 
 DROP_TYPE = {"ai": "AI 콘텐츠", "marketing": "마케팅 자료", "evergreen": "상시 자료"}
+DOT_CLS = {"ai": "dot-ai", "marketing": "", "evergreen": "dot-eg"}
+WEEKDAY_KO = "월화수목금토일"
+
+
+def _feed_day_marker(date_str: str) -> str:
+    """YYYY-MM-DD → 타임라인 왼쪽 날짜 칩(일/월/요일)."""
+    try:
+        d = core.parse_date(date_str)
+        return (f"<div class=tl-day><span class=d>{d.day}</span>"
+                f"<span class=m>{d.month}월</span>"
+                f"<span class=w>{WEEKDAY_KO[d.weekday()]}</span></div>")
+    except Exception:
+        return f"<div class=tl-day><span class=m>{esc(date_str)}</span></div>"
 
 
 def view_feed(qs) -> bytes:
     """공개 글감 피드 — 지난 콘텐츠 전체(최신순). 로그인 없이 누구나 열람."""
     conn = db.connect()
     rows = core.all_drops(conn, 365)
-    cards = []
+    # 같은 날짜끼리 묶어 타임라인 노드 1개로(최신순 정렬은 그대로 유지).
+    groups: list[tuple[str, list]] = []
     for r in rows:
-        media = ""
-        if r["assets"]:
-            parts = [render_asset(conn, a) for a in r["assets"].splitlines()]
-            parts = [p for p in parts if p]
-            if parts:
-                solo = " solo" if len(parts) == 1 else ""
-                media = f"<div class='media-grid{solo}'>{''.join(parts)}</div>"
-        body = (f"<pre>{esc(r['body'])}</pre>"
-                "<button type=button class=ghost onclick=fpCopy(this)>📋 본문 복사</button>"
-                ) if (r["body"] or "").strip() else ""
-        cards.append(
-            f"<div class=card><h2>{esc(r['title'])}"
-            f"<span class=pill>{esc(DROP_TYPE.get(r['dtype'], r['dtype']))}</span></h2>"
-            f"<div class=feed-date>📅 {esc(r['drop_date'])}</div>"
-            f"{body}{media}</div>")
+        if groups and groups[-1][0] == r["drop_date"]:
+            groups[-1][1].append(r)
+        else:
+            groups.append((r["drop_date"], [r]))
+
+    nodes = []
+    for date_str, drs in groups:
+        cards = []
+        for r in drs:
+            media = ""
+            if r["assets"]:
+                parts = [render_asset(conn, a) for a in r["assets"].splitlines()]
+                parts = [p for p in parts if p]
+                if parts:
+                    solo = " solo" if len(parts) == 1 else ""
+                    media = f"<div class='media-grid{solo}'>{''.join(parts)}</div>"
+            body = (f"<pre>{esc(r['body'])}</pre>"
+                    "<button type=button class=ghost onclick=fpCopy(this)>📋 본문 복사</button>"
+                    ) if (r["body"] or "").strip() else ""
+            cards.append(
+                f"<div class=card><h2>{esc(r['title'])}"
+                f"<span class=pill>{esc(DROP_TYPE.get(r['dtype'], r['dtype']))}</span></h2>"
+                f"{body}{media}</div>")
+        dot = DOT_CLS.get(drs[0]["dtype"], "")
+        nodes.append(
+            f"<div class=tl-item>{_feed_day_marker(date_str)}"
+            f"<span class='tl-dot {dot}'></span>"
+            f"<div class=tl-body>{''.join(cards)}</div></div>")
     conn.close()
-    if not cards:
-        cards = ["<div class=card><div class=empty>아직 올라온 글감이 없습니다.</div></div>"]
+
+    body_html = (f"<div class=timeline>{''.join(nodes)}</div>" if nodes
+                 else "<div class=card><div class=empty>아직 올라온 글감이 없습니다.</div></div>")
     intro = ("<div class=card style='border-color:var(--acc)'><h2>📚 글감 피드</h2>"
              "<p class=empty>매일 올라오는 콘텐츠 보관함입니다. <b>늦게 들어와도 1일차부터 전부</b> 볼 수 있어요. "
              "글은 <b>복사</b> 버튼으로 가져가 베끼거나 변형해서 쓰고, 사진·영상은 눌러서 받으세요.</p></div>")
     token = (qs.get("t", [None])[0])
     return shell_portal("글감 피드", "매일 콘텐츠 보관함",
-                        COPY_JS + intro + "".join(cards), token)
+                        COPY_JS + intro + body_html, token)
 
 
 def view_drop(qs) -> str:
@@ -1051,24 +1092,80 @@ def view_library(qs) -> str:
     return flash + upload + listing
 
 
-def view_reminders() -> str:
+def _send_reminder_sms(jobs) -> tuple[int, int, int]:
+    """jobs: [(PartnerStatus, 메시지본문)] → (성공수, 실패수, 번호없음수). 1명씩 개별 발송."""
+    sent = fail = noaddr = 0
+    for stat, msg in jobs:
+        if not ppurio.normalize_phone(stat.row["contact"] or ""):
+            noaddr += 1
+            continue
+        try:
+            ppurio.send_sms([{"phone": stat.row["contact"], "name": stat.name}], msg)
+            sent += 1
+        except Exception:
+            fail += 1
+    return sent, fail, noaddr
+
+
+def _sms_btn(pid: int, phone: str | None, kind: str) -> str:
+    """미인증자 1명에게 문자 발송 버튼(뿌리오 설정 + 유효 번호 있을 때만)."""
+    if not ppurio.is_configured():
+        return ""
+    if not ppurio.normalize_phone(phone or ""):
+        return "<p class=empty style='margin-top:8px'>📵 연락처가 없거나 휴대폰 형식이 아니라 문자 발송 불가</p>"
+    return (f"<form method=post action=/op/sms style='margin-top:8px'>"
+            f"<input type=hidden name=pid value={pid}>"
+            f"<input type=hidden name=kind value={kind}>"
+            f"<button class=ghost>📨 이 분께 문자 발송</button></form>")
+
+
+def view_reminders(qs=None) -> str:
+    qs = qs or {}
     conn = db.connect()
     b = core.daily_board(conn, core.today())
     conn.close()
+    targets = b["at_risk"] + b["kick"]
+
+    head = "<div class=card><h2>보낼 메시지</h2>"
+    if qs.get("sent") is not None:
+        sent = qs.get("sent", ["0"])[0]
+        fail = qs.get("fail", ["0"])[0]
+        no = qs.get("no", ["0"])[0]
+        head = ("<div class=card style='border-color:var(--grn)'>"
+                f"<b class=b-grn>📨 문자 발송 완료 — 성공 {esc(sent)}건"
+                f"{f', 실패 {esc(fail)}건' if fail != '0' else ''}"
+                f"{f', 번호없음 {esc(no)}명' if no != '0' else ''}.</b></div>"
+                "<div class=card><h2>보낼 메시지</h2>")
+    if ppurio.is_configured():
+        n_send = sum(1 for s in targets if ppurio.normalize_phone(s.row["contact"] or ""))
+        bulk = (f"<form method=post action=/op/sms-all style='margin-top:10px'>"
+                f"<button{' disabled' if not n_send else ''}>"
+                f"📨 미인증자 전체에게 문자 발송 ({n_send}명)</button></form>"
+                "<p class=empty>독려는 위험군에게, 경고는 어제 빵꾸난 분께 자동 분기됩니다. "
+                "휴대폰 번호가 없는 분은 건너뜁니다.</p>") if targets else ""
+        head += ("<p class=empty>아래 칸을 복사해 카톡으로 보내거나, 버튼으로 바로 문자(뿌리오) 발송하세요.</p>"
+                 + bulk + "</div>")
+    else:
+        head += ("<p class=empty>아래 칸을 복사해 카톡으로 보내세요. "
+                 "문자(뿌리오) 자동발송을 켜려면 프로젝트 루트 <code>.env</code> 에 "
+                 "<code>PPURIO_ACCOUNT_ID</code>·<code>PPURIO_BASIC_AUTH</code>·"
+                 "<code>PPURIO_CALLER_NUMBER</code> 를 넣으세요.</p></div>")
+
     blocks = []
     for s in b["at_risk"]:
         tgt = s.row["contact"] or (s.handle or s.name)
         blocks.append(f"<div class=card><h2>{esc(s.name)} <span class=pill>{esc(tgt)} · 독려</span></h2>"
-                      f"<pre>{esc(messages.reminder(s.name, s.streak))}</pre></div>")
+                      f"<pre>{esc(messages.reminder(s.name, s.streak))}</pre>"
+                      f"{_sms_btn(s.row['id'], s.row['contact'], 'remind')}</div>")
     for s in b["kick"]:
         tgt = s.row["contact"] or (s.handle or s.name)
         blocks.append(f"<div class=card style='border-color:var(--red)'>"
                       f"<h2>{esc(s.name)} <span class=pill>{esc(tgt)} · 경고</span></h2>"
-                      f"<pre>{esc(messages.warning(s.name))}</pre></div>")
+                      f"<pre>{esc(messages.warning(s.name))}</pre>"
+                      f"{_sms_btn(s.row['id'], s.row['contact'], 'warn')}</div>")
     if not blocks:
         blocks = ["<div class=card><div class=empty>보낼 메시지 없음 — 전원 오늘 완료 👍</div></div>"]
-    return ("<div class=card><h2>보낼 메시지</h2>"
-            "<p class=empty>아래 칸을 복사해 카톡으로 보내세요.</p></div>" + "".join(blocks))
+    return head + "".join(blocks)
 
 
 def view_enforce(qs) -> str:
@@ -1427,6 +1524,28 @@ class Handler(BaseHTTPRequestHandler):
                 done = core.enforce(conn, core.today(), dry_run=False)
                 conn.close()
                 return self._redirect(f"/enforce?done={len(done)}")
+            if u.path == "/op/sms":  # 운영자: 미인증자 1명에게 문자 발송
+                conn = db.connect()
+                b = core.daily_board(conn, core.today())
+                conn.close()
+                pid = (f.get("pid") or "").strip()
+                kind = (f.get("kind") or "remind").strip()
+                stat = next((s for s in (b["at_risk"] + b["kick"])
+                             if str(s.row["id"]) == pid), None)
+                if not stat:
+                    return self._redirect("/reminders")
+                msg = (messages.warning(stat.name) if kind == "warn"
+                       else messages.reminder(stat.name, stat.streak))
+                sent, fail, no = _send_reminder_sms([(stat, msg)])
+                return self._redirect(f"/reminders?sent={sent}&fail={fail}&no={no}")
+            if u.path == "/op/sms-all":  # 운영자: 미인증자 전체에게 문자 발송
+                conn = db.connect()
+                b = core.daily_board(conn, core.today())
+                conn.close()
+                jobs = [(s, messages.reminder(s.name, s.streak)) for s in b["at_risk"]]
+                jobs += [(s, messages.warning(s.name)) for s in b["kick"]]
+                sent, fail, no = _send_reminder_sms(jobs)
+                return self._redirect(f"/reminders?sent={sent}&fail={fail}&no={no}")
             if u.path == "/op/library-upload":  # 자료실: 파일 업로드
                 title = (f.get("title") or "").strip()
                 flist = files.get("file") or []
@@ -1520,7 +1639,7 @@ class Handler(BaseHTTPRequestHandler):
             elif u.path == "/":
                 body = shell("대시보드", view_dashboard(qs))
             elif u.path == "/reminders":
-                body = shell("보낼 메시지", view_reminders())
+                body = shell("보낼 메시지", view_reminders(qs))
             elif u.path == "/enforce":
                 body = shell("강퇴 집행", view_enforce(qs))
             elif u.path == "/review":

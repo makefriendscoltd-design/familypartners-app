@@ -18,7 +18,7 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-from . import core, db, messages, onboard, products
+from . import core, db, messages, onboard, ppurio, products
 
 _COLOR = sys.stdout.isatty()
 def _c(code):
@@ -162,6 +162,54 @@ def cmd_reminders(args):
     if not b["at_risk"] and not b["kick"]:
         _p("\n보낼 메시지 없음 — 전원 오늘 완료 👍")
     conn.close()
+
+
+def cmd_sms(args):
+    """뿌리오 문자 발송 — 설정 점검 / 테스트 발송 / 미인증자 일괄 발송."""
+    if not ppurio.is_configured():
+        _p(f"{C_RED}뿌리오 설정 없음{C_RESET} — 프로젝트 루트 .env 에 아래를 넣으세요:")
+        _p("  PPURIO_ACCOUNT_ID=...\n  PPURIO_BASIC_AUTH=...(계정:API키 Base64)\n  PPURIO_CALLER_NUMBER=...")
+        _p(f"{C_DIM}(클라우드 배포 시 PPURIO_PROXY_URL/PPURIO_PROXY_SECRET 추가){C_RESET}")
+        return
+    if args.check:
+        import os as _os
+        _p(f"{C_GREEN}설정 OK{C_RESET} — 엔드포인트 {ppurio._base()}, "
+           f"발신번호 {_os.environ.get('PPURIO_CALLER_NUMBER')}")
+        return
+    if args.to:
+        text = args.text or "[패밀리 파트너스] 테스트 문자입니다."
+        res = ppurio.send_sms([{"phone": args.to}], text)
+        _p(f"{C_GREEN}발송 완료{C_RESET} — {res['type']} {res['sent']}건"
+           + (f", 건너뜀 {res['skipped']}" if res['skipped'] else ""))
+        return
+    if args.remind:
+        conn = db.connect()
+        b = core.daily_board(conn, core.parse_date(args.date))
+        conn.close()
+        jobs = [(s, messages.reminder(s.name, s.streak)) for s in b["at_risk"]]
+        jobs += [(s, messages.warning(s.name)) for s in b["kick"]]
+        if not jobs:
+            _p("미인증자 없음 — 전원 오늘 완료 👍")
+            return
+        if not args.yes:
+            _p(f"{C_YEL}미인증자 {len(jobs)}명에게 문자 발송 예정.{C_RESET} "
+               "실제 발송하려면 --yes 를 붙이세요.")
+            for s, _m in jobs:
+                tgt = s.row["contact"] or "(번호없음)"
+                _p(f"  - {s.name}  {tgt}")
+            return
+        sent = fail = noaddr = 0
+        for s, msg in jobs:
+            if not ppurio.normalize_phone(s.row["contact"] or ""):
+                noaddr += 1; _p(f"{C_DIM}건너뜀(번호없음): {s.name}{C_RESET}"); continue
+            try:
+                ppurio.send_sms([{"phone": s.row["contact"], "name": s.name}], msg)
+                sent += 1; _p(f"{C_GREEN}발송: {s.name}{C_RESET}")
+            except Exception as e:
+                fail += 1; _p(f"{C_RED}실패: {s.name} — {e}{C_RESET}")
+        _p(f"\n성공 {sent} · 실패 {fail} · 번호없음 {noaddr}")
+        return
+    _p("사용법: fp sms --check | --to 010... [--text ...] | --remind [--date YYYY-MM-DD] [--yes]")
 
 
 def cmd_month(args):
@@ -393,6 +441,15 @@ def build_parser() -> argparse.ArgumentParser:
 
     mp = sub.add_parser("reminders", help="리마인더/경고 메시지 출력")
     mp.set_defaults(func=cmd_reminders); mp.add_argument("--date")
+
+    sm = sub.add_parser("sms", help="뿌리오 문자 발송(점검/테스트/미인증자 일괄)")
+    sm.set_defaults(func=cmd_sms)
+    sm.add_argument("--check", action="store_true", help="설정 점검만")
+    sm.add_argument("--to", help="테스트 발송 대상 번호")
+    sm.add_argument("--text", help="테스트 발송 본문")
+    sm.add_argument("--remind", action="store_true", help="오늘 미인증자 전체에게 발송")
+    sm.add_argument("--date", help="YYYY-MM-DD (기본 오늘)")
+    sm.add_argument("--yes", action="store_true", help="실제 발송(미지정 시 미리보기)")
 
     np = sub.add_parser("month", help="월간 달성 리포트"); np.set_defaults(func=cmd_month)
     np.add_argument("--month", help="YYYY-MM")
