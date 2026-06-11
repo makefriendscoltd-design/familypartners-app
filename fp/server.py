@@ -155,10 +155,12 @@ background:#d7e2f3 center/cover no-repeat;transition:transform .08s}
 .tile.txt.t-eg{background:linear-gradient(135deg,#fdf3e3,#f7e4c4)}
 .tile .ov{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;
 padding:10px;background:linear-gradient(to top,rgba(8,20,40,.72),rgba(8,20,40,0) 58%)}
-.tile.txt .ov{background:none;justify-content:flex-start}
+.tile.txt .ov{background:none;justify-content:flex-start;padding:38px 13px 13px}
 .tile .tt{color:#fff;font-weight:700;font-size:13px;line-height:1.35;
 display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-.tile.txt .tt{color:var(--txt)}
+.tile.txt .tt{color:var(--txt);font-size:15px;-webkit-line-clamp:2}
+.tile .bd{margin-top:8px;color:var(--mut);font-size:12px;line-height:1.45;white-space:normal;
+display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
 .tile .dd{position:absolute;top:8px;left:8px;background:rgba(8,20,40,.6);color:#fff;
 font-size:12px;font-weight:700;padding:3px 9px;border-radius:20px}
 .tile.txt .dd{background:var(--acc)}
@@ -443,14 +445,19 @@ def view_feed(qs) -> bytes:
             tcls = "tile"
             style = f" style=\"background-image:url('{esc(thumb)}')\""
             tag = ""
+            inner = f"<span class=tt>{esc(r['title'])}</span>"
         else:
             tcls = f"tile txt {TILE_BG.get(r['dtype'], '')}".rstrip()
             style = ""
             tag = "<span class=tag>🎬</span>" if has_assets else "<span class=tag>📝</span>"
+            prev = " ".join((r["body"] or "").split())
+            prev = (prev[:80] + "…") if len(prev) > 80 else prev
+            inner = (f"<span class=tt>{esc(r['title'])}</span>"
+                     + (f"<span class=bd>{esc(prev)}</span>" if prev else ""))
         tiles.append(
             f"<a class='{tcls}' href='#{did}'{style}>"
             f"<span class=dd>{_short_date(r['drop_date'])}</span>{tag}"
-            f"<span class=ov><span class=tt>{esc(r['title'])}</span></span></a>")
+            f"<span class=ov>{inner}</span></a>")
 
         media = ""
         if r["assets"]:
