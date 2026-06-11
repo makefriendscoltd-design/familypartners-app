@@ -174,6 +174,13 @@ padding:18px 20px 24px;position:relative}
 color:var(--mut);text-decoration:none;font-weight:700}
 .lb-close:hover{color:var(--red)}
 .lb-inner h2{display:block;margin:2px 40px 8px 0;font-size:16px}
+details.sched{border-top:1px solid var(--ln);padding:9px 0}
+details.sched summary{cursor:pointer;list-style:none;font-size:14px;line-height:1.7}
+details.sched summary::-webkit-details-marker{display:none}
+details.sched summary::before{content:'▸ ';color:var(--acc);font-weight:700}
+details.sched[open] summary::before{content:'▾ '}
+details.sched summary b{margin:0 4px}
+.sched-body{margin-top:10px;padding-left:14px;border-left:2px solid var(--ln)}
 """
 
 
@@ -304,10 +311,10 @@ def view_dashboard(qs) -> str:
 
     done = rows(done_list, "b-grn", done_meta)
     undone = rows(undone_list, "b-yel", undone_meta)
-    scheduled = core.scheduled_drops(conn, as_of)
-    conn.close()
 
-    # 예약된 글감 큐 — 미래 날짜로 등록된 글감(날짜 되면 자동 공개)
+    # 예약된 글감 큐 — 미래 날짜로 등록된 글감(날짜 되면 자동 공개).
+    # 제목을 누르면 본문·사진까지 펼쳐 관리자가 미리 검토 가능.
+    scheduled = core.scheduled_drops(conn, as_of)
     sched_card = ""
     if scheduled:
         items = []
@@ -316,24 +323,38 @@ def view_dashboard(qs) -> str:
                 dd = (core.parse_date(r["drop_date"]) - as_of).days
             except Exception:
                 dd = 0
+            media = ""
+            if r["assets"]:
+                parts = [render_asset(conn, a) for a in r["assets"].splitlines()]
+                parts = [p for p in parts if p]
+                if parts:
+                    solo = " solo" if len(parts) == 1 else ""
+                    media = f"<div class='media-grid{solo}'>{''.join(parts)}</div>"
+            body_html = (f"<pre>{esc(r['body'])}</pre>"
+                         "<button type=button class=ghost onclick=fpCopy(this)>📋 본문 복사</button>"
+                         ) if (r["body"] or "").strip() else "<p class=empty>본문 없음</p>"
             items.append(
-                f"<div class=row><span class=hd>📅 {esc(r['drop_date'])} "
-                f"<b class=b-yel>D-{dd}</b></span>"
-                f"<span class=nm style='min-width:0;margin-left:6px'>{esc(r['title'])}</span>"
-                f"<span class=pill style='margin-left:auto'>"
-                f"{DROP_TYPE.get(r['dtype'], r['dtype'])}</span>"
-                f"<form method=post action=/op/drop-del style='display:inline;margin:0 0 0 10px' "
+                "<details class=sched>"
+                f"<summary>📅 {esc(r['drop_date'])} <b class=b-yel>D-{dd}</b> "
+                f"<b>{esc(r['title'])}</b> "
+                f"<span class=pill>{DROP_TYPE.get(r['dtype'], r['dtype'])}</span></summary>"
+                f"<div class=sched-body>{body_html}{media}"
+                f"<form method=post action=/op/drop-del style='margin-top:12px' "
                 f"onsubmit=\"return confirm('이 예약 글감을 삭제할까요?')\">"
                 f"<input type=hidden name=id value={r['id']}>"
                 f"<input type=hidden name=back value='/'>"
-                f"<button class=ghost style='color:var(--red)'>삭제</button></form></div>")
+                f"<button class=ghost style='color:var(--red)'>🗑 이 예약 글감 삭제</button>"
+                f"</form></div></details>")
         sched_card = (
-            "<div class=card style='border-color:var(--yel)'>"
+            COPY_JS
+            + "<div class=card style='border-color:var(--yel)'>"
             f"<h2 class=b-yel>🗓️ 예약된 글감 — {len(scheduled)}건 "
             "<span class=pill>날짜 되면 자동 공개</span></h2>"
             "<p class=empty style='margin:-4px 0 8px'>미래 날짜로 등록된 글감입니다. "
-            "그 날짜 전까지는 피드·작업실에 <b>안 보이고</b>, 당일 자동으로 공개됩니다.</p>"
+            "그 날짜 전까지는 피드·작업실에 <b>안 보이고</b>, 당일 자동으로 공개됩니다. "
+            "<b>제목을 누르면 본문·사진이 펼쳐집니다.</b></p>"
             + "".join(items) + "</div>")
+    conn.close()
 
     enforce_note = ("" if not kick_n else
                     f"<p class=empty>⚠️ 어제 빵꾸 {kick_n}명(강퇴 대상) — "
