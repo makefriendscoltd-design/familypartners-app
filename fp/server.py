@@ -145,19 +145,33 @@ button.ghost{background:#fff;color:var(--acc);border:1px solid var(--ln);padding
 font-weight:700;text-decoration:none;font-size:15px}
 .dl-btn:hover{filter:brightness(1.08)}
 .dl-warn{margin:10px 0 0;color:var(--red);font-size:13px;font-weight:600}
-.timeline{position:relative;margin-top:6px}
-.timeline::before{content:'';position:absolute;left:60px;top:8px;bottom:8px;width:2px;background:var(--ln)}
-.tl-item{position:relative;padding-left:84px;margin-bottom:20px}
-.tl-day{position:absolute;left:0;top:1px;width:50px;text-align:right;line-height:1.15}
-.tl-day .d{display:block;font-size:22px;font-weight:800;color:var(--txt)}
-.tl-day .m{display:block;font-size:12px;color:var(--mut);font-weight:600}
-.tl-day .w{display:block;font-size:11px;color:var(--mut)}
-.tl-dot{position:absolute;left:54px;top:6px;width:14px;height:14px;border-radius:50%;
-background:var(--acc);border:3px solid var(--bg);box-shadow:0 0 0 1px var(--ln)}
-.tl-dot.dot-ai{background:var(--grn)}.tl-dot.dot-eg{background:var(--yel)}
-.tl-body .card{margin-bottom:10px}.tl-body .card:last-child{margin-bottom:0}
-@media(max-width:560px){.timeline::before{left:44px}.tl-item{padding-left:64px}
-.tl-day{width:38px}.tl-day .d{font-size:19px}.tl-dot{left:38px}}
+.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:8px;margin-top:6px}
+.tile{position:relative;aspect-ratio:1/1;border-radius:12px;overflow:hidden;
+border:1px solid var(--ln);text-decoration:none;display:block;
+background:#d7e2f3 center/cover no-repeat;transition:transform .08s}
+.tile:hover{transform:scale(1.015)}
+.tile.txt{background:linear-gradient(135deg,#eef4fc,#d8e6fb)}
+.tile.txt.t-ai{background:linear-gradient(135deg,#eafaf0,#cdeedd)}
+.tile.txt.t-eg{background:linear-gradient(135deg,#fdf3e3,#f7e4c4)}
+.tile .ov{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;
+padding:10px;background:linear-gradient(to top,rgba(8,20,40,.72),rgba(8,20,40,0) 58%)}
+.tile.txt .ov{background:none;justify-content:flex-start}
+.tile .tt{color:#fff;font-weight:700;font-size:13px;line-height:1.35;
+display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.tile.txt .tt{color:var(--txt)}
+.tile .dd{position:absolute;top:8px;left:8px;background:rgba(8,20,40,.6);color:#fff;
+font-size:12px;font-weight:700;padding:3px 9px;border-radius:20px}
+.tile.txt .dd{background:var(--acc)}
+.tile .tag{position:absolute;top:7px;right:9px;font-size:15px;filter:drop-shadow(0 1px 2px rgba(0,0,0,.4))}
+.lightbox{position:fixed;inset:0;background:rgba(8,20,40,.72);display:none;z-index:50;
+overflow:auto;padding:28px 14px}
+.lightbox:target{display:block}
+.lb-inner{background:var(--card);border-radius:14px;max-width:580px;margin:0 auto;
+padding:18px 20px 24px;position:relative}
+.lb-close{position:absolute;top:6px;right:14px;font-size:26px;line-height:1;
+color:var(--mut);text-decoration:none;font-weight:700}
+.lb-close:hover{color:var(--red)}
+.lb-inner h2{display:block;margin:2px 40px 8px 0;font-size:16px}
 """
 
 
@@ -383,63 +397,85 @@ COPY_JS = (
 )
 
 DROP_TYPE = {"ai": "AI 콘텐츠", "marketing": "마케팅 자료", "evergreen": "상시 자료"}
-DOT_CLS = {"ai": "dot-ai", "marketing": "", "evergreen": "dot-eg"}
-WEEKDAY_KO = "월화수목금토일"
+TILE_BG = {"ai": "t-ai", "marketing": "", "evergreen": "t-eg"}
 
 
-def _feed_day_marker(date_str: str) -> str:
-    """YYYY-MM-DD → 타임라인 왼쪽 날짜 칩(일/월/요일)."""
+def _short_date(date_str: str) -> str:
     try:
         d = core.parse_date(date_str)
-        return (f"<div class=tl-day><span class=d>{d.day}</span>"
-                f"<span class=m>{d.month}월</span>"
-                f"<span class=w>{WEEKDAY_KO[d.weekday()]}</span></div>")
+        return f"{d.month}/{d.day}"
     except Exception:
-        return f"<div class=tl-day><span class=m>{esc(date_str)}</span></div>"
+        return esc(date_str)
+
+
+def _drop_thumb(conn, assets_text: str | None) -> str | None:
+    """글감 첨부에서 갤러리 썸네일로 쓸 이미지 URL 1개 추출(없으면 None)."""
+    for a in (assets_text or "").splitlines():
+        a = a.strip()
+        if not a:
+            continue
+        if a.startswith("m:") and a[2:].isdigit():
+            row = core.get_library(conn, int(a[2:]))
+            if row and row["kind"] == "file":
+                ext = os.path.splitext((row["orig_name"] or "").lower())[1]
+                if ext in IMG_EXT:
+                    return f"/m/{row['id']}"
+            continue
+        yt = _youtube_id(a)
+        if yt:
+            return f"https://img.youtube.com/vi/{yt}/hqdefault.jpg"
+        ext = os.path.splitext(a.lower().split("?")[0])[1]
+        if ext in IMG_EXT:
+            return a
+    return None
 
 
 def view_feed(qs) -> bytes:
     """공개 글감 피드 — 지난 콘텐츠 전체(최신순). 로그인 없이 누구나 열람."""
     conn = db.connect()
     rows = core.all_drops(conn, 365)
-    # 같은 날짜끼리 묶어 타임라인 노드 1개로(최신순 정렬은 그대로 유지).
-    groups: list[tuple[str, list]] = []
+    tiles, modals = [], []
     for r in rows:
-        if groups and groups[-1][0] == r["drop_date"]:
-            groups[-1][1].append(r)
+        did = f"d{r['id']}"
+        thumb = _drop_thumb(conn, r["assets"])
+        has_assets = bool((r["assets"] or "").strip())
+        if thumb:
+            tcls = "tile"
+            style = f" style=\"background-image:url('{esc(thumb)}')\""
+            tag = ""
         else:
-            groups.append((r["drop_date"], [r]))
+            tcls = f"tile txt {TILE_BG.get(r['dtype'], '')}".rstrip()
+            style = ""
+            tag = "<span class=tag>🎬</span>" if has_assets else "<span class=tag>📝</span>"
+        tiles.append(
+            f"<a class='{tcls}' href='#{did}'{style}>"
+            f"<span class=dd>{_short_date(r['drop_date'])}</span>{tag}"
+            f"<span class=ov><span class=tt>{esc(r['title'])}</span></span></a>")
 
-    nodes = []
-    for date_str, drs in groups:
-        cards = []
-        for r in drs:
-            media = ""
-            if r["assets"]:
-                parts = [render_asset(conn, a) for a in r["assets"].splitlines()]
-                parts = [p for p in parts if p]
-                if parts:
-                    solo = " solo" if len(parts) == 1 else ""
-                    media = f"<div class='media-grid{solo}'>{''.join(parts)}</div>"
-            body = (f"<pre>{esc(r['body'])}</pre>"
-                    "<button type=button class=ghost onclick=fpCopy(this)>📋 본문 복사</button>"
-                    ) if (r["body"] or "").strip() else ""
-            cards.append(
-                f"<div class=card><h2>{esc(r['title'])}"
-                f"<span class=pill>{esc(DROP_TYPE.get(r['dtype'], r['dtype']))}</span></h2>"
-                f"{body}{media}</div>")
-        dot = DOT_CLS.get(drs[0]["dtype"], "")
-        nodes.append(
-            f"<div class=tl-item>{_feed_day_marker(date_str)}"
-            f"<span class='tl-dot {dot}'></span>"
-            f"<div class=tl-body>{''.join(cards)}</div></div>")
+        media = ""
+        if r["assets"]:
+            parts = [render_asset(conn, a) for a in r["assets"].splitlines()]
+            parts = [p for p in parts if p]
+            if parts:
+                solo = " solo" if len(parts) == 1 else ""
+                media = f"<div class='media-grid{solo}'>{''.join(parts)}</div>"
+        body = (f"<pre>{esc(r['body'])}</pre>"
+                "<button type=button class=ghost onclick=fpCopy(this)>📋 본문 복사</button>"
+                ) if (r["body"] or "").strip() else ""
+        modals.append(
+            f"<div id={did} class=lightbox><div class=lb-inner>"
+            f"<a class=lb-close href='#' title='닫기'>✕</a>"
+            f"<h2>{esc(r['title'])} "
+            f"<span class=pill>{esc(DROP_TYPE.get(r['dtype'], r['dtype']))}</span></h2>"
+            f"<div class=feed-date>📅 {esc(r['drop_date'])}</div>"
+            f"{body}{media}</div></div>")
     conn.close()
 
-    body_html = (f"<div class=timeline>{''.join(nodes)}</div>" if nodes
+    body_html = (f"<div class=gallery>{''.join(tiles)}</div>{''.join(modals)}" if tiles
                  else "<div class=card><div class=empty>아직 올라온 글감이 없습니다.</div></div>")
     intro = ("<div class=card style='border-color:var(--acc)'><h2>📚 글감 피드</h2>"
              "<p class=empty>매일 올라오는 콘텐츠 보관함입니다. <b>늦게 들어와도 1일차부터 전부</b> 볼 수 있어요. "
-             "글은 <b>복사</b> 버튼으로 가져가 베끼거나 변형해서 쓰고, 사진·영상은 눌러서 받으세요.</p></div>")
+             "<b>썸네일을 누르면</b> 본문(복사)·사진·영상이 펼쳐집니다.</p></div>")
     token = (qs.get("t", [None])[0])
     return shell_portal("글감 피드", "매일 콘텐츠 보관함",
                         COPY_JS + intro + body_html, token)
