@@ -1388,6 +1388,31 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
+    def _cron_sms(self):
+        """매일 21시(KST) 미인증자 자동 문자 발송. CRON_SECRET 베어러 인증 필수."""
+        secret = os.environ.get("CRON_SECRET")
+        auth = self.headers.get("Authorization") or ""
+        if not secret or auth != f"Bearer {secret}":
+            return self._send(b"unauthorized", 401)
+        if not ppurio.is_configured():
+            return self._send(b"ppurio not configured", 503)
+        conn = db.connect()
+        b = core.daily_board(conn, core.today())
+        conn.close()
+        stats = b["at_risk"] + b["kick"]   # 오늘 미제출 활성자 전부
+        recips = [{"phone": s.row["contact"], "name": s.name}
+                  for s in stats if ppurio.normalize_phone(s.row["contact"] or "")]
+        sent, err = 0, ""
+        if recips:
+            try:
+                sent = ppurio.send_sms(recips, SMS_DEFAULT)["sent"]
+            except Exception as e:
+                err = str(e)
+        msg = (f"cron-sms {core.iso(core.today())}: targets={len(stats)} "
+               f"sent={sent} no_phone={len(stats) - len(recips)}"
+               + (f" ERROR={err}" if err else ""))
+        return self._send(msg.encode("utf-8"), 500 if err else 200)
+
     def _redirect(self, location: str):
         # Location 헤더는 latin-1만 허용 → 비ASCII(한글 등) 있으면 퍼센트 인코딩
         try:
@@ -1741,6 +1766,8 @@ class Handler(BaseHTTPRequestHandler):
                 return self._send(view_guide(qs))
             if u.path.startswith("/guide-img/"):
                 return self._guide_img(u.path[len("/guide-img/"):])
+            if u.path == "/cron/sms":   # Vercel Cron(매일 21시 KST) — 시크릿 인증
+                return self._cron_sms()
             if u.path == "/" and not self._admin_ok():
                 return self._send(view_landing())   # 비로그인 메인 = 랜딩
             # 관리자 영역 게이트 — 공개 경로 외에는 로그인 필요
@@ -1864,6 +1891,8 @@ def wsgi_app(environ, start_response):
         headers["Content-Length"] = str(length)
     if environ.get("HTTP_COOKIE"):
         headers["Cookie"] = environ["HTTP_COOKIE"]
+    if environ.get("HTTP_AUTHORIZATION"):   # Vercel Cron 베어러 시크릿 전달
+        headers["Authorization"] = environ["HTTP_AUTHORIZATION"]
     status, out_headers, resp_body = _emit_via_handler(method, full, headers, body)
     start_response(status, out_headers)
     return [resp_body]
