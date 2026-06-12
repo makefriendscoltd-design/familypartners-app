@@ -191,6 +191,7 @@ def esc(s) -> str:
 def shell(title: str, body: str) -> bytes:
     nav = ('<a href="/">대시보드</a><a href="/#글감"><b>✍️글감쓰기</b></a>'
            '<a href="/people">인원</a>'
+           '<a href="/reminders"><b>✉문자발송</b></a>'
            '<a href="/review">검수</a><a href="/board">랭킹</a>'
            '<a href="/library">자료실</a><a href="/feed">글감피드</a>'
            '<a href="/onboard">온보딩</a><a href="/wall">인증보드</a>'
