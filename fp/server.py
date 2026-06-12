@@ -1185,6 +1185,11 @@ def view_library(qs) -> str:
     return flash + upload + listing
 
 
+SMS_DEFAULT = ("[패밀리 파트너스] 오늘 콘텐츠 아직 안 올라왔어요!\n"
+               "자정 전까지 1건 올리고 링크만 답장 주세요.\n"
+               "하루 한 번이 쌓여 매출이 됩니다 🔥")
+
+
 def _send_reminder_sms(jobs) -> tuple[int, int, int]:
     """jobs: [(PartnerStatus, 메시지본문)] → (성공수, 실패수, 번호없음수). 1명씩 개별 발송."""
     sent = fail = noaddr = 0
@@ -1230,14 +1235,30 @@ def view_reminders(qs=None) -> str:
                 f"{f', 번호없음 {esc(no)}명' if no != '0' else ''}.</b></div>"
                 "<div class=card><h2>보낼 메시지</h2>")
     if ppurio.is_configured():
+        active = b["done"] + b["at_risk"] + b["kick"]
         n_send = sum(1 for s in targets if ppurio.normalize_phone(s.row["contact"] or ""))
+        n_active = sum(1 for s in active if ppurio.normalize_phone(s.row["contact"] or ""))
         bulk = (f"<form method=post action=/op/sms-all style='margin-top:10px'>"
                 f"<button{' disabled' if not n_send else ''}>"
-                f"📨 미인증자 전체에게 문자 발송 ({n_send}명)</button></form>"
+                f"📨 미인증자에게 자동문구 발송 ({n_send}명)</button></form>"
                 "<p class=empty>독려는 위험군에게, 경고는 어제 빵꾸난 분께 자동 분기됩니다. "
                 "휴대폰 번호가 없는 분은 건너뜁니다.</p>") if targets else ""
         head += ("<p class=empty>아래 칸을 복사해 카톡으로 보내거나, 버튼으로 바로 문자(뿌리오) 발송하세요.</p>"
                  + bulk + "</div>")
+        # 직접 작성해 발송하는 입력칸
+        head += (
+            "<div class=card style='border:2px solid var(--acc)'>"
+            "<h2>📨 문자 직접 작성해 발송</h2>"
+            "<form method=post action=/op/sms-custom style='flex-direction:column;align-items:stretch'>"
+            f"<textarea name=msg rows=4 placeholder='보낼 문자 내용을 입력하세요'>{esc(SMS_DEFAULT)}</textarea>"
+            "<div style='display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap'>"
+            "<select name=group>"
+            f"<option value=undone>오늘 미인증자 ({n_send}명)</option>"
+            f"<option value=active>활성 파트너 전체 ({n_active}명)</option>"
+            "</select>"
+            "<button>📨 이 내용으로 문자 발송</button></div></form>"
+            "<p class=empty>입력한 문구 <b>그대로</b> 선택 그룹에 발송됩니다(휴대폰 번호 없는 분 제외). "
+            "90바이트 초과 시 자동 LMS. 개인별 맞춤(독려/경고)은 아래 카드 버튼으로 보냅니다.</p></div>")
     else:
         head += ("<p class=empty>아래 칸을 복사해 카톡으로 보내세요. "
                  "문자(뿌리오) 자동발송을 켜려면 프로젝트 루트 <code>.env</code> 에 "
@@ -1638,6 +1659,26 @@ class Handler(BaseHTTPRequestHandler):
                 jobs = [(s, messages.reminder(s.name, s.streak)) for s in b["at_risk"]]
                 jobs += [(s, messages.warning(s.name)) for s in b["kick"]]
                 sent, fail, no = _send_reminder_sms(jobs)
+                return self._redirect(f"/reminders?sent={sent}&fail={fail}&no={no}")
+            if u.path == "/op/sms-custom":  # 운영자: 직접 작성한 문자 일괄 발송
+                msg = (f.get("msg") or "").strip()
+                group = (f.get("group") or "undone").strip()
+                if not msg:
+                    return self._redirect("/reminders")
+                conn = db.connect()
+                b = core.daily_board(conn, core.today())
+                conn.close()
+                stats = ((b["done"] + b["at_risk"] + b["kick"]) if group == "active"
+                         else (b["at_risk"] + b["kick"]))
+                recips = [{"phone": s.row["contact"], "name": s.name}
+                          for s in stats if ppurio.normalize_phone(s.row["contact"] or "")]
+                no = len(stats) - len(recips)
+                sent = fail = 0
+                if recips:
+                    try:
+                        sent = ppurio.send_sms(recips, msg)["sent"]
+                    except Exception:
+                        fail = len(recips)
                 return self._redirect(f"/reminders?sent={sent}&fail={fail}&no={no}")
             if u.path == "/op/library-upload":  # 자료실: 파일 업로드
                 title = (f.get("title") or "").strip()
