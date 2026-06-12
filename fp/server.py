@@ -284,7 +284,7 @@ def view_dashboard(qs) -> str:
            f"<div class=card><div class='big b-grn'>{len(done_list)}</div>"
            f"<div class=lb>오늘 완료(미션완료)</div></div>"
            f"<div class=card><div class='big b-yel'>{len(undone_list)}</div>"
-           f"<div class=lb>미이행자</div></div>"
+           f"<div class=lb>미제출 (어제미완 <b class=b-red>{kick_n}</b>)</div></div>"
            f"<div class=card><div class=big>{b['active_count']}</div>"
            f"<div class=lb>활성 파트너</div></div>"
            f"</div>")
@@ -305,12 +305,12 @@ def view_dashboard(qs) -> str:
         return f"🔥 {s.streak}일 연속 · {link}"
 
     def undone_meta(s):
-        badge = " <span class=b-red>⚠️어제 빵꾸</span>" if s.missed_yesterday else ""
         tgt = esc(s.row["contact"] or s.handle or "-")
-        return f"{s.streak}일 연속 · {tgt}{badge}"
+        return f"{s.streak}일 연속 · {tgt}"
 
     done = rows(done_list, "b-grn", done_meta)
-    undone = rows(undone_list, "b-yel", undone_meta)
+    kick_rows = rows(b["kick"], "b-red", undone_meta)
+    atrisk_rows = rows(b["at_risk"], "b-yel", undone_meta)
 
     # 예약된 글감 큐 — 미래 날짜로 등록된 글감(날짜 되면 자동 공개).
     # 제목을 누르면 본문·사진까지 펼쳐 관리자가 미리 검토 가능.
@@ -360,12 +360,20 @@ def view_dashboard(qs) -> str:
                     f"<p class=empty>⚠️ 어제 빵꾸 {kick_n}명(강퇴 대상) — "
                     "<a class=lk href='/enforce'>강퇴 집행</a> 또는 터미널 "
                     "<code>python -m fp enforce --yes</code></p>")
+    kick_card = (
+        f"<div class=card style='border-color:var(--red)'>"
+        f"<h2 class=b-red>🔴 어제 미완료 — {len(b['kick'])}명 "
+        f"<span class=pill>강퇴 대상</span></h2>"
+        f"<p class=empty style='margin:-4px 0 8px'>어제(필수일) 게시물이 확인되지 않은 분들입니다. "
+        f"이름을 누르면 상세로 이동합니다.</p>{kick_rows}{enforce_note}</div>")
+    atrisk_card = (
+        f"<div class=card><h2>⏳ 오늘 아직 미제출 — {len(b['at_risk'])}명 "
+        f"<span class=pill>어제는 함 · 마감 전 독려</span></h2>{atrisk_rows}"
+        f"<p class=empty>문자/리마인더는 <a class=lk href='/reminders'>✉ 보낼 메시지</a>에서 보냅니다.</p></div>")
     return (flash + drop_form() + sched_card + quick_actions() +
             f"<p class=pill>{b['date']} 기준 (자정~다음날 자정, KST)</p>{kpi}"
             f"<div class=card><h2>✅ 오늘 완료(미션완료) — {len(done_list)}명</h2>{done}</div>"
-            f"<div class=card><h2>⏳ 미이행자 — 오늘 아직 미제출 {len(undone_list)}명</h2>{undone}"
-            f"{enforce_note}"
-            f"<p class=empty>리마인더 문구: <code>python -m fp reminders</code></p></div>")
+            + kick_card + atrisk_card)
 
 
 def view_settle(qs) -> str:
