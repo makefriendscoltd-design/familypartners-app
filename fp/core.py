@@ -78,6 +78,10 @@ def parse_date(s: str | None) -> date:
     return today() if not s else datetime.strptime(s, "%Y-%m-%d").date()
 
 
+def yesterday(as_of: date | None = None) -> date:
+    return (as_of or today()) - timedelta(days=1)
+
+
 def iso(d: date) -> str:
     return d.strftime("%Y-%m-%d")
 

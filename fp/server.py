@@ -309,8 +309,24 @@ def view_dashboard(qs) -> str:
         tgt = esc(s.row["contact"] or s.handle or "-")
         return f"{s.streak}일 연속 · {tgt}"
 
+    def kick_rows_html(items):
+        if not items:
+            return "<div class=empty>없음 👍</div>"
+        out = []
+        for s in items:
+            out.append(
+                "<div class=row>"
+                f"<a class='nm lk b-red' href='/partner?id={s.row['id']}'>{esc(s.name)}</a>"
+                f"<span class=hd>{esc(s.handle or '-')}</span>"
+                f"<span class=meta>{undone_meta(s)}</span>"
+                f"<form method=post action=/op/excuse style='margin:0 0 0 10px' "
+                f"onsubmit=\"return confirm('{esc(s.name)}님 어제 출석을 인정(봐주기)할까요?')\">"
+                f"<input type=hidden name=pid value={s.row['id']}>"
+                f"<button class=ghost>🙏 봐주기</button></form></div>")
+        return "".join(out)
+
     done = rows(done_list, "b-grn", done_meta)
-    kick_rows = rows(b["kick"], "b-red", undone_meta)
+    kick_rows = kick_rows_html(b["kick"])
     atrisk_rows = rows(b["at_risk"], "b-yel", undone_meta)
 
     # 예약된 글감 큐 — 미래 날짜로 등록된 글감(날짜 되면 자동 공개).
@@ -366,7 +382,8 @@ def view_dashboard(qs) -> str:
         f"<h2 class=b-red>🔴 어제 미완료 — {len(b['kick'])}명 "
         f"<span class=pill>강퇴 대상</span></h2>"
         f"<p class=empty style='margin:-4px 0 8px'>어제(필수일) 게시물이 확인되지 않은 분들입니다. "
-        f"이름을 누르면 상세로 이동합니다.</p>{kick_rows}{enforce_note}</div>")
+        f"사정이 있으면 <b>🙏 봐주기</b>로 어제 출석을 인정해 강퇴 대상에서 뺄 수 있습니다.</p>"
+        f"{kick_rows}{enforce_note}</div>")
     atrisk_card = (
         f"<div class=card><h2>⏳ 오늘 아직 미제출 — {len(b['at_risk'])}명 "
         f"<span class=pill>어제는 함 · 마감 전 독려</span></h2>{atrisk_rows}"
@@ -1672,6 +1689,20 @@ class Handler(BaseHTTPRequestHandler):
                 done = core.enforce(conn, core.today(), dry_run=False)
                 conn.close()
                 return self._redirect(f"/enforce?done={len(done)}")
+            if u.path == "/op/excuse":  # 운영자: 어제 미완료 1명 봐주기(수동 출석 인정)
+                pid = int(f.get("pid", 0) or 0)
+                msg = "잘못된 요청입니다."
+                if pid:
+                    conn = db.connect()
+                    yday = core.iso(core.yesterday())
+                    p = conn.execute("SELECT name FROM partners WHERE id=?", (pid,)).fetchone()
+                    if yday not in core.covered_dates(conn, pid):
+                        core.add_submission(conn, pid, "(봐주기)", channel="manual",
+                                            post_date=yday, note="관리자 봐주기(수동 출석 인정)")
+                    conn.close()
+                    nm = p["name"] if p else "파트너"
+                    msg = f"{nm}님 어제({yday}) 출석을 수동 인정했습니다 — 강퇴 대상에서 제외."
+                return self._redirect("/?msg=" + _q(msg))
             if u.path == "/op/sms":  # 운영자: 미인증자 1명에게 문자 발송
                 conn = db.connect()
                 b = core.daily_board(conn, core.today())
