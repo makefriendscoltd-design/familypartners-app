@@ -1,8 +1,8 @@
-(필독) 모든 자료는 여기를 확인하세요
+{{COMMON_RULES}}
 
--프로필명: 성함/휴대폰 뒷 4자리로 설정하세요.
--비방, 욕설, 광고·스팸 링크는 즉시 강퇴됩니다.
--강퇴 후에는 재입장이 불가합니다.
+
+{{COMMON_RESOURCES}}
+
 
 ■AI 직원 사용하기
 
@@ -27,6 +27,11 @@
 -자료조사원 송이씨
 {{AI_SONGI}}
 
+-경리 상수씨
+{{AI_SANGSOO}}
 
-■기타 문의■
-http://pf.kakao.com/_LVxlXxj/chat
+-프롬프터 은서씨
+{{AI_EUNSEO}}
+
+
+{{COMMON_CONTACT}}

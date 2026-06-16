@@ -28,6 +28,14 @@ NOTICE_SLOTS = {
     "{{LINK_SECONDBRAIN}}": "second-brain",
 }
 
+# 모든 유형 공통으로 들어가는 공지 블록 ↔ 조각 파일 (한 곳에서만 수정)
+# 위치는 유형별 템플릿의 {{토큰}} 자리에 따라 정해진다.
+COMMON_BLOCKS = {
+    "COMMON_RULES": "common_rules.txt",        # 필독/프로필명/강퇴 규칙
+    "COMMON_RESOURCES": "common_resources.txt",  # 무료 라이브 + AIMAX 자료 모음집
+    "COMMON_CONTACT": "common_contact.txt",      # 기타 문의
+}
+
 
 def _read(name: str) -> str:
     return (TPL_DIR / name).read_text(encoding="utf-8")
@@ -63,6 +71,8 @@ TYPE_REGISTRY = {
             ("AI_NAKYUNG", "판서쌤 나경씨"),
             ("AI_YUNMI", "스크립트 작가 윤미씨"),
             ("AI_SONGI", "자료조사원 송이씨"),
+            ("AI_SANGSOO", "경리 상수씨"),
+            ("AI_EUNSEO", "프롬프터 은서씨"),
         ],
     },
     "both": {
@@ -81,6 +91,8 @@ TYPE_REGISTRY = {
             ("B_NAKYUNG", "판서쌤 나경씨"),
             ("B_YUNMI", "스크립트 작가 윤미씨"),
             ("B_SONGI", "자료조사원 송이씨"),
+            ("B_SANGSOO", "경리 상수씨"),
+            ("B_EUNSEO", "프롬프터 은서씨"),
         ],
     },
 }
@@ -204,6 +216,9 @@ def notice_text(ptype: str | None = "family", links: dict | None = None) -> str:
     links = links or {}
     cfg = type_cfg(ptype)
     notice = _read(cfg["file"])
+    # 공통 공지 블록(모든 유형 공유)을 먼저 끼워넣는다.
+    for token, fname in COMMON_BLOCKS.items():
+        notice = notice.replace("{{" + token + "}}", _read(fname).rstrip("\n"))
     for key, label in cfg["slots"]:
         val = (links.get(key) or "").strip() or "(별도 발급 — 운영진에게 받아 넣기)"
         notice = notice.replace("{{" + key + "}}", val)
