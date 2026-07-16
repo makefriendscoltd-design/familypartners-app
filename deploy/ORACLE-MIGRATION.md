@@ -66,6 +66,14 @@ ssh -p 3333 ubuntu@100.69.85.89 'systemctl list-timers familypartners-sms.timer 
 - (선택) 기존 도메인 `familypartners.vercel.app` 는 Oracle 로 안내/리다이렉트하거나 사용중지
 - **Neon 은 롤백 안전판으로 최소 며칠 유지** → 안정 확인 후 Free 다운그레이드 또는 프로젝트 삭제, Vercel 프로젝트 정리
 
+## 자동 배포 (GitHub main → Oracle, 2026-07-16 CEO 승인)
+- 서버 root systemd 타이머 `familypartners-autodeploy.timer` 가 **2분마다** origin/main 폴링
+- 새 커밋 감지 시: `git reset --hard origin/main` → 문법검사 → `fp init`(스키마 보정) → 재시작 → `/feed` 헬스체크
+- **실패(문법·헬스) 시 이전 커밋 자동 롤백** 후 재시작 — 깨진 푸시에도 사이트 유지
+- `data/`·`.env` 는 git 미추적이라 배포가 건드리지 않음
+- 로그: `journalctl -u familypartners-autodeploy.service -n 30`
+- 주의: main 푸시 = 2분 내 실서비스 반영. 실험 커밋은 브랜치에서.
+
 ## 롤백
 - 문제 시 Vercel(Neon) 원복은 즉시: DNS 를 원복하거나 vercel.app 주소를 그대로 쓰면 됨(그쪽 코드/DB 그대로 살아있음).
 - 서버 롤백: `sudo systemctl stop familypartners; sudo systemctl disable familypartners`, Caddyfile 백업(`/etc/caddy/Caddyfile.bak-familypartners-*`) 복구 후 `sudo systemctl reload caddy`.

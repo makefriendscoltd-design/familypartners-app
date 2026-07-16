@@ -1,0 +1,7 @@
+[Unit]
+Description=Family Partners auto-deploy (GitHub main 폴링)
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/bash /home/ubuntu/familypartners/deploy/autodeploy.sh

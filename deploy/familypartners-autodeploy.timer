@@ -1,0 +1,9 @@
+[Unit]
+Description=Family Partners auto-deploy — 2분마다 GitHub main 확인
+
+[Timer]
+OnBootSec=90
+OnUnitInactiveSec=120
+
+[Install]
+WantedBy=timers.target
