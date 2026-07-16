@@ -1,0 +1,10 @@
+[Unit]
+Description=Family Partners SMS reminder — 매일 21:00 KST (구 Vercel Cron 대체)
+
+[Timer]
+# systemd v252+ 는 OnCalendar 에 타임존 지정 가능 (Ubuntu 24.04 = systemd 255)
+OnCalendar=*-*-* 21:00:00 Asia/Seoul
+Persistent=true
+
+[Install]
+WantedBy=timers.target

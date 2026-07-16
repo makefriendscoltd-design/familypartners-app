@@ -1,0 +1,15 @@
+[Unit]
+Description=Family Partners (familypartners.aimax.ai.kr)
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/familypartners
+EnvironmentFile=/home/ubuntu/familypartners/.env
+ExecStart=/usr/bin/python3 -m fp serve
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

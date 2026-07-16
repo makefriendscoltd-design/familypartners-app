@@ -1,0 +1,10 @@
+[Unit]
+Description=Family Partners daily SMS reminder (미인증자 문자발송)
+After=network.target familypartners.service
+Requires=familypartners.service
+
+[Service]
+Type=oneshot
+EnvironmentFile=/home/ubuntu/familypartners/.env
+# /cron/sms 는 GET + Authorization: Bearer $CRON_SECRET 인증 (fp/server.py _cron_sms)
+ExecStart=/usr/bin/curl -fsS -m 90 -H "Authorization: Bearer ${CRON_SECRET}" http://127.0.0.1:18790/cron/sms
