@@ -1,0 +1,8 @@
+[Unit]
+Description=Family Partners SQLite 일일 백업
+
+[Service]
+Type=oneshot
+User=ubuntu
+Group=ubuntu
+ExecStart=/usr/bin/bash /home/ubuntu/familypartners/deploy/backup.sh

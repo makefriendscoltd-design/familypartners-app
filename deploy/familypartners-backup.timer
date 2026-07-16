@@ -1,0 +1,9 @@
+[Unit]
+Description=Family Partners 백업 — 매일 03:20 KST
+
+[Timer]
+OnCalendar=*-*-* 03:20:00 Asia/Seoul
+Persistent=true
+
+[Install]
+WantedBy=timers.target
