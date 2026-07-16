@@ -4,4 +4,7 @@ After=network-online.target
 
 [Service]
 Type=oneshot
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/home/ubuntu/familypartners
 ExecStart=/usr/bin/bash /home/ubuntu/familypartners/deploy/autodeploy.sh

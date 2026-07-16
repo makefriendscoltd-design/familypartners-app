@@ -8,7 +8,7 @@ set -uo pipefail
 
 APP=/home/ubuntu/familypartners
 HEALTH_URL=http://127.0.0.1:18790/feed
-LOCK=/run/familypartners-autodeploy.lock
+LOCK=/tmp/familypartners-autodeploy.lock
 
 exec 9>"$LOCK"
 flock -n 9 || exit 0   # 이전 실행이 아직 돌고 있으면 조용히 종료
@@ -27,7 +27,7 @@ health() { curl -s -o /dev/null -m 10 -w '%{http_code}' "$HEALTH_URL" || echo 00
 rollback() {
     echo "[autodeploy] 롤백 -> ${local_rev:0:7}"
     git reset --hard -q "$local_rev"
-    systemctl restart familypartners.service
+    sudo systemctl restart familypartners.service
     sleep 2
     echo "[autodeploy] 롤백 후 헬스: $(health)"
 }
@@ -40,7 +40,7 @@ fi
 
 FP_DB="$APP/data/challenge.db" python3 -m fp init >/dev/null 2>&1
 
-systemctl restart familypartners.service
+sudo systemctl restart familypartners.service
 sleep 2
 code="$(health)"
 if [ "$code" != "200" ]; then
