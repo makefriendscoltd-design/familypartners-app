@@ -82,4 +82,4 @@ ssh -p 3333 ubuntu@100.69.85.89 'systemctl list-timers familypartners-sms.timer 
 - 이미지가 지금은 SQLite 안 base64. 로컬이라 egress 무관하지만, 원하면 디스크 파일 저장(`stored_name`/`LIB_DIR`)으로 바꿔 DB 슬림화 가능.
 - `get_library` 의 `SELECT *`(blob 포함) → 필요한 컬럼만 SELECT 로 좁히면 로컬 I/O·메모리 절감.
 
-> 자동배포 E2E 검증 커밋: 2026-07-16 (이 줄이 서버에 자동 반영되면 성공)
+> 자동배포 E2E 검증 커밋: 2026-07-16 (2차: 폴링이 이 커밋을 스스로 가져가면 성공)
