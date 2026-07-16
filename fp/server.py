@@ -474,6 +474,18 @@ COPY_JS = (
     "try{document.execCommand('copy');ok();}catch(e){}});}</script>"
 )
 
+LAZY_JS = (
+    "<script>(function(){"
+    "function set(t){var u=t.getAttribute('data-bg');"
+    "if(u){t.style.backgroundImage=\"url('\"+u+\"')\";t.removeAttribute('data-bg');}}"
+    "var els=document.querySelectorAll('.tile.lazy[data-bg]');"
+    "if(!('IntersectionObserver' in window)){els.forEach(set);return;}"
+    "var io=new IntersectionObserver(function(es){es.forEach(function(e){"
+    "if(e.isIntersecting){set(e.target);io.unobserve(e.target);}});},"
+    "{rootMargin:'300px'});els.forEach(function(t){io.observe(t);});"
+    "})();</script>"
+)
+
 DROP_TYPE = {"ai": "AI 콘텐츠", "marketing": "마케팅 자료", "evergreen": "상시 자료"}
 TILE_BG = {"ai": "t-ai", "marketing": "", "evergreen": "t-eg"}
 
@@ -511,15 +523,21 @@ def _drop_thumb(conn, assets_text: str | None) -> str | None:
 def view_feed(qs) -> bytes:
     """공개 글감 피드 — 지난 콘텐츠 전체(최신순). 로그인 없이 누구나 열람."""
     conn = db.connect()
-    rows = core.published_drops(conn, core.today(), 365)
+    try:
+        show = max(12, min(365, int((qs.get("n", ["60"])[0]))))
+    except (ValueError, TypeError):
+        show = 60
+    rows = core.published_drops(conn, core.today(), show + 1)
+    more = len(rows) > show
+    rows = rows[:show]
     tiles, modals = [], []
     for r in rows:
         did = f"d{r['id']}"
         thumb = _drop_thumb(conn, r["assets"])
         has_assets = bool((r["assets"] or "").strip())
         if thumb:
-            tcls = "tile"
-            style = f" style=\"background-image:url('{esc(thumb)}')\""
+            tcls = "tile lazy"
+            style = f" data-bg=\"{esc(thumb)}\""
             tag = ""
             inner = f"<span class=tt>{esc(r['title'])}</span>"
         else:
@@ -554,14 +572,18 @@ def view_feed(qs) -> bytes:
             f"{body}{media}</div></div>")
     conn.close()
 
+    token = (qs.get("t", [None])[0])
     body_html = (f"<div class=gallery>{''.join(tiles)}</div>{''.join(modals)}" if tiles
                  else "<div class=card><div class=empty>아직 올라온 글감이 없습니다.</div></div>")
+    if tiles and more:
+        _t = f"&t={esc(token)}" if token else ""
+        body_html += (f"<div class=card style='text-align:center'>"
+                      f"<a class=lk href='/feed?n={show + 60}{_t}'>더 보기 ↓</a></div>")
     intro = ("<div class=card style='border-color:var(--acc)'><h2>📚 글감 피드</h2>"
              "<p class=empty>매일 올라오는 콘텐츠 보관함입니다. <b>늦게 들어와도 1일차부터 전부</b> 볼 수 있어요. "
              "<b>썸네일을 누르면</b> 본문(복사)·사진·영상이 펼쳐집니다.</p></div>")
-    token = (qs.get("t", [None])[0])
     return shell_portal("글감 피드", "매일 콘텐츠 보관함",
-                        COPY_JS + intro + body_html, token)
+                        COPY_JS + LAZY_JS + intro + body_html, token)
 
 
 def view_drop(qs) -> str:
@@ -1480,6 +1502,7 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("Content-Type", ctype)
         self.send_header("Content-Disposition",
                          "attachment; filename*=UTF-8''" + _q(row["orig_name"] or "file"))
+        self.send_header("Cache-Control", "public, max-age=31536000, immutable")
         self.send_header("Content-Length", str(len(data)))
         self.end_headers()
         self.wfile.write(data)
@@ -1499,7 +1522,7 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("Content-Type", ctype)
         self.send_header("Content-Disposition",
                          "inline; filename*=UTF-8''" + _q(row["orig_name"] or "file"))
-        self.send_header("Cache-Control", "public, max-age=86400")
+        self.send_header("Cache-Control", "public, max-age=31536000, immutable")
         self.send_header("Content-Length", str(len(data)))
         self.end_headers()
         self.wfile.write(data)
