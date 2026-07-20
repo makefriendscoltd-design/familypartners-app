@@ -725,7 +725,11 @@ def view_find(qs) -> bytes:
     nf = ("<div class=card style='border-color:var(--red)'>"
           "<b class=b-red>일치하는 정보가 없습니다.</b> 등록 시 넣은 성함·연락처를 확인하거나 "
           "운영자에게 문의하세요.</div>") if qs.get("nf") else ""
-    body = (nf + "<div class=card><h2>내 작업실 찾기</h2>"
+    xp = ("<div class=card style='border-color:var(--red)'>"
+          "<b class=b-red>작업실 링크가 만료되었거나 잘못되었습니다 — 방금 입력한 내용은 "
+          "저장되지 않았습니다.</b><br>아래에서 성함·연락처로 다시 들어간 뒤, "
+          "한 번 더 입력하고 저장해 주세요.</div>") if qs.get("expired") else ""
+    body = (nf + xp + "<div class=card><h2>내 작업실 찾기</h2>"
             "<p class=empty>작업실 링크를 잃어버렸나요? 등록한 <b>성함과 연락처</b>로 다시 들어갈 수 있습니다. "
             "(비밀번호 없음)</p>"
             "<form method=post action=/find>"
@@ -1603,15 +1607,21 @@ class Handler(BaseHTTPRequestHandler):
             if u.path == "/me/save":  # 파트너 세팅 입력(스레드 아이디·오픈톡방)
                 token = (f.get("t") or "").strip()
                 conn = db.connect()
-                core.update_self(conn, token, f.get("handle"), f.get("openchat"))
+                ok = core.update_self(conn, token, f.get("handle"), f.get("openchat"))
                 conn.close()
+                # 토큰이 틀리면 저장이 안 된다 — 예전엔 그래도 '저장됨'으로 보여서
+                # 파트너는 넣었다고 하는데 운영자 화면은 공란인 사고가 났다.
+                if not ok:
+                    return self._redirect("/find?expired=1")
                 return self._redirect(f"/me?t={token}&saved2=1")
             if u.path == "/me/links":  # 파트너 STEP3 판매링크(유형별 슬롯) 입력
                 token = (f.get("t") or "").strip()
                 links = {k[5:]: v for k, v in f.items() if k.startswith("link_")}
                 conn = db.connect()
-                core.update_links(conn, token, links)
+                ok = core.update_links(conn, token, links)
                 conn.close()
+                if not ok:
+                    return self._redirect("/find?expired=1")
                 # 링크 저장 → 공지가 바뀌었으니 '다시 복사' 안내 + STEP3 공지블록으로 이동
                 # (앵커는 ASCII만 — Location 헤더는 latin-1만 허용, 한글이면 인코딩 에러)
                 return self._redirect(f"/me?t={token}&saved2=links#notice")
