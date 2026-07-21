@@ -13,6 +13,7 @@ import hashlib
 import hmac
 import html
 import io
+import json
 import mimetypes
 import os
 import re
@@ -20,7 +21,7 @@ from http.client import HTTPMessage
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, quote, urlparse
 
-from . import core, db, messages, onboard, ppurio, products
+from . import core, db, gemini, messages, onboard, ppurio, products
 
 LIB_DIR = db.ROOT / "assets" / "library"
 GUIDE_DIR = db.ROOT / "assets" / "guide"
@@ -50,7 +51,7 @@ def _admin_token() -> str:
 # 로그인 없이 접근 가능한 경로
 PUBLIC_GET = {"/login", "/logout", "/join", "/me", "/wall", "/files", "/feed",
               "/guide", "/find", "/favicon.ico"}
-PUBLIC_POST = {"/login", "/join", "/submit", "/find", "/me/save", "/me/links"}
+PUBLIC_POST = {"/login", "/join", "/submit", "/find", "/me/save", "/me/links", "/rewrite"}
 
 
 def guide_img(name: str, caption: str) -> str:
@@ -486,6 +487,31 @@ LAZY_JS = (
     "})();</script>"
 )
 
+# 글감 본문 리라이팅 — 서버(/rewrite)가 Gemini 로 표현만 바꿔 JSON 으로 돌려준다.
+REWRITE_JS = (
+    "<script>function fpEsc(s){var d=document.createElement('div');d.textContent=s;"
+    "return d.innerHTML;}"
+    "function fpRewrite(b){var box=b.closest('.rw-box');var out=box.querySelector('.rw-out');"
+    "var o=b.textContent;b.disabled=true;b.textContent='✨ 표현 바꾸는 중…(몇 초)';"
+    "out.innerHTML='';"
+    "var body='t='+encodeURIComponent(b.getAttribute('data-t'))"
+    "+'&id='+encodeURIComponent(b.getAttribute('data-id'));"
+    "fetch('/rewrite',{method:'POST',"
+    "headers:{'Content-Type':'application/x-www-form-urlencoded'},body:body})"
+    ".then(function(r){return r.json();}).then(function(j){"
+    "b.disabled=false;b.textContent=o;"
+    "if(!j.ok){out.innerHTML='<p class=empty style=\"color:var(--red)\">'"
+    "+fpEsc(j.error||'리라이팅 실패')+'</p>';return;}"
+    "out.innerHTML='<div class=rw-res style=\"margin-top:10px;padding-top:10px;"
+    "border-top:1px dashed var(--ln)\"><span class=pill>✨ 리라이팅 — 표현만 바꿈</span>'"
+    "+'<pre>'+fpEsc(j.rewritten)+'</pre>'"
+    "+'<button type=button class=ghost onclick=fpCopy(this)>📋 리라이팅 본문 복사</button>'"
+    "+'<p class=empty>마음에 안 들면 위 [✨ 리라이팅]을 다시 눌러 새로 만들 수 있어요.</p></div>';"
+    "}).catch(function(){b.disabled=false;b.textContent=o;"
+    "out.innerHTML='<p class=empty style=\"color:var(--red)\">네트워크 오류 — 다시 시도하세요.</p>';"
+    "});}</script>"
+)
+
 DROP_TYPE = {"ai": "AI 콘텐츠", "marketing": "마케팅 자료", "evergreen": "상시 자료"}
 TILE_BG = {"ai": "t-ai", "marketing": "", "evergreen": "t-eg"}
 
@@ -792,9 +818,18 @@ def view_me(qs) -> bytes | None:
             if parts:
                 solo = " solo" if len(parts) == 1 else ""
                 media = f"<div class='media-grid{solo}'>{''.join(parts)}</div>"
-        body_html = (f"<pre>{esc(r['body'])}</pre>"
-                     "<button type=button class=ghost onclick=fpCopy(this)>📋 본문 복사</button>"
-                     ) if (r["body"] or "").strip() else ""
+        has_body = bool((r["body"] or "").strip())
+        # 리라이팅 — Gemini 키가 설정돼 있을 때만 버튼을 보여준다(없으면 조용히 숨김).
+        rewrite_html = ""
+        if has_body and gemini.is_configured():
+            rewrite_html = (
+                "<div class=rw-box style='margin-top:10px'>"
+                f"<button type=button class=ghost data-t='{esc(token)}' data-id='{r['id']}' "
+                "onclick=fpRewrite(this)>✨ 리라이팅 (형식 그대로, 표현만 바꾸기)</button>"
+                "<div class=rw-out></div></div>")
+        body_html = ((f"<pre>{esc(r['body'])}</pre>"
+                      "<button type=button class=ghost onclick=fpCopy(this)>📋 본문 복사</button>"
+                      + rewrite_html) if has_body else "")
         more = (f"<p class=empty style='margin-top:10px'>"
                 f"📅 {esc(r['drop_date'])} 등록 · 이전 글감은 여기서 → {feed_link}</p>"
                 if len(recent) > 1 else
@@ -961,7 +996,7 @@ def view_me(qs) -> bytes | None:
         f"{gembed}</div>")
 
     conn.close()
-    body = (COPY_JS + notice_card + saved2 + ok_banner + status_card + guide_banner +
+    body = (COPY_JS + REWRITE_JS + notice_card + saved2 + ok_banner + status_card + guide_banner +
             setup + submit + drop_card + files_link + hist_card + link_card +
             wall_link + find_note)
     return shell_portal(name, f"{esc(name)}님의 작업실", body, token)
@@ -1462,6 +1497,15 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("Location", location)
         self.end_headers()
 
+    def _json(self, obj: dict, code: int = 200):
+        body = json.dumps(obj, ensure_ascii=False).encode("utf-8")
+        self.send_response(code)
+        self.send_header("Content-Type", "application/json; charset=utf-8")
+        self.send_header("Content-Length", str(len(body)))
+        self.send_header("Cache-Control", "no-store")
+        self.end_headers()
+        self.wfile.write(body)
+
     def _guide_img(self, name: str):
         # 안전: 파일명만 허용(경로 이동 차단)
         safe = os.path.basename(name)
@@ -1593,6 +1637,23 @@ class Handler(BaseHTTPRequestHandler):
                                         (f.get("channel") or "threads"))
                 conn.close()
                 return self._redirect(f"/me?t={token}&ok=1")
+            if u.path == "/rewrite":  # 파트너: 글감 본문 리라이팅(표현만 변형) — JSON 응답
+                token = (f.get("t") or "").strip()
+                did = (f.get("id") or "").strip()
+                conn = db.connect()
+                p = core.find_by_token(conn, token)
+                row = (conn.execute("SELECT * FROM drops WHERE id=?", (int(did),)).fetchone()
+                       if p and did.isdigit() else None)
+                conn.close()
+                if not p or p["status"] == "kicked":
+                    return self._json({"ok": False, "error": "작업실 접근 권한이 없습니다."}, 403)
+                if not row or not (row["body"] or "").strip():
+                    return self._json({"ok": False, "error": "리라이팅할 글감 본문이 없습니다."}, 404)
+                try:
+                    out = gemini.rewrite(row["body"])
+                except Exception as e:
+                    return self._json({"ok": False, "error": str(e)}, 200)
+                return self._json({"ok": True, "rewritten": out})
             if u.path == "/find":  # 파트너 재로그인(성함+연락처)
                 conn = db.connect()
                 p = core.find_for_login(conn, f.get("name"), f.get("contact"))
