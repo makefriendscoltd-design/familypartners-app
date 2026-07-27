@@ -21,7 +21,7 @@ from http.client import HTTPMessage
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, quote, urlparse
 
-from . import core, db, gemini, messages, onboard, ppurio, products
+from . import core, db, dropqueue, gemini, messages, onboard, ppurio, products
 
 LIB_DIR = db.ROOT / "assets" / "library"
 GUIDE_DIR = db.ROOT / "assets" / "guide"
@@ -2226,6 +2226,9 @@ def serve(port: int = 8000) -> None:
         db.init_db()
     except Exception as e:
         print(f"[경고] DB 초기화/마이그레이션 실패: {e}")
+    # 예약된 글감(config/drops_queue.json)을 반영. autodeploy 는 배포마다 서비스를
+    # 재시작하므로 여기가 가장 확실한 실행 지점이다. 실패해도 기동을 막지 않는다.
+    dropqueue.sync()
     # 배포 시: 환경변수 HOST=0.0.0.0 (외부 공개), PORT=8080 등으로 지정.
     # 로컬은 기본 127.0.0.1 (이 PC에서만).
     host = os.environ.get("HOST", "127.0.0.1")
