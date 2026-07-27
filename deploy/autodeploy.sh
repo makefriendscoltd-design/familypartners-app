@@ -49,4 +49,9 @@ if [ "$code" != "200" ]; then
     exit 1
 fi
 
+# 글감 예약 큐 등록 — 헬스체크 통과 뒤에만, 실패해도 배포는 성공으로 둔다.
+# (중복 검사가 들어 있어 배포가 여러 번 돌아도 같은 글감이 두 번 들어가지 않는다)
+FP_DB="$APP/data/challenge.db" python3 deploy/seed_drops.py 2>&1 || \
+    echo "[autodeploy] 글감 큐 등록 실패 — 무시하고 계속"
+
 echo "[autodeploy] 완료 $(git rev-parse --short HEAD) health=$code"
