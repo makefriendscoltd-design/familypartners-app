@@ -37,6 +37,28 @@ def _load(path: Path) -> list[dict]:
     return [d for d in (items or []) if isinstance(d, dict)]
 
 
+def pending(path: Path | None = None) -> int:
+    """큐에 있으나 아직 등록되지 않은(표식 없는) 항목 수."""
+    try:
+        items = _load(path or QUEUE_PATH)
+        if not items:
+            return 0
+        conn = db.connect()
+        try:
+            n = 0
+            for d in items:
+                title = (d.get("title") or "").strip()
+                date = (d.get("date") or "").strip()
+                if title and date and not core.get_setting(
+                        conn, f"seeded_drop:{date}:{title}"):
+                    n += 1
+            return n
+        finally:
+            conn.close()
+    except Exception:
+        return -1        # 알 수 없음
+
+
 def sync(path: Path | None = None, verbose: bool = True) -> dict:
     """큐 → DB. {'added': n, 'skipped': n, 'bad': n} 반환. 예외를 밖으로 던지지 않는다."""
     stats = {"added": 0, "skipped": 0, "bad": 0}

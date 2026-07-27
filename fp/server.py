@@ -50,7 +50,7 @@ def _admin_token() -> str:
     return hmac.new(_secret(), b"admin-v1", hashlib.sha256).hexdigest()
 # 로그인 없이 접근 가능한 경로
 PUBLIC_GET = {"/login", "/logout", "/join", "/me", "/wall", "/files", "/feed",
-              "/guide", "/find", "/favicon.ico"}
+              "/guide", "/find", "/favicon.ico", "/status"}
 PUBLIC_POST = {"/login", "/join", "/submit", "/find", "/me/save", "/me/links", "/rewrite"}
 
 
@@ -211,6 +211,49 @@ def shell(title: str, body: str) -> bytes:
            f"<nav>{nav}</nav></header>"
            f"<main>{body}</main></body></html>")
     return doc.encode("utf-8")
+
+
+def deployed_commit() -> str:
+    """현재 배포된 커밋 해시 — .git 을 직접 읽는다(외부 명령 없이).
+
+    배포가 실제로 붙었는지 로그인 없이 확인하기 위한 것. 없으면 'unknown'.
+    """
+    try:
+        git = db.ROOT / ".git"
+        head = (git / "HEAD").read_text(encoding="utf-8").strip()
+        if head.startswith("ref:"):
+            ref = head.split(" ", 1)[1].strip()
+            p = git / ref
+            if p.exists():
+                return p.read_text(encoding="utf-8").strip()[:7]
+            packed = (git / "packed-refs")
+            if packed.exists():
+                for line in packed.read_text(encoding="utf-8").splitlines():
+                    if line.endswith(" " + ref):
+                        return line.split(" ", 1)[0][:7]
+            return "unknown"
+        return head[:7]
+    except Exception:
+        return "unknown"
+
+
+def status_payload() -> dict:
+    """공개 상태 — 배포 확인용. 개수와 커밋만, 내용·개인정보는 넣지 않는다."""
+    out = {"commit": deployed_commit(), "today": core.iso(core.today())}
+    try:
+        conn = db.connect()
+        try:
+            rows = conn.execute(
+                "SELECT drop_date, COUNT(*) c FROM drops WHERE drop_date >= ? "
+                "GROUP BY drop_date ORDER BY drop_date", (core.iso(core.today()),)
+            ).fetchall()
+            out["drops"] = {r["drop_date"]: r["c"] for r in rows}
+        finally:
+            conn.close()
+    except Exception as e:
+        out["drops_error"] = type(e).__name__
+    out["queue_pending"] = dropqueue.pending()
+    return out
 
 
 def _no_db() -> str:
@@ -2117,6 +2160,8 @@ class Handler(BaseHTTPRequestHandler):
                 if not db.is_postgres() and not db.db_path().exists():
                     return self._send(shell_portal("글감 피드", "", _no_db()))
                 return self._send(view_feed(qs))
+            if u.path == "/status":   # 배포·큐 상태(개수만) — 로그인 없이 확인용
+                return self._json(status_payload())
 
             # 운영자 대시보드
             if not db.is_postgres() and not db.db_path().exists() and u.path != "/favicon.ico":

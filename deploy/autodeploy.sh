@@ -15,19 +15,9 @@ flock -n 9 || exit 0   # 이전 실행이 아직 돌고 있으면 조용히 종�
 
 cd "$APP"
 git fetch -q origin main || { echo "[autodeploy] fetch 실패 (네트워크?)"; exit 1; }
-# 글감 예약 큐 등록 — 코드 변경과 무관하게 매 실행마다 확인한다.
-# (한 번 넣은 항목은 표식이 남아 다시 안 들어간다. 운영자가 지운 글감도 안 되살아난다)
-seed_drops() {
-    FP_DB="$APP/data/challenge.db" python3 "$APP/deploy/seed_drops.py" 2>&1 || \
-        echo "[autodeploy] 글감 큐 등록 실패 — 무시하고 계속"
-}
-
 local_rev="$(git rev-parse HEAD)"
 remote_rev="$(git rev-parse origin/main)"
-if [ "$local_rev" = "$remote_rev" ]; then    # 코드 변경 없음 — 큐만 보고 끝
-    seed_drops
-    exit 0
-fi
+[ "$local_rev" = "$remote_rev" ] && exit 0   # 변경 없음
 
 echo "[autodeploy] ${local_rev:0:7} -> ${remote_rev:0:7} 배포 시작"
 git reset --hard -q origin/main
@@ -58,7 +48,5 @@ if [ "$code" != "200" ]; then
     rollback
     exit 1
 fi
-
-seed_drops   # 새 코드 배포 뒤에도 한 번 (큐가 이번 커밋에 함께 들어왔을 수 있음)
 
 echo "[autodeploy] 완료 $(git rev-parse --short HEAD) health=$code"
