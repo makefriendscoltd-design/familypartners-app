@@ -250,8 +250,10 @@ def cmd_drop(args):
     conn = db.connect()
     if args.action == "add":
         assets = [a.strip() for a in (args.assets or "").split(",") if a.strip()]
-        did = core.add_drop(conn, args.title, args.body, assets, args.type, args.date)
-        _p(f"글감 등록: #{did} [{args.type}] {args.title}"
+        did = core.add_drop(conn, args.title, args.body, assets, args.type, args.date,
+                            target=args.target, fmt=args.fmt)
+        tags = " ".join(f"[{t}]" for t in (args.target, args.fmt) if t)
+        _p(f"글감 등록: #{did} [{args.type}] {args.title} {tags}".rstrip()
            + (f" · 첨부 {len(assets)}개" if assets else ""))
     elif args.action == "list":
         rows = conn.execute("SELECT * FROM drops ORDER BY drop_date DESC, id DESC LIMIT 30").fetchall()
@@ -465,6 +467,8 @@ def build_parser() -> argparse.ArgumentParser:
     dp.add_argument("--assets", help="파일경로/URL, 쉼표 구분")
     dp.add_argument("--type", default="ai", choices=["ai", "marketing", "evergreen"])
     dp.add_argument("--date", help="YYYY-MM-DD")
+    dp.add_argument("--target", choices=core.DROP_TARGETS, help="누구에게 말 거는 글인가")
+    dp.add_argument("--fmt", choices=core.DROP_FORMATS, help="글의 형태")
 
     sl = sub.add_parser("sale", help="매출 기록/적재"); sl.set_defaults(func=cmd_sale)
     sl.add_argument("action", choices=["add", "ingest"])
