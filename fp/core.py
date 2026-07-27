@@ -468,24 +468,32 @@ def set_status(conn, pid, status, when=None, reason=None) -> None:
 # 제출
 # --------------------------------------------------------------------------- #
 def add_submission(conn, pid, url, channel="threads", post_date=None, note=None,
-                   drop_id=None) -> int:
+                   drop_id=None, room_members=None) -> int:
     pd = iso(parse_date(post_date))
     cur = conn.execute(
         "INSERT INTO submissions(partner_id, post_url, channel, post_date, submitted_at, "
-        "note, drop_id) VALUES (?,?,?,?,?,?,?)",
-        (pid, url, channel, pd, now_iso(), note, drop_id),
+        "note, drop_id, room_members) VALUES (?,?,?,?,?,?,?,?)",
+        (pid, url, channel, pd, now_iso(), note, drop_id, _to_int(room_members)),
     )
     conn.commit()
     return cur.lastrowid
 
 
 # --------------------------------------------------------------------------- #
-# 성과 추적 — 올린 글이 실제로 어떤 결과를 냈는지(조회·댓글·카톡방 유입)
-#   출석(제출)은 성실도만 재고, 이 값들이 실제 KPI다.
-#   글감별로 묶여야 "어떤 글감이 먹히는지"가 나오므로 submissions.drop_id 가 핵심.
+# 성과 추적 — 오픈톡방 인원 증감으로 글의 실효를 잰다.
+#
+# 파트너는 하루 1건만 올린다(출석 규칙). 그래서 "어제 대비 오늘 방 인원 증가분"이
+# 곧 '그 하루 동안 살아 있던 글 1건'의 성과가 된다. 파트너에게 "이 글로 몇 명
+# 들어왔나요"를 물으면 알 수 없어서 지어내지만, "지금 방 인원 몇 명인가요"는
+# 카톡 화면에 그대로 떠 있는 숫자라 정확하다.
+#
+# 중요 — 하루 밀린다:
+#   제출 시점에 넣는 인원은 방금 올린 글(0분짜리)이 아니라 '어제 올린 글'의 결과다.
+#   그래서 증가분은 직전 제출(=어제 글)에 크레딧을 붙인다.
+#
+# 저장은 반드시 '증감분'이 아니라 '절대값(room_members)'으로 한다.
+#   증감분을 받으면 파트너가 뺄셈을 해야 하고, 오입력 복구도, 빠진 날 감지도 안 된다.
 # --------------------------------------------------------------------------- #
-PERF_MIN_AGE_DAYS = 2      # 올린 지 이틀은 지나야 숫자가 의미 있음
-
 
 def _to_int(v) -> int | None:
     """폼 입력값 → 0 이상 정수. 빈칸/이상값은 None."""
@@ -496,97 +504,147 @@ def _to_int(v) -> int | None:
     return n if n >= 0 else None
 
 
-def pending_perf(conn, pid, as_of: date, limit: int = 10) -> list[sqlite3.Row]:
-    """성과 입력이 아직 안 된 내 제출 (올린 지 PERF_MIN_AGE_DAYS 이상 지난 것)."""
-    cutoff = iso(as_of - timedelta(days=PERF_MIN_AGE_DAYS))
-    return conn.execute(
-        "SELECT * FROM submissions WHERE partner_id=? AND valid=1 AND perf_at IS NULL "
-        "AND post_date<=? ORDER BY post_date DESC, id DESC LIMIT ?",
-        (pid, cutoff, limit),
-    ).fetchall()
-
-
-def record_perf(conn, sub_id, pid, views=None, comments=None, leads=None) -> bool:
-    """본인 제출의 성과를 기록. 남의 제출은 pid 불일치로 무시된다.
-
-    유입(leads)은 필수 — 이게 실제 KPI이자 '성과 보고됨'의 기준이다.
-    조회·댓글은 선택(파트너 입력 부담을 줄이려고). 비면 NULL 로 남는다.
-    """
-    v, c, l = _to_int(views), _to_int(comments), _to_int(leads)
-    if l is None:
-        return False
-    row = conn.execute(
-        "SELECT id FROM submissions WHERE id=? AND partner_id=?", (sub_id, pid)
+def last_room_members(conn, pid) -> int | None:
+    """이 파트너가 마지막으로 넣은 방 인원(절대값). 없으면 None."""
+    r = conn.execute(
+        "SELECT room_members FROM submissions WHERE partner_id=? AND valid=1 "
+        "AND room_members IS NOT NULL ORDER BY post_date DESC, id DESC LIMIT 1", (pid,)
     ).fetchone()
-    if not row:
-        return False
-    conn.execute(
-        "UPDATE submissions SET views=?, comments=?, leads=?, perf_at=? WHERE id=?",
-        (v, c, l, now_iso(), sub_id),
-    )
-    conn.commit()
-    return True
+    return r["room_members"] if r else None
+
+
+def submission_gains(conn) -> dict[int, dict]:
+    """제출별 '그 글이 만든 방 인원 증가분'을 계산.
+
+    반환: {submission_id: {"gain": int, "span": int}}
+      gain — 다음 입력 시점의 방 인원 − 이 시점의 방 인원 (음수 가능: 나간 사람이 더 많음)
+      span — 두 입력 사이의 일수. 1이면 그 글 하루치로 깨끗하게 귀속된다.
+             2 이상이면 여러 날이 뭉친 값이라 글감별 평균에서는 제외한다.
+    마지막 제출은 다음 입력이 아직 없으므로 결과에 포함되지 않는다.
+    """
+    rows = conn.execute(
+        "SELECT id, partner_id, post_date, room_members FROM submissions "
+        "WHERE valid=1 AND room_members IS NOT NULL "
+        "ORDER BY partner_id, post_date, id"
+    ).fetchall()
+    # 같은 날 두 번 제출했으면 그날의 마지막 값만 쓴다(하루 = 한 측정점).
+    by_partner: dict[int, dict[str, sqlite3.Row]] = {}
+    for r in rows:
+        by_partner.setdefault(r["partner_id"], {})[r["post_date"]] = r
+
+    gains: dict[int, dict] = {}
+    for per_day in by_partner.values():
+        seq = [per_day[d] for d in sorted(per_day)]
+        for prev, cur in zip(seq, seq[1:]):
+            span = (parse_date(cur["post_date"]) - parse_date(prev["post_date"])).days
+            gains[prev["id"]] = {
+                "gain": (cur["room_members"] or 0) - (prev["room_members"] or 0),
+                "span": span,
+            }
+    return gains
 
 
 def drop_performance(conn, limit: int = 40) -> list[dict]:
-    """글감별 성과 집계 — 평균 유입 높은 순. 다음 글감을 뭘로 할지 결정하는 근거."""
-    rows = conn.execute(
-        "SELECT d.id, d.drop_date, d.title, d.dtype, "
-        "COUNT(s.id) used, "
-        "SUM(CASE WHEN s.perf_at IS NOT NULL THEN 1 ELSE 0 END) reported, "
-        # 조회는 선택 입력이라 보고 건수와 분모가 다르다 — 따로 센다.
-        "SUM(CASE WHEN s.views IS NOT NULL THEN 1 ELSE 0 END) n_views, "
-        "COALESCE(SUM(s.views),0) views, COALESCE(SUM(s.comments),0) comments, "
-        "COALESCE(SUM(s.leads),0) leads "
-        "FROM drops d LEFT JOIN submissions s ON s.drop_id=d.id AND s.valid=1 "
-        "GROUP BY d.id, d.drop_date, d.title, d.dtype"
+    """글감별 성과 — 글 1건당 평균 방 인원 순증이 높은 순. 다음 글감의 근거."""
+    subs = conn.execute(
+        "SELECT s.id, s.drop_id, d.id did, d.drop_date, d.title, d.dtype "
+        "FROM drops d LEFT JOIN submissions s ON s.drop_id=d.id AND s.valid=1"
     ).fetchall()
-    out = []
-    for r in rows:
-        rep = r["reported"] or 0
-        nv = r["n_views"] or 0
-        out.append({
-            "id": r["id"], "drop_date": r["drop_date"], "title": r["title"],
-            "dtype": r["dtype"], "used": r["used"] or 0, "reported": rep,
-            "n_views": nv,
-            "views": r["views"] or 0, "comments": r["comments"] or 0,
-            "leads": r["leads"] or 0,
-            "avg_views": round((r["views"] or 0) / nv, 1) if nv else 0,
-            "avg_leads": round((r["leads"] or 0) / rep, 2) if rep else 0,
+    gains = submission_gains(conn)
+
+    agg: dict[int, dict] = {}
+    for r in subs:
+        a = agg.setdefault(r["did"], {
+            "id": r["did"], "drop_date": r["drop_date"], "title": r["title"],
+            "dtype": r["dtype"], "used": 0, "measured": 0, "gain": 0, "multi": 0,
         })
-    # 성과가 보고된 글감이 먼저, 그 안에서 평균 유입 → 평균 조회 순
-    out.sort(key=lambda x: (x["reported"] == 0, -x["avg_leads"], -x["avg_views"],
-                            x["drop_date"]))
+        if r["id"] is None:          # 아직 아무도 안 쓴 글감
+            continue
+        a["used"] += 1
+        g = gains.get(r["id"])
+        if not g:
+            continue
+        if g["span"] == 1:           # 하루치로 깨끗하게 귀속되는 것만 평균에 넣는다
+            a["measured"] += 1
+            a["gain"] += g["gain"]
+        else:
+            a["multi"] += 1
+
+    out = []
+    for a in agg.values():
+        m = a["measured"]
+        a["avg_gain"] = round(a["gain"] / m, 2) if m else 0
+        out.append(a)
+    # 측정된 글감 먼저, 그 안에서 평균 순증 높은 순
+    out.sort(key=lambda x: (x["measured"] == 0, -x["avg_gain"], x["drop_date"]))
     return out[:limit]
 
 
 def top_posts(conn, limit: int = 20) -> list[dict]:
-    """성과 상위 개별 게시물 — 이게 곧 다음 글감 후보(파트너가 쓴 글이 소스가 된다)."""
+    """순증 상위 게시물 — 다음 글감 후보(파트너가 쓴 글이 소스가 된다)."""
     rows = conn.execute(
-        "SELECT s.id, s.post_url, s.post_date, s.views, s.comments, s.leads, "
+        "SELECT s.id, s.post_url, s.post_date, s.room_members, "
         "p.name pname, p.handle phandle, d.title dtitle "
         "FROM submissions s JOIN partners p ON p.id=s.partner_id "
-        "LEFT JOIN drops d ON d.id=s.drop_id "
-        "WHERE s.valid=1 AND s.perf_at IS NOT NULL"
+        "LEFT JOIN drops d ON d.id=s.drop_id WHERE s.valid=1"
     ).fetchall()
-    out = [dict(r) for r in rows]
-    out.sort(key=lambda x: (-(x["leads"] or 0), -(x["views"] or 0), -(x["comments"] or 0)))
+    gains = submission_gains(conn)
+    out = []
+    for r in rows:
+        g = gains.get(r["id"])
+        if not g or g["span"] != 1:
+            continue
+        d = dict(r)
+        d["gain"] = g["gain"]
+        out.append(d)
+    out.sort(key=lambda x: -x["gain"])
     return out[:limit]
 
 
-def lead_board(conn, since: str | None = None) -> list[dict]:
-    """파트너별 유입 랭킹 — 출석(연속일)이 아니라 실제 데려온 사람 수 기준."""
-    sql = ("SELECT p.id, p.name, p.handle, "
-           "COUNT(s.id) posts, COALESCE(SUM(s.leads),0) leads, "
-           "COALESCE(SUM(s.views),0) views "
-           "FROM partners p LEFT JOIN submissions s "
-           "  ON s.partner_id=p.id AND s.valid=1 AND s.perf_at IS NOT NULL"
-           + (" AND s.post_date>=?" if since else "") +
-           " WHERE p.status='active' GROUP BY p.id, p.name, p.handle")
-    rows = conn.execute(sql, (since,) if since else ()).fetchall()
-    out = [dict(r) for r in rows]
-    out.sort(key=lambda x: (-(x["leads"] or 0), -(x["views"] or 0), x["name"]))
+def lead_board(conn) -> list[dict]:
+    """파트너별 유입 랭킹 — 연속일(성실도)이 아니라 방을 실제로 얼마나 키웠는지.
+
+    여기서는 span 이 2 이상인 구간도 합산한다(총량은 뭉쳐 있어도 맞기 때문).
+    """
+    gains = submission_gains(conn)
+    rows = conn.execute(
+        "SELECT s.id, s.partner_id, p.name, p.handle, s.room_members "
+        "FROM submissions s JOIN partners p ON p.id=s.partner_id "
+        "WHERE s.valid=1 AND p.status='active' ORDER BY s.partner_id, s.post_date, s.id"
+    ).fetchall()
+    acc: dict[int, dict] = {}
+    for r in rows:
+        a = acc.setdefault(r["partner_id"], {
+            "id": r["partner_id"], "name": r["name"], "handle": r["handle"],
+            "gain": 0, "measured": 0, "members": None,
+        })
+        if r["room_members"] is not None:
+            a["members"] = r["room_members"]      # 정렬상 마지막 = 최신 방 인원
+        g = gains.get(r["id"])
+        if g:
+            a["gain"] += g["gain"]
+            a["measured"] += 1
+    out = list(acc.values())
+    out.sort(key=lambda x: (-x["gain"], -(x["members"] or 0), x["name"]))
     return out
+
+
+def room_stats(conn) -> dict:
+    """전체 요약 — 총 순증 / 글 1건당 평균 순증 / 인원 입력률."""
+    tot = conn.execute(
+        "SELECT COUNT(*) n, SUM(CASE WHEN room_members IS NOT NULL THEN 1 ELSE 0 END) filled "
+        "FROM submissions WHERE valid=1").fetchone()
+    gains = submission_gains(conn)
+    clean = [g["gain"] for g in gains.values() if g["span"] == 1]
+    n, filled = tot["n"] or 0, tot["filled"] or 0
+    return {
+        "submissions": n,
+        "filled": filled,
+        "fill_rate": round(filled * 100 / n) if n else 0,
+        "total_gain": sum(g["gain"] for g in gains.values()),
+        "measured": len(clean),
+        "avg_gain": round(sum(clean) / len(clean), 2) if clean else 0,
+    }
 
 
 def covered_dates(conn, pid) -> set[str]:

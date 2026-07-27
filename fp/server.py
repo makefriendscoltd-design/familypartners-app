@@ -51,8 +51,7 @@ def _admin_token() -> str:
 # 로그인 없이 접근 가능한 경로
 PUBLIC_GET = {"/login", "/logout", "/join", "/me", "/wall", "/files", "/feed",
               "/guide", "/find", "/favicon.ico"}
-PUBLIC_POST = {"/login", "/join", "/submit", "/find", "/me/save", "/me/links", "/rewrite",
-               "/perf"}
+PUBLIC_POST = {"/login", "/join", "/submit", "/find", "/me/save", "/me/links", "/rewrite"}
 
 
 def guide_img(name: str, caption: str) -> str:
@@ -816,6 +815,9 @@ def view_me(qs) -> bytes | None:
                  f"<option value='' disabled selected>어떤 글감으로 썼나요?</option>"
                  f"{drop_opts}<option value='free'>글감 없이 자유글</option></select>"
                  ) if drop_opts else ""
+    last_room = core.last_room_members(conn, p["id"])
+    room_hint = (f"직전 입력 {last_room}명" if last_room is not None
+                 else "카톡 오픈채팅 상단 참여자 수")
     submit = (f"<div class=card><h2>오늘 글 제출</h2>"
               f"<form method=post action=/submit style='flex-wrap:wrap'>"
               f"<input type=hidden name=t value='{esc(token)}'>"
@@ -824,37 +826,16 @@ def view_me(qs) -> bytes | None:
               f"<option value=instagram>인스타</option><option value=blog>블로그</option>"
               f"<option value=etc>기타</option></select>"
               f"{drop_pick}"
+              f"<input name=room type=number min=0 required style='width:150px;"
+              f"border-color:var(--acc)' placeholder='지금 방 인원 *'>"
               f"<button>제출</button></form>"
               f"<p class=empty>제출이 곧 출석입니다. "
-              f"어떤 글감으로 썼는지 골라주시면 <b>뭐가 잘 먹히는지 데이터로 잡힙니다.</b></p></div>")
+              f"<b>지금 내 오픈톡방 인원</b>도 같이 넣어주세요 — {esc(room_hint)}. "
+              f"직접 계산하실 것 없이 <b>보이는 숫자 그대로</b> 넣으시면 됩니다.<br>"
+              f"어제 넣은 값과 비교해서 <b>어제 올린 글이 몇 명을 데려왔는지</b>가 자동으로 계산되고, "
+              f"그걸로 다음 글감이 정해집니다.</p></div>")
 
-    # 성과 입력 — 이틀 지난 내 글의 조회·댓글·유입 숫자. 이게 진짜 KPI.
-    pend = core.pending_perf(conn, p["id"], as_of)
-    if pend:
-        prows = "".join(
-            f"<form method=post action=/perf class=perf>"
-            f"<input type=hidden name=t value='{esc(token)}'>"
-            f"<input type=hidden name=id value='{s['id']}'>"
-            f"<span class=hd>{esc(s['post_date'])}</span>"
-            f"<a class=lk href='{esc(s['post_url'])}' target=_blank>글 열기 ↗</a>"
-            # 유입만 필수(= 진짜 KPI). 조회·댓글은 선택 — 입력 부담을 줄여 입력률을 올린다.
-            f"<input name=leads type=number min=0 placeholder='방 유입 *' required "
-            f"style='border-color:var(--acc)'>"
-            f"<input name=views type=number min=0 placeholder='조회수(선택)'>"
-            f"<input name=comments type=number min=0 placeholder='댓글(선택)'>"
-            f"<button>저장</button></form>"
-            for s in pend)
-        perf_card = (
-            "<div class=card style='border:2px solid var(--yel)'>"
-            f"<h2 class=b-yel>📊 성과 입력 <span class=pill>{len(pend)}건 대기</span></h2>"
-            "<p class=empty style='margin:-4px 0 8px'>올린 지 이틀 지난 글이에요. "
-            "<b class=b-yel>그 글 보고 카톡방 들어온 인원(방 유입) 한 칸만 필수</b>입니다. "
-            "모르면 대충이라도, 아무도 안 왔으면 <b>0</b>. "
-            "조회수·댓글은 여유 될 때만 넣어주세요(선택). "
-            "이 숫자로 <b>다음 글감</b>이 정해지고 <b>유입 랭킹</b>에 반영됩니다.</p>"
-            f"{prows}</div>")
-    else:
-        perf_card = ""
+    # 성과는 제출 폼의 '방 인원' 한 칸으로 대체됐다(별도 입력 카드 없음).
     feed_link = (f"<a class=lk href='/feed?t={esc(token)}'>"
                  "📚 지난 글감 전체보기 →</a>")
     if recent:
@@ -919,15 +900,20 @@ def view_me(qs) -> bytes | None:
 
     # 내 제출 이력
     subs = core.recent_submissions(conn, p["id"], 10)
+    my_gains = core.submission_gains(conn)
 
     def _perf_tag(s):
-        if not s["perf_at"]:
-            return "<span class=pill>성과 미입력</span>"
-        # 조회·댓글은 선택 입력이라 안 넣었으면 0 이 아니라 '–' 로 보여준다.
-        v = s["views"] if s["views"] is not None else "–"
-        cm = s["comments"] if s["comments"] is not None else "–"
-        return (f"<span class=meta style='margin-left:0'>👁 {v} · 💬 {cm} · "
-                f"<b class=b-grn>유입 {s['leads'] or 0}</b></span>")
+        if s["room_members"] is None:
+            return "<span class=pill>인원 미입력</span>"
+        g = my_gains.get(s["id"])
+        if not g:      # 다음 제출이 아직 없어 증감을 못 냄(= 가장 최근 글)
+            return (f"<span class=meta style='margin-left:0'>방 {s['room_members']}명 "
+                    f"<span class=pill>다음 제출 때 집계</span></span>")
+        sign = "+" if g["gain"] >= 0 else ""
+        cls = "b-grn" if g["gain"] > 0 else ("b-red" if g["gain"] < 0 else "")
+        span = "" if g["span"] == 1 else f" <span class=pill>{g['span']}일치</span>"
+        return (f"<span class=meta style='margin-left:0'>방 {s['room_members']}명 · "
+                f"<b class={cls}>{sign}{g['gain']}</b>{span}</span>")
 
     hist = "".join(
         f"<div class=row><span class=hd>{s['post_date']}</span>"
@@ -1056,7 +1042,7 @@ def view_me(qs) -> bytes | None:
         f"{gembed}</div>")
 
     conn.close()
-    body = (COPY_JS + REWRITE_JS + notice_card + saved2 + ok_banner + status_card + perf_card +
+    body = (COPY_JS + REWRITE_JS + notice_card + saved2 + ok_banner + status_card +
             guide_banner + setup + submit + drop_card + files_link + hist_card + link_card +
             wall_link + find_note)
     return shell_portal(name, f"{esc(name)}님의 작업실", body, token)
@@ -1148,90 +1134,87 @@ def view_perf(qs) -> str:
     다음 글감을 감이 아니라 이 화면 보고 정하는 게 목적.
     """
     conn = db.connect()
+    st = core.room_stats(conn)
     dperf = core.drop_performance(conn, 60)
     tops = core.top_posts(conn, 15)
     lb = core.lead_board(conn)
-    tot = conn.execute(
-        "SELECT COUNT(*) c, SUM(CASE WHEN perf_at IS NOT NULL THEN 1 ELSE 0 END) rep, "
-        "COALESCE(SUM(leads),0) leads, COALESCE(SUM(views),0) views "
-        "FROM submissions WHERE valid=1").fetchone()
     conn.close()
 
-    n, rep = tot["c"] or 0, tot["rep"] or 0
-    rate = round(rep * 100 / n) if n else 0
-    avg_lead = round((tot["leads"] or 0) / rep, 2) if rep else 0
     kpi = (f"<div class=kpi>"
-           f"<div class=card><div class=big>{tot['leads'] or 0}</div>"
-           f"<div class=lb>누적 카톡방 유입</div></div>"
-           f"<div class=card><div class=big>{avg_lead}</div>"
-           f"<div class=lb>글 1건당 평균 유입</div></div>"
-           f"<div class=card><div class=big>{rate}%</div>"
-           f"<div class=lb>성과 입력률 ({rep}/{n})</div></div></div>")
+           f"<div class=card><div class=big>{st['total_gain']}</div>"
+           f"<div class=lb>카톡방 총 순증</div></div>"
+           f"<div class=card><div class=big>{st['avg_gain']}</div>"
+           f"<div class=lb>글 1건당 평균 순증</div></div>"
+           f"<div class=card><div class=big>{st['fill_rate']}%</div>"
+           f"<div class=lb>인원 입력률 ({st['filled']}/{st['submissions']})</div></div></div>")
 
-    if rep == 0:
+    how = ("<div class=card style='border-color:var(--acc)'>"
+           "<h2>이 숫자가 어떻게 나오나 <span class=pill>읽는 법</span></h2>"
+           "<p class=empty style='margin:0'>파트너는 제출할 때 <b>그 시점의 오픈톡방 인원</b>을 "
+           "같이 넣습니다. 하루 1건 발행 규칙이라 <b>어제→오늘 인원 증가분 = 어제 올린 글 1건의 성과</b>가 "
+           "됩니다.<br>그래서 오늘 넣은 증가분은 <b>어제 쓴 글감</b>에 붙습니다. "
+           "며칠 빼먹어서 증가분이 여러 날 뭉친 건은 글감별 평균에서 빼고 "
+           "(‘측정’ 칸에서 제외), 아래 랭킹 총합에만 넣습니다.</p></div>")
+
+    if st["measured"] == 0:
         note = ("<div class=card style='border-color:var(--yel)'>"
-                "<h2 class=b-yel>아직 성과 데이터가 없습니다</h2>"
-                "<p class=empty>파트너 작업실에 <b>성과 입력</b> 칸이 생겼습니다. "
-                "올린 지 이틀 지난 글부터 대상이라, 오늘 켰다면 <b>이틀 뒤부터</b> 숫자가 쌓입니다. "
-                "카톡방에 ‘작업실 들어가서 성과 3칸 채워주세요’ 한 번 공지하면 빨라집니다.</p></div>")
+                "<h2 class=b-yel>아직 순증 데이터가 없습니다</h2>"
+                "<p class=empty>증가분은 <b>같은 파트너가 두 번 제출해야</b> 처음 나옵니다"
+                "(1회차 = 기준값). 그러니 공지 후 <b>이틀째부터</b> 숫자가 보이기 시작합니다.</p></div>")
     else:
         note = ""
 
-    # 글감별 성과 — 평균 유입 순. 이게 다음 글감 결정 근거.
+    # 글감별 성과 — 평균 순증 순. 이게 다음 글감 결정 근거.
     drows = "".join(
         f"<tr><td>{esc(d['drop_date'])}</td>"
         f"<td>{esc((d['title'] or '')[:38])}</td>"
         f"<td class=num>{d['used']}</td>"
-        f"<td class=num>{d['reported']}</td>"
-        f"<td class=num>{d['avg_views'] if d['n_views'] else '–'}</td>"
-        f"<td class=num><b>{d['avg_leads']}</b></td>"
-        f"<td class=num>{d['leads']}</td></tr>"
+        f"<td class=num>{d['measured']}{('+' + str(d['multi'])) if d['multi'] else ''}</td>"
+        f"<td class=num><b>{d['avg_gain'] if d['measured'] else '–'}</b></td>"
+        f"<td class=num>{d['gain'] if d['measured'] else '–'}</td></tr>"
         for d in dperf if d["used"])
     drop_card = (
-        "<div class=card><h2>글감별 성과 <span class=pill>평균 유입 높은 순</span></h2>"
-        "<p class=empty>‘쓴 사람’ 대비 ‘입력’이 적으면 평균값은 참고만 하세요. "
+        "<div class=card><h2>글감별 성과 <span class=pill>평균 순증 높은 순</span></h2>"
+        "<p class=empty>‘쓴 사람’ 대비 ‘측정’이 적으면 평균은 참고만 하세요. "
         "위쪽 글감의 <b>소재·후킹 각도를 다음 글감에 재활용</b>하면 됩니다. "
-        "조회수는 파트너 선택 입력이라 안 넣은 글감은 <b>–</b> 로 나옵니다.</p>"
+        "측정 칸의 <b>+N</b> 은 여러 날이 뭉쳐 평균에서 뺀 건수입니다.</p>"
         "<table><tr><th>날짜</th><th>글감</th><th class=num>쓴 사람</th>"
-        "<th class=num>입력</th><th class=num>평균 조회</th><th class=num>평균 유입</th>"
-        f"<th class=num>총 유입</th></tr>{drows}</table></div>"
+        "<th class=num>측정</th><th class=num>평균 순증</th>"
+        f"<th class=num>총 순증</th></tr>{drows}</table></div>"
         if drows else
         "<div class=card><h2>글감별 성과</h2><div class=empty>"
         "아직 글감이 연결된 제출이 없습니다. 파트너가 제출할 때 글감을 골라야 집계됩니다.</div></div>")
 
-    # 성과 상위 개별 게시물 — 파트너가 쓴 글이 다음 글감의 소스가 된다.
+    # 순증 상위 개별 게시물 — 파트너가 쓴 글이 다음 글감의 소스가 된다.
     trows = "".join(
-        f"<tr><td>{esc(t['pname'])}</td>"
+        f"<tr><td>{esc(t['pname'])}</td><td>{esc(t['post_date'])}</td>"
         f"<td><a class=lk href='{esc(t['post_url'])}' target=_blank>글 열기 ↗</a></td>"
         f"<td>{esc((t['dtitle'] or '자유글')[:26])}</td>"
-        # 조회·댓글은 선택 입력 — 미입력을 0 으로 보이면 '유입 60인데 조회 0' 같은 오해가 생긴다.
-        f"<td class=num>{t['views'] if t['views'] is not None else '–'}</td>"
-        f"<td class=num>{t['comments'] if t['comments'] is not None else '–'}</td>"
-        f"<td class=num><b>{t['leads'] or 0}</b></td></tr>"
+        f"<td class=num><b class={'b-grn' if t['gain'] > 0 else ''}>"
+        f"{'+' if t['gain'] >= 0 else ''}{t['gain']}</b></td></tr>"
         for t in tops)
     top_card = (
-        "<div class=card><h2>성과 상위 게시물 "
-        "<span class=pill>다음 글감 후보</span></h2>"
+        "<div class=card><h2>순증 상위 게시물 <span class=pill>다음 글감 후보</span></h2>"
         "<p class=empty>여기 위쪽 글들이 <b>다음 주 글감 뱅크</b>에 들어갈 것들입니다. "
-        "글감 소스를 형 머리에서 파트너 실적으로 옮기는 지점이에요.</p>"
-        "<table><tr><th>파트너</th><th>게시물</th><th>사용 글감</th>"
-        "<th class=num>조회</th><th class=num>댓글</th><th class=num>유입</th></tr>"
-        f"{trows}</table></div>"
+        "글감 소스를 운영자 머리에서 파트너 실적으로 옮기는 지점이에요.</p>"
+        "<table><tr><th>파트너</th><th>올린 날</th><th>게시물</th><th>사용 글감</th>"
+        f"<th class=num>다음날 순증</th></tr>{trows}</table></div>"
         if trows else "")
 
-    # 유입 랭킹 — 출석(연속일)이 아니라 실제 데려온 사람 수
+    # 유입 랭킹 — 출석(연속일)이 아니라 방을 얼마나 키웠는지
     lrows = "".join(
         f"<div class=row><span style='min-width:34px'>{'🥇🥈🥉'[i] if i < 3 else i + 1}</span>"
         f"<a class='nm lk' href='/partner?id={r['id']}'>{esc(r['name'])}</a>"
         f"<span class=hd>{esc(r['handle'] or '-')}</span>"
-        f"<span class=meta>유입 <b class=b-grn>{r['leads']}</b>명 · "
-        f"조회 {r['views']} · 성과입력 {r['posts']}건</span></div>"
+        f"<span class=meta>순증 <b class=b-grn>{'+' if r['gain'] >= 0 else ''}{r['gain']}</b>명 · "
+        f"현재 방 {r['members'] if r['members'] is not None else '–'}명 · "
+        f"측정 {r['measured']}건</span></div>"
         for i, r in enumerate(lb[:20]))
-    lead_card = (f"<div class=card><h2>유입 랭킹 <span class=pill>실제 데려온 사람 수</span></h2>"
+    lead_card = (f"<div class=card><h2>유입 랭킹 <span class=pill>방을 얼마나 키웠나</span></h2>"
                  f"<p class=empty>연속일 랭킹(<a class=lk href='/board'>활동 랭킹</a>)은 성실도, "
                  f"이건 <b>돈이 되는 숫자</b>입니다.</p>{lrows}</div>") if lb else ""
 
-    return kpi + note + drop_card + top_card + lead_card
+    return kpi + note + how + drop_card + top_card + lead_card
 
 
 def view_people(qs) -> str:
@@ -1790,19 +1773,10 @@ class Handler(BaseHTTPRequestHandler):
                 if p and url and p["status"] != "kicked":
                     core.add_submission(conn, p["id"], url,
                                         (f.get("channel") or "threads"),
-                                        drop_id=int(did) if did.isdigit() else None)
+                                        drop_id=int(did) if did.isdigit() else None,
+                                        room_members=f.get("room"))
                 conn.close()
                 return self._redirect(f"/me?t={token}&ok=1")
-            if u.path == "/perf":  # 파트너: 올린 글의 성과(조회·댓글·유입) 입력
-                token = (f.get("t") or "").strip()
-                sid = (f.get("id") or "").strip()
-                conn = db.connect()
-                p = core.find_by_token(conn, token)
-                if p and sid.isdigit() and p["status"] != "kicked":
-                    core.record_perf(conn, int(sid), p["id"], f.get("views"),
-                                     f.get("comments"), f.get("leads"))
-                conn.close()
-                return self._redirect(f"/me?t={token}&ok=perf")
             if u.path == "/rewrite":  # 파트너: 글감 본문 리라이팅(표현만 변형) — JSON 응답
                 token = (f.get("t") or "").strip()
                 did = (f.get("id") or "").strip()

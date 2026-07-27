@@ -165,10 +165,12 @@ CREATE TABLE IF NOT EXISTS submissions (
     valid        INTEGER NOT NULL DEFAULT 1, -- 1=유효(출석인정) / 0=무효(검수 탈락)
     void_reason  TEXT,                       -- 무효 처리 사유
     drop_id      INTEGER,                    -- 이 글을 쓸 때 사용한 글감(drops.id). NULL=미선택
-    views        INTEGER,                    -- 성과: 조회수
-    comments     INTEGER,                    -- 성과: 댓글 수
-    leads        INTEGER,                    -- 성과: 카톡방 유입 인원(진짜 KPI)
-    perf_at      TEXT                        -- 성과 입력 시각(ISO). NULL=아직 미입력
+    room_members INTEGER,                    -- 제출 시점의 내 오픈톡방 인원(절대값).
+                                             -- 다음 제출 값과의 차이 = 이 글이 만든 순증.
+    views        INTEGER,                    -- (구) 파트너 직접 입력 성과 — 미사용
+    comments     INTEGER,                    -- (구)
+    leads        INTEGER,                    -- (구)
+    perf_at      TEXT                        -- (구)
 );
 -- idx_sub_drop 는 여기 두면 안 된다: 기존 DB는 CREATE TABLE IF NOT EXISTS 가 건너뛰어져
 -- drop_id 컬럼이 아직 없는 상태로 인덱스를 만들려다 죽는다. init_db() 의 마이그레이션 뒤에서 생성.
@@ -240,6 +242,7 @@ CREATE INDEX IF NOT EXISTS idx_sales_partner ON sales(partner_id, sale_date);
 # 기존 DB에 뒤늦게 추가된 submissions 성과 컬럼 (SQLite/Postgres 공통 마이그레이션 목록)
 SUB_PERF_COLS = (
     ("drop_id", "INTEGER"),
+    ("room_members", "INTEGER"),
     ("views", "INTEGER"),
     ("comments", "INTEGER"),
     ("leads", "INTEGER"),
