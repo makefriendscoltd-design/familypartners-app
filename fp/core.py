@@ -720,16 +720,68 @@ def daily_board(conn, as_of: date) -> dict:
 # --------------------------------------------------------------------------- #
 # 일일 글감/소스 배포
 # --------------------------------------------------------------------------- #
-def add_drop(conn, title, body=None, assets=None, dtype="ai", drop_date=None) -> int:
+# 글감 태그 — 성과를 글감 하나가 아니라 '축'으로 누적해서 보기 위한 것.
+# 파트너가 10명뿐이라 글감 하나당 표본이 2~3명밖에 안 된다. 그 숫자로는 아무것도
+# 판단할 수 없다. 같은 타겟/포맷을 2주 모으면 표본이 10~15가 되어 비교가 가능해진다.
+DROP_TARGETS = ["전체", "자영업자", "직장인", "부모", "입문자", "N잡러", "시니어"]
+DROP_FORMATS = ["리스트형", "실패담", "자가진단", "한줄질문", "숫자대비",
+                "역발상", "대화인용", "남의사례", "과정공개", "툴비교"]
+
+
+def add_drop(conn, title, body=None, assets=None, dtype="ai", drop_date=None,
+             target=None, fmt=None) -> int:
     d = iso(parse_date(drop_date))
     asset_text = "\n".join(assets) if assets else None
     cur = conn.execute(
-        "INSERT INTO drops(drop_date, dtype, title, body, assets, created_at) "
-        "VALUES (?,?,?,?,?,?)",
-        (d, dtype, title, body, asset_text, now_iso()),
+        "INSERT INTO drops(drop_date, dtype, title, body, assets, target, fmt, created_at) "
+        "VALUES (?,?,?,?,?,?,?,?)",
+        (d, dtype, title, body, asset_text,
+         (target or "").strip() or None, (fmt or "").strip() or None, now_iso()),
     )
     conn.commit()
     return cur.lastrowid
+
+
+def latest_drop_day(conn, as_of: date) -> list[sqlite3.Row]:
+    """'오늘 올릴 글감' 묶음 — 공개된 글감 중 가장 최근 날짜의 것 전부.
+
+    파트너는 이 중에서 자기 계정 색깔에 맞는 하나를 골라 쓴다.
+    오늘자가 아직 없으면(운영자가 늦게 올리면) 직전 날짜 묶음을 그대로 보여준다.
+    """
+    rows = published_drops(conn, as_of, 60)
+    if not rows:
+        return []
+    newest = rows[0]["drop_date"]
+    same_day = [r for r in rows if r["drop_date"] == newest]
+    # published_drops 는 최신순이라 51, 51-1, 51-2 가 뒤집혀 나온다.
+    # 파트너에게는 운영자가 올린 순서 그대로 보여준다.
+    return sorted(same_day, key=lambda r: r["id"])
+
+
+def tag_performance(conn, field: str) -> list[dict]:
+    """타겟/포맷 축으로 성과를 누적. field 는 'target' 또는 'fmt'."""
+    if field not in ("target", "fmt"):
+        raise ValueError("field 는 target 또는 fmt")
+    rows = conn.execute(
+        f"SELECT s.id, d.{field} tag FROM submissions s "
+        f"JOIN drops d ON d.id=s.drop_id WHERE s.valid=1"
+    ).fetchall()
+    gains = submission_gains(conn)
+    acc: dict[str, dict] = {}
+    for r in rows:
+        tag = r["tag"] or "(태그 없음)"
+        a = acc.setdefault(tag, {"tag": tag, "used": 0, "measured": 0, "gain": 0})
+        a["used"] += 1
+        g = gains.get(r["id"])
+        if g and g["span"] == 1:
+            a["measured"] += 1
+            a["gain"] += g["gain"]
+    out = []
+    for a in acc.values():
+        a["avg_gain"] = round(a["gain"] / a["measured"], 2) if a["measured"] else 0
+        out.append(a)
+    out.sort(key=lambda x: (x["measured"] == 0, -x["avg_gain"]))
+    return out
 
 
 def drops_on(conn, d: date) -> list[sqlite3.Row]:

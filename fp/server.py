@@ -143,6 +143,10 @@ background:#000;display:block;max-height:520px;object-fit:contain}
 button.ghost{background:#fff;color:var(--acc);border:1px solid var(--ln);padding:5px 12px;font-size:13px}
 form.perf{flex-wrap:wrap;align-items:center;border-top:1px solid var(--ln);padding-top:10px}
 form.perf input{width:92px}form.perf .hd{min-width:64px}
+.pick{border:1px solid var(--ln);border-radius:10px;padding:14px 16px;margin-bottom:12px;
+background:#fbfdff}.pick:last-of-type{margin-bottom:0}
+.tag{display:inline-block;font-size:12px;color:var(--acc);background:#eaf1fe;
+border:1px solid #cfe0fb;border-radius:999px;padding:2px 9px;margin-right:6px}
 .dl-cta{grid-column:1/-1;border:2px dashed var(--acc);border-radius:10px;padding:14px;text-align:center;background:#f3f7fd}
 .dl-btn{display:inline-block;background:var(--acc);color:#fff;padding:12px 20px;border-radius:9px;
 font-weight:700;text-decoration:none;font-size:15px}
@@ -236,6 +240,12 @@ def quick_actions() -> str:
     )
 
 
+def _sel(name: str, label: str, options: list) -> str:
+    """선택형 드롭다운 — 첫 항목은 '미지정'(빈 값)."""
+    opts = "".join(f"<option value='{esc(o)}'>{esc(o)}</option>" for o in options)
+    return f"<select name={name}><option value=''>{esc(label)} 미지정</option>{opts}</select>"
+
+
 def drop_form() -> str:
     """대시보드: 오늘 글감 등록(본문 + 사진·영상 직접 업로드 + 외부 링크)."""
     return (
@@ -249,13 +259,19 @@ def drop_form() -> str:
         "<b>개당 4MB 이하</b>)</label>"
         "<input type=file name=media accept='image/*,video/*' multiple>"
         "<textarea name=urls rows=2 placeholder='긴 영상은 여기에 링크 — 유튜브·드라이브 등 한 줄에 하나'></textarea>"
-        "<div style='display:flex;gap:8px;align-items:center;margin-top:8px'>"
+        "<div style='display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap'>"
         "<select name=dtype><option value=marketing>마케팅 자료</option>"
         "<option value=ai>AI 콘텐츠</option><option value=evergreen>상시 자료</option></select>"
+        + _sel("target", "🎯 타겟", core.DROP_TARGETS)
+        + _sel("fmt", "✍ 형태", core.DROP_FORMATS) +
         "<input name=drop_date placeholder='날짜 YYYY-MM-DD (비우면 오늘)' style='flex:1'>"
         "<button>글감 게시</button></div></form>"
         "<p class=empty>게시 즉시 <a class=lk href='/feed'>글감 피드</a>에 올라가고, 늦게 들어온 분도 전부 봅니다. "
-        "사진·영상은 자료실에도 자동 저장됩니다.</p></div>"
+        "사진·영상은 자료실에도 자동 저장됩니다.<br>"
+        "<b>타겟·형태를 붙이면</b> 글감 하나로는 표본이 모자란 성과를 "
+        "<b>축 단위로 누적</b>해서 볼 수 있습니다 (<a class=lk href='/perf'>📊 성과</a> 하단). "
+        "같은 날 글감은 <b>서로 다른 타겟·형태</b>로 내는 게 좋습니다 — "
+        "파트너가 자기 계정에 맞는 걸 골라 갑니다.</p></div>"
     )
 
 
@@ -803,12 +819,15 @@ def view_me(qs) -> bytes | None:
     else:
         ok_banner = ""
 
-    # 오늘 올릴 글감 — 공개된 것 중 최신 1건만(미래 예약분은 그 날짜 전까지 숨김).
+    # 오늘 올릴 글감 — 가장 최근 날짜의 글감 '전부'(파트너가 골라 쓴다).
+    # 제출 폼 드롭다운은 최근 것들을 더 넓게 보여줘야 해서 별도로 받는다.
     recent = core.published_drops(conn, core.today(), 30)
+    today_drops = core.latest_drop_day(conn, core.today())
 
     # 제출 폼 — 어떤 글감으로 썼는지 같이 받는다(글감별 성과 집계의 근거).
     drop_opts = "".join(
-        f"<option value='{r['id']}'>{esc(r['drop_date'])} · {esc((r['title'] or '')[:34])}</option>"
+        f"<option value='{r['id']}'>{esc(r['drop_date'])} · {esc((r['title'] or '')[:34])}"
+        f"{(' [' + esc(r['target']) + ']') if (r['target'] or '').strip() else ''}</option>"
         for r in recent[:12])
     # 필수 — 안 고르면 글감별 성과가 비어버린다. 대신 '자유글' 선택지를 둬서 항상 답할 수 있게.
     drop_pick = (f"<select name=drop_id required>"
@@ -838,43 +857,58 @@ def view_me(qs) -> bytes | None:
     # 성과는 제출 폼의 '방 인원' 한 칸으로 대체됐다(별도 입력 카드 없음).
     feed_link = (f"<a class=lk href='/feed?t={esc(token)}'>"
                  "📚 지난 글감 전체보기 →</a>")
-    if recent:
-        r = recent[0]   # 가장 최근 등록한 글감
-        media = ""
-        if r["assets"]:
-            parts = [render_asset(conn, a) for a in r["assets"].splitlines()]
-            parts = [p for p in parts if p]
-            if parts:
-                solo = " solo" if len(parts) == 1 else ""
-                media = f"<div class='media-grid{solo}'>{''.join(parts)}</div>"
-        has_body = bool((r["body"] or "").strip())
-        # 리라이팅 — Gemini 키가 설정돼 있을 때만 버튼을 보여준다(없으면 조용히 숨김).
-        rewrite_html = ""
-        if has_body and gemini.is_configured():
-            rewrite_html = (
-                "<div class=rw-box style='margin-top:10px'>"
-                f"<button type=button class=ghost data-t='{esc(token)}' data-id='{r['id']}' "
-                "onclick=fpRewrite(this)>✨ 리라이팅 (형식 그대로, 표현만 바꾸기)</button>"
-                "<div class=rw-out></div></div>")
-        body_html = ((f"<pre>{esc(r['body'])}</pre>"
-                      "<button type=button class=ghost onclick=fpCopy(this)>📋 본문 복사</button>"
-                      + rewrite_html) if has_body else "")
-        more = (f"<p class=empty style='margin-top:10px'>"
-                f"📅 {esc(r['drop_date'])} 등록 · 이전 글감은 여기서 → {feed_link}</p>"
-                if len(recent) > 1 else
-                f"<p class=empty style='margin-top:10px'>{feed_link}</p>")
+    if today_drops:
+        blocks = []
+        for r in today_drops:
+            media = ""
+            if r["assets"]:
+                parts = [render_asset(conn, a) for a in r["assets"].splitlines()]
+                parts = [p for p in parts if p]
+                if parts:
+                    solo = " solo" if len(parts) == 1 else ""
+                    media = f"<div class='media-grid{solo}'>{''.join(parts)}</div>"
+            has_body = bool((r["body"] or "").strip())
+            # 리라이팅 — Gemini 키가 설정돼 있을 때만 버튼을 보여준다(없으면 조용히 숨김).
+            rewrite_html = ""
+            if has_body and gemini.is_configured():
+                rewrite_html = (
+                    "<div class=rw-box style='margin-top:10px'>"
+                    f"<button type=button class=ghost data-t='{esc(token)}' data-id='{r['id']}' "
+                    "onclick=fpRewrite(this)>✨ 리라이팅 (형식 그대로, 표현만 바꾸기)</button>"
+                    "<div class=rw-out></div></div>")
+            body_html = ((f"<pre>{esc(r['body'])}</pre>"
+                          "<button type=button class=ghost onclick=fpCopy(this)>📋 본문 복사</button>"
+                          + rewrite_html) if has_body else "")
+            tags = "".join(
+                f"<span class=tag>{esc(v)}</span>"
+                for v in (r["target"], r["fmt"]) if (v or "").strip())
+            blocks.append(
+                "<div class=pick>"
+                f"<h2 style='margin-bottom:8px'>{esc(r['title'])}"
+                f"<span class=pill>{DROP_TYPE.get(r['dtype'], r['dtype'])}</span></h2>"
+                f"{('<div style=margin-bottom:8px>' + tags + '</div>') if tags else ''}"
+                f"{body_html}{media}</div>")
+        n = len(today_drops)
+        head = (f"<h2>📌 오늘 올릴 글감 <span class=pill>{n}개 중 하나를 고르세요</span></h2>"
+                "<p class=empty style='margin:-4px 0 12px'>"
+                "오늘 것 중 <b>내 계정 색깔·내 팔로워에 맞는 하나</b>를 골라 올리세요. "
+                "전원이 같은 글을 올리면 스레드에 똑같은 글이 도배돼서 오히려 반응이 죽습니다.<br>"
+                "⚠️ <b>어제 이전 글감은 올리면 안 됩니다.</b> "
+                "제출할 때 <b>고른 글감을 그대로 선택</b>해 주세요."
+                if n > 1 else
+                "<h2>📌 오늘 올릴 글감</h2>"
+                "<p class=empty style='margin:-4px 0 12px'>"
+                "⚠️ <b>이 글감을 올리세요.</b> 어제 거 올리면 안 됩니다.")
         drop_card = ("<div class=card style='border:2px solid var(--acc)'>"
-                     "<h2>📌 오늘 올릴 글감 <span class=pill>최신 1건만 — 이걸 올리세요</span></h2>"
-                     "<p class=empty style='margin:-4px 0 10px'>"
-                     "⚠️ <b>맨 위 이 글감을 올리세요.</b> 어제 거 올리면 안 됩니다. "
-                     "예전 글감을 보려면 아래 ‘지난 글감 전체보기’로만 들어가세요.</p>"
-                     f"<h2>{esc(r['title'])}"
-                     f"<span class=pill>{DROP_TYPE.get(r['dtype'], r['dtype'])}</span></h2>"
-                     f"{body_html}{media}{more}</div>")
+                     f"{head} 예전 글감은 아래 ‘지난 글감 전체보기’로만 들어가세요.</p>"
+                     + "".join(blocks) +
+                     f"<p class=empty style='margin-top:10px'>"
+                     f"📅 {esc(today_drops[0]['drop_date'])} 등록 · {feed_link}</p></div>")
     else:
         drop_card = ("<div class=card><h2>📌 오늘 올릴 글감</h2>"
                      "<div class=empty>아직 등록 전입니다.</div>"
                      f"<p class=empty>{feed_link}</p></div>")
+    # 제출 폼 드롭다운의 글감 목록도 오늘 것이 위로 오도록 이미 정렬돼 있다.
 
     # 내 판매 링크 (유형별 상품 — 운영진이 발급, 공지에 자동삽입)
     plinks = onboard.links_of(p)
@@ -1138,6 +1172,7 @@ def view_perf(qs) -> str:
     dperf = core.drop_performance(conn, 60)
     tops = core.top_posts(conn, 15)
     lb = core.lead_board(conn)
+    tag_perf = {f: core.tag_performance(conn, f) for f in ("target", "fmt")}
     conn.close()
 
     kpi = (f"<div class=kpi>"
@@ -1214,7 +1249,31 @@ def view_perf(qs) -> str:
                  f"<p class=empty>연속일 랭킹(<a class=lk href='/board'>활동 랭킹</a>)은 성실도, "
                  f"이건 <b>돈이 되는 숫자</b>입니다.</p>{lrows}</div>") if lb else ""
 
-    return kpi + note + how + drop_card + top_card + lead_card
+    # 태그별 성과 — 글감 하나는 표본이 2~3명뿐이라 못 믿는다. 축으로 누적해야 읽힌다.
+    def tag_table(field, title, hint):
+        rows = tag_perf[field]
+        if not rows:
+            return ""
+        body = "".join(
+            f"<tr><td>{esc(t['tag'])}</td><td class=num>{t['used']}</td>"
+            f"<td class=num>{t['measured']}</td>"
+            f"<td class=num><b>{t['avg_gain'] if t['measured'] else '–'}</b></td>"
+            f"<td class=num>{t['gain'] if t['measured'] else '–'}</td></tr>"
+            for t in rows)
+        return (f"<div class=card><h2>{title} <span class=pill>평균 순증 높은 순</span></h2>"
+                f"<p class=empty>{hint}</p>"
+                "<table><tr><th>구분</th><th class=num>쓴 글</th><th class=num>측정</th>"
+                f"<th class=num>평균 순증</th><th class=num>총 순증</th></tr>{body}</table></div>")
+
+    tag_cards = (
+        tag_table("target", "🎯 타겟별 성과",
+                  "누구에게 말 거는 글이 우리 파트너 계정에서 먹히는지. "
+                  "글감 하나는 표본이 2~3명이라 못 믿지만, 타겟은 2주 모으면 10건 넘어 읽을 수 있습니다.") +
+        tag_table("fmt", "✍ 형태별 성과",
+                  "리스트형만 반복하면 피드가 똑같아 보입니다. "
+                  "어떤 <b>글의 형태</b>가 반응이 좋은지 보고 다음 글감의 틀을 바꾸세요."))
+
+    return kpi + note + how + drop_card + top_card + lead_card + tag_cards
 
 
 def view_people(qs) -> str:
@@ -1869,7 +1928,8 @@ class Handler(BaseHTTPRequestHandler):
                 dtype = (f.get("dtype") or "marketing").strip() or "marketing"
                 dd = (f.get("drop_date") or "").strip() or None
                 core.add_drop(conn, title, (f.get("body") or "").strip() or None,
-                              assets, dtype, dd)
+                              assets, dtype, dd,
+                              target=f.get("target"), fmt=f.get("fmt"))
                 conn.close()
                 msg = f"글감 등록: {title} (첨부 {len(assets)}개)"
                 if skipped:

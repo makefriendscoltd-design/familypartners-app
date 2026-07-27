@@ -192,6 +192,8 @@ CREATE TABLE IF NOT EXISTS drops (
     title      TEXT NOT NULL,
     body       TEXT,                        -- 글감 본문/캡션
     assets     TEXT,                        -- 다운로드 경로/URL, 줄바꿈 구분
+    target     TEXT,                        -- 누구에게 말 거는 글인가 (자영업자/직장인/부모/...)
+    fmt        TEXT,                        -- 글의 형태 (리스트형/실패담/자가진단/...)
     created_at TEXT NOT NULL
 );
 CREATE INDEX IF NOT EXISTS idx_drops_date ON drops(drop_date);
@@ -240,6 +242,8 @@ CREATE INDEX IF NOT EXISTS idx_sales_partner ON sales(partner_id, sale_date);
 """
 
 # 기존 DB에 뒤늦게 추가된 submissions 성과 컬럼 (SQLite/Postgres 공통 마이그레이션 목록)
+DROP_TAG_COLS = (("target", "TEXT"), ("fmt", "TEXT"))
+
 SUB_PERF_COLS = (
     ("drop_id", "INTEGER"),
     ("room_members", "INTEGER"),
@@ -264,6 +268,8 @@ def init_db() -> None:
             conn.execute("ALTER TABLE library ADD COLUMN IF NOT EXISTS data_b64 TEXT")
             for col, typ in SUB_PERF_COLS:
                 conn.execute(f"ALTER TABLE submissions ADD COLUMN IF NOT EXISTS {col} {typ}")
+            for col, typ in DROP_TAG_COLS:
+                conn.execute(f"ALTER TABLE drops ADD COLUMN IF NOT EXISTS {col} {typ}")
             conn.execute("CREATE INDEX IF NOT EXISTS idx_sub_drop ON submissions(drop_id)")
             conn.commit()
         else:
@@ -292,6 +298,10 @@ def init_db() -> None:
             for col, typ in SUB_PERF_COLS:
                 if col not in scols:
                     conn.execute(f"ALTER TABLE submissions ADD COLUMN {col} {typ}")
+            dcols = {r["name"] for r in conn.execute("PRAGMA table_info(drops)")}
+            for col, typ in DROP_TAG_COLS:
+                if col not in dcols:
+                    conn.execute(f"ALTER TABLE drops ADD COLUMN {col} {typ}")
             conn.execute("CREATE INDEX IF NOT EXISTS idx_sub_drop ON submissions(drop_id)")
             conn.commit()
     finally:
