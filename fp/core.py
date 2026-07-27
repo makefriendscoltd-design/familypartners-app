@@ -467,15 +467,126 @@ def set_status(conn, pid, status, when=None, reason=None) -> None:
 # --------------------------------------------------------------------------- #
 # 제출
 # --------------------------------------------------------------------------- #
-def add_submission(conn, pid, url, channel="threads", post_date=None, note=None) -> int:
+def add_submission(conn, pid, url, channel="threads", post_date=None, note=None,
+                   drop_id=None) -> int:
     pd = iso(parse_date(post_date))
     cur = conn.execute(
-        "INSERT INTO submissions(partner_id, post_url, channel, post_date, submitted_at, note) "
-        "VALUES (?,?,?,?,?,?)",
-        (pid, url, channel, pd, now_iso(), note),
+        "INSERT INTO submissions(partner_id, post_url, channel, post_date, submitted_at, "
+        "note, drop_id) VALUES (?,?,?,?,?,?,?)",
+        (pid, url, channel, pd, now_iso(), note, drop_id),
     )
     conn.commit()
     return cur.lastrowid
+
+
+# --------------------------------------------------------------------------- #
+# 성과 추적 — 올린 글이 실제로 어떤 결과를 냈는지(조회·댓글·카톡방 유입)
+#   출석(제출)은 성실도만 재고, 이 값들이 실제 KPI다.
+#   글감별로 묶여야 "어떤 글감이 먹히는지"가 나오므로 submissions.drop_id 가 핵심.
+# --------------------------------------------------------------------------- #
+PERF_MIN_AGE_DAYS = 2      # 올린 지 이틀은 지나야 숫자가 의미 있음
+
+
+def _to_int(v) -> int | None:
+    """폼 입력값 → 0 이상 정수. 빈칸/이상값은 None."""
+    try:
+        n = int(str(v).strip().replace(",", ""))
+    except (TypeError, ValueError):
+        return None
+    return n if n >= 0 else None
+
+
+def pending_perf(conn, pid, as_of: date, limit: int = 10) -> list[sqlite3.Row]:
+    """성과 입력이 아직 안 된 내 제출 (올린 지 PERF_MIN_AGE_DAYS 이상 지난 것)."""
+    cutoff = iso(as_of - timedelta(days=PERF_MIN_AGE_DAYS))
+    return conn.execute(
+        "SELECT * FROM submissions WHERE partner_id=? AND valid=1 AND perf_at IS NULL "
+        "AND post_date<=? ORDER BY post_date DESC, id DESC LIMIT ?",
+        (pid, cutoff, limit),
+    ).fetchall()
+
+
+def record_perf(conn, sub_id, pid, views=None, comments=None, leads=None) -> bool:
+    """본인 제출의 성과를 기록. 남의 제출은 pid 불일치로 무시된다.
+
+    유입(leads)은 필수 — 이게 실제 KPI이자 '성과 보고됨'의 기준이다.
+    조회·댓글은 선택(파트너 입력 부담을 줄이려고). 비면 NULL 로 남는다.
+    """
+    v, c, l = _to_int(views), _to_int(comments), _to_int(leads)
+    if l is None:
+        return False
+    row = conn.execute(
+        "SELECT id FROM submissions WHERE id=? AND partner_id=?", (sub_id, pid)
+    ).fetchone()
+    if not row:
+        return False
+    conn.execute(
+        "UPDATE submissions SET views=?, comments=?, leads=?, perf_at=? WHERE id=?",
+        (v, c, l, now_iso(), sub_id),
+    )
+    conn.commit()
+    return True
+
+
+def drop_performance(conn, limit: int = 40) -> list[dict]:
+    """글감별 성과 집계 — 평균 유입 높은 순. 다음 글감을 뭘로 할지 결정하는 근거."""
+    rows = conn.execute(
+        "SELECT d.id, d.drop_date, d.title, d.dtype, "
+        "COUNT(s.id) used, "
+        "SUM(CASE WHEN s.perf_at IS NOT NULL THEN 1 ELSE 0 END) reported, "
+        # 조회는 선택 입력이라 보고 건수와 분모가 다르다 — 따로 센다.
+        "SUM(CASE WHEN s.views IS NOT NULL THEN 1 ELSE 0 END) n_views, "
+        "COALESCE(SUM(s.views),0) views, COALESCE(SUM(s.comments),0) comments, "
+        "COALESCE(SUM(s.leads),0) leads "
+        "FROM drops d LEFT JOIN submissions s ON s.drop_id=d.id AND s.valid=1 "
+        "GROUP BY d.id, d.drop_date, d.title, d.dtype"
+    ).fetchall()
+    out = []
+    for r in rows:
+        rep = r["reported"] or 0
+        nv = r["n_views"] or 0
+        out.append({
+            "id": r["id"], "drop_date": r["drop_date"], "title": r["title"],
+            "dtype": r["dtype"], "used": r["used"] or 0, "reported": rep,
+            "n_views": nv,
+            "views": r["views"] or 0, "comments": r["comments"] or 0,
+            "leads": r["leads"] or 0,
+            "avg_views": round((r["views"] or 0) / nv, 1) if nv else 0,
+            "avg_leads": round((r["leads"] or 0) / rep, 2) if rep else 0,
+        })
+    # 성과가 보고된 글감이 먼저, 그 안에서 평균 유입 → 평균 조회 순
+    out.sort(key=lambda x: (x["reported"] == 0, -x["avg_leads"], -x["avg_views"],
+                            x["drop_date"]))
+    return out[:limit]
+
+
+def top_posts(conn, limit: int = 20) -> list[dict]:
+    """성과 상위 개별 게시물 — 이게 곧 다음 글감 후보(파트너가 쓴 글이 소스가 된다)."""
+    rows = conn.execute(
+        "SELECT s.id, s.post_url, s.post_date, s.views, s.comments, s.leads, "
+        "p.name pname, p.handle phandle, d.title dtitle "
+        "FROM submissions s JOIN partners p ON p.id=s.partner_id "
+        "LEFT JOIN drops d ON d.id=s.drop_id "
+        "WHERE s.valid=1 AND s.perf_at IS NOT NULL"
+    ).fetchall()
+    out = [dict(r) for r in rows]
+    out.sort(key=lambda x: (-(x["leads"] or 0), -(x["views"] or 0), -(x["comments"] or 0)))
+    return out[:limit]
+
+
+def lead_board(conn, since: str | None = None) -> list[dict]:
+    """파트너별 유입 랭킹 — 출석(연속일)이 아니라 실제 데려온 사람 수 기준."""
+    sql = ("SELECT p.id, p.name, p.handle, "
+           "COUNT(s.id) posts, COALESCE(SUM(s.leads),0) leads, "
+           "COALESCE(SUM(s.views),0) views "
+           "FROM partners p LEFT JOIN submissions s "
+           "  ON s.partner_id=p.id AND s.valid=1 AND s.perf_at IS NOT NULL"
+           + (" AND s.post_date>=?" if since else "") +
+           " WHERE p.status='active' GROUP BY p.id, p.name, p.handle")
+    rows = conn.execute(sql, (since,) if since else ()).fetchall()
+    out = [dict(r) for r in rows]
+    out.sort(key=lambda x: (-(x["leads"] or 0), -(x["views"] or 0), x["name"]))
+    return out
 
 
 def covered_dates(conn, pid) -> set[str]:
