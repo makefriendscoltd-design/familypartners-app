@@ -609,8 +609,12 @@ def _drop_thumb(conn, assets_text: str | None) -> str | None:
     return None
 
 
-def view_feed(qs) -> bytes:
-    """공개 글감 피드 — 지난 콘텐츠 전체(최신순). 로그인 없이 누구나 열람."""
+def view_feed(qs, is_admin: bool = False) -> bytes:
+    """공개 글감 피드 — 지난 콘텐츠 전체(최신순). 로그인 없이 누구나 열람.
+
+    운영자로 로그인한 경우에만 맨 위에 '예약 글감'(미래 날짜)이 함께 보인다.
+    예약분은 파트너에게는 그 날짜가 되기 전까지 계속 숨겨진다.
+    """
     conn = db.connect()
     try:
         show = max(12, min(365, int((qs.get("n", ["60"])[0]))))
@@ -659,6 +663,44 @@ def view_feed(qs) -> bytes:
             f"<span class=pill>{esc(DROP_TYPE.get(r['dtype'], r['dtype']))}</span></h2>"
             f"<div class=feed-date>📅 {esc(r['drop_date'])}</div>"
             f"{body}{media}</div></div>")
+
+    # 예약 글감 — 운영자에게만. 파트너는 날짜가 될 때까지 못 본다.
+    sched_html = ""
+    if is_admin:
+        sched = core.scheduled_drops(conn, core.today())
+        if sched:
+            blocks = []
+            for r in sched:
+                try:
+                    dd = (core.parse_date(r["drop_date"]) - core.today()).days
+                except Exception:
+                    dd = 0
+                b = r["body"] or ""
+                n_lines = len([l for l in b.split("\n") if l.strip()])
+                sbody = ((f"<pre>{esc(b)}</pre>"
+                          "<button type=button class=ghost onclick=fpCopy(this)>📋 본문 복사</button>")
+                         if b.strip() else "<p class=empty>본문 없음</p>")
+                tags = "".join(f"<span class=tag>{esc(v)}</span>"
+                               for v in (r["target"], r["fmt"]) if (v or "").strip())
+                blocks.append(
+                    "<div class=pick>"
+                    f"<h2 style='margin-bottom:6px'>{esc(r['title'])}"
+                    f"<span class=pill>📅 {esc(r['drop_date'])} · D-{dd}</span></h2>"
+                    f"<p class=empty style='margin:0 0 8px'>{n_lines}줄 · {len(b)}자"
+                    f"{(' · ' + tags) if tags else ''}</p>"
+                    f"{sbody}"
+                    f"<p class=empty style='margin-top:10px'>"
+                    f"<a class=lk href='/drop?date={esc(r['drop_date'])}'>"
+                    f"✏️ 이 날짜 글감 수정·삭제 →</a></p></div>")
+            days = sorted({r["drop_date"] for r in sched})
+            sched_html = (
+                "<div class=card style='border:2px solid var(--yel)'>"
+                f"<h2 class=b-yel>⏳ 예약된 글감 <span class=pill>{len(sched)}건 · "
+                f"{days[0]}~{days[-1]}</span></h2>"
+                "<p class=empty style='margin:-4px 0 12px'>"
+                "<b>운영자에게만 보입니다.</b> 파트너 작업실·피드에는 그 날짜가 되어야 나타납니다. "
+                "아래에서 내용을 미리 확인하고, 고치거나 지우려면 각 항목의 링크로 들어가세요.</p>"
+                + "".join(blocks) + "</div>")
     conn.close()
 
     token = (qs.get("t", [None])[0])
@@ -672,7 +714,7 @@ def view_feed(qs) -> bytes:
              "<p class=empty>매일 올라오는 콘텐츠 보관함입니다. <b>늦게 들어와도 1일차부터 전부</b> 볼 수 있어요. "
              "<b>썸네일을 누르면</b> 본문(복사)·사진·영상이 펼쳐집니다.</p></div>")
     return shell_portal("글감 피드", "매일 콘텐츠 보관함",
-                        COPY_JS + LAZY_JS + intro + body_html, token)
+                        COPY_JS + LAZY_JS + intro + sched_html + body_html, token)
 
 
 def _sel_v(name: str, label: str, options: list, cur) -> str:
@@ -2225,7 +2267,7 @@ class Handler(BaseHTTPRequestHandler):
             if u.path == "/feed":
                 if not db.is_postgres() and not db.db_path().exists():
                     return self._send(shell_portal("글감 피드", "", _no_db()))
-                return self._send(view_feed(qs))
+                return self._send(view_feed(qs, is_admin=self._admin_ok()))
             if u.path == "/status":   # 배포·큐 상태(개수만) — 로그인 없이 확인용
                 return self._json(status_payload())
 
