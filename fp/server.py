@@ -239,7 +239,11 @@ def deployed_commit() -> str:
 
 
 def status_payload() -> dict:
-    """공개 상태 — 배포 확인용. 개수와 커밋만, 내용·개인정보는 넣지 않는다."""
+    """공개 상태 — 배포 확인 + 글감 생성기가 읽을 성과 요약.
+
+    개인정보는 넣지 않는다: 파트너 이름·개별 방 인원은 제외하고,
+    타겟/형태 축의 평균 순증과 글감 제목(이미 피드에 공개된 값)만 담는다.
+    """
     out = {"commit": deployed_commit(), "today": core.iso(core.today())}
     try:
         conn = db.connect()
@@ -249,6 +253,13 @@ def status_payload() -> dict:
                 "GROUP BY drop_date ORDER BY drop_date", (core.iso(core.today()),)
             ).fetchall()
             out["drops"] = {r["drop_date"]: r["c"] for r in rows}
+            st = core.room_stats(conn)
+            out["perf"] = {
+                "measured": st["measured"],          # 순증이 산출된 글 수
+                "avg_gain": st["avg_gain"],          # 글 1건당 평균 방 인원 순증
+                "fill_rate": st["fill_rate"],        # 파트너 인원 입력률(%)
+                **core.perf_summary(conn),
+            }
         finally:
             conn.close()
     except Exception as e:

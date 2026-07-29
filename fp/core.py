@@ -547,7 +547,7 @@ def submission_gains(conn) -> dict[int, dict]:
 def drop_performance(conn, limit: int = 40) -> list[dict]:
     """글감별 성과 — 글 1건당 평균 방 인원 순증이 높은 순. 다음 글감의 근거."""
     subs = conn.execute(
-        "SELECT s.id, s.drop_id, d.id did, d.drop_date, d.title, d.dtype "
+        "SELECT s.id, s.drop_id, d.id did, d.drop_date, d.title, d.dtype, d.target, d.fmt "
         "FROM drops d LEFT JOIN submissions s ON s.drop_id=d.id AND s.valid=1"
     ).fetchall()
     gains = submission_gains(conn)
@@ -556,7 +556,8 @@ def drop_performance(conn, limit: int = 40) -> list[dict]:
     for r in subs:
         a = agg.setdefault(r["did"], {
             "id": r["did"], "drop_date": r["drop_date"], "title": r["title"],
-            "dtype": r["dtype"], "used": 0, "measured": 0, "gain": 0, "multi": 0,
+            "dtype": r["dtype"], "target": r["target"], "fmt": r["fmt"],
+            "used": 0, "measured": 0, "gain": 0, "multi": 0,
         })
         if r["id"] is None:          # 아직 아무도 안 쓴 글감
             continue
@@ -627,6 +628,30 @@ def lead_board(conn) -> list[dict]:
     out = list(acc.values())
     out.sort(key=lambda x: (-x["gain"], -(x["members"] or 0), x["name"]))
     return out
+
+
+def perf_summary(conn, top_n: int = 6) -> dict:
+    """글감 생성기가 읽을 성과 요약 — 개인정보 없이 '무엇이 먹혔나'만.
+
+    파트너 이름·방 인원 같은 개인 단위 값은 넣지 않는다. 타겟/형태 축의 평균과
+    글감 제목(이미 공개된 값)만 담아, 다음 글감을 뭘로 쓸지 판단할 근거로 쓴다.
+    """
+    def axis(field):
+        return [{"tag": t["tag"], "avg_gain": t["avg_gain"], "measured": t["measured"]}
+                for t in tag_performance(conn, field) if t["measured"]]
+
+    drops = [d for d in drop_performance(conn, 200) if d["measured"]]
+    drops.sort(key=lambda d: -d["avg_gain"])
+    return {
+        "by_target": axis("target"),
+        "by_fmt": axis("fmt"),
+        "top_drops": [{"title": d["title"], "target": d["target"], "fmt": d["fmt"],
+                       "avg_gain": d["avg_gain"], "measured": d["measured"]}
+                      for d in drops[:top_n]],
+        "worst_drops": [{"title": d["title"], "target": d["target"], "fmt": d["fmt"],
+                         "avg_gain": d["avg_gain"], "measured": d["measured"]}
+                        for d in drops[-3:]] if len(drops) > top_n else [],
+    }
 
 
 def room_stats(conn) -> dict:
