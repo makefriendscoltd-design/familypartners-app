@@ -17,6 +17,7 @@ import json
 import mimetypes
 import os
 import re
+from datetime import timedelta
 from http.client import HTTPMessage
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, quote, urlparse
@@ -674,14 +675,42 @@ def view_feed(qs) -> bytes:
                         COPY_JS + LAZY_JS + intro + body_html, token)
 
 
+def _sel_v(name: str, label: str, options: list, cur) -> str:
+    """현재값이 선택된 상태로 렌더되는 드롭다운."""
+    cur = (cur or "").strip()
+    opts = "".join(
+        f"<option value='{esc(o)}'{' selected' if o == cur else ''}>{esc(o)}</option>"
+        for o in options)
+    sel = "" if cur else " selected"
+    return (f"<select name={name}><option value=''{sel}>{esc(label)} 미지정</option>"
+            f"{opts}</select>")
+
+
 def view_drop(qs) -> str:
+    """날짜별 글감 — 미래(예약) 날짜도 보인다. 파트너에게 나가기 전 검토·수정하는 화면."""
     conn = db.connect()
     d = core.parse_date(qs.get("date", [None])[0])
+    iso_d = core.iso(d)
     rows = core.drops_on(conn, d)
+    prev = core.iso(d - timedelta(days=1))
+    nxt = core.iso(d + timedelta(days=1))
+    flash = ""
+    if qs.get("msg"):
+        flash = (f"<div class=card style='border-color:var(--grn)'>"
+                 f"<b class=b-grn>{esc(qs['msg'][0])}</b></div>")
+    nav = (flash + f"<div class=card><h2>글감 — {iso_d}"
+           f"<span class=pill>{len(rows)}건{' · 예약(미래)' if iso_d > core.iso(core.today()) else ''}</span></h2>"
+           f"<form method=get action=/drop style='margin-top:0'>"
+           f"<a class=lk href='/drop?date={prev}'>← {prev}</a>"
+           f"<input name=date value='{esc(iso_d)}' style='width:130px'>"
+           f"<button>이동</button>"
+           f"<a class=lk href='/drop?date={nxt}' style='margin-left:auto'>{nxt} →</a></form>"
+           f"<p class=empty>여기서 <b>파트너에게 나가기 전</b> 내용을 고치거나 지울 수 있습니다. "
+           f"수정은 즉시 반영됩니다.</p></div>")
     if not rows:
         conn.close()
-        return (f"<div class=card><h2>오늘의 글감 — {core.iso(d)}</h2>"
-                f"<div class=empty>등록된 글감 없음 — 대시보드에서 ‘📝 오늘 글감 올리기’로 등록하세요.</div></div>")
+        return (nav + "<div class=card><div class=empty>등록된 글감 없음 — "
+                "대시보드 ‘📝 오늘 글감 올리기’ 또는 예약 큐에서 등록됩니다.</div></div>")
     out = []
     for r in rows:
         media = ""
@@ -691,11 +720,35 @@ def view_drop(qs) -> str:
             if parts:
                 solo = " solo" if len(parts) == 1 else ""
                 media = f"<div class='media-grid{solo}'>{''.join(parts)}</div>"
-        out.append(f"<div class=card><h2>{esc(r['title'])}"
-                   f"<span class=pill>{r['drop_date']} · {DROP_TYPE.get(r['dtype'], r['dtype'])}</span></h2>"
-                   f"<pre>{esc(r['body'] or '')}</pre>{media}</div>")
+        body = r["body"] or ""
+        n_lines = len([l for l in body.split("\n") if l.strip()])
+        # 길이는 기존 글감 60건 기준(중앙값 6줄·110자). 벗어나면 눈에 띄게 표시.
+        warn = ("<span class=b-red>· 기존 글감보다 깁니다(중앙값 6줄·110자)</span>"
+                if n_lines > 9 or len(body) > 170 else "")
+        out.append(
+            f"<div class=card><h2>{esc(r['title'])}"
+            f"<span class=pill>{DROP_TYPE.get(r['dtype'], r['dtype'])}"
+            f"{(' · ' + esc(r['target'])) if r['target'] else ''}"
+            f"{(' · ' + esc(r['fmt'])) if r['fmt'] else ''}</span></h2>"
+            f"<p class=empty style='margin:-6px 0 8px'>{n_lines}줄 · {len(body)}자 {warn}</p>"
+            f"{media}"
+            f"<form method=post action=/op/drop-edit style='flex-direction:column;align-items:stretch'>"
+            f"<input type=hidden name=id value='{r['id']}'>"
+            f"<input type=hidden name=date value='{esc(iso_d)}'>"
+            f"<input name=title value='{esc(r['title'])}' required>"
+            f"<textarea name=body rows={max(6, n_lines + 1)}>{esc(body)}</textarea>"
+            f"<div style='display:flex;gap:8px;margin-top:8px;flex-wrap:wrap'>"
+            + _sel_v("target", "🎯 타겟", core.DROP_TARGETS, r["target"])
+            + _sel_v("fmt", "✍ 형태", core.DROP_FORMATS, r["fmt"])
+            + f"<input name=drop_date value='{esc(r['drop_date'])}' style='width:130px'>"
+            f"<button>수정 저장</button></div></form>"
+            f"<form method=post action=/op/drop-del style='margin-top:6px'>"
+            f"<input type=hidden name=id value='{r['id']}'>"
+            f"<input type=hidden name=date value='{esc(iso_d)}'>"
+            f"<button class=ghost style='color:var(--red);border-color:var(--red)'>"
+            f"이 글감 삭제</button></form></div>")
     conn.close()
-    return "".join(out)
+    return nav + "".join(out)
 
 
 def view_onboard(qs) -> str:
@@ -1978,10 +2031,23 @@ class Handler(BaseHTTPRequestHandler):
                 if skipped:
                     msg += f" · {skipped}개는 4MB 초과로 제외 — 유튜브/드라이브 링크로 올려주세요"
                 return self._redirect("/?msg=" + _q(msg))
+            if u.path == "/op/drop-edit":  # 운영자: 글감 수정(파트너 노출 전 검토용)
+                conn = db.connect()
+                ok = core.update_drop(
+                    conn, int(f.get("id", 0)), title=f.get("title"), body=f.get("body"),
+                    target=f.get("target"), fmt=f.get("fmt"), drop_date=f.get("drop_date"))
+                conn.close()
+                back = (f.get("date") or "").strip()
+                msg = "글감 수정 완료" if ok else "수정할 내용이 없습니다"
+                return self._redirect(
+                    (f"/drop?date={_q(back)}&msg={_q(msg)}") if back else f"/drop?msg={_q(msg)}")
             if u.path == "/op/drop-del":  # 운영자: 글감 삭제
                 conn = db.connect()
                 core.delete_drop(conn, int(f.get("id", 0)))
                 conn.close()
+                back = (f.get("date") or "").strip()
+                if back:
+                    return self._redirect(f"/drop?date={_q(back)}&msg={_q('글감 삭제됨')}")
                 return self._redirect(f.get("back") or "/feed")
             if u.path == "/op/delete":  # 운영자: 파트너 완전 삭제
                 conn = db.connect()

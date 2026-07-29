@@ -784,6 +784,36 @@ def tag_performance(conn, field: str) -> list[dict]:
     return out
 
 
+def get_drop(conn, drop_id) -> sqlite3.Row | None:
+    return conn.execute("SELECT * FROM drops WHERE id=?", (drop_id,)).fetchone()
+
+
+def update_drop(conn, drop_id, title=None, body=None, dtype=None,
+                target=None, fmt=None, drop_date=None) -> bool:
+    """글감 수정 — 넘어온 값만 바꾼다. 예약 글감을 파트너 노출 전에 손보기 위한 것."""
+    row = get_drop(conn, drop_id)
+    if not row:
+        return False
+    sets, vals = [], []
+    for col, val in (("title", title), ("body", body), ("dtype", dtype),
+                     ("target", target), ("fmt", fmt), ("drop_date", drop_date)):
+        if val is None:
+            continue
+        v = val.strip()
+        if col in ("title", "drop_date") and not v:
+            continue                      # 제목·날짜는 빈 값으로 못 지운다
+        if col == "drop_date":
+            v = iso(parse_date(v))
+        sets.append(f"{col}=?")
+        vals.append(v or None)
+    if not sets:
+        return False
+    vals.append(drop_id)
+    conn.execute(f"UPDATE drops SET {', '.join(sets)} WHERE id=?", vals)
+    conn.commit()
+    return True
+
+
 def drops_on(conn, d: date) -> list[sqlite3.Row]:
     return conn.execute(
         "SELECT * FROM drops WHERE drop_date=? ORDER BY id", (iso(d),)
