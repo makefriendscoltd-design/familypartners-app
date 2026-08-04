@@ -18,3 +18,8 @@ nohup.out
 
 .env
 .env.*
+
+# 로컬 개발 환경 (PC마다 다름 — 커밋하지 않음)
+.venv/
+.claude/settings.local.json
+.DS_Store
