@@ -23,8 +23,8 @@ from fp import db, dropqueue  # noqa: E402
 def main() -> int:
     db.init_db()
     s = dropqueue.sync()
-    if not (s["added"] or s["bad"]):
-        print(f"[글감큐] 새로 등록할 글감 없음 (건너뜀 {s['skipped']})")
+    if not (s["added"] or s["updated"] or s["bad"]):
+        print(f"[글감큐] 반영할 글감 없음 (건너뜀 {s['skipped']})")
     return 0
 
 
