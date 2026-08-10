@@ -22,7 +22,10 @@ import json
 import re
 import sys
 from collections import defaultdict
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
+
+KST = timezone(timedelta(hours=9))
 
 ROOT = Path(__file__).resolve().parent.parent
 QUEUE = ROOT / "config" / "drops_queue.json"
@@ -34,7 +37,8 @@ CTA_WORDS = ("댓글", "답글")
 # CTA 줄에 있으면 "뭘 주는지 모르겠는" 문장이 된다
 VAGUE = ("이렇게", "이 순서", "이거 보고", "그걸", "이런 식으로", "이 방법")
 BANMAL = ("음", "임", "함", "거임", "더라", "잖아", "해봐", "줄게", "거든", "네요?")
-NUM = re.compile(r"[0-9]|한|두|세|네|다섯|여섯|일곱|여덟|아홉|열|스무|서른|마흔|백|천|만")
+NUM = re.compile(r"[0-9]|한|두|세|네|다섯|여섯|일곱|여덟|아홉|열|십|스무|서른|마흔|"
+                 r"쉰|예순|백|천|만|절반|두세")
 
 
 def load(path: Path):
@@ -96,9 +100,13 @@ def check_one(d: dict, cfg: dict) -> list[str]:
     return bad
 
 
-def check_day(date: str, group: list[dict]) -> list[str]:
-    """하루치 4건 사이의 규칙."""
-    bad = []
+def check_day(date: str, group: list[dict]) -> tuple[list[str], list[str]]:
+    """하루치 4건 사이의 규칙. (불합격, 경고) 를 돌려준다.
+
+    구성 비율 같은 건 판단 영역이라 경고로만 알린다 — 자료를 하나 더 주는 날이
+    나쁜 건 아니다. 다만 ai 가 빠지면 그날은 오픈톡방 유도가 없다는 뜻이라 알린다.
+    """
+    bad, warn = [], []
     if len(group) != 4:
         bad.append(f"{len(group)}건 (하루 4건이어야 함)")
     tg = [d.get("target") for d in group]
@@ -113,8 +121,10 @@ def check_day(date: str, group: list[dict]) -> list[str]:
         bad.append("반말 위주 글감이 없음")
     types = sorted(d.get("type") for d in group)
     if types != ["ai", "evergreen", "evergreen", "marketing"]:
-        bad.append(f"구성이 evergreen2/ai1/marketing1 이 아님: {types}")
-    return bad
+        warn.append(f"구성 {types} — 권장은 evergreen2/ai1/marketing1")
+    if "ai" not in types:
+        warn.append("ai(최신 소식)가 없어 이날은 오픈톡방 유도가 빠진다")
+    return bad, warn
 
 
 def main(argv: list[str]) -> int:
@@ -130,31 +140,51 @@ def main(argv: list[str]) -> int:
         "used_kw_before": set(a["_이미쓴_댓글키워드"]) - now_kw,
     }
 
+    # 이미 나간 글감은 고칠 수 없다 — 오늘 이후 것만 검사한다.
+    today = datetime.now(KST).strftime("%Y-%m-%d")
     fails = 0
     by_date: dict[str, list[dict]] = defaultdict(list)
+    skipped = 0
     for d in drops:
+        if (d.get("date") or "") < today:
+            skipped += 1
+            continue
         by_date[d.get("date", "?")].append(d)
+    if skipped:
+        print(f"(지난 날짜 {skipped}건은 건너뜀 — 오늘 {today} 이후만 검사)")
 
+    warns = 0
     for date in sorted(by_date):
         group = by_date[date]
         print(f"\n── {date}")
-        for msg in check_day(date, group):
+        day_bad, day_warn = check_day(date, group)
+        for msg in day_bad:
             print(f"   ✗ [하루] {msg}")
             fails += 1
+        for msg in day_warn:
+            print(f"   ! [하루] {msg}")
+            warns += 1
+        # 오늘자는 자정에 이미 공개됐다 — 고쳐도 먼저 본 파트너에겐 안 닿으므로
+        # 실패로 세지 않고 경고로만 알린다.
+        live = date == today
         for d in group:
             num = (d.get("title") or "").split(" (")[0].replace("컨텐츠 ", "")
             lines = lines_of(d.get("body") or "")
             chars = len((d.get("body") or "").replace("\n", ""))
             bad = check_one(d, cfg)
-            mark = "✓" if not bad else "✗"
+            mark = "✓" if not bad else ("!" if live else "✗")
             asset = cfg["by_code"].get(d.get("asset"), {}).get("name", "-")
             print(f"   {mark} {num:<6} {d.get('type'):<9} {len(lines)}줄 {chars:>3}자 "
                   f"| {lines[0][:22] if lines else '':<24} | {asset[:26]}")
             for m in bad:
-                print(f"       ↳ {m}")
-                fails += 1
+                print(f"       ↳ {m}{' (이미 공개됨 — 참고)' if live else ''}")
+                if live:
+                    warns += 1
+                else:
+                    fails += 1
 
-    print(f"\n{'=' * 60}\n글감 {len(drops)}건 · 불합격 {fails}건")
+    checked = sum(len(v) for v in by_date.values())
+    print(f"\n{'=' * 60}\n검사 {checked}건 · 불합격 {fails}건 · 경고 {warns}건")
     if fails:
         print("불합격이 있으면 push 하지 말고 그 건만 고치세요.")
     return 1 if fails else 0
