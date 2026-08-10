@@ -504,6 +504,33 @@ def _to_int(v) -> int | None:
     return n if n >= 0 else None
 
 
+def set_prev_replies(conn, pid, n) -> bool:
+    """직전 제출(= 어제 올린 글)의 답글 수를 기록한다.
+
+    왜 '직전'인가 — 방 인원과 같은 하루 밀림 구조다. 제출하는 순간 방금 올린 글은
+    아직 답글이 0이고, 세어볼 수 있는 건 어제 올린 글이다. 어제 레코드에 붙여야
+    글감별 평균이 맞는다.
+
+    왜 답글인가 — 2026-08-04 파트너 10명 계정 실측 결과 '댓글에 ○○ 남겨주세요'가
+    있는 글만 답글이 붙었고(최대 427), 없는 글은 0~1이었다. 유입 경로가
+    댓글 → DM → 오픈톡방이라 **답글 수가 곧 유입 후보 수**다. 방 인원(room_members)
+    보다 세기 쉽고 파트너가 화면에서 바로 읽을 수 있다.
+
+    저장은 (구) `comments` 컬럼을 재사용한다 — 같은 뜻이고 새 마이그레이션이 필요 없다.
+    """
+    v = _to_int(n)
+    if v is None:
+        return False
+    r = conn.execute(
+        "SELECT id FROM submissions WHERE partner_id=? AND valid=1 "
+        "ORDER BY post_date DESC, id DESC LIMIT 1", (pid,)).fetchone()
+    if not r:
+        return False
+    conn.execute("UPDATE submissions SET comments=? WHERE id=?", (v, r["id"]))
+    conn.commit()
+    return True
+
+
 def last_room_members(conn, pid) -> int | None:
     """이 파트너가 마지막으로 넣은 방 인원(절대값). 없으면 None."""
     r = conn.execute(
@@ -636,22 +663,66 @@ def perf_summary(conn, top_n: int = 6) -> dict:
     파트너 이름·방 인원 같은 개인 단위 값은 넣지 않는다. 타겟/형태 축의 평균과
     글감 제목(이미 공개된 값)만 담아, 다음 글감을 뭘로 쓸지 판단할 근거로 쓴다.
     """
-    def axis(field):
-        return [{"tag": t["tag"], "avg_gain": t["avg_gain"], "measured": t["measured"]}
-                for t in tag_performance(conn, field) if t["measured"]]
+    rep = reply_performance(conn)
 
-    drops = [d for d in drop_performance(conn, 200) if d["measured"]]
+    def axis(field):
+        out = []
+        for t in tag_performance(conn, field):
+            r = rep["by_" + field].get(t["tag"])
+            if not t["measured"] and not r:
+                continue
+            row = {"tag": t["tag"], "avg_gain": t["avg_gain"], "measured": t["measured"]}
+            if r:
+                row["avg_replies"] = r["avg"]
+                row["replied"] = r["n"]
+            out.append(row)
+        return out
+
+    all_drops = drop_performance(conn, 200)
+    drops = [d for d in all_drops if d["measured"]]
     drops.sort(key=lambda d: -d["avg_gain"])
+    picks = sorted((d for d in all_drops if d["used"]), key=lambda d: -d["used"])
     return {
         "by_target": axis("target"),
         "by_fmt": axis("fmt"),
+        "replies": {"measured": rep["n"], "avg": rep["avg"]},
+        # 채택률 — 파트너가 그 글감을 실제로 골랐는가. 방 인원과 달리 100% 관측된다.
+        "most_picked": [{"title": d["title"], "target": d["target"], "fmt": d["fmt"],
+                         "used": d["used"]} for d in picks[:top_n]],
+        "never_picked": [{"title": d["title"], "target": d["target"], "fmt": d["fmt"]}
+                         for d in all_drops if not d["used"]][:top_n],
         "top_drops": [{"title": d["title"], "target": d["target"], "fmt": d["fmt"],
-                       "avg_gain": d["avg_gain"], "measured": d["measured"]}
+                       "avg_gain": d["avg_gain"], "measured": d["measured"],
+                       "used": d["used"]}
                       for d in drops[:top_n]],
         "worst_drops": [{"title": d["title"], "target": d["target"], "fmt": d["fmt"],
-                         "avg_gain": d["avg_gain"], "measured": d["measured"]}
+                         "avg_gain": d["avg_gain"], "measured": d["measured"],
+                         "used": d["used"]}
                         for d in drops[-3:]] if len(drops) > top_n else [],
     }
+
+
+def reply_performance(conn) -> dict:
+    """스레드 답글 수 집계 — 글감 태그별 평균.
+
+    방 인원(room_members)은 입력률이 낮고 방마다 크기가 달라 노이즈가 크다.
+    답글 수는 파트너가 화면에서 바로 읽는 값이고, 유입 경로(댓글 → DM → 방)의
+    첫 단계라 글감의 좋고 나쁨을 훨씬 빨리 보여준다.
+    """
+    rows = conn.execute(
+        "SELECT s.comments c, d.target, d.fmt FROM submissions s "
+        "JOIN drops d ON d.id=s.drop_id WHERE s.valid=1 AND s.comments IS NOT NULL"
+    ).fetchall()
+    by: dict[str, dict[str, list[int]]] = {"target": {}, "fmt": {}}
+    for r in rows:
+        for f in ("target", "fmt"):
+            by[f].setdefault(r[f] or "(태그 없음)", []).append(r["c"])
+    out = {"n": len(rows),
+           "avg": round(sum(r["c"] for r in rows) / len(rows), 2) if rows else 0}
+    for f in ("target", "fmt"):
+        out["by_" + f] = {k: {"avg": round(sum(v) / len(v), 2), "n": len(v)}
+                          for k, v in by[f].items()}
+    return out
 
 
 def room_stats(conn) -> dict:

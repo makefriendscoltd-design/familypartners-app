@@ -22,7 +22,7 @@ from http.client import HTTPMessage
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, quote, urlparse
 
-from . import core, db, dropqueue, gemini, messages, onboard, ppurio, products
+from . import core, db, dropqueue, gemini, messages, onboard, ppurio, products, watchdog
 
 LIB_DIR = db.ROOT / "assets" / "library"
 GUIDE_DIR = db.ROOT / "assets" / "guide"
@@ -253,6 +253,8 @@ def status_payload() -> dict:
                 "GROUP BY drop_date ORDER BY drop_date", (core.iso(core.today()),)
             ).fetchall()
             out["drops"] = {r["drop_date"]: r["c"] for r in rows}
+            # 며칠치가 연속으로 확보돼 있나 — 0~1이면 자정에 빌 위험이다.
+            out["buffer_days"] = watchdog.buffer_state(conn)["streak"]
             st = core.room_stats(conn)
             out["perf"] = {
                 "measured": st["measured"],          # 순증이 산출된 글 수
@@ -996,12 +998,17 @@ def view_me(qs) -> bytes | None:
               f"{drop_pick}"
               f"<input name=room type=number min=0 required style='width:150px;"
               f"border-color:var(--acc)' placeholder='지금 방 인원 *'>"
+              f"<input name=replies type=number min=0 style='width:150px'"
+              f" placeholder='어제 글 답글 수'>"
               f"<button>제출</button></form>"
               f"<p class=empty>제출이 곧 출석입니다. "
               f"<b>지금 내 오픈톡방 인원</b>도 같이 넣어주세요 — {esc(room_hint)}. "
               f"직접 계산하실 것 없이 <b>보이는 숫자 그대로</b> 넣으시면 됩니다.<br>"
               f"어제 넣은 값과 비교해서 <b>어제 올린 글이 몇 명을 데려왔는지</b>가 자동으로 계산되고, "
-              f"그걸로 다음 글감이 정해집니다.</p></div>")
+              f"그걸로 다음 글감이 정해집니다.<br>"
+              f"<b>어제 올린 글의 답글 수</b>도 같이 넣어주시면 훨씬 정확해집니다 — "
+              f"실측해보니 답글이 붙은 글만 방으로 사람이 들어왔습니다. 스레드에서 "
+              f"어제 글 밑에 보이는 숫자 그대로 넣으시면 됩니다.</p></div>")
 
     # 성과는 제출 폼의 '방 인원' 한 칸으로 대체됐다(별도 입력 카드 없음).
     feed_link = (f"<a class=lk href='/feed?t={esc(token)}'>"
@@ -1979,6 +1986,9 @@ class Handler(BaseHTTPRequestHandler):
                 p = core.find_by_token(conn, token)
                 did = (f.get("drop_id") or "").strip()
                 if p and url and p["status"] != "kicked":
+                    # 답글 수는 '어제 올린 글'의 값이라 직전 제출에 붙인다.
+                    # 반드시 새 제출을 넣기 전에 — 안 그러면 방금 올린 글에 붙는다.
+                    core.set_prev_replies(conn, p["id"], f.get("replies"))
                     core.add_submission(conn, p["id"], url,
                                         (f.get("channel") or "threads"),
                                         drop_id=int(did) if did.isdigit() else None,
@@ -2393,6 +2403,11 @@ def serve(port: int = 8000) -> None:
     # 예약된 글감(config/drops_queue.json)을 반영. autodeploy 는 배포마다 서비스를
     # 재시작하므로 여기가 가장 확실한 실행 지점이다. 실패해도 기동을 막지 않는다.
     dropqueue.sync()
+    # 글감 버퍼 감시 — 루틴이 죽어도 사람이 모르는 상태를 없앤다(fp/watchdog.py).
+    try:
+        watchdog.start()
+    except Exception as e:
+        print(f"[경고] 감시 시작 실패(무시): {e}")
     # 배포 시: 환경변수 HOST=0.0.0.0 (외부 공개), PORT=8080 등으로 지정.
     # 로컬은 기본 127.0.0.1 (이 PC에서만).
     host = os.environ.get("HOST", "127.0.0.1")
