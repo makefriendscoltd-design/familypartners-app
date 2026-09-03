@@ -978,6 +978,31 @@ def forfeit_month(conn, pid, ym: str, reason=None) -> None:
     conn.commit()
 
 
+def unforfeit_month(conn, pid, ym: str) -> int:
+    """그 달(YYYY-MM) 수익 몰수 표시를 해제. 지운 건수를 돌려준다."""
+    cur = conn.execute(
+        "DELETE FROM events WHERE partner_id=? AND type='forfeit' AND date=?",
+        (pid, ym),
+    )
+    conn.commit()
+    return cur.rowcount or 0
+
+
+def restore_partner(conn, pid, reason=None) -> dict:
+    """강퇴/일시중지된 파트너를 다시 활성으로 되돌린다.
+    강퇴 시 걸린 그 달 수익 몰수도 같이 푼다(강퇴가 오조작이었을 때가 대부분)."""
+    row = conn.execute(
+        "SELECT name, status, kicked_date FROM partners WHERE id=?", (pid,)
+    ).fetchone()
+    if not row:
+        return {"ok": False, "name": "", "unforfeited": 0}
+    ym = (row["kicked_date"] or "")[:7] or None
+    set_status(conn, pid, "active", reason=reason or "운영자 복구")
+    n = unforfeit_month(conn, pid, ym) if ym else 0
+    return {"ok": True, "name": row["name"], "was": row["status"],
+            "month": ym, "unforfeited": n}
+
+
 def is_forfeited(conn, pid, ym: str) -> bool:
     return conn.execute(
         "SELECT 1 FROM events WHERE partner_id=? AND type='forfeit' AND date=?",

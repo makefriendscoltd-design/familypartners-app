@@ -58,9 +58,15 @@ def cmd_partner(args):
         p = core.find_partner(conn, args.who)
         if not p:
             _p(f"파트너를 찾을 수 없음: {args.who}"); sys.exit(1)
-        status = {"kick": "kicked", "pause": "paused", "reactivate": "active"}[args.action]
-        core.set_status(conn, p["id"], status, args.date, args.reason)
-        _p(f"{p['name']} → {status}" + (f" ({args.reason})" if args.reason else ""))
+        if args.action == "reactivate":
+            # 복구는 강퇴 때 걸린 그 달 수익 몰수까지 같이 푼다
+            res = core.restore_partner(conn, p["id"], args.reason)
+            extra = f" · {res['month']} 몰수 해제" if res["unforfeited"] else ""
+            _p(f"{p['name']} → active" + (f" ({args.reason})" if args.reason else "") + extra)
+        else:
+            status = {"kick": "kicked", "pause": "paused"}[args.action]
+            core.set_status(conn, p["id"], status, args.date, args.reason)
+            _p(f"{p['name']} → {status}" + (f" ({args.reason})" if args.reason else ""))
     elif args.action == "warn":
         p = core.find_partner(conn, args.who)
         if not p:

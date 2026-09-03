@@ -1502,7 +1502,11 @@ def view_partner(qs) -> str:
     pslots = onboard.type_slots(r["partner_type"])
     plinks = onboard.links_of(r)
     n_lk = sum(1 for k, _ in pslots if (plinks.get(k) or "").strip())
-    head = (f"<div class=card><h2>{esc(r['name'])} "
+    flash = ""
+    if qs.get("msg"):
+        flash = (f"<div class=card style='border-color:var(--grn)'>"
+                 f"<b class=b-grn>{esc(qs['msg'][0])}</b></div>")
+    head = (flash + f"<div class=card><h2>{esc(r['name'])} "
             f"<span class='pill {st_cls}'>{r['status']}</span></h2>"
             f"<div class=row><span class=hd>유형</span><span class=meta>"
             f"{esc(onboard.type_label(r['partner_type']))}</span></div>"
@@ -1524,6 +1528,17 @@ def view_partner(qs) -> str:
             f"<div class=row><span class=hd>작업실</span><span class=meta>"
             f"<a class=lk href='/me?t={esc(r['portal_token'] or '')}' target=_blank>"
             f"🔗 참여자가 보는 화면 열기</a></span></div></div>")
+    if r["status"] != "active":
+        head += (f"<div class=card style='border-color:var(--red)'>"
+                 f"<h2 class=b-red>⛔ 현재 {esc(r['status'])} 상태</h2>"
+                 f"<p class=empty>지금은 작업실에 접속할 수 없습니다"
+                 + (f" (강퇴일 {esc(r['kicked_date'])})" if r['kicked_date'] else "")
+                 + ". 잘못 눌렀거나 사정을 봐주기로 했으면 아래로 되돌립니다 — "
+                 "접속이 바로 열리고, 강퇴 때 걸린 그 달 수익 몰수도 같이 풀립니다.</p>"
+                 f"<form method=post action=/op/restore>"
+                 f"<input type=hidden name=id value='{r['id']}'>"
+                 f"<input name=reason placeholder='복구 사유(선택)' style=flex:1>"
+                 f"<button>↩ 복구하기</button></form></div>")
     subs = []
     for s in d["submissions"][:30]:
         mark = "" if s["valid"] else f" <span class=b-red>✗{esc(s['void_reason'] or '무효')}</span>"
@@ -2140,6 +2155,19 @@ class Handler(BaseHTTPRequestHandler):
                      (f.get("openchat") or "").strip() or None, ptype, int(pid)))
                 conn.commit(); conn.close()
                 return self._redirect(f"/partner?id={pid}")
+            if u.path == "/op/restore":  # 운영자: 강퇴/중지 파트너 복구
+                pid = int(f.get("id", 0) or 0)
+                if not pid:
+                    return self._redirect("/people?msg=" + _q("잘못된 요청입니다."))
+                conn = db.connect()
+                res = core.restore_partner(conn, pid, (f.get("reason") or "").strip() or None)
+                conn.close()
+                if not res["ok"]:
+                    return self._redirect("/people?msg=" + _q("파트너를 찾을 수 없습니다."))
+                msg = f"{res['name']}님 복구 완료 — 작업실 다시 접속 가능합니다."
+                if res["unforfeited"]:
+                    msg += f" ({res['month']} 수익 몰수도 해제)"
+                return self._redirect(f"/partner?id={pid}&msg=" + _q(msg))
             if u.path == "/op/enforce":  # 운영자: 강퇴 집행
                 conn = db.connect()
                 done = core.enforce(conn, core.today(), dry_run=False)
