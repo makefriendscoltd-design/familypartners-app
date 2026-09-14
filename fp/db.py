@@ -154,6 +154,20 @@ CREATE TABLE IF NOT EXISTS partners (
 );
 CREATE UNIQUE INDEX IF NOT EXISTS idx_partner_token ON partners(portal_token);
 
+CREATE TABLE IF NOT EXISTS exclusive_videos (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    file_key TEXT NOT NULL UNIQUE,
+    orig_name TEXT NOT NULL,
+    size INTEGER NOT NULL,
+    sha256 TEXT NOT NULL UNIQUE,
+    created_at TEXT NOT NULL,
+    published INTEGER NOT NULL DEFAULT 0,
+    claimed_by INTEGER REFERENCES partners(id) ON DELETE SET NULL,
+    claimed_name TEXT,
+    claimed_at TEXT
+);
+
 CREATE TABLE IF NOT EXISTS submissions (
     id           INTEGER PRIMARY KEY AUTOINCREMENT,
     partner_id   INTEGER NOT NULL REFERENCES partners(id) ON DELETE CASCADE,

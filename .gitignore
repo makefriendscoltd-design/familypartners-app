@@ -23,3 +23,6 @@ nohup.out
 .venv/
 .claude/settings.local.json
 .DS_Store
+
+# 원본 영상은 인증된 다운로드 경로로만 제공
+data/private_videos/

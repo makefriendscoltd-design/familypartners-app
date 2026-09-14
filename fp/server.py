@@ -22,7 +22,7 @@ from http.client import HTTPMessage
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, quote, urlparse
 
-from . import core, db, dropqueue, gemini, messages, onboard, ppurio, products, watchdog
+from . import core, db, dropqueue, gemini, messages, onboard, ppurio, products, watchdog, video_library
 
 LIB_DIR = db.ROOT / "assets" / "library"
 GUIDE_DIR = db.ROOT / "assets" / "guide"
@@ -108,7 +108,13 @@ font:15px/1.55 -apple-system,BlinkMacSystemFont,"Malgun Gothic",sans-serif}
 header{padding:18px 24px;border-bottom:1px solid var(--ln);display:flex;
 align-items:center;gap:18px;position:sticky;top:0;background:var(--card);z-index:2}
 header h1{font-size:17px;margin:0;color:var(--acc)}nav a{color:var(--mut);text-decoration:none;
-margin-right:16px;font-size:14px}nav a:hover{color:var(--acc)}
+margin-right:16px;font-size:14px;white-space:nowrap}nav a:hover{color:var(--acc)}
+@media(max-width:640px){
+header{flex-wrap:wrap;gap:8px 14px;padding:14px 18px;position:static}
+header>a{flex:none}header h1{white-space:nowrap}
+header nav{flex-basis:100%;display:flex;flex-wrap:wrap;gap:8px 14px}
+header nav a{margin:0;padding:3px 0}
+}
 main{max-width:920px;margin:0 auto;padding:24px}
 .card{background:var(--card);border:1px solid var(--ln);border-radius:12px;
 padding:18px 20px;margin-bottom:18px;box-shadow:0 1px 3px rgba(15,36,64,.05)}
@@ -202,7 +208,7 @@ def shell(title: str, body: str) -> bytes:
            '<a href="/reminders"><b>✉문자발송</b></a>'
            '<a href="/review">검수</a><a href="/perf"><b>📊성과</b></a>'
            '<a href="/board">랭킹</a>'
-           '<a href="/library">자료실</a><a href="/feed">글감피드</a>'
+           '<a href="/library">자료실</a><a href="/op/videos">영상 배포</a><a href="/feed">글감피드</a>'
            '<a href="/onboard">온보딩</a><a href="/wall">인증보드</a>'
            '<a href="/logout" style="margin-left:auto">로그아웃</a>')
     doc = (f"<!doctype html><html lang=ko><head><meta charset=utf-8>"
@@ -843,6 +849,7 @@ def shell_portal(title: str, sub: str, body: str, token: str | None = None) -> b
            + f"<a href='/guide{t}'>📖 사용법</a>"
            + f"<a href='/feed{t}'>📚 글감 피드</a>"
            + f"<a href='/files{t}'>📁 자료실</a>"
+           + f"<a href='/videos{t}'>영상 받기</a>"
            + f"<a href='/wall{t}'>🏆 인증보드</a>")
     doc = (f"<!doctype html><html lang=ko><head><meta charset=utf-8>"
            f"<meta name=viewport content='width=device-width,initial-scale=1'>"
@@ -1939,6 +1946,8 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(data)
 
     def do_POST(self):
+        if video_library.handle(self):
+            return
         u = urlparse(self.path)
         ctype = self.headers.get("Content-Type", "")
         n = int(self.headers.get("Content-Length", 0) or 0)
@@ -2264,7 +2273,13 @@ class Handler(BaseHTTPRequestHandler):
         except Exception as e:
             self._send(shell("오류", f"<div class=card><pre>{esc(e)}</pre></div>"), 500)
 
+    def do_HEAD(self):
+        if not video_library.handle(self):
+            self.send_error(405)
+
     def do_GET(self):
+        if video_library.handle(self):
+            return
         u = urlparse(self.path)
         qs = parse_qs(u.query)
         try:
