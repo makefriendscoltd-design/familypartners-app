@@ -144,6 +144,27 @@ def listing(h, conn, p):
     page(h, '파트너 전용 영상', body, p['portal_token'])
 
 
+
+def dashboard_card(token=None, admin=False):
+    """Live inventory summary above dashboard content; no recipient details."""
+    from .server import esc
+    conn = db.connect()
+    try:
+        rows = conn.execute('SELECT title FROM exclusive_videos WHERE published=1 AND claimed_at IS NULL AND claimed_by IS NULL ORDER BY id DESC').fetchall()
+    finally:
+        conn.close()
+    href = '/videos?t=' + quote(token, safe='') if token else '/videos'
+    titles = ''.join(f"<li>{esc(r['title'])}</li>" for r in rows[:3])
+    body = (f"<section class=card id=partner-videos style='border:2px solid var(--acc)'>"
+            f"<h2>받을 수 있는 영상 <span>{len(rows)}편</span></h2>"
+            "<p>이름을 입력하고 원본을 받으세요. 영상마다 한 명에게만 배정됩니다.</p>")
+    body += f"<ul style='padding-left:20px;line-height:1.8'>{titles}</ul>" if rows else '<p>새 영상이 올라오면 여기서 확인할 수 있어요.</p>'
+    body += f"<a class=lk href='{esc(href)}'>영상 확인하고 받기 →</a>"
+    if admin:
+        body += " <a class=lk href='/op/videos' style='margin-left:16px'>영상 올리기·배포 내역</a>"
+    return body + '</section>'
+
+
 def admin_listing(h, conn):
     from .server import esc
     rows = conn.execute('SELECT * FROM exclusive_videos ORDER BY id DESC').fetchall()

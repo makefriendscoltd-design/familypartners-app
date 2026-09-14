@@ -66,6 +66,11 @@ class VideoHTTPTest(unittest.TestCase):
         self.assertEqual(json.loads(self.request('GET','/videos/available',cookie=self.a)[2])['ids'],[])
         self.assertEqual(self.claim(vid,'a')[0],409)
         self.assertEqual(self.publish(vid)[0],303)
+        for url in ('/me?t=token-a','/feed?t=token-a','/'):
+            code,_,html=self.request('GET',url,cookie=self.admin if url=='/' else None)
+            self.assertEqual(code,200)
+            self.assertIn('id=partner-videos',html.decode())
+            self.assertIn('테스트 영상',html.decode())
         self.assertEqual(self.request('GET',f'/videos/file/{vid}')[0],403)
         bad=urlencode(dict(id=vid,name='테스트나',csrf=v.csrf('token-a')))
         self.assertEqual(self.request('POST','/videos/claim',bad,self.a)[0],403)
