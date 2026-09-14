@@ -97,6 +97,26 @@ class VideoHTTPTest(unittest.TestCase):
         self.assertEqual(self.request('GET',path,cookie=self.a)[0],403)
         self.assertEqual(self.request('GET',path,cookie=self.admin)[0],200)
 
+    def test_thumbnail_and_dashboard_claim(self):
+        vid=json.loads(self.upload()[2])['id']
+        path=f'/op/videos/thumbnail/{vid}'
+        jpeg=b'\xff\xd8\xff'+b'fixture'+b'\xff\xd9'
+        self.assertEqual(self.request('POST',path,jpeg)[0],403)
+        self.assertEqual(self.request('POST',path,b'bad',self.admin,{'X-CSRF-Token':v.csrf('admin')})[0],400)
+        self.assertEqual(self.request('POST',path,jpeg,self.admin,{'X-CSRF-Token':v.csrf('admin')})[0],200)
+        thumb=f'/videos/thumb/{vid}'
+        self.assertEqual(self.request('GET',thumb)[0],403)
+        self.publish(vid)
+        code,headers,data=self.request('GET',thumb)
+        self.assertEqual((code,data),(200,jpeg));self.assertIn('no-store',headers['Cache-Control'])
+        form=urlencode(dict(id=vid,name='테스트가',t='token-a',csrf=v.csrf('token-a')))
+        code,headers,data=self.request('POST','/videos/claim',form,headers={'Accept':'application/json'})
+        self.assertEqual(code,200);self.assertIn('Set-Cookie',headers)
+        self.assertEqual(json.loads(data)['download'],f'/videos/file/{vid}')
+        self.assertEqual(self.request('GET',thumb)[0],403)
+        self.assertEqual(self.request('GET',thumb,cookie=self.a)[0],200)
+        self.assertEqual(json.loads(self.request('GET','/videos/catalog')[2])['ids'],[])
+
     def test_atomic_claim_and_cookie(self):
         vid=json.loads(self.upload()[2])['id'];self.publish(vid)
         code,headers,_=self.request('GET','/videos?t=token-a')
