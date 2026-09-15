@@ -135,6 +135,11 @@ def emit(config, record):
 
 
 def import_one(api, item, record, persist, config):
+    # A withdrawn file must never be republished by replaying an old batch.
+    if item['sha256'] in config.get('excluded_sha256', {}):
+        record.update(sha256=item['sha256'], status='withdrawn_by_review')
+        persist()
+        return 'excluded_by_review'
     # Discover prior success even if an upload/publish response was lost.
     existing = next((r for r in api.status() if r['sha256'] == item['sha256']), None)
     if existing and (existing['claimed'] or existing['published']):

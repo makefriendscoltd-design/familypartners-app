@@ -46,5 +46,25 @@
       "directory": "/Users/apple/orca/navercafe/outputs/TePQevG_Dgc-20260915/shorts"
     }
   ],
-  "input_snapshots": "/Users/apple/.local/share/familypartners-video-sync/render-inputs"
+  "input_snapshots": "/Users/apple/.local/share/familypartners-video-sync/render-inputs",
+  "excluded_sha256": {
+    "01a501ec66eebd7d300702474364583cfc3edac3e99c88c06ec6b4c155627a9d": {
+      "id": 30,
+      "source_key": "Yv51xj_1DOQ",
+      "reason": "headcopy_width_over_920px",
+      "rule": "SHORTS_SPEC.md:65-68"
+    },
+    "3383c657d1418c8a9781d7beaf8aba0140ecec20d5ac6937934bb5517ca04536": {
+      "id": 32,
+      "source_key": "LW8KLS9j2_E",
+      "reason": "headcopy_width_over_920px",
+      "rule": "SHORTS_SPEC.md:65-68"
+    },
+    "44b2b3dbd097597f31c43edc874b425427fb0ecec7a4eec4e5740411778d8a8e": {
+      "id": 36,
+      "source_key": "GExjqEBXKN4",
+      "reason": "headcopy_width_over_920px",
+      "rule": "SHORTS_SPEC.md:65-68"
+    }
+  }
 }

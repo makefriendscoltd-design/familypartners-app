@@ -7,7 +7,7 @@ import shutil
 import subprocess
 import tempfile
 import unittest
-from unittest.mock import patch
+from unittest.mock import patch, Mock
 import test_video_library as fixture
 from fp import db, video_library as v
 
@@ -16,6 +16,16 @@ sync=importlib.util.module_from_spec(spec);spec.loader.exec_module(sync)
 
 
 class SourceGateTest(unittest.TestCase):
+    def test_withdrawn_original_cannot_be_republished_by_batch_replay(self):
+        api=Mock();record={'id':42,'crm_emitted':True};persist=Mock()
+        result=sync.import_one(api,{'sha256':'withdrawn-sha'},record,persist,
+                               {'excluded_sha256':{'withdrawn-sha':{'reason':'headcopy_rule'}}})
+        self.assertEqual(result,'excluded_by_review')
+        self.assertEqual(record['id'],42)
+        self.assertEqual(record['status'],'withdrawn_by_review')
+        api.status.assert_not_called();api.upload.assert_not_called();api.form.assert_not_called()
+        persist.assert_called_once()
+
     def test_stale_pass_cannot_authorize_changed_script_or_video(self):
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp);(root/'notebooklm').mkdir()
