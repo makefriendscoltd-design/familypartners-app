@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>EnvironmentVariables</key>
+	<dict>
+		<key>PATH</key>
+		<string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>
+	</dict>
+	<key>Label</key>
+	<string>com.local.familypartners-video-sync</string>
+	<key>ProcessType</key>
+	<string>Background</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/usr/bin/python3</string>
+		<string>/Users/apple/orca/projects/familypartners/deploy/sync_partner_videos.py</string>
+		<string>--config</string>
+		<string>/Users/apple/orca/projects/familypartners/config/partner_video_sync.json</string>
+		<string>--state-dir</string>
+		<string>/Users/apple/.local/share/familypartners-video-sync</string>
+	</array>
+	<key>RunAtLoad</key>
+	<false/>
+	<key>StandardErrorPath</key>
+	<string>/Users/apple/.local/share/familypartners-video-sync/stderr.log</string>
+	<key>StandardOutPath</key>
+	<string>/Users/apple/.local/share/familypartners-video-sync/stdout.log</string>
+	<key>StartInterval</key>
+	<integer>300</integer>
+	<key>WorkingDirectory</key>
+	<string>/Users/apple/orca/projects/familypartners</string>
+</dict>
+</plist>

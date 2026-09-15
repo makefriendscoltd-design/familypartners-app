@@ -1,0 +1,49 @@
+{
+  "source_session": "572afd2d-9e7a-4c5d-9399-f8a2c446ad93",
+  "base_url": "https://familypartners.aimax.ai.kr",
+  "token_file": "/Users/apple/.local/share/familypartners-video-sync/token",
+  "ffmpeg": "/opt/homebrew/bin/ffmpeg",
+  "crm_cli": "/Users/apple/orca/projects/aimax-crm-observability/bin/aimax-crm-track",
+  "sources": [
+    {
+      "key": "nSfEL1Y-nUk",
+      "directory": "/Users/apple/orca/navercafe/outputs/nSfEL1Y-nUk-20260915/shorts"
+    },
+    {
+      "key": "EoNH3Tn8wYE",
+      "directory": "/Users/apple/orca/navercafe/outputs/EoNH3Tn8wYE-20260915/shorts"
+    },
+    {
+      "key": "ppN_erpEuZ0",
+      "directory": "/Users/apple/orca/navercafe/outputs/ppN_erpEuZ0-20260915/shorts"
+    },
+    {
+      "key": "nT-9Mrl5Mm4",
+      "directory": "/Users/apple/orca/navercafe/outputs/nT-9Mrl5Mm4-20260915/shorts"
+    },
+    {
+      "key": "HDmBwU5uvEE",
+      "directory": "/Users/apple/orca/navercafe/outputs/HDmBwU5uvEE-20260915/shorts"
+    },
+    {
+      "key": "qQluNEfSVHk",
+      "directory": "/Users/apple/orca/navercafe/outputs/qQluNEfSVHk-20260915/shorts"
+    },
+    {
+      "key": "8NSyI-npJCU",
+      "directory": "/Users/apple/orca/navercafe/outputs/8NSyI-npJCU-20260915/shorts"
+    },
+    {
+      "key": "gQef3d3erOs",
+      "directory": "/Users/apple/orca/navercafe/outputs/gQef3d3erOs-20260915/shorts"
+    },
+    {
+      "key": "UNN6dLt5dPI",
+      "directory": "/Users/apple/orca/navercafe/outputs/UNN6dLt5dPI-20260915/shorts"
+    },
+    {
+      "key": "TePQevG_Dgc",
+      "directory": "/Users/apple/orca/navercafe/outputs/TePQevG_Dgc-20260915/shorts"
+    }
+  ]
+}

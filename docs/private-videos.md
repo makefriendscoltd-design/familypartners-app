@@ -33,8 +33,46 @@ PostgreSQL/서버리스 업로드는 지원하지 않는다.
 업데이트된 캡션이 표시되며, 미수령자에게는 캡션 원문을 제공하지 않는다.
 
 신규 수령 한도는 `fp/video_library.py`의 `DAILY_VIDEO_LIMIT`가 정본이다.
-계정당 한국 시간 기준 하루 1편이며, 자정에 초기화한다. 기존 수령 이력도
+계정당 한국 시간 기준 하루 2편이며, 자정에 초기화한다. 기존 수령 이력도
 포함한다. 이미 받은 원본/캡션을 다시 받는 것은 한도를 소비하지 않는다.
 SQLite는 BEGIN IMMEDIATE, PostgreSQL은 계정 행 잠금으로 한도 확인과
 배정을 한 트랜잭션에서 처리해 서로 다른 영상의 동시 선점을 막는다.
 기존 배정은 회수하거나 다른 계정으로 옮기지 않는다.
+
+## 완성 쇼츠 자동 등록
+
+`config/partner_video_sync.json`이 수집 대상의 정본이다. 요청한 제작 세션의
+10개 source ID만 명시한다. 다른 세션·다른 날짜의 출력은 추측해서 추가하지 않는다.
+이 목록의 미완성 영상은 다음 실행에서 다시 확인한다. 후속 제작 배치가 생기면
+이 정본에 해당 경로를 추가해야 한다. 제작 세션·YouTube 게시 작업은 실행하지 않는다.
+
+`deploy/sync_partner_videos.py`는 5분 간격의 별도 macOS launchd 잡으로 실행한다.
+Mac이 켜져 있고 네트워크가 연결되어야 수집되며, 복귀 후 다음 실행에서 따라잡는다.
+AI 호출 없이 파일 검사와 HTTPS만 사용한다. 중복 실행은 파일 잠금으로 막는다.
+
+render/visual/machine 검사 pass와 최종 MP4 해시, production_manifest의 입력·대본·CTA
+해시를 모두 대조한다. 대본은 그대로 캡션으로 사용하고 댓글 키워드를 바꾸지 않는다.
+원본을 별도 임시 파일로 복사한 후 해시를 다시 확인한다. 비공개 등록 → 원본 다운로드
+해시 대조 → 실제 영상 프레임 JPEG 생성/업로드/해시 대조 → 캡션 원문 대조 → 공개
+순서다. 동일 해시는 중복 등록하지 않고 이미 공개·배정된 영상은 건드리지 않는다.
+원본이 다른 해시로 바뀐 경우 자동 재배포를 보류한다.
+
+인증은 관리자 `/op/videos`에서 얻는 목적별 `video-sync-token`을 사용한다.
+토큰은 `~/.local/share/familypartners-video-sync/token`에 권한 600으로만 저장한다.
+파트너·일반 관리자 화면은 이 토큰으로 접근할 수 없다. 업로드·검증·공개 API만 허용한다.
+FP_SECRET 변경 시 토큰을 다시 받아야 한다. 인증 실패는 다음 주기에 재시도한다.
+토큰·고객 이름·캡션 원문은 상태 로그와 공통 CRM 장부에 남기지 않는다.
+
+로컬 운영 상태는 같은 디렉터리의 `state.json`과 `stdout.log`, `stderr.log`를 확인한다.
+공개 응답을 잃어도 서버 상태를 먼저 조회하며 재공개하지 않는다. 공개 성공을 확인한 뒤
+CRM에 채널·캠페인·단계·건수만 기록한다. 기록 실패는 중복방지 키로 재시도한다.
+
+검증: `python3 -m unittest discover -s tests -p 'test_*video*.py' -q`
+
+비파괴 사전 확인:
+
+```
+python3 deploy/sync_partner_videos.py --config config/partner_video_sync.json --state-dir ~/.local/share/familypartners-video-sync --dry-run
+```
+
+실제 등록은 위 명령에서 `--dry-run`을 뺀다. 수령 테스트를 운영 계정으로 실행하지 않는다.

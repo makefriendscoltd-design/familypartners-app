@@ -20,7 +20,7 @@ from . import core, db
 MAX_VIDEO_BYTES = 512 * 1024 * 1024
 CHUNK = 1024 * 1024
 PARTNER_COOKIE = 'fp_video_partner'
-DAILY_VIDEO_LIMIT = 1
+DAILY_VIDEO_LIMIT = 2
 
 
 def storage_dir():
@@ -100,6 +100,16 @@ def csrf(actor):
     return hmac.new(_secret(), ('private-video-v1:'+actor).encode(), hashlib.sha256).hexdigest()
 
 
+def sync_token():
+    # Dedicated upload credential; it never grants access to partner/admin pages.
+    return csrf('video-upload-sync-v1')
+
+
+def sync_authorized(h):
+    value = h.headers.get('Authorization', '')
+    return value.startswith('Bearer ') and hmac.compare_digest(value[7:], sync_token())
+
+
 def response(h, body, status=200, kind='text/html; charset=utf-8', headers=()):
     if isinstance(body, str):
         body = body.encode()
@@ -130,6 +140,8 @@ def page(h, title, body, token=None, admin=False, status=200):
 
 
 def checked_csrf(h, fields, actor):
+    if getattr(h, '_video_sync_ok', False):
+        return
     origin = h.headers.get('Origin')
     if origin and urlparse(origin).netloc != h.headers.get('Host'):
         raise PermissionError('페이지를 새로 열고 다시 시도해 주세요.')
@@ -280,6 +292,7 @@ def admin_listing(h, conn):
             "<form id=video-upload><label>영상 제목 <input name=title required maxlength=120></label>"
             "<label>원본 파일 <input name=file type=file accept='.mp4,video/mp4' required></label>"
             "<button>비공개로 올리기</button><p id=upload-status role=status></p></form></div>")
+    body += f"<meta name=video-sync-token content='{sync_token()}'>"
     body += '<div class=card><h2>영상 배포 내역</h2>'
     for row in rows:
         state = f"{esc(row['claimed_name'])} · {esc(row['claimed_at'])} 수령" if row['claimed_at'] else ('배포 중' if row['published'] else '비공개')
@@ -391,10 +404,16 @@ def handle(h):
     try:
         conn=db.connect()
         admin=h._admin_ok()
+        sync=sync_authorized(h)
+        h._video_sync_ok=sync
         if u.path.startswith('/op/videos'):
-            if not admin:
+            sync_route = u.path in ('/op/videos/sync-status','/op/videos/upload','/op/videos/publish') or bool(re.fullmatch(r'/op/videos/(thumbnail|caption)/\d+',u.path))
+            if not (admin or (sync and sync_route)):
                 response(h,'관리자 로그인이 필요해요.',403);return True
-            if h.command=='GET' and u.path=='/op/videos':
+            if h.command=='GET' and u.path=='/op/videos/sync-status':
+                rows=conn.execute('SELECT id,sha256,published,claimed_at,file_key FROM exclusive_videos ORDER BY id').fetchall()
+                json_response(h,{'videos':[{'id':r['id'],'sha256':r['sha256'],'published':bool(r['published']),'claimed':bool(r['claimed_at']),'has_caption':bool(caption_text(conn,r['id'])),'has_thumbnail':thumbnail_path(r).is_file()} for r in rows]})
+            elif h.command=='GET' and u.path=='/op/videos':
                 admin_listing(h,conn)
             elif h.command=='POST' and re.fullmatch(r'/op/videos/caption/\d+',u.path):
                 f=fields(h,65536);checked_csrf(h,f,'admin');vid=int(u.path.rsplit('/',1)[1]);row=get_video(conn,vid)
@@ -440,7 +459,7 @@ def handle(h):
             json_response(h,{'ids':ids});return True
         if re.fullmatch(r'/videos/thumb/\d+',u.path) and h.command in ('GET','HEAD'):
             row=get_video(conn,int(u.path.rsplit('/',1)[1]))
-            if not row or not (admin or (row['published'] and not row['claimed_at']) or (p and row['claimed_by']==p['id'])):
+            if not row or not (admin or sync or (row['published'] and not row['claimed_at']) or (p and row['claimed_by']==p['id'])):
                 raise PermissionError('현재 받을 수 없는 영상이에요.')
             path=thumbnail_path(row)
             if path.is_symlink():
@@ -448,12 +467,12 @@ def handle(h):
             response(h,path.read_bytes(),kind='image/jpeg');return True
         if re.fullmatch(r'/videos/caption/\d+',u.path) and h.command=='GET':
             row=get_video(conn,int(u.path.rsplit('/',1)[1]))
-            if not row or not (admin or (p and row['claimed_by']==p['id'])):
+            if not row or not (admin or sync or (p and row['claimed_by']==p['id'])):
                 raise PermissionError('배정받은 파트너만 캡션을 복사할 수 있어요.')
             json_response(h,{'caption':caption_text(conn,row['id'])});return True
         if re.fullmatch(r'/videos/file/\d+',u.path) and h.command in ('GET','HEAD'):
             row=get_video(conn,int(u.path.rsplit('/',1)[1]))
-            if not row or not (admin or (p and row['claimed_by']==p['id'])):
+            if not row or not (admin or sync or (p and row['claimed_by']==p['id'])):
                 raise PermissionError('배정받은 파트너만 원본을 받을 수 있어요.')
             stream(h,row);return True
         if not p:

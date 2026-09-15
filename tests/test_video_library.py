@@ -143,21 +143,24 @@ class VideoHTTPTest(unittest.TestCase):
 
     def test_daily_limit_concurrent_different_videos_and_midnight(self):
         ids=[]
-        for n in range(6):
+        for n in range(7):
             vid=json.loads(self.upload(self.blob+bytes([n]))[2])['id'];self.publish(vid);ids.append(vid)
         with patch('fp.core.now_iso',return_value='2026-09-15T23:59:59'):
             with concurrent.futures.ThreadPoolExecutor(max_workers=6) as pool:
                 results=list(pool.map(lambda vid:(vid,self.claim(vid,'a')[0]),ids))
-            self.assertEqual(sorted(status for _,status in results),[303,409,409,409,409,409])
-            owned=next(vid for vid,status in results if status==303)
-            remaining=[vid for vid in ids if vid!=owned]
+            self.assertEqual(sorted(status for _,status in results),[303,303,409,409,409,409,409])
+            owned_ids=[vid for vid,status in results if status==303]
+            owned=owned_ids[0]
+            remaining=[vid for vid in ids if vid not in owned_ids]
             self.assertEqual(self.claim(owned,'a')[0],303)
             self.assertEqual(self.claim(remaining[0],'b')[0],303)
-            self.assertEqual(self.claim(remaining[1],'b')[0],409)
+            self.assertEqual(self.claim(remaining[1],'b')[0],303)
+            self.assertEqual(self.claim(remaining[2],'b')[0],409)
         with patch('fp.core.now_iso',return_value='2026-09-16T00:00:00'):
             self.assertEqual(self.claim(owned,'a')[0],303)
-            self.assertEqual(self.claim(remaining[1],'a')[0],303)
-            self.assertEqual(self.claim(remaining[2],'a')[0],409)
+            self.assertEqual(self.claim(remaining[2],'a')[0],303)
+            self.assertEqual(self.claim(remaining[3],'a')[0],303)
+            self.assertEqual(self.claim(remaining[4],'a')[0],409)
         c=db.connect();row=c.execute('SELECT claimed_at FROM exclusive_videos WHERE id=?',(owned,)).fetchone();c.close()
         self.assertEqual(row['claimed_at'],'2026-09-15T23:59:59')
 
@@ -174,6 +177,18 @@ class VideoHTTPTest(unittest.TestCase):
             for vid in ids[:4]:self.assertEqual(self.claim(vid,'a')[0],303)
         with patch('fp.core.now_iso',return_value='2026-09-16T00:00:00'):
             self.assertEqual(self.claim(ids[4],'a')[0],303)
+
+    def test_sync_credential_scope_and_upload(self):
+        headers={'Authorization':'Bearer '+v.sync_token(),'X-Video-Title':quote('자동 등록'),'X-File-Name':'sync.mp4'}
+        code,_,data=self.request('POST','/op/videos/upload',self.blob,headers=headers)
+        self.assertEqual(code,201);vid=json.loads(data)['id']
+        self.assertEqual(self.request('GET','/op/videos',headers=headers)[0],403)
+        self.assertEqual(self.request('GET','/people',headers=headers)[0],303)
+        rows=json.loads(self.request('GET','/op/videos/sync-status',headers=headers)[2])['videos']
+        self.assertEqual(rows[0]['id'],vid);self.assertNotIn('claimed_name',rows[0])
+        self.assertEqual(self.request('POST','/op/videos/publish',urlencode(dict(id=vid,published=1)),headers=headers)[0],303)
+        self.assertEqual(self.request('GET',f'/videos/file/{vid}',headers=headers)[0],200)
+        self.assertEqual(self.request('GET','/op/videos/sync-status',headers={'Authorization':'Bearer wrong'})[0],403)
 
     def test_atomic_claim_and_cookie(self):
         vid=json.loads(self.upload()[2])['id'];self.publish(vid)
