@@ -112,14 +112,35 @@ def checked_csrf(h, fields, actor):
         raise PermissionError('페이지를 새로 열고 다시 시도해 주세요.')
 
 
-def fields(h):
+def fields(h, limit=16384):
     n = int(h.headers.get('Content-Length', '0'))
-    if not 0 < n <= 16384:
+    if not 0 < n <= limit:
         raise ValueError('invalid request size')
     return {k:v[0] for k,v in parse_qs(h.rfile.read(n).decode('utf-8')).items()}
 
 
+def caption_text(conn, vid):
+    row = conn.execute('SELECT caption FROM video_captions WHERE video_id=?', (vid,)).fetchone()
+    return row['caption'] if row else ''
+
+
+def caption_box(text):
+    from .server import esc
+    if not text:
+        return '<p>캡션을 준비 중이에요.</p>'
+    return ("<div class=caption-box><label>게시글 캡션<textarea readonly rows=7>"
+            + esc(text) + "</textarea></label><button type=button data-copy-caption>캡션 복사</button>"
+            "<p role=status aria-live=polite></p></div>")
+
+
+CAPTION_SCRIPT = """<script>
+function fpCaptionBox(text){const box=document.createElement('div');box.className='caption-box';const label=document.createElement('label');label.textContent='게시글 캡션';const area=document.createElement('textarea');area.readOnly=true;area.rows=7;area.value=text;label.append(area);const button=document.createElement('button');button.type='button';button.setAttribute('data-copy-caption','');button.textContent='캡션 복사';const status=document.createElement('p');status.setAttribute('role','status');box.append(label,button,status);return box}
+if(!window.fpCaptionCopyBound){window.fpCaptionCopyBound=true;document.addEventListener('click',async e=>{const b=e.target.closest('[data-copy-caption]');if(!b)return;const box=b.closest('.caption-box'),t=box.querySelector('textarea'),status=box.querySelector('[role=status]');try{if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(t.value)}else{t.focus();t.select();if(!document.execCommand('copy'))throw Error('copy failed')}status.textContent='캡션을 복사했어요.'}catch{t.focus();t.select();status.textContent='텍스트를 길게 눌러 복사해 주세요.'}})}
+</script>"""
+
+
 GALLERY_STYLE = """<style>
+.caption-box{margin-top:16px;min-width:0}.caption-box label{display:block;font-size:14px}.caption-box textarea{display:block;width:100%;min-width:0;resize:vertical;margin:8px 0 12px;padding:12px;font-family:inherit;font-size:14px;line-height:1.7;white-space:pre-wrap;overflow-wrap:anywhere}.caption-box button{margin:0}.caption-box [role=status]{font-size:13px}
 .video-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:18px 0}
 .video-card{min-width:0;background:white;border:1px solid var(--ln);border-radius:14px;overflow:hidden}
 .video-card summary{display:block;cursor:pointer;list-style:none}.video-card summary::-webkit-details-marker{display:none}
@@ -135,7 +156,7 @@ GALLERY_STYLE = """<style>
 GALLERY_SCRIPT = """<script>
 (()=>{const section=document.querySelector('#partner-videos');if(!section)return;
 const update=async()=>{try{const r=await fetch('/videos/catalog',{cache:'no-store'});if(!r.ok)return;const a=await r.json();section.querySelectorAll('[data-video]').forEach(e=>{if(!a.ids.includes(Number(e.dataset.video))&&!e.hasAttribute('data-claim-pending'))e.remove()});section.querySelectorAll('[data-available-count]').forEach(e=>e.textContent=a.ids.length+'편')}catch{}};
-section.querySelectorAll('form[data-claim]').forEach(f=>f.addEventListener('submit',async e=>{e.preventDefault();const b=f.querySelector('button'),msg=f.querySelector('[role=status]');b.disabled=true;f.closest('[data-video]').setAttribute('data-claim-pending','');msg.textContent='이름을 확인하고 있어요.';try{const r=await fetch('/videos/claim',{method:'POST',headers:{Accept:'application/json'},body:new URLSearchParams(new FormData(f))});if(!r.ok){const t=await r.text();throw Error(t.startsWith('{')?'입력한 내용을 확인해 주세요.':t)}const a=await r.json();const card=f.closest('[data-video]');card.removeAttribute('data-video');const result=document.createElement('div');result.className='video-result';const note=document.createElement('p');note.textContent='내 영상으로 배정됐어요.';const link=document.createElement('a');link.href=a.download;link.textContent='원본 다시 받기';link.download='';result.append(note,link);card.replaceChildren(result);link.click();update()}catch(err){msg.textContent=err.message;b.disabled=false;f.closest('[data-video]')?.removeAttribute('data-claim-pending');update()}}));
+section.querySelectorAll('form[data-claim]').forEach(f=>f.addEventListener('submit',async e=>{e.preventDefault();const b=f.querySelector('button'),msg=f.querySelector('[role=status]');b.disabled=true;f.closest('[data-video]').setAttribute('data-claim-pending','');msg.textContent='이름을 확인하고 있어요.';try{const r=await fetch('/videos/claim',{method:'POST',headers:{Accept:'application/json'},body:new URLSearchParams(new FormData(f))});if(!r.ok){const t=await r.text();throw Error(t.startsWith('{')?'입력한 내용을 확인해 주세요.':t)}const a=await r.json();const card=f.closest('[data-video]');card.removeAttribute('data-video');const result=document.createElement('div');result.className='video-result';const note=document.createElement('p');note.textContent='내 영상으로 배정됐어요.';const link=document.createElement('a');link.href=a.download;link.textContent='원본 다시 받기';link.download='';result.append(note,link);if(a.caption)result.append(fpCaptionBox(a.caption));card.replaceChildren(result);link.click();update()}catch(err){msg.textContent=err.message;b.disabled=false;f.closest('[data-video]')?.removeAttribute('data-claim-pending');update()}}));
 setInterval(update,2500);document.addEventListener('visibilitychange',()=>{if(!document.hidden)update()});})();
 </script>"""
 
@@ -171,10 +192,10 @@ def listing(h, conn, p):
             + gallery(available, p['portal_token']) + '</section>' + GALLERY_SCRIPT)
     body += '<div class=card><h2>내가 받은 영상</h2>'
     for row in owned:
-        body += f"<p>{esc(row['title'])} · <a href='/videos/file/{row['id']}'>원본 다시 받기</a></p>"
+        body += f"<div class=card><h3>{esc(row['title'])}</h3><a href='/videos/file/{row['id']}'>원본 다시 받기</a>" + caption_box(caption_text(conn,row['id'])) + '</div>'
     if not owned:
         body += '<p>아직 받은 영상이 없어요.</p>'
-    page(h, '파트너 전용 영상', body + '</div>', p['portal_token'])
+    page(h, '파트너 전용 영상', body + '</div>' + CAPTION_SCRIPT, p['portal_token'])
 
 
 def dashboard_card(token=None, admin=False):
@@ -195,7 +216,7 @@ def dashboard_card(token=None, admin=False):
     else:
         href = '/videos?t=' + quote(token, safe='') if active else '/videos'
         body += f"<a class=lk href='{href}'>내가 받은 영상 · 전체 목록 →</a>"
-    return body + '</section>' + GALLERY_SCRIPT
+    return body + '</section>' + CAPTION_SCRIPT + GALLERY_SCRIPT
 
 
 def thumbnail_path(row):
@@ -243,7 +264,10 @@ def admin_listing(h, conn):
             label = '숨기기' if row['published'] else '공개하기'
             body += (f"<form method=post action=/op/videos/publish><input type=hidden name=id value='{row['id']}'>"
                      f"<input type=hidden name=csrf value='{csrf('admin')}'><input type=hidden name=published value='{value}'><button>{label}</button></form>")
-        body += '</div>'
+        body += (f"<details><summary>캡션 편집</summary><form method=post action='/op/videos/caption/{row['id']}' style='display:block'>"
+                 f"<input type=hidden name=csrf value='{csrf('admin')}'><input type=hidden name=sha256 value='{row['sha256']}'>"
+                 f"<textarea name=caption required maxlength=4000 rows=10 style='width:100%;line-height:1.7'>{esc(caption_text(conn,row['id']))}</textarea>"
+                 "<button>캡션 저장</button></form></details></div>")
     body += '</div>'
     body += """<script>async function videoCover(file){const v=document.createElement('video');v.muted=true;v.preload='auto';const u=URL.createObjectURL(file);try{return await new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(Error('썸네일을 만들지 못했어요. 파일을 다시 올려 주세요.')),15000);v.onerror=()=>{clearTimeout(timer);reject(Error('영상을 확인해 주세요.'))};v.onloadedmetadata=()=>{v.currentTime=Math.min(2,v.duration/2)};v.onseeked=()=>{const c=document.createElement('canvas');c.width=540;c.height=Math.round(540*v.videoHeight/v.videoWidth);c.getContext('2d').drawImage(v,0,0,c.width,c.height);c.toBlob(b=>{clearTimeout(timer);b?resolve(b):reject(Error('썸네일 생성 실패'))},'image/jpeg',0.85)};v.src=u})}finally{v.removeAttribute('src');v.load();URL.revokeObjectURL(u)}}</script>"""
     body += '''<script>document.querySelector('#video-upload').onsubmit=async e=>{e.preventDefault();const f=e.target,b=f.querySelector('button'),s=document.querySelector('#upload-status');b.disabled=true;s.textContent='올리는 중이에요. 이 페이지를 닫지 마세요.';try{const file=f.elements.file.files[0];const r=await fetch('/op/videos/upload',{method:'POST',headers:{'Content-Type':'video/mp4','X-CSRF-Token':__VIDEO_CSRF__,'X-Video-Title':encodeURIComponent(f.elements.title.value),'X-File-Name':encodeURIComponent(file.name)},body:file});const data=await r.json();if(!r.ok)throw Error(data.error||'업로드에 실패했어요.');s.textContent='썸네일을 만드는 중이에요.';const cover=await videoCover(file);const thumb=await fetch('/op/videos/thumbnail/'+data.id,{method:'POST',headers:{'Content-Type':'image/jpeg','X-CSRF-Token':__VIDEO_CSRF__},body:cover});if(!thumb.ok)throw Error('원본은 저장됐지만 썸네일을 올리지 못했어요. 다시 올려 주세요.');location.reload()}catch(err){s.textContent=err.message;b.disabled=false}};</script>'''.replace('__VIDEO_CSRF__',json.dumps(csrf('admin')))
@@ -346,6 +370,18 @@ def handle(h):
                 response(h,'관리자 로그인이 필요해요.',403);return True
             if h.command=='GET' and u.path=='/op/videos':
                 admin_listing(h,conn)
+            elif h.command=='POST' and re.fullmatch(r'/op/videos/caption/\d+',u.path):
+                f=fields(h,65536);checked_csrf(h,f,'admin');vid=int(u.path.rsplit('/',1)[1]);row=get_video(conn,vid)
+                if not row or not hmac.compare_digest(f.get('sha256',''),row['sha256']):
+                    raise ValueError('video mismatch')
+                caption=f.get('caption','').strip()
+                if not caption or len(caption)>4000:
+                    raise ValueError('invalid caption')
+                conn.execute('INSERT INTO video_captions(video_id,caption,updated_at) VALUES (?,?,?) ON CONFLICT(video_id) DO UPDATE SET caption=excluded.caption,updated_at=excluded.updated_at',(vid,caption,core.now_iso()));conn.commit()
+                if 'application/json' in h.headers.get('Accept',''):
+                    json_response(h,{'ok':True,'id':vid,'sha256':hashlib.sha256(caption.encode()).hexdigest()})
+                else:
+                    redirect(h,'/op/videos')
             elif h.command=='POST' and re.fullmatch(r'/op/videos/thumbnail/\d+',u.path):
                 upload_thumbnail(h,conn,int(u.path.rsplit('/',1)[1]))
             elif h.command=='POST' and u.path=='/op/videos/upload':
@@ -384,6 +420,11 @@ def handle(h):
             if path.is_symlink():
                 raise PermissionError('잘못된 파일이에요.')
             response(h,path.read_bytes(),kind='image/jpeg');return True
+        if re.fullmatch(r'/videos/caption/\d+',u.path) and h.command=='GET':
+            row=get_video(conn,int(u.path.rsplit('/',1)[1]))
+            if not row or not (admin or (p and row['claimed_by']==p['id'])):
+                raise PermissionError('배정받은 파트너만 캡션을 복사할 수 있어요.')
+            json_response(h,{'caption':caption_text(conn,row['id'])});return True
         if re.fullmatch(r'/videos/file/\d+',u.path) and h.command in ('GET','HEAD'):
             row=get_video(conn,int(u.path.rsplit('/',1)[1]))
             if not row or not (admin or (p and row['claimed_by']==p['id'])):
@@ -402,7 +443,7 @@ def handle(h):
             secure='; Secure' if h.headers.get('X-Forwarded-Proto')=='https' else ''
             cookie=('Set-Cookie',f'{PARTNER_COOKIE}={token}; HttpOnly; SameSite=Lax; Path=/videos; Max-Age=604800{secure}')
             if 'application/json' in h.headers.get('Accept',''):
-                response(h,json.dumps({'download':f"/videos/file/{row['id']}"}),kind='application/json',headers=[cookie])
+                response(h,json.dumps({'download':f"/videos/file/{row['id']}",'caption':caption_text(conn,row['id'])}),kind='application/json',headers=[cookie])
             else:
                 redirect(h,f"/videos/file/{row['id']}",[cookie])
         else:

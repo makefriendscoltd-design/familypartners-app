@@ -117,6 +117,30 @@ class VideoHTTPTest(unittest.TestCase):
         self.assertEqual(self.request('GET',thumb,cookie=self.a)[0],200)
         self.assertEqual(json.loads(self.request('GET','/videos/catalog')[2])['ids'],[])
 
+    def test_caption_ownership_update_and_existing_recipient(self):
+        uploaded=json.loads(self.upload()[2]);vid=uploaded['id'];path=f'/op/videos/caption/{vid}'
+        caption="원본 내용 <script> & 테스트\n\n댓글에 ‘정리’ 남겨주시면\n이 영상 정리본 드릴게요."
+        form=urlencode(dict(sha256=uploaded['sha256'],caption=caption,csrf=v.csrf('admin')))
+        self.assertEqual(self.request('POST',path,form)[0],403)
+        wrong=urlencode(dict(sha256='wrong',caption=caption,csrf=v.csrf('admin')))
+        self.assertEqual(self.request('POST',path,wrong,self.admin)[0],400)
+        self.assertEqual(self.request('POST',path,form,self.admin)[0],303)
+        self.publish(vid)
+        endpoint=f'/videos/caption/{vid}'
+        self.assertEqual(self.request('GET',endpoint,cookie=self.a)[0],403)
+        f=urlencode(dict(id=vid,t='token-a',name='테스트가',csrf=v.csrf('token-a')))
+        code,_,payload=self.request('POST','/videos/claim',f,headers={'Accept':'application/json'})
+        self.assertEqual(code,200);self.assertEqual(json.loads(payload)['caption'],caption)
+        self.assertEqual(self.request('GET',endpoint,cookie=self.b)[0],403)
+        self.assertEqual(json.loads(self.request('GET',endpoint,cookie=self.a)[2])['caption'],caption)
+        page=self.request('GET','/videos',cookie=self.a)[2].decode()
+        self.assertIn('&lt;script&gt;',page);self.assertIn('data-copy-caption',page)
+        updated=caption+'\n내용 보완'
+        f=urlencode(dict(sha256=uploaded['sha256'],caption=updated,csrf=v.csrf('admin')))
+        self.assertEqual(self.request('POST',path,f,self.admin)[0],303)
+        db.init_db()
+        self.assertEqual(json.loads(self.request('GET',endpoint,cookie=self.a)[2])['caption'],updated)
+
     def test_atomic_claim_and_cookie(self):
         vid=json.loads(self.upload()[2])['id'];self.publish(vid)
         code,headers,_=self.request('GET','/videos?t=token-a')

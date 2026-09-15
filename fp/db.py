@@ -168,6 +168,13 @@ CREATE TABLE IF NOT EXISTS exclusive_videos (
     claimed_at TEXT
 );
 
+CREATE TABLE IF NOT EXISTS video_captions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    video_id INTEGER NOT NULL UNIQUE REFERENCES exclusive_videos(id) ON DELETE CASCADE,
+    caption TEXT NOT NULL,
+    updated_at TEXT NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS submissions (
     id           INTEGER PRIMARY KEY AUTOINCREMENT,
     partner_id   INTEGER NOT NULL REFERENCES partners(id) ON DELETE CASCADE,
