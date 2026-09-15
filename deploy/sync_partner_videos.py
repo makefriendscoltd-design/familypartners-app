@@ -45,7 +45,7 @@ def bindings(value):
             yield from bindings(child)
 
 
-def candidate(root, key, min_age=60):
+def candidate(root, key, min_age=60, input_snapshots=None):
     root = Path(root)
     video = root / 'final.mp4'
     if not video.is_file() or time.time() - video.stat().st_mtime < min_age:
@@ -65,7 +65,16 @@ def candidate(root, key, min_age=60):
         raise ValueError('video_hash_mismatch')
     for field in ('render_inputs', 'content_lineage'):
         for bound in bindings(manifest[field]):
-            if digest(bound['path']) != bound['sha256']:
+            path = Path(bound['path'])
+            # Render evidence may bind a protected Downloads asset. A previously
+            # hash-verified immutable snapshot is sufficient for that render;
+            # scripts/CTA and item-local files must always be checked in place.
+            external = root.resolve() not in path.resolve().parents
+            if field == 'render_inputs' and external and input_snapshots:
+                frozen = Path(input_snapshots) / bound['sha256']
+                if frozen.is_file():
+                    path = frozen
+            if digest(path) != bound['sha256']:
                 raise ValueError('input_hash_mismatch')
     lineage = manifest['content_lineage']
     for field, relative in [('script', '07_script_final.txt'), ('cta_transform', 'notebooklm/cta-transform.json')]:
@@ -181,7 +190,7 @@ def run(config, state_path, dry_run=False):
         key = source['key']
         record = state['items'].setdefault(key, {})
         try:
-            item = candidate(source['directory'], key)
+            item = candidate(source['directory'], key, input_snapshots=config.get('input_snapshots'))
             if record.get('sha256') and record['sha256'] != item['sha256']:
                 raise ValueError('published_source_revision_requires_review')
             if dry_run:
@@ -192,7 +201,7 @@ def run(config, state_path, dry_run=False):
                 import shutil
                 frozen = Path(tmp) / 'final.mp4'
                 shutil.copyfile(item['video'], frozen)
-                checked = candidate(source['directory'], key)
+                checked = candidate(source['directory'], key, input_snapshots=config.get('input_snapshots'))
                 if checked != item or digest(frozen) != item['sha256']:
                     raise ValueError('source_changed_during_check')
                 item['video'] = str(frozen)

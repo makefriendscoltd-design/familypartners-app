@@ -76,3 +76,9 @@ python3 deploy/sync_partner_videos.py --config config/partner_video_sync.json --
 ```
 
 실제 등록은 위 명령에서 `--dry-run`을 뺀다. 수령 테스트를 운영 계정으로 실행하지 않는다.
+
+macOS 보호 폴더의 촬영 원본은 최초 연결 시 해시를 대조한 불변 복사본을
+`input_snapshots` 디렉터리에 SHA256 파일명으로 보관한다. 예약 작업은 해당
+렌더 입력의 복사본 해시를 검사한다. 대본·CTA·최종 MP4와 출력 디렉터리 안의
+입력은 항상 제작 위치에서 직접 검사하며 복사본으로 우회하지 않는다.
+새로운 외부 촬영 원본이 사용되면 그 해시의 복사본을 준비해야 한다.

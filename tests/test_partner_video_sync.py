@@ -30,6 +30,18 @@ class SourceGateTest(unittest.TestCase):
             lineage={k:dict(path=str(root/p),sha256=sync.digest(root/p)) for k,p in [('script','07_script_final.txt'),('cta_transform','notebooklm/cta-transform.json')]}
             put('production_manifest.json',dict(source_id='sample',title_candidate='제목',render_inputs={},content_lineage=lineage))
             self.assertEqual(sync.candidate(root,'sample',0)['keyword'],'전용')
+            # Protected source input can use a hash-bound immutable snapshot;
+            # item-local caption bindings still cannot use that fallback.
+            manifest=json.loads((root/'production_manifest.json').read_text())
+            cache=root/'cache';cache.mkdir()
+            presenter_sha=hashlib.sha256(b'presenter').hexdigest()
+            (cache/presenter_sha).write_bytes(b'presenter')
+            manifest['render_inputs']['presenter']={'path':'/protected/source/presenter.mp4','sha256':presenter_sha}
+            put('production_manifest.json',manifest)
+            self.assertEqual(sync.candidate(root,'sample',0,str(cache))['keyword'],'전용')
+            (cache/presenter_sha).write_bytes(b'corrupted')
+            with self.assertRaisesRegex(ValueError,'input_hash_mismatch'):sync.candidate(root,'sample',0,str(cache))
+            manifest['render_inputs']={};put('production_manifest.json',manifest)
             (root/'07_script_final.txt').write_text('댓글에 수정 남겨주세요.')
             with self.assertRaisesRegex(ValueError,'input_hash_mismatch'):sync.candidate(root,'sample',0)
             (root/'final.mp4').write_bytes(b'changed')
