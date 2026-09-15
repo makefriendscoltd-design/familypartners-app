@@ -168,6 +168,8 @@ CREATE TABLE IF NOT EXISTS exclusive_videos (
     claimed_at TEXT
 );
 
+CREATE INDEX IF NOT EXISTS idx_video_claim_day ON exclusive_videos(claimed_by, claimed_at);
+
 CREATE TABLE IF NOT EXISTS video_captions (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     video_id INTEGER NOT NULL UNIQUE REFERENCES exclusive_videos(id) ON DELETE CASCADE,

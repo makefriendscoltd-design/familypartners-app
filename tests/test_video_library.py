@@ -141,6 +141,40 @@ class VideoHTTPTest(unittest.TestCase):
         db.init_db()
         self.assertEqual(json.loads(self.request('GET',endpoint,cookie=self.a)[2])['caption'],updated)
 
+    def test_daily_limit_concurrent_different_videos_and_midnight(self):
+        ids=[]
+        for n in range(6):
+            vid=json.loads(self.upload(self.blob+bytes([n]))[2])['id'];self.publish(vid);ids.append(vid)
+        with patch('fp.core.now_iso',return_value='2026-09-15T23:59:59'):
+            with concurrent.futures.ThreadPoolExecutor(max_workers=6) as pool:
+                results=list(pool.map(lambda vid:(vid,self.claim(vid,'a')[0]),ids))
+            self.assertEqual(sorted(status for _,status in results),[303,409,409,409,409,409])
+            owned=next(vid for vid,status in results if status==303)
+            remaining=[vid for vid in ids if vid!=owned]
+            self.assertEqual(self.claim(owned,'a')[0],303)
+            self.assertEqual(self.claim(remaining[0],'b')[0],303)
+            self.assertEqual(self.claim(remaining[1],'b')[0],409)
+        with patch('fp.core.now_iso',return_value='2026-09-16T00:00:00'):
+            self.assertEqual(self.claim(owned,'a')[0],303)
+            self.assertEqual(self.claim(remaining[1],'a')[0],303)
+            self.assertEqual(self.claim(remaining[2],'a')[0],409)
+        c=db.connect();row=c.execute('SELECT claimed_at FROM exclusive_videos WHERE id=?',(owned,)).fetchone();c.close()
+        self.assertEqual(row['claimed_at'],'2026-09-15T23:59:59')
+
+    def test_daily_limit_counts_existing_claims_without_reassigning(self):
+        ids=[]
+        for n in range(5):
+            vid=json.loads(self.upload(self.blob+bytes([n]))[2])['id'];self.publish(vid);ids.append(vid)
+        c=db.connect();pid=c.execute("SELECT id FROM partners WHERE portal_token='token-a'").fetchone()['id']
+        for vid in ids[:4]:
+            c.execute('UPDATE exclusive_videos SET claimed_by=?,claimed_name=?,claimed_at=? WHERE id=?',(pid,'테스트가','2026-09-15T10:00:00',vid))
+        c.commit();c.close()
+        with patch('fp.core.now_iso',return_value='2026-09-15T23:59:59'):
+            self.assertEqual(self.claim(ids[4],'a')[0],409)
+            for vid in ids[:4]:self.assertEqual(self.claim(vid,'a')[0],303)
+        with patch('fp.core.now_iso',return_value='2026-09-16T00:00:00'):
+            self.assertEqual(self.claim(ids[4],'a')[0],303)
+
     def test_atomic_claim_and_cookie(self):
         vid=json.loads(self.upload()[2])['id'];self.publish(vid)
         code,headers,_=self.request('GET','/videos?t=token-a')

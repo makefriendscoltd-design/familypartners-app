@@ -5,6 +5,7 @@ No original is stored in the public library or repository. Registration is draft
 from __future__ import annotations
 
 import hashlib
+from datetime import date, timedelta
 import hmac
 import json
 import os
@@ -19,6 +20,7 @@ from . import core, db
 MAX_VIDEO_BYTES = 512 * 1024 * 1024
 CHUNK = 1024 * 1024
 PARTNER_COOKIE = 'fp_video_partner'
+DAILY_VIDEO_LIMIT = 1
 
 
 def storage_dir():
@@ -48,25 +50,49 @@ def get_video(conn, vid):
     return conn.execute('SELECT * FROM exclusive_videos WHERE id=?', (vid,)).fetchone()
 
 
+def daily_claim_count(conn, pid, day):
+    start = day + 'T00:00:00'
+    end = (date.fromisoformat(day) + timedelta(days=1)).isoformat() + 'T00:00:00'
+    return conn.execute('SELECT COUNT(*) AS n FROM exclusive_videos WHERE claimed_by=? AND claimed_at>=? AND claimed_at<?', (pid, start, end)).fetchone()['n']
+
+
 def claim(conn, vid, token, name):
-    """UPDATE predicate is the lock: independent concurrent requests have one owner."""
-    p = partner(conn, token)
-    if not p or name.strip() != p['name'].strip():
-        raise PermissionError('등록한 이름을 확인해 주세요.')
-    row = get_video(conn, vid)
-    if not row:
-        raise LookupError('영상을 찾을 수 없어요.')
-    file_path(row)  # Do not consume an allocation when storage is unavailable.
-    won = conn.execute(
-        "UPDATE exclusive_videos SET claimed_by=?,claimed_name=?,claimed_at=? "
-        "WHERE id=? AND published=1 AND claimed_at IS NULL AND claimed_by IS NULL "
-        "AND EXISTS (SELECT 1 FROM partners WHERE id=? AND portal_token=? AND status='active') "
-        "RETURNING id", (p['id'], p['name'], core.now_iso(), vid, p['id'], token)).fetchone()
-    conn.commit()
-    row = get_video(conn, vid)
-    if won or row['claimed_by'] == p['id']:
-        return row
-    raise LookupError('다른 파트너가 먼저 받은 영상이에요.')
+    """Serialize per-account quota check and allocation in the same transaction."""
+    if not db.is_postgres():
+        conn.execute('BEGIN IMMEDIATE')
+    try:
+        if db.is_postgres():
+            p = conn.execute("SELECT id,name,portal_token FROM partners WHERE portal_token=? AND status='active' FOR UPDATE", (token,)).fetchone()
+        else:
+            p = partner(conn, token)
+        if not p or name.strip() != p['name'].strip():
+            raise PermissionError('등록한 이름을 확인해 주세요.')
+        row = get_video(conn, vid)
+        if not row:
+            raise LookupError('영상을 찾을 수 없어요.')
+        # Retrying an existing allocation never consumes today's allowance.
+        if row['claimed_by'] == p['id']:
+            file_path(row)
+            conn.commit()
+            return row
+        if not row['published'] or row['claimed_at'] or row['claimed_by']:
+            raise LookupError('다른 파트너가 먼저 받았거나 배포가 끝난 영상이에요.')
+        stamp = core.now_iso()  # Existing history uses Korea local timestamps.
+        if daily_claim_count(conn, p['id'], stamp[:10]) >= DAILY_VIDEO_LIMIT:
+            raise LookupError('오늘 받을 수 있는 영상을 이미 받았어요. 한국 시간 자정 이후에 새 영상을 받을 수 있어요. 이미 받은 영상은 다시 받을 수 있어요.')
+        file_path(row)
+        won = conn.execute(
+            "UPDATE exclusive_videos SET claimed_by=?,claimed_name=?,claimed_at=? "
+            "WHERE id=? AND published=1 AND claimed_at IS NULL AND claimed_by IS NULL RETURNING id",
+            (p['id'], p['name'], stamp, vid)).fetchone()
+        if not won:
+            raise LookupError('다른 파트너가 먼저 받은 영상이에요.')
+        allocated = get_video(conn, vid)
+        conn.commit()
+        return allocated
+    except Exception:
+        conn.execute('ROLLBACK')
+        raise
 
 
 def csrf(actor):
@@ -188,7 +214,7 @@ def listing(h, conn, p):
     available = conn.execute('SELECT * FROM exclusive_videos WHERE published=1 AND claimed_at IS NULL AND claimed_by IS NULL ORDER BY id DESC').fetchall()
     owned = conn.execute('SELECT * FROM exclusive_videos WHERE claimed_by=? ORDER BY claimed_at DESC', (p['id'],)).fetchall()
     body = (GALLERY_STYLE + "<section id=partner-videos><div class=card><h2>받을 수 있는 영상 "
-            f"<span data-available-count>{len(available)}편</span></h2><p>카드를 선택하고 등록한 이름을 입력하세요. 영상마다 한 명만 받을 수 있어요.</p></div>"
+            f"<span data-available-count>{len(available)}편</span></h2><p>계정당 하루 {DAILY_VIDEO_LIMIT}편만 받을 수 있어요. 한국 시간 자정에 한도가 초기화됩니다. 이미 받은 영상은 다시 받을 수 있어요.</p></div>"
             + gallery(available, p['portal_token']) + '</section>' + GALLERY_SCRIPT)
     body += '<div class=card><h2>내가 받은 영상</h2>'
     for row in owned:
@@ -207,7 +233,7 @@ def dashboard_card(token=None, admin=False):
         conn.close()
     body = (GALLERY_STYLE + "<section class=card id=partner-videos style='border:2px solid var(--acc)'>"
             f"<h2>받을 수 있는 영상 <span data-available-count>{len(rows)}편</span></h2>"
-            "<p>카드를 선택하고 이름을 입력하면 원본을 받을 수 있어요. 먼저 받은 사람에게만 배정됩니다.</p>"
+            f"<p>계정당 하루 {DAILY_VIDEO_LIMIT}편. 카드를 선택하고 이름을 입력하세요. 한국 시간 자정에 한도가 초기화됩니다.</p>"
             + gallery(rows, token if active else None, admin))
     if not rows:
         body += '<p>지금 받을 수 있는 영상이 없어요. 이미 받은 영상은 다시 받을 수 있어요.</p>'
