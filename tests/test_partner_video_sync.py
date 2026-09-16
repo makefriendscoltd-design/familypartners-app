@@ -16,6 +16,18 @@ sync=importlib.util.module_from_spec(spec);spec.loader.exec_module(sync)
 
 
 class SourceGateTest(unittest.TestCase):
+    def test_short_caption_keeps_source_points_keyword_and_cta(self):
+        text='첫째, 고객 응대입니다. 상세 설명입니다.\n둘째, 문서 처리입니다. 긴 설명입니다.\n셋째, 후속 관리입니다. 더 긴 설명입니다.'
+        self.assertEqual(sync.short_caption(text,'전용','시간 없나요? 업무 자동화'),
+                         '시간 없나요?\n업무 자동화\n\n• 고객 응대\n• 문서 처리\n• 후속 관리\n\n댓글에 전용 남기면\n이 영상 정리본 드릴게요.')
+        huge='첫째, '+('아주 긴 설명 '*100)+'.\n둘째, 문서 처리입니다.'
+        result=sync.short_caption(huge,'스킬','업무 자동화')
+        self.assertLessEqual(len(result),300)
+        self.assertNotIn('아주 긴 설명',result)
+        self.assertTrue(result.endswith('댓글에 스킬 남기면\n이 영상 정리본 드릴게요.'))
+        self.assertEqual(sync.short_caption(result,'스킬','다른 제목'),result)
+        with self.assertRaises(ValueError):sync.short_caption(text,'정리\n다른말','제목')
+
     def test_withdrawn_original_cannot_be_republished_by_batch_replay(self):
         api=Mock();record={'id':42,'crm_emitted':True};persist=Mock()
         result=sync.import_one(api,{'sha256':'withdrawn-sha'},record,persist,
@@ -93,5 +105,5 @@ class ImporterHTTPTest(unittest.TestCase):
             self.assertEqual(emit.call_count,1)
         rows=api.status();self.assertEqual(len(rows),1);self.assertTrue(rows[0]['claimed'])
         self.assertTrue(rows[0]['has_thumbnail']);self.assertTrue(rows[0]['has_caption'])
-        self.assertEqual(json.loads(api.request('GET',f'/videos/caption/{vid}'))['caption'],item['caption'])
+        self.assertEqual(json.loads(api.request('GET',f'/videos/caption/{vid}'))['caption'],'영상\n\n댓글에 전용 남기면\n이 영상 정리본 드릴게요.')
         self.assertEqual(hashlib.sha256(api.request('GET',f'/videos/file/{vid}')).hexdigest(),item['sha256'])

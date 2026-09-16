@@ -8,6 +8,7 @@ import hashlib
 import http.client
 import json
 import os
+import re
 from pathlib import Path
 import subprocess
 import tempfile
@@ -43,6 +44,40 @@ def bindings(value):
     elif isinstance(value, list):
         for child in value:
             yield from bindings(child)
+
+
+# Editorial limit for readable copy, not a claim about platform API limits.
+CAPTION_MAX_CHARS = 300
+
+
+def short_caption(script, keyword, title):
+    """Keep source headings and the video's exact comment keyword; CTA cannot truncate."""
+    if not re.fullmatch(r'[가-힣A-Za-z0-9_]{1,20}', keyword):
+        raise ValueError('invalid_comment_keyword')
+    if len(script) <= CAPTION_MAX_CHARS and script.endswith(f'댓글에 {keyword} 남기면\n이 영상 정리본 드릴게요.'):
+        return script
+    title = title.strip()
+    if not title or len(title) > 100:
+        raise ValueError('invalid_caption_title')
+    cta = f'댓글에 {keyword} 남기면\n이 영상 정리본 드릴게요.'
+    title = re.sub(r'([?!]) +', r'\1\n', title, count=1)
+    headings = re.findall(r'(?:^|\n)\s*(?:첫째|둘째|셋째|넷째|다섯째)[,.]\s*([^\n]+)', script)
+    points = []
+    for heading in headings:
+        point = re.split(r'(?<=[.!?])\s+', heading.strip())[0].rstrip('.')
+        point = re.sub(r'입니다$', '', point).strip()
+        # Omit overlong sentences as a whole; never cut a word or drop its caveat.
+        if point and len(point) <= 60:
+            candidate_points = points + ['• ' + point]
+            result = title + '\n\n' + '\n'.join(candidate_points) + '\n\n' + cta
+            if len(result) <= CAPTION_MAX_CHARS:
+                points = candidate_points
+        if len(points) == 3:
+            break
+    result = title + ('\n\n' + '\n'.join(points) if points else '') + '\n\n' + cta
+    if len(result) > CAPTION_MAX_CHARS:
+        raise ValueError('caption_too_long')
+    return result
 
 
 def candidate(root, key, min_age=60, input_snapshots=None):
@@ -87,7 +122,7 @@ def candidate(root, key, min_age=60, input_snapshots=None):
     title = manifest['title_candidate'].strip()
     if not title:
         raise ValueError('missing_title')
-    return dict(key=key, video=str(video), sha256=sha, title=title, caption=caption, keyword=keyword)
+    return dict(key=key, video=str(video), sha256=sha, title=title, caption=short_caption(caption, keyword, title), keyword=keyword)
 
 
 class API:
@@ -140,6 +175,7 @@ def import_one(api, item, record, persist, config):
         record.update(sha256=item['sha256'], status='withdrawn_by_review')
         persist()
         return 'excluded_by_review'
+    item = dict(item, caption=short_caption(item['caption'], item['keyword'], item['title']))
     # Discover prior success even if an upload/publish response was lost.
     existing = next((r for r in api.status() if r['sha256'] == item['sha256']), None)
     if existing and (existing['claimed'] or existing['published']):
