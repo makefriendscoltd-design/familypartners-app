@@ -28,6 +28,15 @@ class SourceGateTest(unittest.TestCase):
         self.assertEqual(sync.short_caption(result,'스킬','다른 제목'),result)
         with self.assertRaises(ValueError):sync.short_caption(text,'정리\n다른말','제목')
 
+    def test_low_stock_alert_once_per_day(self):
+        class Api:
+            def sync_status(self):return {'stock':{'available':19,'queued':25,'target':20},'videos':[]}
+        state={};sent=[]
+        def notify(text):sent.append(text);return True
+        self.assertEqual(sync.check_stock(Api(),state,lambda:None,notify),1)
+        sync.check_stock(Api(),state,lambda:None,notify)
+        self.assertEqual(len(sent),1);self.assertIn('대기열 25편',sent[0])
+
     def test_withdrawn_original_cannot_be_republished_by_batch_replay(self):
         api=Mock();record={'id':42,'crm_emitted':True};persist=Mock()
         result=sync.import_one(api,{'sha256':'withdrawn-sha'},record,persist,
@@ -78,7 +87,7 @@ class ImporterHTTPTest(unittest.TestCase):
     request=fixture.VideoHTTPTest.request
     claim=fixture.VideoHTTPTest.claim
 
-    def test_roundtrip_replay_after_lost_publish_response_and_claim(self):
+    def test_roundtrip_replay_after_lost_queue_response_midnight_publish_and_claim(self):
         video=Path(self.tmp.name)/'source.mp4'
         ffmpeg=shutil.which('ffmpeg')
         if not ffmpeg:self.skipTest('ffmpeg unavailable')
@@ -91,15 +100,22 @@ class ImporterHTTPTest(unittest.TestCase):
         original=api.form
         def lost_response(path,data):
             result=original(path,data)
-            if path=='/op/videos/publish':raise RuntimeError('connection_lost')
+            if path=='/op/videos/queue':raise RuntimeError('connection_lost')
             return result
         with patch.object(api,'form',side_effect=lost_response):
             with self.assertRaisesRegex(RuntimeError,'connection_lost'):sync.import_one(api,item,record,persist,config)
         self.assertTrue(record['publish_attempted'])
         vid=record['id']
-        self.assertEqual(self.claim(vid,'a')[0],303)
         def emitted(config,record):record['crm_emitted']=True
         with patch.object(sync,'emit',side_effect=emitted) as emit:
+            # Queued, not yet visible: no claim and no CRM until the midnight refill publishes it.
+            self.assertEqual(sync.import_one(api,item,record,persist,config),'queued')
+            self.assertEqual(self.claim(vid,'a')[0],409)
+            emit.assert_not_called()
+            c=db.connect()
+            try:self.assertEqual(v.refill(c,'2999-01-01'),1)
+            finally:c.close()
+            self.assertEqual(self.claim(vid,'a')[0],303)
             self.assertEqual(sync.import_one(api,item,record,persist,config),'already_available_or_claimed')
             sync.import_one(api,item,record,persist,config)
             self.assertEqual(emit.call_count,1)

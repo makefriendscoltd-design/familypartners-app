@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Poll explicitly authorized outputs; verify draft artifacts before publishing.
-No producer execution, AI calls, browser, partner claims, or outbound messages.
+No producer execution, AI calls, browser, partner claims, or outbound messages
+(only a once-a-day low-stock Telegram alert to the operator).
 """
 import argparse
 import fcntl
@@ -148,7 +149,10 @@ class API:
             conn.close()
 
     def status(self):
-        return json.loads(self.request('GET', '/op/videos/sync-status'))['videos']
+        return self.sync_status()['videos']
+
+    def sync_status(self):
+        return json.loads(self.request('GET', '/op/videos/sync-status'))
 
     def form(self, path, data):
         return self.request('POST', path, urlencode(data).encode(), {'Content-Type': 'application/x-www-form-urlencoded'})
@@ -178,6 +182,11 @@ def import_one(api, item, record, persist, config):
     item = dict(item, caption=short_caption(item['caption'], item['keyword'], item['title']))
     # Discover prior success even if an upload/publish response was lost.
     existing = next((r for r in api.status() if r['sha256'] == item['sha256']), None)
+    if existing and existing.get('queued'):
+        # The server publishes queued originals at KST midnight; CRM is emitted once it is live.
+        record.update(id=existing['id'], sha256=item['sha256'], status='queued')
+        persist()
+        return 'queued'
     if existing and (existing['claimed'] or existing['published']):
         record.update(id=existing['id'], sha256=item['sha256'], status='published_or_claimed')
         persist()
@@ -210,14 +219,43 @@ def import_one(api, item, record, persist, config):
         raise ValueError('remote_caption_mismatch')
     record.update(status='verified', publish_attempted=True)
     persist()
-    api.form('/op/videos/publish', {'id': vid, 'published': 1})
+    api.form('/op/videos/queue', {'id': vid, 'queued': 1})
     status = next(r for r in api.status() if r['id'] == vid)
-    if not (status['published'] or status['claimed']):
-        raise ValueError('publication_not_confirmed')
-    record.update(status='published', verified_at=time.time())
+    if not (status.get('queued') or status['published'] or status['claimed']):
+        raise ValueError('queue_not_confirmed')
+    record.update(status='queued', verified_at=time.time())
     persist()
-    emit(config, record); persist()
-    return 'published'
+    return 'queued'
+
+
+LOW_STOCK_DAYS = 2
+
+
+def check_stock(api, state, persist, notify=None):
+    """Alert once per day when the queue covers fewer than LOW_STOCK_DAYS full refills."""
+    st = api.sync_status().get('stock')
+    if not st:
+        return None
+    days = st['queued'] // st['target']
+    state['stock'] = dict(st, days=days, checked_at=time.time())
+    today = time.strftime('%Y-%m-%d')
+    if days < LOW_STOCK_DAYS and state.get('low_stock_alerted_day') != today:
+        text = (f"[파트너스 영상] 대기열 {st['queued']}편 남음 (하루 최대 {st['target']}편 기준 {days}일치). "
+                f"지금 받을 수 있는 영상 {st['available']}편. 새 숏폼을 대기열에 올려야 함.")
+        if (notify or telegram)(text):
+            state['low_stock_alerted_day'] = today
+    persist()
+    return days
+
+
+def telegram(text):
+    import sys
+    sys.path.insert(0, str(Path.home() / 'orca/projects/loopguard/src'))
+    try:
+        from loopguard import notify
+        return notify.send({}, text)[0]
+    except Exception:
+        return False
 
 
 def run(config, state_path, dry_run=False):
@@ -260,6 +298,10 @@ def run(config, state_path, dry_run=False):
         if not dry_run:
             persist()
     if not dry_run:
+        try:
+            check_stock(api, state, persist)
+        except Exception as exc:
+            state['stock_error'] = type(exc).__name__
         state['last_finished_at'] = time.time(); persist()
     print(json.dumps({'dry_run': dry_run, 'results': results}, ensure_ascii=False))
     return results

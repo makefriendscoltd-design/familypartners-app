@@ -163,12 +163,20 @@ CREATE TABLE IF NOT EXISTS exclusive_videos (
     sha256 TEXT NOT NULL UNIQUE,
     created_at TEXT NOT NULL,
     published INTEGER NOT NULL DEFAULT 0,
+    queued INTEGER NOT NULL DEFAULT 0,
     claimed_by INTEGER REFERENCES partners(id) ON DELETE SET NULL,
     claimed_name TEXT,
     claimed_at TEXT
 );
 
 CREATE INDEX IF NOT EXISTS idx_video_claim_day ON exclusive_videos(claimed_by, claimed_at);
+
+-- 자정 채우기 기록: 하루 한 번만 대기열 영상을 공개로 돌린다.
+CREATE TABLE IF NOT EXISTS video_refills (
+    day TEXT PRIMARY KEY,
+    published INTEGER NOT NULL DEFAULT 0,
+    at TEXT NOT NULL
+);
 
 CREATE TABLE IF NOT EXISTS video_captions (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -289,6 +297,8 @@ def init_db() -> None:
             conn.execute("ALTER TABLE partners ADD COLUMN IF NOT EXISTS "
                          "partner_type TEXT DEFAULT 'family'")
             conn.execute("ALTER TABLE library ADD COLUMN IF NOT EXISTS data_b64 TEXT")
+            conn.execute("ALTER TABLE exclusive_videos ADD COLUMN IF NOT EXISTS "
+                         "queued INTEGER NOT NULL DEFAULT 0")
             for col, typ in SUB_PERF_COLS:
                 conn.execute(f"ALTER TABLE submissions ADD COLUMN IF NOT EXISTS {col} {typ}")
             for col, typ in DROP_TAG_COLS:
@@ -314,6 +324,9 @@ def init_db() -> None:
             lcols = {r["name"] for r in conn.execute("PRAGMA table_info(library)")}
             if "data_b64" not in lcols:
                 conn.execute("ALTER TABLE library ADD COLUMN data_b64 TEXT")
+            vcols = {r["name"] for r in conn.execute("PRAGMA table_info(exclusive_videos)")}
+            if "queued" not in vcols:
+                conn.execute("ALTER TABLE exclusive_videos ADD COLUMN queued INTEGER NOT NULL DEFAULT 0")
             scols = {r["name"] for r in conn.execute("PRAGMA table_info(submissions)")}
             if "valid" not in scols:
                 conn.execute("ALTER TABLE submissions ADD COLUMN valid INTEGER NOT NULL DEFAULT 1")

@@ -54,6 +54,39 @@ class VideoHTTPTest(unittest.TestCase):
         token,name,cookie=('token-a','테스트가',self.a) if which=='a' else ('token-b','테스트나',self.b)
         return self.request('POST','/videos/claim',urlencode(dict(id=vid,name=name,csrf=v.csrf(token))),cookie)
 
+    def queue(self,vid,queued=1):
+        return self.request('POST','/op/videos/queue',urlencode(dict(id=vid,queued=queued,csrf=v.csrf('admin'))),self.admin)
+
+    def test_midnight_refill_tops_up_to_target_once_per_day_oldest_first(self):
+        ids=[]
+        for i in range(4):
+            status,_,body=self.upload(self.blob+bytes([i]));self.assertEqual(status,201);ids.append(json.loads(body)['id'])
+        withdrawn=ids[3]  # unpublished but never queued: must never be auto-published
+        self.assertEqual(self.publish(ids[0])[0],303)
+        for vid in ids[1:3]:self.assertEqual(self.queue(vid)[0],303)
+        self.assertEqual(self.claim(ids[1],'a')[0],409)
+        c=db.connect()
+        try:
+            # Today's refill already ran on the first request, with nothing queued yet.
+            self.assertIsNotNone(c.execute('SELECT day FROM video_refills WHERE day=?',(v.core.now_iso()[:10],)).fetchone())
+            with patch.object(v,'VISIBLE_TARGET',2):
+                self.assertEqual(v.refill(c,'2999-01-01'),1)
+                self.assertIsNone(v.refill(c,'2999-01-01'))
+                self.assertEqual(v.stock(c),{'available':2,'queued':1,'target':2})
+                rows={r['id']:r for r in c.execute('SELECT id,published,queued FROM exclusive_videos').fetchall()}
+                self.assertEqual((rows[ids[1]]['published'],rows[ids[1]]['queued']),(1,0))
+                self.assertEqual(rows[ids[2]]['queued'],1)
+                self.assertEqual((rows[withdrawn]['published'],rows[withdrawn]['queued']),(0,0))
+        finally:c.close()
+        self.assertEqual(self.claim(ids[1],'a')[0],303)
+        status=json.loads(self.request('GET','/op/videos/sync-status',cookie=self.admin)[2])
+        self.assertEqual(status['stock']['queued'],1)
+        self.assertIn('대기열',self.request('GET','/op/videos',cookie=self.admin)[2].decode())
+        self.assertEqual(self.queue(ids[2],0)[0],303)
+        c=db.connect()
+        try:self.assertEqual(v.stock(c)['queued'],0)
+        finally:c.close()
+
     def test_upload_visibility_security_and_ranges(self):
         self.assertEqual(self.request('GET','/op/videos')[0],403)
         html=self.request('GET','/op/videos',cookie=self.admin)[2].decode()

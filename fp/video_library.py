@@ -21,6 +21,8 @@ MAX_VIDEO_BYTES = 512 * 1024 * 1024
 CHUNK = 1024 * 1024
 PARTNER_COOKIE = 'fp_video_partner'
 DAILY_VIDEO_LIMIT = 2
+VISIBLE_TARGET = 20  # 자정마다 받을 수 있는 영상이 이 수가 되도록 대기열에서 채운다.
+AVAILABLE_SQL = 'published=1 AND claimed_at IS NULL AND claimed_by IS NULL'
 
 
 def storage_dir():
@@ -54,6 +56,45 @@ def daily_claim_count(conn, pid, day):
     start = day + 'T00:00:00'
     end = (date.fromisoformat(day) + timedelta(days=1)).isoformat() + 'T00:00:00'
     return conn.execute('SELECT COUNT(*) AS n FROM exclusive_videos WHERE claimed_by=? AND claimed_at>=? AND claimed_at<?', (pid, start, end)).fetchone()['n']
+
+
+def stock(conn):
+    available = conn.execute(f'SELECT COUNT(*) AS n FROM exclusive_videos WHERE {AVAILABLE_SQL}').fetchone()['n']
+    queued = conn.execute('SELECT COUNT(*) AS n FROM exclusive_videos WHERE queued=1 AND published=0 AND claimed_at IS NULL AND claimed_by IS NULL').fetchone()['n']
+    return {'available': available, 'queued': queued, 'target': VISIBLE_TARGET}
+
+
+def refill(conn, day=None):
+    """Once per KST day, publish the oldest queued originals until VISIBLE_TARGET are available."""
+    day = day or core.now_iso()[:10]
+    try:
+        if conn.execute('SELECT day FROM video_refills WHERE day=?', (day,)).fetchone():
+            conn.commit()
+            return None
+        # The day row is the lock: only the request that inserts it publishes.
+        if not conn.execute('INSERT INTO video_refills(day,published,at) VALUES (?,0,?) ON CONFLICT(day) DO NOTHING RETURNING day',
+                            (day, core.now_iso())).fetchone():
+            conn.commit()
+            return None
+        need = VISIBLE_TARGET - stock(conn)['available']
+        done = 0
+        if need > 0:
+            rows = conn.execute('SELECT * FROM exclusive_videos WHERE queued=1 AND published=0 AND claimed_at IS NULL AND claimed_by IS NULL ORDER BY id').fetchall()
+            for row in rows:
+                if done >= need:
+                    break
+                try:
+                    file_path(row)
+                except (FileNotFoundError, ValueError):
+                    continue  # A missing original stays queued instead of being shown broken.
+                conn.execute('UPDATE exclusive_videos SET published=1,queued=0 WHERE id=? AND queued=1 AND published=0', (row['id'],))
+                done += 1
+        conn.execute('UPDATE video_refills SET published=? WHERE day=?', (done, day))
+        conn.commit()
+        return done
+    except Exception:
+        conn.execute('ROLLBACK')
+        raise
 
 
 def claim(conn, vid, token, name):
@@ -223,7 +264,7 @@ def gallery(rows, token=None, admin=False):
 
 def listing(h, conn, p):
     from .server import esc
-    available = conn.execute('SELECT * FROM exclusive_videos WHERE published=1 AND claimed_at IS NULL AND claimed_by IS NULL ORDER BY id DESC').fetchall()
+    available = conn.execute(f'SELECT * FROM exclusive_videos WHERE {AVAILABLE_SQL} ORDER BY id DESC').fetchall()
     owned = conn.execute('SELECT * FROM exclusive_videos WHERE claimed_by=? ORDER BY claimed_at DESC', (p['id'],)).fetchall()
     body = (GALLERY_STYLE + "<section id=partner-videos><div class=card><h2>받을 수 있는 영상 "
             f"<span data-available-count>{len(available)}편</span></h2><p>계정당 하루 {DAILY_VIDEO_LIMIT}편만 받을 수 있어요. 한국 시간 자정에 한도가 초기화됩니다. 이미 받은 영상은 다시 받을 수 있어요.</p></div>"
@@ -293,9 +334,12 @@ def admin_listing(h, conn):
             "<label>원본 파일 <input name=file type=file accept='.mp4,video/mp4' required></label>"
             "<button>비공개로 올리기</button><p id=upload-status role=status></p></form></div>")
     body += f"<meta name=video-sync-token content='{sync_token()}'>"
+    st = stock(conn)
+    body += (f"<div class=card><h2>대기열</h2><p>지금 받을 수 있는 영상 {st['available']}편 · 대기열 {st['queued']}편. "
+             f"한국 시간 자정마다 받을 수 있는 영상이 {VISIBLE_TARGET}편이 되도록 대기열에서 먼저 올린 순서대로 공개돼요.</p></div>")
     body += '<div class=card><h2>영상 배포 내역</h2>'
     for row in rows:
-        state = f"{esc(row['claimed_name'])} · {esc(row['claimed_at'])} 수령" if row['claimed_at'] else ('배포 중' if row['published'] else '비공개')
+        state = f"{esc(row['claimed_name'])} · {esc(row['claimed_at'])} 수령" if row['claimed_at'] else ('배포 중' if row['published'] else ('대기열' if row['queued'] else '비공개'))
         body += (f"<div class=card><h3>{esc(row['title'])}</h3><p>{state}</p>"
                  f"<a href='/videos/file/{row['id']}'>원본 확인</a>")
         if not row['claimed_at']:
@@ -303,6 +347,10 @@ def admin_listing(h, conn):
             label = '숨기기' if row['published'] else '공개하기'
             body += (f"<form method=post action=/op/videos/publish><input type=hidden name=id value='{row['id']}'>"
                      f"<input type=hidden name=csrf value='{csrf('admin')}'><input type=hidden name=published value='{value}'><button>{label}</button></form>")
+            if not row['published']:
+                qv, ql = (0, '대기열에서 빼기') if row['queued'] else (1, '대기열에 넣기')
+                body += (f"<form method=post action=/op/videos/queue><input type=hidden name=id value='{row['id']}'>"
+                         f"<input type=hidden name=csrf value='{csrf('admin')}'><input type=hidden name=queued value='{qv}'><button>{ql}</button></form>")
         body += (f"<details><summary>캡션 편집</summary><form method=post action='/op/videos/caption/{row['id']}' style='display:block'>"
                  f"<input type=hidden name=csrf value='{csrf('admin')}'><input type=hidden name=sha256 value='{row['sha256']}'>"
                  f"<textarea name=caption required maxlength=4000 rows=10 style='width:100%;line-height:1.7'>{esc(caption_text(conn,row['id']))}</textarea>"
@@ -406,13 +454,17 @@ def handle(h):
         admin=h._admin_ok()
         sync=sync_authorized(h)
         h._video_sync_ok=sync
+        try:
+            refill(conn)
+        except Exception:
+            pass  # Refill retries on the next request; never block the page.
         if u.path.startswith('/op/videos'):
-            sync_route = u.path in ('/op/videos/sync-status','/op/videos/upload','/op/videos/publish') or bool(re.fullmatch(r'/op/videos/(thumbnail|caption)/\d+',u.path))
+            sync_route = u.path in ('/op/videos/sync-status','/op/videos/upload','/op/videos/publish','/op/videos/queue') or bool(re.fullmatch(r'/op/videos/(thumbnail|caption)/\d+',u.path))
             if not (admin or (sync and sync_route)):
                 response(h,'관리자 로그인이 필요해요.',403);return True
             if h.command=='GET' and u.path=='/op/videos/sync-status':
-                rows=conn.execute('SELECT id,sha256,published,claimed_at,file_key FROM exclusive_videos ORDER BY id').fetchall()
-                json_response(h,{'videos':[{'id':r['id'],'sha256':r['sha256'],'published':bool(r['published']),'claimed':bool(r['claimed_at']),'has_caption':bool(caption_text(conn,r['id'])),'has_thumbnail':thumbnail_path(r).is_file()} for r in rows]})
+                rows=conn.execute('SELECT id,sha256,published,queued,claimed_at,file_key FROM exclusive_videos ORDER BY id').fetchall()
+                json_response(h,{'stock':stock(conn),'videos':[{'id':r['id'],'sha256':r['sha256'],'published':bool(r['published']),'queued':bool(r['queued']),'claimed':bool(r['claimed_at']),'has_caption':bool(caption_text(conn,r['id'])),'has_thumbnail':thumbnail_path(r).is_file()} for r in rows]})
             elif h.command=='GET' and u.path=='/op/videos':
                 admin_listing(h,conn)
             elif h.command=='POST' and re.fullmatch(r'/op/videos/caption/\d+',u.path):
@@ -439,7 +491,18 @@ def handle(h):
                 published=int(f['published'])
                 if published not in (0,1):
                     raise ValueError('invalid visibility')
-                conn.execute('UPDATE exclusive_videos SET published=? WHERE id=? AND claimed_at IS NULL AND claimed_by IS NULL',(published,row['id']));conn.commit()
+                conn.execute('UPDATE exclusive_videos SET published=?,queued=0 WHERE id=? AND claimed_at IS NULL AND claimed_by IS NULL',(published,row['id']));conn.commit()
+                redirect(h,'/op/videos')
+            elif h.command=='POST' and u.path=='/op/videos/queue':
+                f=fields(h);checked_csrf(h,f,'admin');row=get_video(conn,int(f['id']))
+                if not row:
+                    raise LookupError('영상을 찾을 수 없어요.')
+                queued=int(f['queued'])
+                if queued not in (0,1):
+                    raise ValueError('invalid queue state')
+                if queued:
+                    file_path(row)
+                conn.execute('UPDATE exclusive_videos SET queued=? WHERE id=? AND published=0 AND claimed_at IS NULL AND claimed_by IS NULL',(queued,row['id']));conn.commit()
                 redirect(h,'/op/videos')
             else:
                 response(h,'없는 페이지예요.',404)
