@@ -258,6 +258,33 @@ def telegram(text):
         return False
 
 
+def discover(config):
+    """Find newly produced shorts so a fresh render needs no config edit to ship."""
+    auto = config.get('auto_discover')
+    if not auto:
+        return []
+    root = Path(auto['root'])
+    found = []
+    for directory in sorted(root.glob(auto.get('pattern', '*/shorts'))):
+        video = directory / 'final.mp4'
+        if not video.is_file():
+            continue
+        # An old render that never shipped stays out; it needs a human look, not a surprise upload.
+        if (time.time() - video.stat().st_mtime) / 86400 > auto.get('max_age_days', 14):
+            continue
+        stat = video.stat()
+        found.append({'key': re.sub(r'-\d{8}$', '', directory.parent.name),
+                      'directory': str(directory), 'auto': True,
+                      'fingerprint': f'{stat.st_mtime_ns}:{stat.st_size}'})
+    return found
+
+
+def sources(config):
+    listed = config['sources']
+    known = {s['key'] for s in listed}
+    return listed + [s for s in discover(config) if s['key'] not in known]
+
+
 def run(config, state_path, dry_run=False):
     state = read_json(state_path) if state_path.exists() else {'items': {}}
     state['last_run_at'] = time.time()
@@ -265,9 +292,20 @@ def run(config, state_path, dry_run=False):
         save(state_path, state)
     api = None if dry_run else API(config['base_url'], Path(config['token_file']).read_text().strip())
     results = []
-    for source in config['sources']:
+    limit = config.get('auto_discover', {}).get('max_per_run', 5)
+    started = 0
+    for source in sources(config):
         key = source['key']
         record = state['items'].setdefault(key, {})
+        # An unchanged original that already shipped is not re-hashed every five minutes.
+        if source.get('auto') and record.get('done_fingerprint') == source['fingerprint']:
+            results.append({'key': key, 'status': 'already_done'})
+            continue
+        # Cap first-time auto uploads per run so a backlog cannot flood one pass.
+        first_time = bool(source.get('auto')) and not record.get('id')
+        if first_time and started >= limit:
+            results.append({'key': key, 'status': 'deferred_to_next_run'})
+            continue
         try:
             item = candidate(source['directory'], key, input_snapshots=config.get('input_snapshots'))
             if record.get('sha256') and record['sha256'] != item['sha256']:
@@ -285,6 +323,10 @@ def run(config, state_path, dry_run=False):
                     raise ValueError('source_changed_during_check')
                 item['video'] = str(frozen)
                 status = import_one(api, item, record, persist, config)
+            if first_time and status != 'excluded_by_review':
+                started += 1
+            if source.get('auto') and status != 'draft':
+                record['done_fingerprint'] = source['fingerprint']
             results.append({'key': key, 'status': status})
             record.pop('error', None)
         except FileNotFoundError:

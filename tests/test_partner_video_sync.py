@@ -16,6 +16,9 @@ sync=importlib.util.module_from_spec(spec);spec.loader.exec_module(sync)
 
 
 class SourceGateTest(unittest.TestCase):
+    def setUp(self):
+        self._tmp=tempfile.TemporaryDirectory();self.tmp=self._tmp;self.addCleanup(self._tmp.cleanup)
+
     def test_short_caption_keeps_source_points_keyword_and_cta(self):
         text='첫째, 고객 응대입니다. 상세 설명입니다.\n둘째, 문서 처리입니다. 긴 설명입니다.\n셋째, 후속 관리입니다. 더 긴 설명입니다.'
         self.assertEqual(sync.short_caption(text,'전용','시간 없나요? 업무 자동화'),
@@ -27,6 +30,44 @@ class SourceGateTest(unittest.TestCase):
         self.assertTrue(result.endswith('댓글에 스킬 남기면\n이 영상 정리본 드릴게요.'))
         self.assertEqual(sync.short_caption(result,'스킬','다른 제목'),result)
         with self.assertRaises(ValueError):sync.short_caption(text,'정리\n다른말','제목')
+
+    def test_discovery_finds_fresh_renders_skips_stale_and_duplicate_keys(self):
+        import os,time
+        root=Path(self.tmp.name)/'outputs'
+        for name,age_days in [('abc123-20260920',0),('def456-20260901',30),('nSfEL1Y-nUk-20260915',1)]:
+            d=root/name/'shorts';d.mkdir(parents=True);f=d/'final.mp4';f.write_bytes(b'x')
+            stamp=time.time()-age_days*86400;os.utime(f,(stamp,stamp))
+        (root/'nofinal-20260920'/'shorts').mkdir(parents=True)
+        config={'sources':[{'key':'nSfEL1Y-nUk','directory':'/configured'}],
+                'auto_discover':{'root':str(root),'max_age_days':14}}
+        self.assertEqual([x['key'] for x in sync.discover(config)],['abc123','nSfEL1Y-nUk'])
+        merged=sync.sources(config)
+        self.assertEqual([x['key'] for x in merged],['nSfEL1Y-nUk','abc123'])
+        self.assertEqual(merged[0]['directory'],'/configured')  # configured entry wins
+        self.assertEqual(sync.discover({'sources':[]}),[])
+
+    def test_first_time_auto_uploads_are_capped_per_run(self):
+        root=Path(self.tmp.name)/'many'
+        for i in range(4):
+            (root/f'k{i}-20260920'/'shorts').mkdir(parents=True);(root/f'k{i}-20260920'/'shorts'/'final.mp4').write_bytes(b'x')
+        config={'sources':[],'auto_discover':{'root':str(root),'max_per_run':2},'token_file':'/dev/null','base_url':'http://x'}
+        state=Path(self.tmp.name)/'state.json'
+        calls=[];nextsha=['']
+        def fake(api,item,record,persist,cfg):
+            if record.get('id'):return 'already_available_or_claimed'
+            calls.append(item['key']);record['id']=len(calls);return 'queued'
+        def cand(directory,key,**kw):
+            nextsha[0]='s'+key
+            return {'key':key,'video':str(Path(directory)/'final.mp4'),'sha256':'s'+key,'title':key,'caption':'c','keyword':'정리'}
+        with patch.object(sync,'API'),patch.object(sync,'import_one',side_effect=fake),patch.object(sync,'candidate',side_effect=cand),patch.object(sync,'check_stock'),patch.object(sync,'digest',side_effect=lambda p:'s'+Path(p).parent.name if False else nextsha[0]):
+            results=sync.run(config,state)
+        self.assertEqual(calls,['k0','k1'])
+        self.assertEqual([r['status'] for r in results],['queued','queued','deferred_to_next_run','deferred_to_next_run'])
+        # Known items no longer consume the cap, so the next run picks up where it stopped.
+        with patch.object(sync,'API'),patch.object(sync,'import_one',side_effect=fake),patch.object(sync,'candidate',side_effect=cand),patch.object(sync,'check_stock'),patch.object(sync,'digest',side_effect=lambda p:'s'+Path(p).parent.name if False else nextsha[0]):
+            results=sync.run(config,state)
+        self.assertEqual(calls,['k0','k1','k2','k3'])
+        self.assertEqual([r['status'] for r in results],['already_done','already_done','queued','queued'])
 
     def test_low_stock_alert_once_per_day(self):
         class Api:

@@ -47,6 +47,10 @@ SQLite는 BEGIN IMMEDIATE, PostgreSQL은 계정 행 잠금으로 한도 확인�
 이 정본에 해당 경로를 추가해야 한다. 제작 세션·YouTube 게시 작업은 실행하지 않는다.
 
 `deploy/sync_partner_videos.py`는 5분 간격의 별도 macOS launchd 잡으로 실행한다.
+정본 설정의 `auto_discover`가 있으면 `sources` 목록에 더해 `root/pattern`(예: `navercafe/outputs/*/shorts`)에서
+새로 렌더된 숏폼을 찾아 같은 검사를 거쳐 대기열에 올린다. `max_age_days`가 지난 렌더는 사람이 확인해야 하므로 건너뛰고,
+처음 올리는 건은 한 번 실행에 `max_per_run`개까지만 처리한다. 이미 올린 원본은 `final.mp4`의 수정시각·크기가
+그대로면 다시 해시하지 않는다.
 Mac이 켜져 있고 네트워크가 연결되어야 수집되며, 복귀 후 다음 실행에서 따라잡는다.
 AI 호출 없이 파일 검사와 HTTPS만 사용한다. 중복 실행은 파일 잠금으로 막는다.
 
