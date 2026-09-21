@@ -69,6 +69,29 @@ class SourceGateTest(unittest.TestCase):
         self.assertEqual(calls,['k0','k1','k2','k3'])
         self.assertEqual([r['status'] for r in results],['already_done','already_done','queued','queued'])
 
+    def test_cutback_clips_ship_only_from_approved_channels(self):
+        ffmpeg=shutil.which('ffmpeg')
+        if not ffmpeg:self.skipTest('ffmpeg unavailable')
+        root=Path(self.tmp.name)/'jobs'
+        def job(name,channel):
+            out=root/name/'out';out.mkdir(parents=True)
+            subprocess.run([ffmpeg,'-nostdin','-loglevel','error','-f','lavfi','-i','color=c=black:s=1080x1920:d=2','-f','lavfi','-i','anullsrc=r=48000:cl=stereo','-shortest','-c:v','libx264','-pix_fmt','yuv420p','-c:a','aac',str(out/'c01.mp4')],check=True,capture_output=True)
+            (root/name/'meta.json').write_text(json.dumps({'channel':channel}))
+            (root/name/'plan.json').write_text(json.dumps({'clips':[{'id':'c01','head1':'블로그 안 써본 사람이','head2':'자동화하지 마세요','title':'직접 해본 일부터 자동화'}]}))
+        job('own','나민수 AI');job('other','장사건물주 강호동')
+        config={'sources':[],'ffmpeg':ffmpeg,'cutback_jobs':{'root':str(root),'channels':['나민수 AI']}}
+        found={x['key']:x for x in sync.discover_cutback(config)}
+        self.assertEqual(sorted(found),['cutback-other-c01','cutback-own-c01'])
+        with patch.object(sync,'headcopy_widths',return_value=[700,650]):
+            item=sync.cutback_candidate(found['cutback-own-c01'],config,min_age=0)
+            self.assertEqual(item['title'],'블로그 안 써본 사람이 자동화하지 마세요')
+            self.assertTrue(item['caption'].endswith('댓글에 정리 남기면\n이 영상 정리본 드릴게요.'))
+            with self.assertRaisesRegex(ValueError,'channel_not_approved'):
+                sync.cutback_candidate(found['cutback-other-c01'],config,min_age=0)
+        with patch.object(sync,'headcopy_widths',return_value=[700,951]):
+            with self.assertRaisesRegex(ValueError,'headcopy_width_over_920px'):
+                sync.cutback_candidate(found['cutback-own-c01'],config,min_age=0)
+
     def test_low_stock_alert_once_per_day(self):
         class Api:
             def sync_status(self):return {'stock':{'available':19,'queued':25,'target':20},'videos':[]}

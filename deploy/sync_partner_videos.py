@@ -279,10 +279,96 @@ def discover(config):
     return found
 
 
+HEADCOPY_MAX_PX = 920
+
+
+def discover_cutback(config):
+    """Clips cut from a longform by the cutback 롱폼숏폼화 tool: jobs/<id>/out/cNN.mp4 + plan.json."""
+    auto = config.get('cutback_jobs')
+    if not auto:
+        return []
+    found = []
+    for out in sorted(Path(auto['root']).glob('*/out')):
+        job = out.parent
+        for video in sorted(out.glob('c*.mp4')):
+            stat = video.stat()
+            if (time.time() - stat.st_mtime) / 86400 > auto.get('max_age_days', 14):
+                continue
+            found.append({'key': f'cutback-{job.name}-{video.stem}', 'directory': str(job), 'video': str(video),
+                          'kind': 'cutback', 'auto': True, 'fingerprint': f'{stat.st_mtime_ns}:{stat.st_size}'})
+    return found
+
+
+def headcopy_widths(video, ffmpeg):
+    """Pixel width of each cyan/green headcopy line on a 1080-wide frame at 3s."""
+    from io import BytesIO
+    from PIL import Image
+    frame = subprocess.run([ffmpeg, '-nostdin', '-v', 'error', '-ss', '3', '-i', str(video), '-frames:v', '1',
+                            '-vf', 'scale=1080:-2', '-f', 'image2pipe', '-vcodec', 'png', 'pipe:1'],
+                           capture_output=True, timeout=60).stdout
+    im = Image.open(BytesIO(frame)).convert('RGB').crop((0, 200, 1080, 700))
+    width, height = im.size
+    px = im.load()
+    def ink(x, y):
+        r, g, b = px[x, y]
+        return (b > 140 and g > 120 and r < 140 and b - r > 60) or (g > 170 and r > 120 and b < 110 and g - b > 90)
+    rows = [y for y in range(height) if sum(ink(x, y) for x in range(0, width, 2)) > 2]
+    lines, start, prev = [], None, None
+    for y in rows:
+        if start is None:
+            start = y
+        elif y - prev > 12:
+            lines.append((start, prev)); start = y
+        prev = y
+    if start is not None:
+        lines.append((start, prev))
+    widths = []
+    for y0, y1 in (l for l in lines if l[1] - l[0] > 40):
+        xs = [x for x in range(width) if any(ink(x, y) for y in range(y0, y1 + 1, 2))]
+        widths.append(xs[-1] - xs[0] + 1)
+    return widths
+
+
+def cutback_candidate(source, config, min_age=60):
+    job = Path(source['directory'])
+    video = Path(source['video'])
+    if not video.is_file() or time.time() - video.stat().st_mtime < min_age:
+        raise ValueError('incomplete_or_still_writing')
+    channel = read_json(job / 'meta.json').get('channel', '')
+    # Only our own channels ship automatically; anything else needs a human decision first.
+    if channel not in config['cutback_jobs'].get('channels', []):
+        raise ValueError('channel_not_approved')
+    clip = next((c for c in read_json(job / 'plan.json')['clips'] if c['id'] == video.stem), None)
+    if not clip or not clip.get('head1', '').strip() or not clip.get('head2', '').strip():
+        raise ValueError('missing_headcopy')
+    probe = json.loads(subprocess.run([str(Path(config['ffmpeg']).with_name('ffprobe')), '-v', 'error', '-show_streams',
+                                       '-show_format', '-of', 'json', str(video)], capture_output=True, timeout=60).stdout)
+    streams = probe['streams']
+    v = next(x for x in streams if x['codec_type'] == 'video')
+    if v['height'] * 9 != v['width'] * 16 or v['width'] < 1080 or not any(x['codec_type'] == 'audio' for x in streams) \
+            or float(probe['format']['duration']) > 180:
+        raise ValueError('format_not_partner_short')
+    widths = headcopy_widths(video, config['ffmpeg'])
+    if len(widths) < 2 or max(widths[:2]) > HEADCOPY_MAX_PX:
+        raise ValueError('headcopy_width_over_920px')
+    head1, head2 = clip['head1'].strip(), clip['head2'].strip()
+    caption = f"{head1}\n{head2}\n\n{clip['title'].strip()}\n\n댓글에 정리 남기면\n이 영상 정리본 드릴게요."
+    if len(caption) > CAPTION_MAX_CHARS:
+        raise ValueError('caption_too_long')
+    return dict(key=source['key'], video=str(video), sha256=digest(video), title=f'{head1} {head2}',
+                caption=caption, keyword='정리')
+
+
+def check(source, config, input_snapshots=None):
+    if source.get('kind') == 'cutback':
+        return cutback_candidate(source, config)
+    return candidate(source['directory'], source['key'], input_snapshots=input_snapshots)
+
+
 def sources(config):
     listed = config['sources']
     known = {s['key'] for s in listed}
-    return listed + [s for s in discover(config) if s['key'] not in known]
+    return listed + [s for s in discover(config) + discover_cutback(config) if s['key'] not in known]
 
 
 def run(config, state_path, dry_run=False):
@@ -307,7 +393,7 @@ def run(config, state_path, dry_run=False):
             results.append({'key': key, 'status': 'deferred_to_next_run'})
             continue
         try:
-            item = candidate(source['directory'], key, input_snapshots=config.get('input_snapshots'))
+            item = check(source, config, input_snapshots=config.get('input_snapshots'))
             if record.get('sha256') and record['sha256'] != item['sha256']:
                 raise ValueError('published_source_revision_requires_review')
             if dry_run:
@@ -318,7 +404,7 @@ def run(config, state_path, dry_run=False):
                 import shutil
                 frozen = Path(tmp) / 'final.mp4'
                 shutil.copyfile(item['video'], frozen)
-                checked = candidate(source['directory'], key, input_snapshots=config.get('input_snapshots'))
+                checked = check(source, config, input_snapshots=config.get('input_snapshots'))
                 if checked != item or digest(frozen) != item['sha256']:
                     raise ValueError('source_changed_during_check')
                 item['video'] = str(frozen)
