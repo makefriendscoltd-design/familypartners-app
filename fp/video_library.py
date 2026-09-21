@@ -23,6 +23,11 @@ PARTNER_COOKIE = 'fp_video_partner'
 DAILY_VIDEO_LIMIT = 2
 VISIBLE_TARGET = 20  # 자정마다 받을 수 있는 영상이 이 수가 되도록 대기열에서 채운다.
 AVAILABLE_SQL = 'published=1 AND claimed_at IS NULL AND claimed_by IS NULL'
+# Disk guard: when the video disk passes PURGE_START_PCT, delete originals that partners
+# claimed at least PURGE_MIN_DAYS ago, oldest first, until PURGE_TARGET_PCT. Unclaimed never.
+PURGE_START_PCT = 80
+PURGE_TARGET_PCT = 70
+PURGE_MIN_DAYS = 14
 
 
 def storage_dir():
@@ -58,10 +63,48 @@ def daily_claim_count(conn, pid, day):
     return conn.execute('SELECT COUNT(*) AS n FROM exclusive_videos WHERE claimed_by=? AND claimed_at>=? AND claimed_at<?', (pid, start, end)).fetchone()['n']
 
 
+def disk_used_pct():
+    import shutil
+    path = storage_dir()
+    while not path.exists():  # before the first upload the folder may not exist yet
+        path = path.parent
+    usage = shutil.disk_usage(path)
+    return round(usage.used * 100 / usage.total, 1)
+
+
+def purge(conn, day=None, used=disk_used_pct):
+    """Free disk by deleting old claimed originals; the claim record and thumbnail stay."""
+    if used() < PURGE_START_PCT:
+        return 0
+    day = day or core.now_iso()[:10]
+    cutoff = (date.fromisoformat(day) - timedelta(days=PURGE_MIN_DAYS)).isoformat() + 'T00:00:00'
+    rows = conn.execute('SELECT id,file_key FROM exclusive_videos WHERE claimed_at IS NOT NULL AND claimed_at<? '
+                        'AND purged_at IS NULL ORDER BY claimed_at', (cutoff,)).fetchall()
+    done = 0
+    for row in rows:
+        if used() <= PURGE_TARGET_PCT:
+            break
+        if not re.fullmatch(r'[a-f0-9]{32}\.mp4', row['file_key']):
+            continue
+        path = storage_dir() / row['file_key']
+        if path.is_file() and not path.is_symlink():
+            path.unlink()
+        conn.execute('UPDATE exclusive_videos SET purged_at=? WHERE id=?', (core.now_iso(), row['id']))
+        conn.commit()
+        done += 1
+    return done
+
+
 def stock(conn):
     available = conn.execute(f'SELECT COUNT(*) AS n FROM exclusive_videos WHERE {AVAILABLE_SQL}').fetchone()['n']
     queued = conn.execute('SELECT COUNT(*) AS n FROM exclusive_videos WHERE queued=1 AND published=0 AND claimed_at IS NULL AND claimed_by IS NULL').fetchone()['n']
     return {'available': available, 'queued': queued, 'target': VISIBLE_TARGET}
+
+
+def storage(conn):
+    purged = conn.execute('SELECT COUNT(*) AS n FROM exclusive_videos WHERE purged_at IS NOT NULL').fetchone()['n']
+    return {'disk_used_pct': disk_used_pct(), 'purged': purged,
+            'purge_start_pct': PURGE_START_PCT, 'purge_target_pct': PURGE_TARGET_PCT}
 
 
 def refill(conn, day=None):
@@ -91,6 +134,10 @@ def refill(conn, day=None):
                 done += 1
         conn.execute('UPDATE video_refills SET published=? WHERE day=?', (done, day))
         conn.commit()
+        try:
+            purge(conn, day)
+        except (OSError, ValueError):
+            pass  # A disk check failure must not undo the day's refill.
         return done
     except Exception:
         conn.execute('ROLLBACK')
@@ -271,7 +318,8 @@ def listing(h, conn, p):
             + gallery(available, p['portal_token']) + '</section>' + GALLERY_SCRIPT)
     body += '<div class=card><h2>내가 받은 영상</h2>'
     for row in owned:
-        body += f"<div class=card><h3>{esc(row['title'])}</h3><a href='/videos/file/{row['id']}'>원본 다시 받기</a>" + caption_box(caption_text(conn,row['id'])) + '</div>'
+        again = "<p>보관 기간이 지나 원본을 정리했어요.</p>" if row['purged_at'] else f"<a href='/videos/file/{row['id']}'>원본 다시 받기</a>"
+        body += f"<div class=card><h3>{esc(row['title'])}</h3>{again}" + caption_box(caption_text(conn,row['id'])) + '</div>'
     if not owned:
         body += '<p>아직 받은 영상이 없어요.</p>'
     page(h, '파트너 전용 영상', body + '</div>' + CAPTION_SCRIPT, p['portal_token'])
@@ -339,7 +387,7 @@ def admin_listing(h, conn):
              f"한국 시간 자정마다 받을 수 있는 영상이 {VISIBLE_TARGET}편이 되도록 대기열에서 먼저 올린 순서대로 공개돼요.</p></div>")
     body += '<div class=card><h2>영상 배포 내역</h2>'
     for row in rows:
-        state = f"{esc(row['claimed_name'])} · {esc(row['claimed_at'])} 수령" if row['claimed_at'] else ('배포 중' if row['published'] else ('대기열' if row['queued'] else '비공개'))
+        state = f"{esc(row['claimed_name'])} · {esc(row['claimed_at'])} 수령" + (' · 원본 정리됨' if row['purged_at'] else '') if row['claimed_at'] else ('배포 중' if row['published'] else ('대기열' if row['queued'] else '비공개'))
         body += (f"<div class=card><h3>{esc(row['title'])}</h3><p>{state}</p>"
                  f"<a href='/videos/file/{row['id']}'>원본 확인</a>")
         if not row['claimed_at']:
@@ -464,7 +512,7 @@ def handle(h):
                 response(h,'관리자 로그인이 필요해요.',403);return True
             if h.command=='GET' and u.path=='/op/videos/sync-status':
                 rows=conn.execute('SELECT id,sha256,published,queued,claimed_at,file_key FROM exclusive_videos ORDER BY id').fetchall()
-                json_response(h,{'stock':stock(conn),'videos':[{'id':r['id'],'sha256':r['sha256'],'published':bool(r['published']),'queued':bool(r['queued']),'claimed':bool(r['claimed_at']),'has_caption':bool(caption_text(conn,r['id'])),'has_thumbnail':thumbnail_path(r).is_file()} for r in rows]})
+                json_response(h,{'stock':stock(conn),'storage':storage(conn),'videos':[{'id':r['id'],'sha256':r['sha256'],'published':bool(r['published']),'queued':bool(r['queued']),'claimed':bool(r['claimed_at']),'has_caption':bool(caption_text(conn,r['id'])),'has_thumbnail':thumbnail_path(r).is_file()} for r in rows]})
             elif h.command=='GET' and u.path=='/op/videos':
                 admin_listing(h,conn)
             elif h.command=='POST' and re.fullmatch(r'/op/videos/caption/\d+',u.path):
@@ -537,6 +585,8 @@ def handle(h):
             row=get_video(conn,int(u.path.rsplit('/',1)[1]))
             if not row or not (admin or sync or (p and row['claimed_by']==p['id'])):
                 raise PermissionError('배정받은 파트너만 원본을 받을 수 있어요.')
+            if row['purged_at']:
+                response(h,'보관 기간이 지나 원본을 정리했어요.',410);return True
             stream(h,row);return True
         if not p:
             page(h,'파트너 전용 영상','<div class=card><h2>내 작업실에서 들어와 주세요</h2><p>파트너 확인 후 영상을 받을 수 있어요.</p><a href=/find>내 작업실 찾기</a></div>',status=403);return True

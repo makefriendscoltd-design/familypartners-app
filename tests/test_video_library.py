@@ -87,6 +87,38 @@ class VideoHTTPTest(unittest.TestCase):
         try:self.assertEqual(v.stock(c)['queued'],0)
         finally:c.close()
 
+    def test_disk_guard_purges_oldest_old_claims_only(self):
+        ids=[]
+        for i in range(4):
+            status,_,body=self.upload(self.blob+bytes([i]));self.assertEqual(status,201);vid=json.loads(body)['id'];ids.append(vid)
+            self.assertEqual(self.publish(vid)[0],303)
+        for vid,who in zip(ids[:3],'aab'):
+            self.assertEqual(self.claim(vid,who)[0],303)
+        c=db.connect()
+        try:
+            # ids[0] claimed 40 days ago, ids[1] 20 days ago, ids[2] yesterday, ids[3] unclaimed
+            for vid,stamp in [(ids[0],'2026-08-01T10:00:00'),(ids[1],'2026-08-21T10:00:00'),(ids[2],'2026-09-09T10:00:00')]:
+                c.execute('UPDATE exclusive_videos SET claimed_at=? WHERE id=?',(stamp,vid))
+            c.commit()
+            level=[85.0]
+            def used():return level[0]
+            real_unlink=Path.unlink
+            def unlink(path,*a,**k):level[0]-=10;return real_unlink(path,*a,**k)
+            with patch.object(Path,'unlink',unlink):
+                self.assertEqual(v.purge(c,'2026-09-10',used),2)  # 85 -> 75 -> 65: two oldest old claims
+            rows={r['id']:r for r in c.execute('SELECT id,purged_at,file_key FROM exclusive_videos').fetchall()}
+        finally:c.close()
+        self.assertIsNotNone(rows[ids[0]]['purged_at']);self.assertIsNotNone(rows[ids[1]]['purged_at'])
+        self.assertIsNone(rows[ids[2]]['purged_at'])
+        self.assertIsNone(rows[ids[3]]['purged_at'])
+        self.assertFalse((v.storage_dir()/rows[ids[0]]['file_key']).exists())
+        self.assertTrue((v.storage_dir()/rows[ids[3]]['file_key']).exists())
+        self.assertEqual(self.request('GET',f'/videos/file/{ids[0]}',cookie=self.a)[0],410)
+        self.assertIn('보관 기간이 지나',self.request('GET','/videos',cookie=self.a)[2].decode())
+        c=db.connect()
+        try:self.assertEqual(v.purge(c,'2026-09-10',lambda:60.0),0)  # under the start line: nothing happens
+        finally:c.close()
+
     def test_upload_visibility_security_and_ranges(self):
         self.assertEqual(self.request('GET','/op/videos')[0],403)
         html=self.request('GET','/op/videos',cookie=self.admin)[2].decode()
