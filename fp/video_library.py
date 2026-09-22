@@ -20,8 +20,8 @@ from . import core, db
 MAX_VIDEO_BYTES = 512 * 1024 * 1024
 CHUNK = 1024 * 1024
 PARTNER_COOKIE = 'fp_video_partner'
-DAILY_VIDEO_LIMIT = 2
-VISIBLE_TARGET = 20  # 자정마다 받을 수 있는 영상이 이 수가 되도록 대기열에서 채운다.
+DAILY_VIDEO_LIMIT = 3
+VISIBLE_TARGET = 30  # 자정마다 받을 수 있는 영상이 이 수가 되도록 대기열에서 채운다.
 AVAILABLE_SQL = 'published=1 AND claimed_at IS NULL AND claimed_by IS NULL'
 # Disk guard: when the video disk passes PURGE_START_PCT, delete originals that partners
 # claimed at least PURGE_MIN_DAYS ago, oldest first, until PURGE_TARGET_PCT. Unclaimed never.

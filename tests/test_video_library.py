@@ -207,25 +207,23 @@ class VideoHTTPTest(unittest.TestCase):
         self.assertEqual(json.loads(self.request('GET',endpoint,cookie=self.a)[2])['caption'],updated)
 
     def test_daily_limit_concurrent_different_videos_and_midnight(self):
-        ids=[]
-        for n in range(7):
+        L=v.DAILY_VIDEO_LIMIT;ids=[]
+        for n in range(3*L+1):
             vid=json.loads(self.upload(self.blob+bytes([n]))[2])['id'];self.publish(vid);ids.append(vid)
         with patch('fp.core.now_iso',return_value='2026-09-15T23:59:59'):
             with concurrent.futures.ThreadPoolExecutor(max_workers=6) as pool:
                 results=list(pool.map(lambda vid:(vid,self.claim(vid,'a')[0]),ids))
-            self.assertEqual(sorted(status for _,status in results),[303,303,409,409,409,409,409])
+            self.assertEqual(sorted(status for _,status in results),[303]*L+[409]*(2*L+1))
             owned_ids=[vid for vid,status in results if status==303]
             owned=owned_ids[0]
             remaining=[vid for vid in ids if vid not in owned_ids]
-            self.assertEqual(self.claim(owned,'a')[0],303)
-            self.assertEqual(self.claim(remaining[0],'b')[0],303)
-            self.assertEqual(self.claim(remaining[1],'b')[0],303)
-            self.assertEqual(self.claim(remaining[2],'b')[0],409)
+            self.assertEqual(self.claim(owned,'a')[0],303)  # retry never consumes the allowance
+            for vid in remaining[:L]:self.assertEqual(self.claim(vid,'b')[0],303)
+            self.assertEqual(self.claim(remaining[L],'b')[0],409)
         with patch('fp.core.now_iso',return_value='2026-09-16T00:00:00'):
             self.assertEqual(self.claim(owned,'a')[0],303)
-            self.assertEqual(self.claim(remaining[2],'a')[0],303)
-            self.assertEqual(self.claim(remaining[3],'a')[0],303)
-            self.assertEqual(self.claim(remaining[4],'a')[0],409)
+            for vid in remaining[L:2*L]:self.assertEqual(self.claim(vid,'a')[0],303)
+            self.assertEqual(self.claim(remaining[2*L],'a')[0],409)
         c=db.connect();row=c.execute('SELECT claimed_at FROM exclusive_videos WHERE id=?',(owned,)).fetchone();c.close()
         self.assertEqual(row['claimed_at'],'2026-09-15T23:59:59')
 
