@@ -179,7 +179,8 @@ def import_one(api, item, record, persist, config):
         record.update(sha256=item['sha256'], status='withdrawn_by_review')
         persist()
         return 'excluded_by_review'
-    item = dict(item, caption=short_caption(item['caption'], item['keyword'], item['title']))
+    if not item.get('caption_final'):
+        item = dict(item, caption=short_caption(item['caption'], item['keyword'], item['title']))
     # Discover prior success even if an upload/publish response was lost.
     existing = next((r for r in api.status() if r['sha256'] == item['sha256']), None)
     if existing and existing.get('queued'):
@@ -329,12 +330,33 @@ def headcopy_widths(video, ffmpeg):
     return widths
 
 
+DEFAULT_EMPLOYEE_KEYWORD = 'AI직원'
+
+
+def employee_label(job, meta, config):
+    """(which AI employee this longform builds, comment keyword). Config wins; else read the title."""
+    labels = config['cutback_jobs'].get('labels', {})
+    if job in labels:
+        label, keyword = labels[job]
+        return label, keyword
+    for part in re.split(r'[|,]', meta.get('title', '')):
+        hit = re.search(r'(\S.*?AI 직원)', part.strip())
+        if hit:
+            return hit.group(1).strip(), DEFAULT_EMPLOYEE_KEYWORD
+    return '이런 AI 직원', DEFAULT_EMPLOYEE_KEYWORD
+
+
+def employee_caption(label, keyword):
+    return f'{label} 만드는 방법이 궁금하다면\n댓글에 {keyword} 남겨주세요.\n만드는 과정 정리해서 보내드릴게요.'
+
+
 def cutback_candidate(source, config, min_age=60):
     job = Path(source['directory'])
     video = Path(source['video'])
     if not video.is_file() or time.time() - video.stat().st_mtime < min_age:
         raise ValueError('incomplete_or_still_writing')
-    channel = read_json(job / 'meta.json').get('channel', '')
+    meta = read_json(job / 'meta.json')
+    channel = meta.get('channel', '')
     # Only our own channels ship automatically; anything else needs a human decision first.
     if channel not in config['cutback_jobs'].get('channels', []):
         raise ValueError('channel_not_approved')
@@ -352,11 +374,14 @@ def cutback_candidate(source, config, min_age=60):
     if len(widths) < 2 or max(widths[:2]) > HEADCOPY_MAX_PX:
         raise ValueError('headcopy_width_over_920px')
     head1, head2 = clip['head1'].strip(), clip['head2'].strip()
-    caption = f"{head1}\n{head2}\n\n{clip['title'].strip()}\n\n댓글에 정리 남기면\n이 영상 정리본 드릴게요."
+    label, keyword = employee_label(job.name, meta, config)
+    if not re.fullmatch(r'[가-힣A-Za-z0-9_]{1,20}', keyword):
+        raise ValueError('invalid_comment_keyword')
+    caption = employee_caption(label, keyword)
     if len(caption) > CAPTION_MAX_CHARS:
         raise ValueError('caption_too_long')
     return dict(key=source['key'], video=str(video), sha256=digest(video), title=f'{head1} {head2}',
-                caption=caption, keyword='정리')
+                caption=caption, keyword=keyword, caption_final=True)
 
 
 def check(source, config, input_snapshots=None):

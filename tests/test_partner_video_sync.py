@@ -85,12 +85,23 @@ class SourceGateTest(unittest.TestCase):
         with patch.object(sync,'headcopy_widths',return_value=[700,650]):
             item=sync.cutback_candidate(found['cutback-own-c01'],config,min_age=0)
             self.assertEqual(item['title'],'블로그 안 써본 사람이 자동화하지 마세요')
-            self.assertTrue(item['caption'].endswith('댓글에 정리 남기면\n이 영상 정리본 드릴게요.'))
+            self.assertEqual(item['caption'],'이런 AI 직원 만드는 방법이 궁금하다면\n댓글에 AI직원 남겨주세요.\n만드는 과정 정리해서 보내드릴게요.')
+            config['cutback_jobs']['labels']={'own':['블로그 글 쓰는 AI 직원','블로그']}
+            item=sync.cutback_candidate(found['cutback-own-c01'],config,min_age=0)
+            self.assertTrue(item['caption'].startswith('블로그 글 쓰는 AI 직원 만드는 방법이 궁금하다면\n댓글에 블로그 남겨주세요.'))
+            self.assertTrue(item['caption_final'])
+            del config['cutback_jobs']['labels']
             with self.assertRaisesRegex(ValueError,'channel_not_approved'):
                 sync.cutback_candidate(found['cutback-other-c01'],config,min_age=0)
         with patch.object(sync,'headcopy_widths',return_value=[700,951]):
             with self.assertRaisesRegex(ValueError,'headcopy_width_over_920px'):
                 sync.cutback_candidate(found['cutback-own-c01'],config,min_age=0)
+
+    def test_employee_label_from_title(self):
+        cfg={'cutback_jobs':{}}
+        self.assertEqual(sync.employee_label('j',{'title':'블로그 자동화, 글 쓰는 AI 직원 직접 만들었습니다'},cfg),('글 쓰는 AI 직원','AI직원'))
+        self.assertEqual(sync.employee_label('j',{'title':'PPT 만드는 AI 직원, 강의 자료로 직접 시켜봤습니다'},cfg),('PPT 만드는 AI 직원','AI직원'))
+        self.assertEqual(sync.employee_label('j',{'title':'24시간 일하는 AI 오피스 만들기'},cfg),('이런 AI 직원','AI직원'))
 
     def test_low_stock_alert_once_per_day(self):
         class Api:
