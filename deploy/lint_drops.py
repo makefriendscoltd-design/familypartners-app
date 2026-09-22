@@ -1,4 +1,6 @@
-"""글감 큐 검사기 — 규칙을 프롬프트가 아니라 코드로 강제한다.
+"""글감 큐 구조 검사기 — 가독성·CTA·자료 존재를 확인한다.
+
+후킹·사용자 말투·주장 검증은 브랜드 기준 및 실제 원문과 별도 대조한다.
 
     python deploy/lint_drops.py            # config/drops_queue.json 검사
     python deploy/lint_drops.py <파일>     # 다른 파일 검사
@@ -33,6 +35,12 @@ ASSETS = ROOT / "config" / "assets.json"
 
 MAX_LINES = 8            # 빈 줄 제외
 MAX_CHARS = 150
+# 무료자료형은 사용자가 지정한 초기 피드의 짧은 활용 목록을 담는다.
+# 숫자·AI 도구명을 억지로 넣는 대신 자료 실재와 가독성을 검사한다.
+FREE_MAX_LINES = 10
+FREE_MAX_CHARS = 180
+FREE_MAX_LINE_CHARS = 30
+FREE_MAX_PARAGRAPH_LINES = 3
 CTA_WORDS = ("댓글", "답글")
 # CTA 줄에 있으면 "뭘 주는지 모르겠는" 문장이 된다
 VAGUE = ("이렇게", "이 순서", "이거 보고", "그걸", "이런 식으로", "이 방법")
@@ -60,10 +68,20 @@ def check_one(d: dict, cfg: dict) -> list[str]:
 
     if not lines:
         return ["본문이 비었음"]
-    if len(lines) > MAX_LINES:
-        bad.append(f"줄 수 {len(lines)} (최대 {MAX_LINES})")
-    if chars > MAX_CHARS:
-        bad.append(f"글자 수 {chars} (최대 {MAX_CHARS})")
+    max_lines = FREE_MAX_LINES if dtype == "evergreen" else MAX_LINES
+    max_chars = FREE_MAX_CHARS if dtype == "evergreen" else MAX_CHARS
+    if len(lines) > max_lines:
+        bad.append(f"줄 수 {len(lines)} (최대 {max_lines})")
+    if chars > max_chars:
+        bad.append(f"글자 수 {chars} (최대 {max_chars})")
+    if dtype == "evergreen":
+        if any(len(line) > FREE_MAX_LINE_CHARS for line in lines):
+            bad.append(f"한 줄 {FREE_MAX_LINE_CHARS}자 초과")
+        paragraphs = re.split(r"\n\s*\n", body.strip())
+        if len(lines_of(paragraphs[0])) > 2:
+            bad.append("첫 문장 뒤 빈 줄 필요")
+        if any(len(lines_of(p)) > FREE_MAX_PARAGRAPH_LINES for p in paragraphs):
+            bad.append(f"한 문단 {FREE_MAX_PARAGRAPH_LINES}줄 초과")
 
     # ① 댓글 유도 — 이게 없으면 실측상 답글이 0~1개다
     if not any(w in tail for w in CTA_WORDS):
@@ -79,7 +97,7 @@ def check_one(d: dict, cfg: dict) -> list[str]:
 
     # ③ 직관성 — 본문에 도구·기관 이름이 하나는 있어야 뭘 하는 건지 안다
     #    (참여형 marketing 은 주는 게 없으니 면제)
-    if dtype in ("evergreen", "ai"):
+    if dtype == "ai":
         if not any(p in body for p in cfg["proper"]):
             bad.append("도구·서비스 이름이 본문에 없음(직관성)")
 
@@ -90,7 +108,7 @@ def check_one(d: dict, cfg: dict) -> list[str]:
             break
 
     # ⑤ 구체적 숫자
-    if not NUM.search(body):
+    if dtype != "evergreen" and not NUM.search(body):
         bad.append("구체적 숫자 없음")
 
     # ⑥ 댓글 키워드가 이미 쓴 것과 겹치는가
@@ -128,7 +146,13 @@ def check_day(date: str, group: list[dict]) -> tuple[list[str], list[str]]:
 
 
 def main(argv: list[str]) -> int:
-    path = Path(argv[1]) if len(argv) > 1 else QUEUE
+    import argparse
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("path", nargs="?", type=Path, default=QUEUE)
+    parser.add_argument("--include-published", action="store_true",
+                        help="기존 글 수정 시 지난 날짜와 오늘도 엄격하게 검사")
+    args = parser.parse_args(argv[1:])
+    path = args.path
     a = load(ASSETS)
     drops = load(path).get("drops") or []
 
@@ -140,13 +164,13 @@ def main(argv: list[str]) -> int:
         "used_kw_before": set(a["_이미쓴_댓글키워드"]) - now_kw,
     }
 
-    # 이미 나간 글감은 고칠 수 없다 — 오늘 이후 것만 검사한다.
+    # 기본은 오늘 이후 검사. 기존 글 수정은 --include-published로 전부 검사한다.
     today = datetime.now(KST).strftime("%Y-%m-%d")
     fails = 0
     by_date: dict[str, list[dict]] = defaultdict(list)
     skipped = 0
     for d in drops:
-        if (d.get("date") or "") < today:
+        if not args.include_published and (d.get("date") or "") < today:
             skipped += 1
             continue
         by_date[d.get("date", "?")].append(d)
@@ -166,7 +190,7 @@ def main(argv: list[str]) -> int:
             warns += 1
         # 오늘자는 자정에 이미 공개됐다 — 고쳐도 먼저 본 파트너에겐 안 닿으므로
         # 실패로 세지 않고 경고로만 알린다.
-        live = date == today
+        live = date == today and not args.include_published
         for d in group:
             num = (d.get("title") or "").split(" (")[0].replace("컨텐츠 ", "")
             lines = lines_of(d.get("body") or "")
