@@ -165,6 +165,7 @@ CREATE TABLE IF NOT EXISTS exclusive_videos (
     published INTEGER NOT NULL DEFAULT 0,
     queued INTEGER NOT NULL DEFAULT 0,
     purged_at TEXT,
+    source_url TEXT,
     claimed_by INTEGER REFERENCES partners(id) ON DELETE SET NULL,
     claimed_name TEXT,
     claimed_at TEXT
@@ -301,6 +302,7 @@ def init_db() -> None:
             conn.execute("ALTER TABLE exclusive_videos ADD COLUMN IF NOT EXISTS "
                          "queued INTEGER NOT NULL DEFAULT 0")
             conn.execute("ALTER TABLE exclusive_videos ADD COLUMN IF NOT EXISTS purged_at TEXT")
+            conn.execute("ALTER TABLE exclusive_videos ADD COLUMN IF NOT EXISTS source_url TEXT")
             for col, typ in SUB_PERF_COLS:
                 conn.execute(f"ALTER TABLE submissions ADD COLUMN IF NOT EXISTS {col} {typ}")
             for col, typ in DROP_TAG_COLS:
@@ -331,6 +333,8 @@ def init_db() -> None:
                 conn.execute("ALTER TABLE exclusive_videos ADD COLUMN queued INTEGER NOT NULL DEFAULT 0")
             if "purged_at" not in vcols:
                 conn.execute("ALTER TABLE exclusive_videos ADD COLUMN purged_at TEXT")
+            if "source_url" not in vcols:
+                conn.execute("ALTER TABLE exclusive_videos ADD COLUMN source_url TEXT")
             scols = {r["name"] for r in conn.execute("PRAGMA table_info(submissions)")}
             if "valid" not in scols:
                 conn.execute("ALTER TABLE submissions ADD COLUMN valid INTEGER NOT NULL DEFAULT 1")

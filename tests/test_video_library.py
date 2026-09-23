@@ -119,6 +119,21 @@ class VideoHTTPTest(unittest.TestCase):
         try:self.assertEqual(v.purge(c,'2026-09-10',lambda:60.0),0)  # under the start line: nothing happens
         finally:c.close()
 
+    def test_source_url_shown_to_partner_and_validated(self):
+        vid=json.loads(self.upload()[2])['id'];self.publish(vid)
+        c=db.connect();sha=c.execute('SELECT sha256 FROM exclusive_videos WHERE id=?',(vid,)).fetchone()['sha256'];c.close()
+        bad=self.request('POST',f'/op/videos/source/{vid}',urlencode(dict(sha256=sha,source_url='http://evil.example/x',csrf=v.csrf('admin'))),self.admin)
+        self.assertEqual(bad[0],400)
+        url='https://www.youtube.com/watch?v=1JTyPNeD9dk'
+        okr=self.request('POST',f'/op/videos/source/{vid}',urlencode(dict(sha256=sha,source_url=url,csrf=v.csrf('admin'))),self.admin)
+        self.assertEqual(okr[0],200)
+        page=self.request('GET','/videos',cookie=self.a)[2].decode()
+        self.assertIn(url,page);self.assertIn('원본 영상 보기',page)
+        body=json.loads(self.request('POST','/videos/claim',urlencode(dict(id=vid,name='테스트가',csrf=v.csrf('token-a'))),self.a,{'Accept':'application/json'})[2])
+        self.assertEqual(body['source'],url)
+        self.assertIn(url,self.request('GET','/videos',cookie=self.a)[2].decode())
+        self.assertEqual(json.loads(self.request('GET','/op/videos/sync-status',cookie=self.admin)[2])['videos'][0]['source_url'],url)
+
     def test_upload_visibility_security_and_ranges(self):
         self.assertEqual(self.request('GET','/op/videos')[0],403)
         html=self.request('GET','/op/videos',cookie=self.admin)[2].decode()

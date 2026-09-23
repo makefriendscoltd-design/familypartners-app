@@ -245,6 +245,24 @@ def fields(h, limit=16384):
     return {k:v[0] for k,v in parse_qs(h.rfile.read(n).decode('utf-8')).items()}
 
 
+def source_link(row, label='원본 영상 보기'):
+    """Partners check the source video; the link lives outside the caption they copy."""
+    try:
+        url = row['source_url']
+    except (KeyError, IndexError, TypeError):
+        url = None
+    if not url:
+        return ''
+    from .server import esc
+    return f"<p class=video-source><a href='{esc(url)}' target=_blank rel='noopener noreferrer'>{label}</a></p>"
+
+
+def valid_source_url(url):
+    parts = urlparse(url)
+    return parts.scheme == 'https' and parts.netloc in (
+        'www.youtube.com', 'youtube.com', 'm.youtube.com', 'youtu.be') and len(url) <= 300
+
+
 def caption_text(conn, vid):
     row = conn.execute('SELECT caption FROM video_captions WHERE video_id=?', (vid,)).fetchone()
     return row['caption'] if row else ''
@@ -282,7 +300,7 @@ GALLERY_STYLE = """<style>
 GALLERY_SCRIPT = """<script>
 (()=>{const section=document.querySelector('#partner-videos');if(!section)return;
 const update=async()=>{try{const r=await fetch('/videos/catalog',{cache:'no-store'});if(!r.ok)return;const a=await r.json();section.querySelectorAll('[data-video]').forEach(e=>{if(!a.ids.includes(Number(e.dataset.video))&&!e.hasAttribute('data-claim-pending'))e.remove()});section.querySelectorAll('[data-available-count]').forEach(e=>e.textContent=a.ids.length+'편')}catch{}};
-section.querySelectorAll('form[data-claim]').forEach(f=>f.addEventListener('submit',async e=>{e.preventDefault();const b=f.querySelector('button'),msg=f.querySelector('[role=status]');b.disabled=true;f.closest('[data-video]').setAttribute('data-claim-pending','');msg.textContent='이름을 확인하고 있어요.';try{const r=await fetch('/videos/claim',{method:'POST',headers:{Accept:'application/json'},body:new URLSearchParams(new FormData(f))});if(!r.ok){const t=await r.text();throw Error(t.startsWith('{')?'입력한 내용을 확인해 주세요.':t)}const a=await r.json();const card=f.closest('[data-video]');card.removeAttribute('data-video');const result=document.createElement('div');result.className='video-result';const note=document.createElement('p');note.textContent='내 영상으로 배정됐어요.';const link=document.createElement('a');link.href=a.download;link.textContent='원본 다시 받기';link.download='';result.append(note,link);if(a.caption)result.append(fpCaptionBox(a.caption));card.replaceChildren(result);link.click();update()}catch(err){msg.textContent=err.message;b.disabled=false;f.closest('[data-video]')?.removeAttribute('data-claim-pending');update()}}));
+section.querySelectorAll('form[data-claim]').forEach(f=>f.addEventListener('submit',async e=>{e.preventDefault();const b=f.querySelector('button'),msg=f.querySelector('[role=status]');b.disabled=true;f.closest('[data-video]').setAttribute('data-claim-pending','');msg.textContent='이름을 확인하고 있어요.';try{const r=await fetch('/videos/claim',{method:'POST',headers:{Accept:'application/json'},body:new URLSearchParams(new FormData(f))});if(!r.ok){const t=await r.text();throw Error(t.startsWith('{')?'입력한 내용을 확인해 주세요.':t)}const a=await r.json();const card=f.closest('[data-video]');card.removeAttribute('data-video');const result=document.createElement('div');result.className='video-result';const note=document.createElement('p');note.textContent='내 영상으로 배정됐어요.';const link=document.createElement('a');link.href=a.download;link.textContent='원본 다시 받기';link.download='';result.append(note,link);if(a.source){const s=document.createElement('a');s.href=a.source;s.target='_blank';s.rel='noopener noreferrer';s.textContent='원본 영상 보기';result.append(s)}if(a.caption)result.append(fpCaptionBox(a.caption));card.replaceChildren(result);link.click();update()}catch(err){msg.textContent=err.message;b.disabled=false;f.closest('[data-video]')?.removeAttribute('data-claim-pending');update()}}));
 setInterval(update,2500);document.addEventListener('visibilitychange',()=>{if(!document.hidden)update()});})();
 </script>"""
 
@@ -296,6 +314,7 @@ def gallery(rows, token=None, admin=False):
                  f"<div class=video-info><h3>{esc(row['title'])}</h3><small>MP4 · {core.human_size(row['size'])}</small>"
                  "<span class=video-select>선택하고 받기 →</span></div>")
         body += f"<article class=video-card data-video='{vid}' id='video-{vid}'>"
+        body += source_link(row)
         if token and not admin:
             body += (f"<details><summary>{cover}</summary><form data-claim method=post action=/videos/claim>"
                      f"<input type=hidden name=id value='{vid}'><input type=hidden name=t value='{esc(token)}'>"
@@ -319,7 +338,7 @@ def listing(h, conn, p):
     body += '<div class=card><h2>내가 받은 영상</h2>'
     for row in owned:
         again = "<p>보관 기간이 지나 원본을 정리했어요.</p>" if row['purged_at'] else f"<a href='/videos/file/{row['id']}'>원본 다시 받기</a>"
-        body += f"<div class=card><h3>{esc(row['title'])}</h3>{again}" + caption_box(caption_text(conn,row['id'])) + '</div>'
+        body += f"<div class=card><h3>{esc(row['title'])}</h3>{again}" + source_link(row) + caption_box(caption_text(conn,row['id'])) + '</div>'
     if not owned:
         body += '<p>아직 받은 영상이 없어요.</p>'
     page(h, '파트너 전용 영상', body + '</div>' + CAPTION_SCRIPT, p['portal_token'])
@@ -389,7 +408,7 @@ def admin_listing(h, conn):
     for row in rows:
         state = f"{esc(row['claimed_name'])} · {esc(row['claimed_at'])} 수령" + (' · 원본 정리됨' if row['purged_at'] else '') if row['claimed_at'] else ('배포 중' if row['published'] else ('대기열' if row['queued'] else '비공개'))
         body += (f"<div class=card><h3>{esc(row['title'])}</h3><p>{state}</p>"
-                 f"<a href='/videos/file/{row['id']}'>원본 확인</a>")
+                 f"<a href='/videos/file/{row['id']}'>원본 확인</a>" + source_link(row, '유튜브 원본'))
         if not row['claimed_at']:
             value = 0 if row['published'] else 1
             label = '숨기기' if row['published'] else '공개하기'
@@ -507,12 +526,12 @@ def handle(h):
         except Exception:
             pass  # Refill retries on the next request; never block the page.
         if u.path.startswith('/op/videos'):
-            sync_route = u.path in ('/op/videos/sync-status','/op/videos/upload','/op/videos/publish','/op/videos/queue') or bool(re.fullmatch(r'/op/videos/(thumbnail|caption)/\d+',u.path))
+            sync_route = u.path in ('/op/videos/sync-status','/op/videos/upload','/op/videos/publish','/op/videos/queue') or bool(re.fullmatch(r'/op/videos/source/\d+',u.path)) or bool(re.fullmatch(r'/op/videos/(thumbnail|caption)/\d+',u.path))
             if not (admin or (sync and sync_route)):
                 response(h,'관리자 로그인이 필요해요.',403);return True
             if h.command=='GET' and u.path=='/op/videos/sync-status':
-                rows=conn.execute('SELECT id,sha256,published,queued,claimed_at,file_key FROM exclusive_videos ORDER BY id').fetchall()
-                json_response(h,{'stock':stock(conn),'storage':storage(conn),'videos':[{'id':r['id'],'sha256':r['sha256'],'published':bool(r['published']),'queued':bool(r['queued']),'claimed':bool(r['claimed_at']),'has_caption':bool(caption_text(conn,r['id'])),'has_thumbnail':thumbnail_path(r).is_file()} for r in rows]})
+                rows=conn.execute('SELECT id,sha256,published,queued,claimed_at,file_key,source_url FROM exclusive_videos ORDER BY id').fetchall()
+                json_response(h,{'stock':stock(conn),'storage':storage(conn),'videos':[{'id':r['id'],'sha256':r['sha256'],'published':bool(r['published']),'queued':bool(r['queued']),'claimed':bool(r['claimed_at']),'source_url':r['source_url'],'has_caption':bool(caption_text(conn,r['id'])),'has_thumbnail':thumbnail_path(r).is_file()} for r in rows]})
             elif h.command=='GET' and u.path=='/op/videos':
                 admin_listing(h,conn)
             elif h.command=='POST' and re.fullmatch(r'/op/videos/caption/\d+',u.path):
@@ -541,6 +560,15 @@ def handle(h):
                     raise ValueError('invalid visibility')
                 conn.execute('UPDATE exclusive_videos SET published=?,queued=0 WHERE id=? AND claimed_at IS NULL AND claimed_by IS NULL',(published,row['id']));conn.commit()
                 redirect(h,'/op/videos')
+            elif h.command=='POST' and re.fullmatch(r'/op/videos/source/\d+',u.path):
+                f=fields(h);checked_csrf(h,f,'admin');vid=int(u.path.rsplit('/',1)[1]);row=get_video(conn,vid)
+                if not row or not hmac.compare_digest(f.get('sha256',''),row['sha256']):
+                    raise ValueError('video mismatch')
+                url=f.get('source_url','').strip()
+                if url and not valid_source_url(url):
+                    raise ValueError('invalid source url')
+                conn.execute('UPDATE exclusive_videos SET source_url=? WHERE id=?',(url or None,vid));conn.commit()
+                json_response(h,{'ok':True,'id':vid,'source_url':url or None})
             elif h.command=='POST' and u.path=='/op/videos/queue':
                 f=fields(h);checked_csrf(h,f,'admin');row=get_video(conn,int(f['id']))
                 if not row:
@@ -601,7 +629,7 @@ def handle(h):
             secure='; Secure' if h.headers.get('X-Forwarded-Proto')=='https' else ''
             cookie=('Set-Cookie',f'{PARTNER_COOKIE}={token}; HttpOnly; SameSite=Lax; Path=/videos; Max-Age=604800{secure}')
             if 'application/json' in h.headers.get('Accept',''):
-                response(h,json.dumps({'download':f"/videos/file/{row['id']}",'caption':caption_text(conn,row['id'])}),kind='application/json',headers=[cookie])
+                response(h,json.dumps({'download':f"/videos/file/{row['id']}",'caption':caption_text(conn,row['id']),'source':row['source_url']}),kind='application/json',headers=[cookie])
             else:
                 redirect(h,f"/videos/file/{row['id']}",[cookie])
         else:

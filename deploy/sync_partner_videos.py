@@ -81,6 +81,11 @@ def short_caption(script, keyword, title):
     return result
 
 
+def youtube_url(source_id):
+    """Partners open the original video; producer keys are YouTube ids."""
+    return f'https://www.youtube.com/watch?v={source_id}' if re.fullmatch(r'[A-Za-z0-9_-]{11}', source_id) else None
+
+
 def candidate(root, key, min_age=60, input_snapshots=None):
     root = Path(root)
     video = root / 'final.mp4'
@@ -123,7 +128,8 @@ def candidate(root, key, min_age=60, input_snapshots=None):
     title = manifest['title_candidate'].strip()
     if not title:
         raise ValueError('missing_title')
-    return dict(key=key, video=str(video), sha256=sha, title=title, caption=short_caption(caption, keyword, title), keyword=keyword)
+    return dict(key=key, video=str(video), sha256=sha, title=title, caption=short_caption(caption, keyword, title),
+                keyword=keyword, source_url=youtube_url(key))
 
 
 class API:
@@ -218,6 +224,10 @@ def import_one(api, item, record, persist, config):
     api.form(f'/op/videos/caption/{vid}', {'sha256': item['sha256'], 'caption': item['caption']})
     if json.loads(api.request('GET', f'/videos/caption/{vid}'))['caption'] != item['caption']:
         raise ValueError('remote_caption_mismatch')
+    if item.get('source_url'):
+        api.form(f"/op/videos/source/{vid}", {'sha256': item['sha256'], 'source_url': item['source_url']})
+        if next(r for r in api.status() if r['id'] == vid).get('source_url') != item['source_url']:
+            raise ValueError('remote_source_url_mismatch')
     record.update(status='verified', publish_attempted=True)
     persist()
     api.form('/op/videos/queue', {'id': vid, 'queued': 1})
@@ -380,8 +390,11 @@ def cutback_candidate(source, config, min_age=60):
     caption = employee_caption(label, keyword)
     if len(caption) > CAPTION_MAX_CHARS:
         raise ValueError('caption_too_long')
+    url = meta.get('url') or ''
+    if not url.startswith('https://'):
+        url = youtube_url(job.name)
     return dict(key=source['key'], video=str(video), sha256=digest(video), title=f'{head1} {head2}',
-                caption=caption, keyword=keyword, caption_final=True)
+                caption=caption, keyword=keyword, caption_final=True, source_url=url)
 
 
 def check(source, config, input_snapshots=None):
