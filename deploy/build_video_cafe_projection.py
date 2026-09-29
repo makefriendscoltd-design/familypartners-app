@@ -96,7 +96,8 @@ def valid_coverage_item(item: dict | None, *, video_id: int, video_sha: str,
     clip_excerpt, article_excerpt = item.get("clip_excerpt", ""), item.get("article_excerpt", "")
     if not clip_excerpt or not article_excerpt:
         return None
-    if clip_excerpt not in json.dumps(load(clip_review_path), ensure_ascii=False):
+    normalize = lambda value: re.sub(r"[^0-9A-Za-z가-힣]", "", value)
+    if normalize(clip_excerpt) not in normalize(json.dumps(load(clip_review_path), ensure_ascii=False)):
         return None
     if article_excerpt not in article_path.read_text(encoding="utf-8"):
         return None
