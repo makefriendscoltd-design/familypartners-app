@@ -38,6 +38,11 @@ class CardnewsTest(base.VideoHTTPTest):
         for did in (a1, a2, b1):                                   # 디자인 상관없이 전부 보인다
             self.assertIn(f"data-deck='{did}'", page)
         self.assertEqual(self.claim_deck(b1, 'a')[0], 303)          # 아무 디자인이나 고를 수 있다
+        got = self.claim_deck(b1, 'a')
+        self.assertEqual(got[1]['Location'], f'/cardnews?got={b1}')
+        c = db.connect(); c.execute('UPDATE cardnews_decks SET caption=? WHERE id=?', ('테스트 캡션\n\n댓글에 AIMAX 남기면', b1)); c.commit(); c.close()
+        page = self.request('GET', f'/cardnews?got={b1}', cookie=self.a)[2].decode()
+        self.assertIn('카드뉴스를 받았어요', page); self.assertIn('테스트 캡션', page); self.assertIn(f'/cardnews/file/{b1}', page)
         self.assertEqual(self.claim_deck(a2, 'a')[0], 409)          # 하루 1개
         self.assertEqual(self.claim_deck(b1, 'a')[0], 303)          # 받은 건 다시 받기 가능
         self.assertEqual(self.claim_deck(b1, 'b')[0], 409)          # 한 묶음은 한 사람만

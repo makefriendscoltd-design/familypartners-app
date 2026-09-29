@@ -194,11 +194,21 @@ def card(row, token=None, claimable=False):
     return body + '</article>'
 
 
-def listing(h, conn, p):
+def listing(h, conn, p, got=None):
     from .server import esc
     rows = conn.execute(f'SELECT * FROM cardnews_decks WHERE {AVAILABLE} ORDER BY id DESC').fetchall()
     owned = conn.execute('SELECT * FROM cardnews_decks WHERE claimed_by=? ORDER BY claimed_at DESC', (p['id'],)).fetchall()
-    body = (vl.GALLERY_STYLE + DECK_STYLE + "<section class=card><h2>🗂 받을 수 있는 카드뉴스 "
+    fresh = next((r for r in owned if r['id'] == got), None) if got else None
+    top = ''
+    if fresh:
+        # 받자마자 캡션과 원본 링크를 같이 보여주고 ZIP 은 자동으로 내려받게 한다.
+        top = ("<section class=card style='border:2px solid var(--acc)'><h2>✅ 카드뉴스를 받았어요</h2>"
+               f"<p><b>{esc(fresh['title'])}</b></p><p><a id=fresh-deck href='/cardnews/file/{fresh['id']}' download>"
+               "카드 10장 ZIP 받기</a> — 자동으로 안 받아지면 눌러 주세요.</p>"
+               "<p>아래 캡션을 복사해서 카드뉴스와 같이 올리면 됩니다.</p>"
+               + vl.caption_box(fresh['caption'] or '') + vl.source_link(fresh)
+               + "<script>document.getElementById('fresh-deck').click()</script></section>")
+    body = (vl.GALLERY_STYLE + DECK_STYLE + top + "<section class=card><h2>🗂 받을 수 있는 카드뉴스 "
             f"<span>{len(rows)}개</span></h2><p>마음에 드는 카드뉴스를 골라 받아 가세요. 먼저 받은 사람에게 배정되고, "
             f"계정당 하루 {DAILY_CARDNEWS_LIMIT}개, 한국 시간 자정에 초기화됩니다.</p>"
             "<div class=video-grid>" + ''.join(card(r, p['portal_token'], True) for r in rows) + '</div>')
@@ -326,11 +336,12 @@ def handle(h):
             vl.page(h, '카드뉴스방', '<div class=card><h2>내 작업실에서 들어와 주세요</h2><p>파트너 확인 후 카드뉴스를 받을 수 있어요.</p>'
                     '<a href=/find>내 작업실 찾기</a></div>', status=403); return True
         if u.path == '/cardnews' and h.command == 'GET':
-            listing(h, conn, p)
+            got = qs.get('got', [''])[0]
+            listing(h, conn, p, int(got) if got.isdigit() else None)
         elif u.path == '/cardnews/claim' and h.command == 'POST':
             vl.checked_csrf(h, submitted, token)
             row = claim(conn, int(submitted['id']), token, submitted.get('name', ''))
-            vl.redirect(h, f"/cardnews/file/{row['id']}", [(cookie[0], cookie[1].format(token))])
+            vl.redirect(h, f"/cardnews?got={row['id']}", [(cookie[0], cookie[1].format(token))])
         else:
             vl.response(h, '없는 페이지예요.', 404)
     except PermissionError as e:
