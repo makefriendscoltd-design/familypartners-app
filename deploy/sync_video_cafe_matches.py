@@ -16,10 +16,13 @@ def payload(row, reviews):
     result = {"video_sha256":row["video_sha256"], "source_key":row["source_key"],
               "status":status_map[row["status"]], "topic_match_verified":row["clip_topic_match_verified"],
               "updated_at":datetime.now(timezone.utc).isoformat()}
+    if row.get("clip_topic_match_verified"):
+        result.update(clip_review_sha256=row.get("clip_review_sha256") or review.get("clip_review_sha256"),
+                      article_sha256=row.get("article_sha256") or review.get("article_sha256"))
     if row["status"] == "발행확인":
         result.update(cafe_title=row["cafe_title"], cafe_url=row["cafe_url"],
-                      clip_review_sha256=review["clip_review_sha256"],
-                      article_sha256=review["article_sha256"])
+                      clip_review_sha256=result["clip_review_sha256"],
+                      article_sha256=result["article_sha256"])
     return result
 
 

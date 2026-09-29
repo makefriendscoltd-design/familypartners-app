@@ -75,18 +75,33 @@ def valid_match_review(review: dict | None, *, video_id: int, video_sha: str,
     ))
 
 
-def valid_recovery_match(recovery: dict | None, *, video_id: int, video_sha: str,
-                         clip_review_path: Path, article_path: Path | None) -> bool:
-    if not recovery or not article_path or not article_path.is_file():
-        return False
-    if (recovery.get("topic_match") or {}).get("status") != "matched_by_clip_caption_and_article_sections":
-        return False
-    binding = next((x for x in recovery.get("partner_videos", [])
-                    if x.get("video_id") == video_id and x.get("video_sha256") == video_sha), None)
-    cafe = recovery.get("cafe") or {}
-    bound_path = Path(binding.get("caption_evidence", "")).resolve() if binding else None
-    return bool(binding and bound_path == clip_review_path.resolve()
-                and cafe.get("body_sha256") == digest(article_path))
+def valid_coverage_item(item: dict | None, *, video_id: int, video_sha: str,
+                        source_key: str, clip_review_path: Path,
+                        article_path: Path | None) -> dict | None:
+    """Accept only literal clip/article excerpts bound to the current bytes."""
+    if not item or item.get("coverage") != "pass" or not article_path or not article_path.is_file():
+        return None
+    if item.get("source_key") != source_key or item.get("partner_video_id") != video_id:
+        return None
+    if item.get("partner_video_sha256") != video_sha:
+        return None
+    if Path(item.get("caption_evidence", "")).resolve() != clip_review_path.resolve():
+        return None
+    if item.get("caption_evidence_sha256") != digest(clip_review_path):
+        return None
+    if Path(item.get("body", "")).resolve() != article_path.resolve():
+        return None
+    if item.get("body_sha256") != digest(article_path):
+        return None
+    clip_excerpt, article_excerpt = item.get("clip_excerpt", ""), item.get("article_excerpt", "")
+    if not clip_excerpt or not article_excerpt:
+        return None
+    if clip_excerpt not in json.dumps(load(clip_review_path), ensure_ascii=False):
+        return None
+    if article_excerpt not in article_path.read_text(encoding="utf-8"):
+        return None
+    return {"clip_review_sha256": digest(clip_review_path),
+            "article_sha256": digest(article_path)}
 
 
 def cafe_record(entry: dict | None, project: Path, source_key: str,
@@ -133,7 +148,8 @@ def cafe_record(entry: dict | None, project: Path, source_key: str,
 
 def build(partner_inventory: Path, queue_path: Path, caption_reviews: Path,
           match_reviews_path: Path, cafe_project: Path, recovery_report: Path | None = None,
-          public_verification: Path | None = None, topic_report: Path | None = None) -> dict:
+          public_verification: Path | None = None, topic_report: Path | None = None,
+          coverage_report: Path | None = None) -> dict:
     partner = load(partner_inventory)["items"]
     current = [x for x in partner if x.get("distribution") in ("available", "queued")]
     queue = load(queue_path)
@@ -144,6 +160,8 @@ def build(partner_inventory: Path, queue_path: Path, caption_reviews: Path,
     recovery_by_source = {x.get("source_key"): x for x in recoveries}
     topic_items = load(topic_report).get("items", []) if topic_report and topic_report.is_file() else []
     topic_by_source = {x.get("source_key"): x for x in topic_items}
+    coverage_items = load(coverage_report).get("items", []) if coverage_report and coverage_report.is_file() else []
+    coverage_by_video = {x.get("partner_video_id"): x for x in coverage_items}
     public_pages = load(public_verification).get("pages", []) if public_verification and public_verification.is_file() else []
     fresh_urls = {x.get("finalUrl") for x in public_pages if x.get("status") == "read" and CAFE_URL.fullmatch(x.get("finalUrl", ""))}
     alignment_module = cafe_project / "cafe_shorts_alignment.py"
@@ -164,13 +182,22 @@ def build(partner_inventory: Path, queue_path: Path, caption_reviews: Path,
         cafe = cafe_record(by_source.get(source_key), cafe_project, source_key,
                            fresh_urls, recovery_by_source.get(source_key), topic_by_source.get(source_key))
         article_path = Path(cafe["article_path"]) if cafe.get("article_path") else None
-        matched = bool(clip_review and (valid_match_review(
-            match_by_video.get(video_id), video_id=video_id, video_sha=video_sha,
-            source_key=source_key, clip_review_path=clip_path, article_path=article_path)
-            or valid_recovery_match(recovery_by_source.get(source_key), video_id=video_id,
-                                    video_sha=video_sha, clip_review_path=clip_path,
-                                    article_path=article_path)))
+        explicit = match_by_video.get(video_id)
+        match_hashes = None
+        if clip_review and valid_match_review(explicit, video_id=video_id, video_sha=video_sha,
+                                              source_key=source_key, clip_review_path=clip_path,
+                                              article_path=article_path):
+            match_hashes = {"clip_review_sha256": explicit["clip_review_sha256"],
+                            "article_sha256": explicit["article_sha256"]}
+        if clip_review and not match_hashes:
+            match_hashes = valid_coverage_item(coverage_by_video.get(video_id), video_id=video_id,
+                                               video_sha=video_sha, source_key=source_key,
+                                               clip_review_path=clip_path, article_path=article_path)
+        matched = bool(match_hashes)
         status = cafe["status"]
+        coverage = coverage_by_video.get(video_id)
+        if coverage and coverage.get("coverage") != "pass" and status in ("작성중", "발행대기", "발행확인"):
+            status = "내용매칭검토필요"
         if status == "발행확인" and not matched:
             status = "내용매칭검토필요"
         if status == "발행대기":
@@ -191,6 +218,8 @@ def build(partner_inventory: Path, queue_path: Path, caption_reviews: Path,
             "status": status, "clip_evidence_verified": bool(clip_review),
             "detail_reason": detail_reason,
             "clip_topic_match_verified": matched,
+            "clip_review_sha256": match_hashes.get("clip_review_sha256") if match_hashes else None,
+            "article_sha256": match_hashes.get("article_sha256") if match_hashes else None,
             "cafe_title": cafe.get("title") if matched else None,
             "cafe_url": cafe.get("url") if matched else None,
         })
@@ -213,11 +242,12 @@ def main():
     p.add_argument("--recovery-report", type=Path)
     p.add_argument("--public-verification", type=Path)
     p.add_argument("--topic-report", type=Path)
+    p.add_argument("--coverage-report", type=Path)
     p.add_argument("--output", type=Path, required=True)
     a = p.parse_args()
     result = build(a.partner_inventory, a.queue, a.caption_reviews,
                    a.match_reviews, a.cafe_project, a.recovery_report,
-                   a.public_verification, a.topic_report)
+                   a.public_verification, a.topic_report, a.coverage_report)
     a.output.parent.mkdir(parents=True, exist_ok=True)
     tmp = a.output.with_suffix(a.output.suffix + ".tmp")
     tmp.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

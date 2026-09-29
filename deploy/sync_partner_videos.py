@@ -419,10 +419,32 @@ def sync_cafe_matches(api, config, state, state_path, dry_run=False):
         return {'status': 'disabled'}
     from build_video_cafe_projection import build
     from sync_video_cafe_matches import payload
-    projection = build(Path(cafe['partner_inventory']), Path(cafe['queue']),
-                       Path(cafe['caption_reviews']), Path(cafe['match_reviews']),
-                       Path(cafe['cafe_project']), Path(cafe['recovery_report']),
-                       Path(cafe['public_verification']), Path(cafe['topic_report']))
+    inventory_path = Path(cafe['partner_inventory'])
+    temporary_inventory = None
+    if api is not None:
+        from urllib.parse import parse_qs, urlparse
+        live = []
+        for video in api.status():
+            parsed = urlparse(video.get('source_url') or '')
+            source_key = (parse_qs(parsed.query).get('v') or [parsed.path.rsplit('/', 1)[-1]])[0]
+            if not re.fullmatch(r'[A-Za-z0-9_-]{11}', source_key) or not (video.get('published') or video.get('queued')):
+                continue
+            live.append({'video_id': video['id'], 'video_sha256': video['sha256'],
+                         'source_key': source_key,
+                         'distribution': 'available' if video.get('published') else 'queued'})
+        temporary_inventory = tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False, encoding='utf-8')
+        json.dump({'items': live}, temporary_inventory, ensure_ascii=False)
+        temporary_inventory.close()
+        inventory_path = Path(temporary_inventory.name)
+    try:
+        projection = build(inventory_path, Path(cafe['queue']),
+                           Path(cafe['caption_reviews']), Path(cafe['match_reviews']),
+                           Path(cafe['cafe_project']), Path(cafe['recovery_report']),
+                           Path(cafe['public_verification']), Path(cafe['topic_report']),
+                           Path(cafe['coverage_report']))
+    finally:
+        if temporary_inventory:
+            Path(temporary_inventory.name).unlink(missing_ok=True)
     records = state.setdefault('cafe_matches', {})
     reviews = {x['video_id']:x for x in read_json(cafe['match_reviews'])['reviews']}
     changed = []
