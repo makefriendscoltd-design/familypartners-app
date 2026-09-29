@@ -21,6 +21,9 @@ CTA = '댓글에 AIMAX 남기면\n관련 정보 보내드릴게요.'
 
 
 def caption(content):
+    # 카드 원고를 만들 때 같이 쓴 인스타 캡션이 있으면 그걸 쓴다(검사 통과본).
+    if (content.get('caption') or '').strip():
+        return content['caption'].strip()
     cover = content['slides'][0]['f']
     title = cover.get('title', '').replace('\n', ' ').strip()
     sub = cover.get('sub', '').replace('\n', ' ').strip()
