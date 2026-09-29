@@ -1,7 +1,7 @@
-"""파트너 카드뉴스방: 10장 묶음 ZIP 을 파트너별 고정 템플릿으로 하루 1개씩 배정한다.
+"""파트너 카드뉴스방: 10장 묶음 ZIP 을 전부 공개하고 파트너가 골라 하루 1개씩 받아간다.
 
 영상방(video_library)과 같은 배정 원칙을 쓴다 — 한 묶음은 한 사람에게만, 받은 건 다시 받을 수 있다.
-다른 점은 파트너마다 템플릿 하나가 고정돼서(브랜딩) 자기 템플릿 묶음만 보인다는 것이다.
+(2026-09-29: 파트너별 템플릿 고정은 사용자 결정으로 폐지. partner_card_templates 는 기록용으로만 남는다.)
 """
 from __future__ import annotations
 
@@ -93,8 +93,7 @@ def claim(conn, did, token, name):
             deck_path(row)
             conn.commit()
             return row
-        mine = template_of(conn, p['id'])
-        if row['template'] != mine or not row['published'] or row['claimed_at'] or row['claimed_by']:
+        if not row['published'] or row['claimed_at'] or row['claimed_by']:
             raise LookupError('다른 파트너가 먼저 받았거나 받을 수 없는 카드뉴스예요.')
         stamp = core.now_iso()
         if daily_count(conn, p['id'], stamp[:10]) >= DAILY_CARDNEWS_LIMIT:
@@ -179,7 +178,7 @@ def card(row, token=None, claimable=False):
     from .server import esc
     did = row['id']
     cover = (f"<img src='/cardnews/thumb/{did}' alt='{esc(row['title'])}' loading=lazy width=360 height=360>"
-             f"<div class=video-info><h3>{esc(row['title'])}</h3><small>카드 10장 · ZIP</small>"
+             f"<div class=video-info><h3>{esc(row['title'])}</h3><small>카드 10장 · {esc(TEMPLATES.get(row['template'], ''))}</small>"
              + ("<span class=video-select>선택하고 받기 →</span>" if claimable else '') + '</div>')
     body = f"<article class=video-card data-deck='{did}'>" + vl.source_link(row)
     if claimable and token:
@@ -195,12 +194,11 @@ def card(row, token=None, claimable=False):
 
 def listing(h, conn, p):
     from .server import esc
-    mine = template_of(conn, p['id'])
-    rows = conn.execute(f'SELECT * FROM cardnews_decks WHERE {AVAILABLE} AND template=? ORDER BY id', (mine,)).fetchall()
+    rows = conn.execute(f'SELECT * FROM cardnews_decks WHERE {AVAILABLE} ORDER BY id DESC').fetchall()
     owned = conn.execute('SELECT * FROM cardnews_decks WHERE claimed_by=? ORDER BY claimed_at DESC', (p['id'],)).fetchall()
     body = (vl.GALLERY_STYLE + "<section class=card><h2>🗂 받을 수 있는 카드뉴스 "
-            f"<span>{len(rows)}개</span></h2><p>내 카드뉴스 디자인: <b>{esc(TEMPLATES[mine])}</b> — 늘 같은 디자인으로 드려서 "
-            f"계정 분위기가 유지돼요. 계정당 하루 {DAILY_CARDNEWS_LIMIT}개, 한국 시간 자정에 초기화됩니다.</p>"
+            f"<span>{len(rows)}개</span></h2><p>마음에 드는 카드뉴스를 골라 받아 가세요. 먼저 받은 사람에게 배정되고, "
+            f"계정당 하루 {DAILY_CARDNEWS_LIMIT}개, 한국 시간 자정에 초기화됩니다.</p>"
             "<div class=video-grid>" + ''.join(card(r, p['portal_token'], True) for r in rows) + '</div>')
     if not rows:
         body += '<p>지금 받을 수 있는 카드뉴스가 없어요. 매일 새로 채워집니다.</p>'
@@ -310,7 +308,7 @@ def handle(h):
             row = get_deck(conn, int(m.group(2)))
             owner = bool(p and row and row['claimed_by'] == p['id'])
             if m.group(1) == 'thumb':
-                visible = row and row['published'] and not row['claimed_at'] and p and row['template'] == template_of(conn, p['id'], assign=False)
+                visible = row and row['published'] and not row['claimed_at'] and p
                 if not row or not (admin or sync or owner or visible):
                     raise PermissionError('볼 수 없는 카드뉴스예요.')
                 vl.response(h, thumb_path(row).read_bytes(), kind='image/jpeg'); return True
