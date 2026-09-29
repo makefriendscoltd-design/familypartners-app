@@ -249,7 +249,7 @@ def handle(h):
         sync = vl.sync_authorized(h)
         h._video_sync_ok = sync
         if u.path.startswith('/op/cardnews'):
-            sync_route = u.path in ('/op/cardnews/sync-status', '/op/cardnews/upload') or bool(
+            sync_route = u.path in ('/op/cardnews/sync-status', '/op/cardnews/upload', '/op/cardnews/publish') or bool(
                 re.fullmatch(r'/op/cardnews/(thumbnail|caption|source)/\d+', u.path))
             if not (admin or (sync and sync_route)):
                 vl.response(h, '관리자 로그인이 필요해요.', 403); return True
@@ -261,6 +261,15 @@ def handle(h):
                      'has_thumbnail': thumb_path(r).is_file()} for r in rows]})
             elif h.command == 'GET' and u.path == '/op/cardnews':
                 admin_listing(h, conn)
+            elif h.command == 'POST' and u.path == '/op/cardnews/publish':
+                f = vl.fields(h); vl.checked_csrf(h, f, 'admin')
+                value = int(f['published'])
+                if value not in (0, 1):
+                    raise ValueError('published')
+                # 받아간 묶음은 그대로 둔다 — 파트너가 다시 받을 수 있어야 한다.
+                conn.execute('UPDATE cardnews_decks SET published=? WHERE id=? AND claimed_at IS NULL', (value, int(f['id'])))
+                conn.commit()
+                vl.json_response(h, {'ok': True})
             elif h.command == 'POST' and u.path == '/op/cardnews/upload':
                 upload(h, conn)
             elif h.command == 'POST' and re.fullmatch(r'/op/cardnews/thumbnail/\d+', u.path):
