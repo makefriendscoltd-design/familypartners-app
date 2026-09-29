@@ -90,12 +90,17 @@ def valid_recovery_match(recovery: dict | None, *, video_id: int, video_sha: str
 
 
 def cafe_record(entry: dict | None, project: Path, source_key: str,
-                fresh_urls: set[str], recovery: dict | None = None) -> dict:
+                fresh_urls: set[str], recovery: dict | None = None,
+                topic_item: dict | None = None) -> dict:
     if not entry:
         if recovery and recovery.get("classification") == "existing_draft_missing_queue":
             cafe = recovery.get("cafe") or {}
             return {"status": "작성중", "title": cafe.get("title"),
                     "article_path": cafe.get("body_path")}
+        if topic_item:
+            cafe = topic_item.get("cafe") or {}
+            return {"status": "작성중", "title": cafe.get("title"),
+                    "article_path": cafe.get("body")}
         return {"status": "원고없음"}
     manifest_path = project / entry.get("manifest", "")
     manifest = load(manifest_path) if manifest_path.is_file() else {}
@@ -128,7 +133,7 @@ def cafe_record(entry: dict | None, project: Path, source_key: str,
 
 def build(partner_inventory: Path, queue_path: Path, caption_reviews: Path,
           match_reviews_path: Path, cafe_project: Path, recovery_report: Path | None = None,
-          public_verification: Path | None = None) -> dict:
+          public_verification: Path | None = None, topic_report: Path | None = None) -> dict:
     partner = load(partner_inventory)["items"]
     current = [x for x in partner if x.get("distribution") in ("available", "queued")]
     queue = load(queue_path)
@@ -137,6 +142,8 @@ def build(partner_inventory: Path, queue_path: Path, caption_reviews: Path,
     match_by_video = {x.get("video_id"): x for x in match_reviews}
     recoveries = load(recovery_report).get("items", []) if recovery_report and recovery_report.is_file() else []
     recovery_by_source = {x.get("source_key"): x for x in recoveries}
+    topic_items = load(topic_report).get("items", []) if topic_report and topic_report.is_file() else []
+    topic_by_source = {x.get("source_key"): x for x in topic_items}
     public_pages = load(public_verification).get("pages", []) if public_verification and public_verification.is_file() else []
     fresh_urls = {x.get("finalUrl") for x in public_pages if x.get("status") == "read" and CAFE_URL.fullmatch(x.get("finalUrl", ""))}
     alignment_module = cafe_project / "cafe_shorts_alignment.py"
@@ -155,7 +162,7 @@ def build(partner_inventory: Path, queue_path: Path, caption_reviews: Path,
         clip_path = caption_reviews / f"{video_id}.json"
         clip_review = valid_clip_review(clip_path, video_sha)
         cafe = cafe_record(by_source.get(source_key), cafe_project, source_key,
-                           fresh_urls, recovery_by_source.get(source_key))
+                           fresh_urls, recovery_by_source.get(source_key), topic_by_source.get(source_key))
         article_path = Path(cafe["article_path"]) if cafe.get("article_path") else None
         matched = bool(clip_review and (valid_match_review(
             match_by_video.get(video_id), video_id=video_id, video_sha=video_sha,
@@ -205,10 +212,12 @@ def main():
     p.add_argument("--cafe-project", type=Path, required=True)
     p.add_argument("--recovery-report", type=Path)
     p.add_argument("--public-verification", type=Path)
+    p.add_argument("--topic-report", type=Path)
     p.add_argument("--output", type=Path, required=True)
     a = p.parse_args()
     result = build(a.partner_inventory, a.queue, a.caption_reviews,
-                   a.match_reviews, a.cafe_project, a.recovery_report, a.public_verification)
+                   a.match_reviews, a.cafe_project, a.recovery_report,
+                   a.public_verification, a.topic_report)
     a.output.parent.mkdir(parents=True, exist_ok=True)
     tmp = a.output.with_suffix(a.output.suffix + ".tmp")
     tmp.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

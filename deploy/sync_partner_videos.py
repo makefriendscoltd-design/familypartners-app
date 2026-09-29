@@ -422,7 +422,7 @@ def sync_cafe_matches(api, config, state, state_path, dry_run=False):
     projection = build(Path(cafe['partner_inventory']), Path(cafe['queue']),
                        Path(cafe['caption_reviews']), Path(cafe['match_reviews']),
                        Path(cafe['cafe_project']), Path(cafe['recovery_report']),
-                       Path(cafe['public_verification']))
+                       Path(cafe['public_verification']), Path(cafe['topic_report']))
     records = state.setdefault('cafe_matches', {})
     reviews = {x['video_id']:x for x in read_json(cafe['match_reviews'])['reviews']}
     changed = []
