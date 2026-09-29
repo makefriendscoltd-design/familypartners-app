@@ -34,6 +34,7 @@ class CardnewsTest(base.VideoHTTPTest):
                                       {'X-CSRF-Token': v.csrf('admin'), 'X-Deck-Title': 'x', 'X-Template': '01-gradient'})[0], 400)
         a1 = self.up('01-gradient', 'a1'); a2 = self.up('02-shortcut', 'a2'); b1 = self.up('05-hero', 'b1')
         page = self.request('GET', '/cardnews', cookie=self.a)[2].decode()
+        self.assertIn('img.deck-cover{aspect-ratio:1/1', page)    # 정사각형 표지가 잘리지 않게
         for did in (a1, a2, b1):                                   # 디자인 상관없이 전부 보인다
             self.assertIn(f"data-deck='{did}'", page)
         self.assertEqual(self.claim_deck(b1, 'a')[0], 303)          # 아무 디자인이나 고를 수 있다

@@ -31,6 +31,8 @@ TEMPLATES = {
     '07-typeplay': '민트 · 타이포 연출',
 }
 AVAILABLE = 'published=1 AND claimed_at IS NULL AND claimed_by IS NULL'
+# 영상 썸네일은 세로(9:12) 틀이라 정사각형 카드 표지는 양옆이 잘린다 — 카드뉴스는 1:1 로 보인다.
+DECK_STYLE = '<style>.video-card img.deck-cover{aspect-ratio:1/1;object-fit:contain;background:#111}</style>'
 
 
 def storage_dir():
@@ -177,7 +179,7 @@ def upload_thumb(h, conn, did):
 def card(row, token=None, claimable=False):
     from .server import esc
     did = row['id']
-    cover = (f"<img src='/cardnews/thumb/{did}' alt='{esc(row['title'])}' loading=lazy width=360 height=360>"
+    cover = (f"<img class=deck-cover src='/cardnews/thumb/{did}' alt='{esc(row['title'])}' loading=lazy width=360 height=360>"
              f"<div class=video-info><h3>{esc(row['title'])}</h3><small>카드 10장 · {esc(TEMPLATES.get(row['template'], ''))}</small>"
              + ("<span class=video-select>선택하고 받기 →</span>" if claimable else '') + '</div>')
     body = f"<article class=video-card data-deck='{did}'>" + vl.source_link(row)
@@ -196,7 +198,7 @@ def listing(h, conn, p):
     from .server import esc
     rows = conn.execute(f'SELECT * FROM cardnews_decks WHERE {AVAILABLE} ORDER BY id DESC').fetchall()
     owned = conn.execute('SELECT * FROM cardnews_decks WHERE claimed_by=? ORDER BY claimed_at DESC', (p['id'],)).fetchall()
-    body = (vl.GALLERY_STYLE + "<section class=card><h2>🗂 받을 수 있는 카드뉴스 "
+    body = (vl.GALLERY_STYLE + DECK_STYLE + "<section class=card><h2>🗂 받을 수 있는 카드뉴스 "
             f"<span>{len(rows)}개</span></h2><p>마음에 드는 카드뉴스를 골라 받아 가세요. 먼저 받은 사람에게 배정되고, "
             f"계정당 하루 {DAILY_CARDNEWS_LIMIT}개, 한국 시간 자정에 초기화됩니다.</p>"
             "<div class=video-grid>" + ''.join(card(r, p['portal_token'], True) for r in rows) + '</div>')
