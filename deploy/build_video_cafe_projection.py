@@ -197,6 +197,8 @@ def build(partner_inventory: Path, queue_path: Path, caption_reviews: Path,
         matched = bool(match_hashes)
         status = cafe["status"]
         coverage = coverage_by_video.get(video_id)
+        if explicit and explicit.get("verdict") != "pass" and status in ("작성중", "발행대기", "발행확인"):
+            status = "내용매칭검토필요"
         if coverage and coverage.get("coverage") != "pass" and status in ("작성중", "발행대기", "발행확인"):
             status = "내용매칭검토필요"
         if status == "발행확인" and not matched:

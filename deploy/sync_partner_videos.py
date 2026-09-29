@@ -441,7 +441,7 @@ def sync_cafe_matches(api, config, state, state_path, dry_run=False):
                            Path(cafe['caption_reviews']), Path(cafe['match_reviews']),
                            Path(cafe['cafe_project']), Path(cafe['recovery_report']),
                            Path(cafe['public_verification']), Path(cafe['topic_report']),
-                           Path(cafe['coverage_report']))
+                           Path(cafe['coverage_report']) if cafe.get('coverage_report') else None)
     finally:
         if temporary_inventory:
             Path(temporary_inventory.name).unlink(missing_ok=True)
