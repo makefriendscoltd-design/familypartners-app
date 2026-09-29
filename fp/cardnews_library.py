@@ -225,6 +225,28 @@ def listing(h, conn, p, got=None):
     vl.page(h, '카드뉴스방', body + '</div>' + vl.CAPTION_SCRIPT, p['portal_token'])
 
 
+def dashboard_card(token=None, admin=False, limit=8):
+    """작업실·관리자 대시보드에 붙는 카드뉴스 미리보기(최신 몇 개)."""
+    conn = db.connect()
+    try:
+        rows = conn.execute(f'SELECT * FROM cardnews_decks WHERE {AVAILABLE} ORDER BY id DESC').fetchall()
+        active = vl.partner(conn, token)
+    finally:
+        conn.close()
+    body = (vl.GALLERY_STYLE + DECK_STYLE + "<section class=card id=partner-cardnews style='border:2px solid var(--acc)'>"
+            f"<h2>🗂 받을 수 있는 카드뉴스 <span>{len(rows)}개</span></h2>"
+            f"<p>카드 10장 묶음, 계정당 하루 {DAILY_CARDNEWS_LIMIT}개. 먼저 받은 사람에게 배정돼요.</p>"
+            "<div class=video-grid>" + ''.join(card(r) for r in rows[:limit]) + '</div>')
+    if not rows:
+        body += '<p>지금 받을 수 있는 카드뉴스가 없어요.</p>'
+    if admin:
+        body += "<a class=lk href='/op/cardnews'>카드뉴스 전체 보기·관리 →</a>"
+    else:
+        href = '/cardnews?t=' + quote(token, safe='') if active else '/cardnews'
+        body += f"<a class=lk href='{href}'>카드뉴스방에서 골라 받기 →</a>"
+    return body + '</section>'
+
+
 def admin_listing(h, conn):
     from .server import esc
     rows = conn.execute('SELECT * FROM cardnews_decks ORDER BY id DESC LIMIT 300').fetchall()
@@ -235,7 +257,10 @@ def admin_listing(h, conn):
         names = ', '.join(esc(r['name']) for r in assigned if r['template'] == t) or '—'
         left = sum(1 for r in rows if r['template'] == t and not r['claimed_at'] and r['published'])
         body += f"<li><b>{t}</b> {esc(label)} · 남은 묶음 {left}개 · {names}</li>"
-    body += "</ul></div><div class=card><h2>카드뉴스 배포 내역</h2>"
+    live = [r for r in rows if r['published'] and not r['claimed_at']]
+    body += ("</ul></div>" + vl.GALLERY_STYLE + DECK_STYLE + f"<section class=card><h2>지금 파트너에게 보이는 카드뉴스 {len(live)}개</h2>"
+             "<div class=video-grid>" + ''.join(card(r) for r in live) + "</div></section>")
+    body += "<div class=card><h2>카드뉴스 배포 내역</h2>"
     for r in rows:
         state = f"{esc(r['claimed_name'])} · {esc(r['claimed_at'])} 수령" if r['claimed_at'] else ('배포 중' if r['published'] else '비공개')
         body += f"<div class=card><h3>{esc(r['title'])}</h3><p>{r['template']} · {state}</p>{vl.source_link(r, '유튜브 원본')}</div>"

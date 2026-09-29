@@ -55,3 +55,8 @@ class CardnewsTest(base.VideoHTTPTest):
         status = json.loads(self.request('GET', '/op/cardnews/sync-status', cookie=self.admin)[2])
         self.assertEqual(status['stock']['available'], 1)
         self.assertEqual(json.loads(self.request('GET', '/op/videos/sync-status', cookie=self.admin)[2])['videos'], [])
+        admin_page = self.request('GET', '/op/cardnews', cookie=self.admin)[2].decode()
+        self.assertIn('지금 파트너에게 보이는 카드뉴스', admin_page)
+        self.assertIn(f"/cardnews/thumb/{a2}", admin_page)             # 관리자도 표지를 본다
+        self.assertEqual(self.request('GET', f'/cardnews/thumb/{a2}', cookie=self.admin)[0], 200)
+        self.assertIn('받을 수 있는 카드뉴스', cn.dashboard_card(admin=True))

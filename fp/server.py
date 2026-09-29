@@ -471,7 +471,7 @@ def view_dashboard(qs) -> str:
         f"<div class=card><h2>⏳ 오늘 아직 미제출 — {len(b['at_risk'])}명 "
         f"<span class=pill>어제는 함 · 마감 전 독려</span></h2>{atrisk_rows}"
         f"<p class=empty>문자/리마인더는 <a class=lk href='/reminders'>✉ 보낼 메시지</a>에서 보냅니다.</p></div>")
-    return (video_library.dashboard_card(admin=True) + flash + drop_form() + sched_card + quick_actions() +
+    return (video_library.dashboard_card(admin=True) + cardnews_library.dashboard_card(admin=True) + flash + drop_form() + sched_card + quick_actions() +
             f"<p class=pill>{b['date']} 기준 (자정~다음날 자정, KST)</p>{kpi}"
             f"<div class=card><h2>✅ 오늘 완료(미션완료) — {len(done_list)}명</h2>{done}</div>"
             + kick_card + atrisk_card)
@@ -733,7 +733,7 @@ def view_feed(qs, is_admin: bool = False) -> bytes:
              "<p class=empty>매일 올라오는 콘텐츠 보관함입니다. <b>늦게 들어와도 1일차부터 전부</b> 볼 수 있어요. "
              "<b>썸네일을 누르면</b> 본문(복사)·사진·영상이 펼쳐집니다.</p></div>")
     return shell_portal("글감 피드", "매일 콘텐츠 보관함",
-                        COPY_JS + LAZY_JS + video_library.dashboard_card(token) + intro + sched_html + body_html, token)
+                        COPY_JS + LAZY_JS + video_library.dashboard_card(token) + cardnews_library.dashboard_card(token) + intro + sched_html + body_html, token)
 
 
 def _sel_v(name: str, label: str, options: list, cur) -> str:
@@ -1240,7 +1240,7 @@ def view_me(qs) -> bytes | None:
         f"{gembed}</div>")
 
     conn.close()
-    body = (COPY_JS + REWRITE_JS + video_library.dashboard_card(token) + notice_card + saved2 + ok_banner + status_card +
+    body = (COPY_JS + REWRITE_JS + video_library.dashboard_card(token) + cardnews_library.dashboard_card(token) + notice_card + saved2 + ok_banner + status_card +
             guide_banner + setup + submit + drop_card + files_link + hist_card + link_card +
             wall_link + find_note)
     return shell_portal(name, f"{esc(name)}님의 작업실", body, token)
