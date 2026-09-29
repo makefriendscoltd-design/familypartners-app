@@ -160,6 +160,9 @@ class API:
     def sync_status(self):
         return json.loads(self.request('GET', '/op/videos/sync-status'))
 
+    def cardnews_status(self):
+        return json.loads(self.request('GET', '/op/cardnews/sync-status'))
+
     def form(self, path, data):
         return self.request('POST', path, urlencode(data).encode(), {'Content-Type': 'application/x-www-form-urlencoded'})
 
