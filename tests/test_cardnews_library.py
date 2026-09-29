@@ -60,3 +60,15 @@ class CardnewsTest(base.VideoHTTPTest):
         self.assertIn(f"/cardnews/thumb/{a2}", admin_page)             # 관리자도 표지를 본다
         self.assertEqual(self.request('GET', f'/cardnews/thumb/{a2}', cookie=self.admin)[0], 200)
         self.assertIn('받을 수 있는 카드뉴스', cn.dashboard_card(admin=True))
+
+
+class RoomsHubTest(base.VideoHTTPTest):
+    def test_workroom_shows_three_rooms_and_feed_is_writing_only(self):
+        page = self.request('GET', '/me?t=token-a')[2].decode()
+        for room in ('✍️', '글감방', '🎬', '영상방', '🗂', '카드뉴스방'):
+            self.assertIn(room, page)
+        self.assertIn("href='/cardnews?t=token-a'", page)
+        self.assertIn('오늘 0/3편 받음', page)
+        self.assertNotIn('id=partner-videos', page)             # 미리보기 대신 방 버튼
+        feed = self.request('GET', '/feed?t=token-a')[2].decode()
+        self.assertNotIn('id=partner-videos', feed); self.assertNotIn('id=partner-cardnews', feed)

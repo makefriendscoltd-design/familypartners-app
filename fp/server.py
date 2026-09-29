@@ -733,7 +733,7 @@ def view_feed(qs, is_admin: bool = False) -> bytes:
              "<p class=empty>매일 올라오는 콘텐츠 보관함입니다. <b>늦게 들어와도 1일차부터 전부</b> 볼 수 있어요. "
              "<b>썸네일을 누르면</b> 본문(복사)·사진·영상이 펼쳐집니다.</p></div>")
     return shell_portal("글감 피드", "매일 콘텐츠 보관함",
-                        COPY_JS + LAZY_JS + video_library.dashboard_card(token) + cardnews_library.dashboard_card(token) + intro + sched_html + body_html, token)
+                        COPY_JS + LAZY_JS + intro + sched_html + body_html, token)
 
 
 def _sel_v(name: str, label: str, options: list, cur) -> str:
@@ -839,6 +839,36 @@ def view_onboard(qs) -> str:
 # =========================================================================== #
 # 파트너 포털 (토큰 링크 · 비번 없음 · 포털에서 직접 제출)
 # =========================================================================== #
+def rooms_hub(token: str | None) -> str:
+    """작업실 맨 위: 글감방·영상방·카드뉴스방 세 갈래. 오늘 받을 수 있는 수를 같이 보여준다."""
+    t = ("?t=" + _q(token)) if token else ""
+    conn = db.connect()
+    try:
+        p = video_library.partner(conn, token)
+        today = core.now_iso()[:10]
+        videos = conn.execute(f"SELECT COUNT(*) AS n FROM exclusive_videos WHERE {video_library.AVAILABLE_SQL}").fetchone()["n"]
+        decks = conn.execute(f"SELECT COUNT(*) AS n FROM cardnews_decks WHERE {cardnews_library.AVAILABLE}").fetchone()["n"]
+        got_v = video_library.daily_claim_count(conn, p["id"], today) if p else 0
+        got_c = cardnews_library.daily_count(conn, p["id"], today) if p else 0
+    finally:
+        conn.close()
+    def tile(icon, name, line, left, href):
+        return (f"<a class=room href='{href}'><span class=room-icon>{icon}</span><b>{name}</b>"
+                f"<span class=room-line>{line}</span><span class=room-left>{left}</span></a>")
+    return ("<style>.rooms{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:0 0 16px}"
+            ".room{display:flex;flex-direction:column;gap:6px;padding:18px;border:2px solid var(--acc);border-radius:14px;"
+            "background:var(--card,#fff);color:inherit;text-decoration:none}.room:hover{transform:translateY(-2px)}"
+            ".room-icon{font-size:30px}.room b{font-size:20px}.room-line{font-size:14px;opacity:.75}"
+            ".room-left{font-weight:700}@media(max-width:640px){.rooms{grid-template-columns:1fr}}</style>"
+            "<nav class=rooms aria-label='방 선택'>"
+            + tile("✍️", "글감방", "오늘 글감 보고 내 글 올리기", "오늘 글감 보러 가기 →", f"/feed{t}")
+            + tile("🎬", "영상방", f"받을 수 있는 영상 {videos}편",
+                   f"오늘 {got_v}/{video_library.DAILY_VIDEO_LIMIT}편 받음 →", f"/videos{t}")
+            + tile("🗂", "카드뉴스방", f"받을 수 있는 카드뉴스 {decks}개",
+                   f"오늘 {got_c}/{cardnews_library.DAILY_CARDNEWS_LIMIT}개 받음 →", f"/cardnews{t}")
+            + "</nav>")
+
+
 def shell_portal(title: str, sub: str, body: str, token: str | None = None) -> bytes:
     # 토큰이 있으면(=내 작업실에서 온 경우) 작업실 링크가 토큰을 유지하도록 함
     t = ("?t=" + _q(token)) if token else ""
@@ -1240,7 +1270,7 @@ def view_me(qs) -> bytes | None:
         f"{gembed}</div>")
 
     conn.close()
-    body = (COPY_JS + REWRITE_JS + video_library.dashboard_card(token) + cardnews_library.dashboard_card(token) + notice_card + saved2 + ok_banner + status_card +
+    body = (COPY_JS + REWRITE_JS + rooms_hub(token) + notice_card + saved2 + ok_banner + status_card +
             guide_banner + setup + submit + drop_card + files_link + hist_card + link_card +
             wall_link + find_note)
     return shell_portal(name, f"{esc(name)}님의 작업실", body, token)
