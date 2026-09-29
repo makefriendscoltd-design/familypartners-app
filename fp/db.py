@@ -180,6 +180,32 @@ CREATE TABLE IF NOT EXISTS video_refills (
     at TEXT NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS cardnews_decks (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    template TEXT NOT NULL,
+    file_key TEXT NOT NULL UNIQUE,
+    size INTEGER NOT NULL,
+    sha256 TEXT NOT NULL UNIQUE,
+    created_at TEXT NOT NULL,
+    published INTEGER NOT NULL DEFAULT 1,
+    caption TEXT,
+    source_url TEXT,
+    purged_at TEXT,
+    claimed_by INTEGER REFERENCES partners(id) ON DELETE SET NULL,
+    claimed_name TEXT,
+    claimed_at TEXT
+);
+
+CREATE INDEX IF NOT EXISTS idx_cardnews_claim_day ON cardnews_decks(claimed_by, claimed_at);
+
+-- 파트너마다 카드뉴스 디자인 하나를 고정한다(브랜딩).
+CREATE TABLE IF NOT EXISTS partner_card_templates (
+    partner_id INTEGER PRIMARY KEY REFERENCES partners(id) ON DELETE CASCADE,
+    template TEXT NOT NULL,
+    assigned_at TEXT NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS video_captions (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     video_id INTEGER NOT NULL UNIQUE REFERENCES exclusive_videos(id) ON DELETE CASCADE,

@@ -22,7 +22,7 @@ from http.client import HTTPMessage
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, quote, urlparse
 
-from . import core, db, dropqueue, gemini, messages, onboard, ppurio, products, watchdog, video_library
+from . import core, db, dropqueue, gemini, messages, onboard, ppurio, products, watchdog, video_library, cardnews_library
 
 LIB_DIR = db.ROOT / "assets" / "library"
 GUIDE_DIR = db.ROOT / "assets" / "guide"
@@ -208,7 +208,7 @@ def shell(title: str, body: str) -> bytes:
            '<a href="/reminders"><b>✉문자발송</b></a>'
            '<a href="/review">검수</a><a href="/perf"><b>📊성과</b></a>'
            '<a href="/board">랭킹</a>'
-           '<a href="/library">자료실</a><a href="/op/videos">영상 배포</a><a href="/feed">글감피드</a>'
+           '<a href="/library">자료실</a><a href="/op/videos">영상 배포</a><a href="/op/cardnews">카드뉴스 배포</a><a href="/feed">글감피드</a>'
            '<a href="/onboard">온보딩</a><a href="/wall">인증보드</a>'
            '<a href="/logout" style="margin-left:auto">로그아웃</a>')
     doc = (f"<!doctype html><html lang=ko><head><meta charset=utf-8>"
@@ -847,9 +847,10 @@ def shell_portal(title: str, sub: str, body: str, token: str | None = None) -> b
                else "<a href='/find'>🏠 내 작업실 찾기</a>")
     nav = (me_link
            + f"<a href='/guide{t}'>📖 사용법</a>"
-           + f"<a href='/feed{t}'>📚 글감 피드</a>"
+           + f"<a href='/feed{t}'>✍️ 글감방</a>"
+           + f"<a href='/videos{t}'>🎬 영상방</a>"
+           + f"<a href='/cardnews{t}'>🗂 카드뉴스방</a>"
            + f"<a href='/files{t}'>📁 자료실</a>"
-           + f"<a href='/videos{t}'>영상 받기</a>"
            + f"<a href='/wall{t}'>🏆 인증보드</a>")
     doc = (f"<!doctype html><html lang=ko><head><meta charset=utf-8>"
            f"<meta name=viewport content='width=device-width,initial-scale=1'>"
@@ -1946,7 +1947,7 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(data)
 
     def do_POST(self):
-        if video_library.handle(self):
+        if video_library.handle(self) or cardnews_library.handle(self):
             return
         u = urlparse(self.path)
         ctype = self.headers.get("Content-Type", "")
@@ -2274,11 +2275,11 @@ class Handler(BaseHTTPRequestHandler):
             self._send(shell("오류", f"<div class=card><pre>{esc(e)}</pre></div>"), 500)
 
     def do_HEAD(self):
-        if not video_library.handle(self):
+        if not (video_library.handle(self) or cardnews_library.handle(self)):
             self.send_error(405)
 
     def do_GET(self):
-        if video_library.handle(self):
+        if video_library.handle(self) or cardnews_library.handle(self):
             return
         u = urlparse(self.path)
         qs = parse_qs(u.query)
