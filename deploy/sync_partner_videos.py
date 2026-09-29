@@ -412,6 +412,38 @@ def sources(config):
     return listed + [s for s in discover(config) + discover_cutback(config) if s['key'] not in known]
 
 
+def sync_cafe_matches(api, config, state, state_path, dry_run=False):
+    """Project canonical Cafe state in the existing periodic video sync."""
+    cafe = config.get('cafe_match')
+    if not cafe:
+        return {'status': 'disabled'}
+    from build_video_cafe_projection import build
+    from sync_video_cafe_matches import payload
+    projection = build(Path(cafe['partner_inventory']), Path(cafe['queue']),
+                       Path(cafe['caption_reviews']), Path(cafe['match_reviews']),
+                       Path(cafe['cafe_project']), Path(cafe['recovery_report']),
+                       Path(cafe['public_verification']))
+    records = state.setdefault('cafe_matches', {})
+    reviews = {x['video_id']:x for x in read_json(cafe['match_reviews'])['reviews']}
+    changed = []
+    for row in projection['rows']:
+        if row['status'] == '출처확인필요':
+            continue
+        body = payload(row, reviews)
+        comparable = dict(body);comparable.pop('updated_at',None)
+        fingerprint = hashlib.sha256(json.dumps(comparable,sort_keys=True,ensure_ascii=False).encode()).hexdigest()
+        if records.get(str(row['video_id'])) != fingerprint:
+            changed.append((row['video_id'], body, fingerprint))
+    if dry_run:
+        return {'status':'dry_run','changed':len(changed),'total':projection['video_count']}
+    for video_id, body, fingerprint in changed:
+        api.request('POST', f'/op/videos/cafe/{video_id}', json.dumps(body,ensure_ascii=False).encode(),
+                    {'Content-Type':'application/json'})
+        records[str(video_id)] = fingerprint
+        save(state_path, state)
+    return {'status':'synced','changed':len(changed),'total':projection['video_count']}
+
+
 def run(config, state_path, dry_run=False):
     state = read_json(state_path) if state_path.exists() else {'items': {}}
     state['last_run_at'] = time.time()
@@ -472,7 +504,14 @@ def run(config, state_path, dry_run=False):
         except Exception as exc:
             state['stock_error'] = type(exc).__name__
         state['last_finished_at'] = time.time(); persist()
-    print(json.dumps({'dry_run': dry_run, 'results': results}, ensure_ascii=False))
+    try:
+        cafe_matches = sync_cafe_matches(api, config, state, state_path, dry_run)
+        state.pop('cafe_match_error', None)
+    except Exception as exc:
+        cafe_matches = {'status':'blocked','reason':type(exc).__name__}
+        state['cafe_match_error'] = type(exc).__name__
+        if not dry_run: persist()
+    print(json.dumps({'dry_run': dry_run, 'results': results, 'cafe_matches': cafe_matches}, ensure_ascii=False))
     return results
 
 

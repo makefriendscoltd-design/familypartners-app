@@ -15,7 +15,7 @@ import sqlite3
 from pathlib import Path
 from urllib.parse import parse_qs, quote, unquote, urlparse
 
-from . import core, db
+from . import core, db, video_cafe
 
 MAX_VIDEO_BYTES = 512 * 1024 * 1024
 CHUNK = 1024 * 1024
@@ -305,13 +305,15 @@ setInterval(update,2500);document.addEventListener('visibilitychange',()=>{if(!d
 </script>"""
 
 
-def gallery(rows, token=None, admin=False):
+def gallery(rows, cafe_by_id=None, token=None, admin=False):
     from .server import esc
     body = '<div class=video-grid>'
     for row in rows:
         vid = row['id']
+        cafe = (cafe_by_id or {}).get(vid)
         cover = (f"<img src='/videos/thumb/{vid}' alt='{esc(row['title'])}' loading=lazy width=360 height=480>"
                  f"<div class=video-info><h3>{esc(row['title'])}</h3><small>MP4 · {core.human_size(row['size'])}</small>"
+                 + (f"<a class=video-cafe href='{esc(cafe['cafe_url'])}' target=_blank rel='noopener noreferrer'>영상 정리글 보기</a>" if cafe else "") +
                  "<span class=video-select>선택하고 받기 →</span></div>")
         body += f"<article class=video-card data-video='{vid}' id='video-{vid}'>"
         body += source_link(row)
@@ -332,13 +334,16 @@ def listing(h, conn, p):
     from .server import esc
     available = conn.execute(f'SELECT * FROM exclusive_videos WHERE {AVAILABLE_SQL} ORDER BY id DESC').fetchall()
     owned = conn.execute('SELECT * FROM exclusive_videos WHERE claimed_by=? ORDER BY claimed_at DESC', (p['id'],)).fetchall()
+    cafe_by_id = {row['id']: match for row in available if (match := video_cafe.public_record(conn,row['id']))}
     body = (GALLERY_STYLE + "<section id=partner-videos><div class=card><h2>받을 수 있는 영상 "
             f"<span data-available-count>{len(available)}편</span></h2><p>계정당 하루 {DAILY_VIDEO_LIMIT}편만 받을 수 있어요. 한국 시간 자정에 한도가 초기화됩니다. 이미 받은 영상은 다시 받을 수 있어요.</p></div>"
-            + gallery(available, p['portal_token']) + '</section>' + GALLERY_SCRIPT)
+            + gallery(available, cafe_by_id, p['portal_token']) + '</section>' + GALLERY_SCRIPT)
     body += '<div class=card><h2>내가 받은 영상</h2>'
     for row in owned:
         again = "<p>보관 기간이 지나 원본을 정리했어요.</p>" if row['purged_at'] else f"<a href='/videos/file/{row['id']}'>원본 다시 받기</a>"
-        body += f"<div class=card><h3>{esc(row['title'])}</h3>{again}" + source_link(row) + caption_box(caption_text(conn,row['id'])) + '</div>'
+        cafe = video_cafe.public_record(conn,row['id'])
+        cafe_html = f"<p><a href='{esc(cafe['cafe_url'])}' target=_blank rel='noopener noreferrer'>영상 정리글 보기</a></p>" if cafe else ""
+        body += f"<div class=card><h3>{esc(row['title'])}</h3>{again}" + source_link(row) + cafe_html + caption_box(caption_text(conn,row['id'])) + '</div>'
     if not owned:
         body += '<p>아직 받은 영상이 없어요.</p>'
     page(h, '파트너 전용 영상', body + '</div>' + CAPTION_SCRIPT, p['portal_token'])
@@ -349,12 +354,13 @@ def dashboard_card(token=None, admin=False):
     try:
         rows = conn.execute('SELECT * FROM exclusive_videos WHERE published=1 AND claimed_at IS NULL AND claimed_by IS NULL ORDER BY id DESC').fetchall()
         active = partner(conn, token)
+        cafe_by_id = {row['id']: match for row in rows if (match := video_cafe.public_record(conn,row['id']))}
     finally:
         conn.close()
     body = (GALLERY_STYLE + "<section class=card id=partner-videos style='border:2px solid var(--acc)'>"
             f"<h2>받을 수 있는 영상 <span data-available-count>{len(rows)}편</span></h2>"
             f"<p>계정당 하루 {DAILY_VIDEO_LIMIT}편. 카드를 선택하고 이름을 입력하세요. 한국 시간 자정에 한도가 초기화됩니다.</p>"
-            + gallery(rows, token if active else None, admin))
+            + gallery(rows, cafe_by_id, token if active else None, admin))
     if not rows:
         body += '<p>지금 받을 수 있는 영상이 없어요. 이미 받은 영상은 다시 받을 수 있어요.</p>'
     if admin:
@@ -526,7 +532,7 @@ def handle(h):
         except Exception:
             pass  # Refill retries on the next request; never block the page.
         if u.path.startswith('/op/videos'):
-            sync_route = u.path in ('/op/videos/sync-status','/op/videos/upload','/op/videos/publish','/op/videos/queue') or bool(re.fullmatch(r'/op/videos/source/\d+',u.path)) or bool(re.fullmatch(r'/op/videos/(thumbnail|caption)/\d+',u.path))
+            sync_route = u.path in ('/op/videos/sync-status','/op/videos/upload','/op/videos/publish','/op/videos/queue') or bool(re.fullmatch(r'/op/videos/source/\d+',u.path)) or bool(re.fullmatch(r'/op/videos/(thumbnail|caption|cafe)/\d+',u.path))
             if not (admin or (sync and sync_route)):
                 response(h,'관리자 로그인이 필요해요.',403);return True
             if h.command=='GET' and u.path=='/op/videos/sync-status':
@@ -560,6 +566,11 @@ def handle(h):
                     raise ValueError('invalid visibility')
                 conn.execute('UPDATE exclusive_videos SET published=?,queued=0 WHERE id=? AND claimed_at IS NULL AND claimed_by IS NULL',(published,row['id']));conn.commit()
                 redirect(h,'/op/videos')
+            elif h.command=='POST' and re.fullmatch(r'/op/videos/cafe/\d+',u.path):
+                vid=int(u.path.rsplit('/',1)[1]);row=get_video(conn,vid)
+                if not row: raise LookupError('영상을 찾을 수 없어요.')
+                data=json.loads(h.rfile.read(int(h.headers.get('Content-Length','0'))))
+                video_cafe.upsert(conn,row,data);json_response(h,{'ok':True,'id':vid})
             elif h.command=='POST' and re.fullmatch(r'/op/videos/source/\d+',u.path):
                 f=fields(h);checked_csrf(h,f,'admin');vid=int(u.path.rsplit('/',1)[1]);row=get_video(conn,vid)
                 if not row or not hmac.compare_digest(f.get('sha256',''),row['sha256']):
@@ -596,6 +607,12 @@ def handle(h):
         if u.path=='/videos/catalog' and h.command=='GET':
             ids=[r['id'] for r in conn.execute('SELECT id FROM exclusive_videos WHERE published=1 AND claimed_at IS NULL AND claimed_by IS NULL').fetchall()]
             json_response(h,{'ids':ids});return True
+        if re.fullmatch(r'/videos/cafe/\d+',u.path) and h.command=='GET':
+            row=get_video(conn,int(u.path.rsplit('/',1)[1]))
+            if not row or not (admin or sync or (row['published'] and not row['claimed_at']) or (p and row['claimed_by']==p['id'])):
+                raise PermissionError('현재 볼 수 없는 영상이에요.')
+            payload=video_cafe.public_payload(conn,row['id'])
+            json_response(h,payload or {'status':'not_available'},200 if payload else 404);return True
         if re.fullmatch(r'/videos/thumb/\d+',u.path) and h.command in ('GET','HEAD'):
             row=get_video(conn,int(u.path.rsplit('/',1)[1]))
             if not row or not (admin or sync or (row['published'] and not row['claimed_at']) or (p and row['claimed_by']==p['id'])):

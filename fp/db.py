@@ -213,6 +213,19 @@ CREATE TABLE IF NOT EXISTS video_captions (
     updated_at TEXT NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS video_cafe_matches (
+    video_id INTEGER PRIMARY KEY REFERENCES exclusive_videos(id) ON DELETE CASCADE,
+    video_sha256 TEXT NOT NULL,
+    source_key TEXT NOT NULL,
+    status TEXT NOT NULL,
+    cafe_title TEXT,
+    cafe_url TEXT,
+    topic_match_verified INTEGER NOT NULL DEFAULT 0,
+    clip_review_sha256 TEXT,
+    article_sha256 TEXT,
+    updated_at TEXT NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS submissions (
     id           INTEGER PRIMARY KEY AUTOINCREMENT,
     partner_id   INTEGER NOT NULL REFERENCES partners(id) ON DELETE CASCADE,
