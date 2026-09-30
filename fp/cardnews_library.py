@@ -1,4 +1,4 @@
-"""파트너 카드뉴스방: 10장 묶음 ZIP 을 전부 공개하고 파트너가 골라 하루 1개씩 받아간다.
+"""파트너 카드뉴스방: 10장 묶음 ZIP 을 전부 공개하고 파트너가 골라 하루 2개씩 받아간다.
 
 영상방(video_library)과 같은 배정 원칙을 쓴다 — 한 묶음은 한 사람에게만, 받은 건 다시 받을 수 있다.
 (2026-09-29: 파트너별 템플릿 고정은 사용자 결정으로 폐지. partner_card_templates 는 기록용으로만 남는다.)
@@ -18,7 +18,7 @@ from urllib.parse import parse_qs, quote, unquote, urlparse
 from . import core, db
 from . import video_library as vl
 
-DAILY_CARDNEWS_LIMIT = 1
+DAILY_CARDNEWS_LIMIT = 2
 MAX_DECK_BYTES = 64 * 1024 * 1024
 COOKIE = 'fp_cardnews_partner'
 TEMPLATES = {

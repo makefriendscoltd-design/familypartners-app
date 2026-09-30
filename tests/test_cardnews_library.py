@@ -1,4 +1,4 @@
-"""카드뉴스방: 템플릿 고정 배정, 하루 1개, ZIP 배포."""
+"""카드뉴스방: 디자인 자유 선택, 하루 2개, ZIP 배포."""
 import io, json, zipfile
 from urllib.parse import urlencode, quote
 import test_video_library as base
@@ -29,13 +29,13 @@ class CardnewsTest(base.VideoHTTPTest):
         token, name, cookie = ('token-a', '테스트가', self.a) if who == 'a' else ('token-b', '테스트나', self.b)
         return self.request('POST', '/cardnews/claim', urlencode(dict(id=did, name=name, t=token, csrf=v.csrf(token))), cookie)
 
-    def test_open_gallery_daily_one_and_zip_download(self):
+    def test_open_gallery_daily_two_and_zip_download(self):
         self.assertEqual(self.request('POST', '/op/cardnews/upload', b'not a zip at all 123456789', self.admin,
                                       {'X-CSRF-Token': v.csrf('admin'), 'X-Deck-Title': 'x', 'X-Template': '01-gradient'})[0], 400)
-        a1 = self.up('01-gradient', 'a1'); a2 = self.up('02-shortcut', 'a2'); b1 = self.up('05-hero', 'b1')
+        a1 = self.up('01-gradient', 'a1'); a2 = self.up('02-shortcut', 'a2'); b1 = self.up('05-hero', 'b1'); a3 = self.up('03-negative', 'a3')
         page = self.request('GET', '/cardnews', cookie=self.a)[2].decode()
         self.assertIn('img.deck-cover{aspect-ratio:1/1', page)    # 정사각형 표지가 잘리지 않게
-        for did in (a1, a2, b1):                                   # 디자인 상관없이 전부 보인다
+        for did in (a1, a2, b1, a3):                                   # 디자인 상관없이 전부 보인다
             self.assertIn(f"data-deck='{did}'", page)
         self.assertEqual(self.claim_deck(b1, 'a')[0], 303)          # 아무 디자인이나 고를 수 있다
         got = self.claim_deck(b1, 'a')
@@ -43,7 +43,9 @@ class CardnewsTest(base.VideoHTTPTest):
         c = db.connect(); c.execute('UPDATE cardnews_decks SET caption=? WHERE id=?', ('테스트 캡션\n\n댓글에 AIMAX 남기면', b1)); c.commit(); c.close()
         page = self.request('GET', f'/cardnews?got={b1}', cookie=self.a)[2].decode()
         self.assertIn('카드뉴스를 받았어요', page); self.assertIn('테스트 캡션', page); self.assertIn(f'/cardnews/file/{b1}', page)
-        self.assertEqual(self.claim_deck(a2, 'a')[0], 409)          # 하루 1개
+        self.assertEqual(self.claim_deck(a2, 'a')[0], 303)          # 두 번째 수령 허용
+        self.assertEqual(self.claim_deck(a1, 'a')[0], 409)          # 세 번째 수령 차단
+        self.assertIn('계정당 하루 2개', page)
         self.assertEqual(self.claim_deck(b1, 'a')[0], 303)          # 받은 건 다시 받기 가능
         self.assertEqual(self.claim_deck(b1, 'b')[0], 409)          # 한 묶음은 한 사람만
         self.assertNotIn(f"data-deck='{b1}'", self.request('GET', '/cardnews', cookie=self.b)[2].decode())
@@ -57,8 +59,8 @@ class CardnewsTest(base.VideoHTTPTest):
         self.assertEqual(json.loads(self.request('GET', '/op/videos/sync-status', cookie=self.admin)[2])['videos'], [])
         admin_page = self.request('GET', '/op/cardnews', cookie=self.admin)[2].decode()
         self.assertIn('지금 파트너에게 보이는 카드뉴스', admin_page)
-        self.assertIn(f"/cardnews/thumb/{a2}", admin_page)             # 관리자도 표지를 본다
-        self.assertEqual(self.request('GET', f'/cardnews/thumb/{a2}', cookie=self.admin)[0], 200)
+        self.assertIn(f"/cardnews/thumb/{a3}", admin_page)             # 관리자도 표지를 본다
+        self.assertEqual(self.request('GET', f'/cardnews/thumb/{a3}', cookie=self.admin)[0], 200)
         self.assertIn('받을 수 있는 카드뉴스', cn.dashboard_card(admin=True))
 
 
