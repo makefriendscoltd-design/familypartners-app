@@ -239,12 +239,12 @@ FOLD_JS = """<script>function fpOpenSection(){try{var el=document.getElementById
 
 
 def shell(title: str, body: str) -> bytes:
-    nav = ('<a href="/">오늘 현황</a><a href="/review">제출 확인</a><a href="/people">파트너 관리</a>'
+    nav = ('<a href="/">오늘 현황</a><a href="/review">제출 확인</a><a href="/people">파트너 관리</a><a href="/board">활동 순위</a>'
            '<details class=nav-more><summary>콘텐츠 관리</summary><div>'
            '<a href="/#글감">글감 작성</a><a href="/op/videos">영상 배포</a>'
            '<a href="/op/cardnews">카드뉴스 배포</a><a href="/library">자료실</a><a href="/feed">글감 피드</a></div></details>'
            '<details class=nav-more><summary>운영 도구</summary><div>'
-           '<a href="/reminders">문자 발송</a><a href="/board">활동 랭킹</a>'
+           '<a href="/reminders">문자 발송</a>'
            '<a href="/onboard">가입 안내</a><a href="/wall">인증 보드</a>'
            '<a href="/logout">로그아웃</a></div></details>')
     doc = (f"<!doctype html><html lang=ko><head><meta charset=utf-8>"
@@ -479,6 +479,7 @@ def view_dashboard(qs) -> str:
             "그 날짜 전까지는 피드·작업실에 <b>안 보이고</b>, 당일 자동으로 공개됩니다. "
             "<b>제목을 누르면 본문·사진이 펼쳐집니다.</b></p>"
             + "".join(items) + "</div>")
+    activity_panel = view_activity(conn, None, admin=True)
     conn.close()
 
     enforce_note = ("" if not kick_n else
@@ -509,7 +510,7 @@ def view_dashboard(qs) -> str:
                        + sched_card + "</div></details>") if scheduled else ""
     extra = ("<details class=workspace-fold><summary>기타 운영 작업</summary><div class=fold-body>"
              + quick_actions() + "</div></details>")
-    return (flash + intro + kpi + actions + (kick_card if kick_n else "") + atrisk_card +
+    return (flash + intro + kpi + actions + activity_panel + (kick_card if kick_n else "") + atrisk_card +
             f"<details class=workspace-fold><summary>오늘 제출 완료 {len(done_list)}명</summary>"
             f"<div class=fold-body>{done}</div></details>" + content + writing + scheduled_panel + extra)
 
@@ -1007,35 +1008,47 @@ def view_find(qs) -> bytes:
     return shell_portal("내 작업실 찾기", "재로그인", body)
 
 
-def view_activity(conn, pid) -> str:
+def view_activity(conn, pid, *, admin=False, full=False) -> str:
     data = activity.summary(conn, pid)
     mine = data["me"]
     start = data["week_start"][5:].replace("-", ".")
     end = data["week_end"][5:].replace("-", ".")
     my_rank = f"{mine['rank']}위" if mine["rank"] else "순위 없음"
     rows = []
-    for entry in data["leaders"]:
+    entries = data["all_active"] if full else data["leaders"]
+    for entry in entries:
         handle = (entry["handle"] or "").strip().lstrip("@")
         name = entry["name"] or "파트너"
         masked = name[0] + "*" + (name[-1] if len(name) > 2 else "")
         label = ("@" + handle[:40]) if handle else masked
+        if admin:
+            label = f"<a class=lk href='/partner?id={entry['partner_id']}'>{esc(name)}</a>"
+        else:
+            label = esc(label)
+        rank_label = f"{entry['rank']}위" if entry['rank'] else "—"
+        total_cell = f"<td class=num>{entry['total']:,}건</td>" if admin else ""
         is_me = entry["partner_id"] == pid
-        rows.append(f"<tr class='{'is-me' if is_me else ''}'><td>{entry['rank']}위</td>"
-                    f"<td>{esc(label)}{' <span class=me-mark>나</span>' if is_me else ''}</td>"
-                    f"<td class=num>{entry['count']:,}건</td></tr>")
-    ranking = ("<table class=activity-table><caption class=sr-only>이번 주 등록 링크 순위 상위 5명</caption>"
-               "<thead><tr><th scope=col>순위</th><th scope=col>파트너</th><th scope=col class=num>등록</th></tr></thead>"
+        rows.append(f"<tr class='{'is-me' if is_me else ''}'><td>{rank_label}</td>"
+                    f"<td>{label}{' <span class=me-mark>나</span>' if is_me else ''}</td>"
+                    f"<td class=num>{entry['count']:,}건</td>{total_cell}</tr>")
+    total_header = "<th scope=col class=num>누적</th>" if admin else ""
+    caption = "활동 중인 파트너 전체 주간 순위" if full else "이번 주 등록 링크 순위 상위 5명"
+    ranking = (f"<table class=activity-table><caption class=sr-only>{caption}</caption>"
+               f"<thead><tr><th scope=col>순위</th><th scope=col>파트너</th><th scope=col class=num>이번 주</th>{total_header}</tr></thead>"
                f"<tbody>{''.join(rows)}</tbody></table>") if rows else (
                "<p class=activity-empty>이번 주 등록된 링크가 아직 없어요. 첫 게시물을 등록해보세요.</p>")
+    personal = (f"<div class=my-activity><span>내 순위 <strong>{my_rank}</strong></span>"
+                f"<span>이번 주 <strong>{mine['count']:,}건</strong></span>"
+                f"<span>내 누적 <strong>{mine['total']:,}건</strong></span></div>") if not admin else (
+                "<p><a class=lk href='/board'>전체 파트너 순위 보기 →</a></p>" if not full else
+                "<p class=activity-meta>활동 중인 파트너 전체를 표시합니다. 이름을 누르면 상세 기록을 볼 수 있어요.</p>")
     return ("<section class=activity-panel id=activity aria-labelledby=activity-title>"
             "<div class=activity-heading><div><p class=section-kicker>함께 쌓는 활동 기록</p>"
             "<h2 id=activity-title>이번 주 활동 순위</h2></div>"
             f"<span class=activity-period>{start}–{end} · 한국 시간</span></div>"
             "<div class=activity-grid><div class=activity-week>"
             f"<p class=activity-meta>이번 주 {data['participants']:,}명이 {data['weekly_posts']:,}건 등록했어요.</p>"
-            f"{ranking}<div class=my-activity><span>내 순위 <strong>{my_rank}</strong></span>"
-            f"<span>이번 주 <strong>{mine['count']:,}건</strong></span>"
-            f"<span>내 누적 <strong>{mine['total']:,}건</strong></span></div></div>"
+            f"{ranking}{personal}</div>"
             "<div class=activity-total><h3>파트너스 누적 등록 링크</h3>"
             f"<p class=activity-number>{data['total_posts']:,}<span>건</span></p>"
             f"<p>스레드 <strong>{data['channel_totals']['threads']:,}건</strong></p>"
@@ -1397,22 +1410,11 @@ def view_review(qs) -> str:
 
 def view_board(qs) -> str:
     conn = db.connect()
-    lb = core.leaderboard(conn, core.parse_date(qs.get("date", [None])[0]))
-    conn.close()
-    if not lb:
-        return "<div class=card><h2>활동 랭킹</h2><div class=empty>활성 파트너 없음.</div></div>"
-    medals = ["🥇", "🥈", "🥉"]
-    rows = []
-    for i, r in enumerate(lb):
-        rank = medals[i] if i < 3 else f"{i+1}"
-        today = "✅" if r["posted_today"] else "⏳"
-        rows.append(
-            f"<div class=row><span style='min-width:34px'>{rank}</span>"
-            f"<a class='nm lk' href='/partner?id={r['id']}'>{esc(r['name'])}</a>"
-            f"<span class=hd>{esc(r['handle'] or '-')}</span>"
-            f"<span class=meta>🔥 {r['streak']}일 · 오늘 {today} · 누적 {r['total']}건</span></div>")
-    return (f"<div class=card><h2>활동 랭킹 <span class=pill>연속일 순</span></h2>"
-            f"<p class=empty>제출한 날과 연속 출석일을 기준으로 표시합니다.</p>{''.join(rows)}</div>")
+    try:
+        return view_activity(conn, None, admin=True, full=True)
+    finally:
+        conn.close()
+
 
 
 def view_people(qs) -> str:

@@ -161,3 +161,32 @@ class ActivityRankingTest(unittest.TestCase):
             self.assertEqual(activity.summary(conn, 2, as_of=self.AS_OF)['me']['total'], 1)
         finally:
             conn.close()
+
+class AdminActivityTest(unittest.TestCase):
+    setUp = fixture.VideoHTTPTest.setUp
+    tearDown = fixture.VideoHTTPTest.tearDown
+    request = fixture.VideoHTTPTest.request
+    add = ActivityRankingTest.add
+    def test_admin_sees_all_active_totals_and_partner_details_while_public_is_denied(self):
+        conn = db.connect()
+        try:
+            self.add(conn, 1, 'https://threads.com/t/OLD', '2026-09-20')
+            self.add(conn, 1, 'https://threads.com/t/NEW', core.iso(core.today()))
+            data = activity.summary(conn, None)
+            self.assertEqual(len(data['all_active']), 2)
+            self.assertEqual(data['all_active'][0]['total'], 2)
+            self.assertIsNone(data['all_active'][1]['rank'])
+        finally:
+            conn.close()
+        self.assertEqual(self.request('GET', '/board')[0], 303)
+        for path in ('/', '/board'):
+            status, _, body = self.request('GET', path, cookie=self.admin)
+            text = body.decode()
+            self.assertEqual(status, 200)
+            self.assertIn('id=activity aria-labelledby', text)
+            self.assertIn("href='/partner?id=1'", text)
+            self.assertIn('class=num>2건</td>', text)
+            self.assertNotIn('내 순위 <strong>', text)
+        text = self.request('GET', '/board', cookie=self.admin)[2].decode()
+        self.assertIn("href='/partner?id=2'", text)
+        self.assertNotIn('연속일 순', text)

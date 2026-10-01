@@ -68,12 +68,14 @@ def summary(conn, pid, as_of: date | None = None, limit: int = 5):
     seen = set()
     channels = {'threads': 0, 'instagram': 0}
     weekly = {}
+    totals = {}
     my_total = 0
     for stamp, _, identity, owner in candidates:
         if identity in seen:
             continue
         seen.add(identity)
         channels[identity[0]] += 1
+        totals[owner] = totals.get(owner, 0) + 1
         if owner == pid:
             my_total += 1
         if start <= stamp.date() <= as_of and partners[owner]['status'] == 'active':
@@ -85,12 +87,16 @@ def summary(conn, pid, as_of: date | None = None, limit: int = 5):
         if count != last_count:
             rank = index
         ranked.append({'partner_id': owner, 'name': partners[owner]['name'],
-                       'handle': partners[owner]['handle'], 'count': count, 'rank': rank})
+                       'handle': partners[owner]['handle'], 'count': count, 'rank': rank,
+                       'total': totals.get(owner, 0)})
         last_count = count
     mine = next((r for r in ranked if r['partner_id'] == pid), None)
+    unranked = [{'partner_id': owner, 'name': p['name'], 'handle': p['handle'],
+                 'count': 0, 'rank': None, 'total': totals.get(owner, 0)}
+                for owner, p in partners.items() if p['status'] == 'active' and owner not in weekly]
     return {'week_start': start.isoformat(), 'week_end': end.isoformat(),
             'total_posts': len(seen), 'channel_totals': channels,
             'weekly_posts': sum(weekly.values()), 'participants': len(weekly),
-            'leaders': ranked[:max(0, limit)],
+            'leaders': ranked[:max(0, limit)], 'all_active': ranked + unranked,
             'me': {'count': weekly.get(pid, 0), 'rank': mine['rank'] if mine else None,
                    'total': my_total}}
