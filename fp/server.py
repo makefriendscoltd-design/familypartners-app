@@ -22,7 +22,7 @@ from http.client import HTTPMessage
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, quote, urlparse
 
-from . import core, db, dropqueue, gemini, messages, onboard, ppurio, products, watchdog, video_library, cardnews_library
+from . import activity, core, db, dropqueue, gemini, messages, onboard, ppurio, products, watchdog, video_library, cardnews_library
 
 LIB_DIR = db.ROOT / "assets" / "library"
 GUIDE_DIR = db.ROOT / "assets" / "guide"
@@ -225,6 +225,15 @@ header nav{display:flex;align-items:center;flex-wrap:wrap;gap:8px 18px}header na
 a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #80a7ff;outline-offset:3px}
 @media(max-width:640px){main{padding:20px 16px 50px}header{padding:14px 16px}header nav{margin-left:0!important;gap:4px 16px;width:100%}.role-label{font-size:11px}.workflow-hero{align-items:flex-start;flex-direction:column;gap:14px}.workflow-hero h2{font-size:26px}.workflow-hero .action-primary{width:100%;box-sizing:border-box}.workflow-steps{gap:8px;justify-content:space-between;font-size:12px}.submit-panel{padding:20px 16px}.submit-panel form>button{width:100%}.workspace-fold>summary{padding:17px 14px;font-size:16px}.workspace-fold>summary>span{float:none;display:block;margin:5px 0 0 19px}.fold-body{padding:0 10px 12px}.admin-actions{display:grid;grid-template-columns:1fr 1fr}.admin-actions a{font-size:14px}.admin-view .row{flex-wrap:wrap}.admin-view .row .meta{margin-left:0}.nav-more{position:static}.nav-more>div{right:16px;left:16px;min-width:0}header{position:relative}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.room:hover{transform:none}}
+"""
+CSS += """
+.activity-panel{margin:30px 0;padding:26px 0;border-top:1px solid var(--ln);border-bottom:1px solid var(--ln)}
+.activity-heading{display:flex;align-items:center;justify-content:space-between;gap:16px}.activity-heading h2{font-size:23px;margin:4px 0 12px}.activity-heading .section-kicker{margin:0;color:var(--mut)}.activity-period{font-size:13px;color:var(--mut);white-space:nowrap}
+.activity-grid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:24px;margin-top:4px}.activity-meta{font-size:13px;color:var(--mut)}
+.activity-table{width:100%;table-layout:fixed;background:#fff;border-radius:8px;overflow:hidden}.activity-table th,.activity-table td{padding:13px 14px}.activity-table th:first-child{width:65px}.activity-table th:last-child{width:75px}.activity-table td:nth-child(2){overflow-wrap:anywhere}.activity-table .is-me{background:#edf3ff}.me-mark{font-size:11px;color:var(--acc);font-weight:600}.my-activity{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;background:#e9f0ff;padding:14px;margin-top:12px;border-radius:7px;font-size:13px}.my-activity strong{color:var(--acc);margin-left:4px}
+.activity-total{border-left:1px solid var(--ln);padding:12px 0 0 24px}.activity-total h3{font-size:15px;font-weight:600;margin:0}.activity-total>p{font-size:14px;color:var(--mut);margin:8px 0}.activity-total .activity-number{font-size:44px;font-weight:750;line-height:1.3;color:var(--txt);margin:12px 0}.activity-number span{font-size:16px;font-weight:400;margin-left:7px}.activity-empty{background:#fff;border:1px solid var(--ln);border-radius:8px;padding:24px 16px;color:var(--mut)}
+.activity-rules{margin-top:18px;color:var(--mut);font-size:13px}.activity-rules summary{cursor:pointer;min-height:28px}.activity-rules p{max-width:760px;margin:9px 0}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@media(max-width:640px){.activity-heading{align-items:flex-start;flex-direction:column;gap:0}.activity-heading h2{margin-bottom:6px}.activity-grid{grid-template-columns:1fr;gap:20px}.activity-total{border-left:0;border-top:1px solid var(--ln);padding:20px 0 0}.activity-total .activity-number{font-size:36px}.activity-table th,.activity-table td{padding:12px 9px}.activity-table th:first-child{width:55px}.activity-table th:last-child{width:60px}}
 """
 FOLD_JS = """<script>function fpOpenSection(){try{var el=document.getElementById(decodeURIComponent(location.hash.slice(1)));if(!el)return;for(var p=el;p;p=p.parentElement)if(p.tagName==='DETAILS')p.open=true;}catch(e){}}window.addEventListener('hashchange',fpOpenSection);fpOpenSection();</script>"""
 
@@ -909,6 +918,7 @@ def shell_portal(title: str, sub: str, body: str, token: str | None = None) -> b
            + f"<details class=nav-more><summary>콘텐츠 받기</summary><div>"
            + f"<a href='/feed{t}'>✍️ 글감방</a><a href='/videos{t}'>🎬 영상방</a>"
            + f"<a href='/cardnews{t}'>🗂 카드뉴스방</a><a href='/files{t}'>자료실</a></div></details>"
+           + (f"<a href='/me{t}#activity'>활동 순위</a>" if token else "")
            + f"<a href='/guide{t}'>사용법</a>")
     doc = (f"<!doctype html><html lang=ko><head><meta charset=utf-8>"
            f"<meta name=viewport content='width=device-width,initial-scale=1'>"
@@ -995,6 +1005,49 @@ def view_find(qs) -> bytes:
             "<input name=contact placeholder='연락처(등록 시 입력한 것)' required style=flex:1>"
             "<button>내 작업실 열기</button></form></div>")
     return shell_portal("내 작업실 찾기", "재로그인", body)
+
+
+def view_activity(conn, pid) -> str:
+    data = activity.summary(conn, pid)
+    mine = data["me"]
+    start = data["week_start"][5:].replace("-", ".")
+    end = data["week_end"][5:].replace("-", ".")
+    my_rank = f"{mine['rank']}위" if mine["rank"] else "순위 없음"
+    rows = []
+    for entry in data["leaders"]:
+        handle = (entry["handle"] or "").strip().lstrip("@")
+        name = entry["name"] or "파트너"
+        masked = name[0] + "*" + (name[-1] if len(name) > 2 else "")
+        label = ("@" + handle[:40]) if handle else masked
+        is_me = entry["partner_id"] == pid
+        rows.append(f"<tr class='{'is-me' if is_me else ''}'><td>{entry['rank']}위</td>"
+                    f"<td>{esc(label)}{' <span class=me-mark>나</span>' if is_me else ''}</td>"
+                    f"<td class=num>{entry['count']:,}건</td></tr>")
+    ranking = ("<table class=activity-table><caption class=sr-only>이번 주 등록 링크 순위 상위 5명</caption>"
+               "<thead><tr><th scope=col>순위</th><th scope=col>파트너</th><th scope=col class=num>등록</th></tr></thead>"
+               f"<tbody>{''.join(rows)}</tbody></table>") if rows else (
+               "<p class=activity-empty>이번 주 등록된 링크가 아직 없어요. 첫 게시물을 등록해보세요.</p>")
+    return ("<section class=activity-panel id=activity aria-labelledby=activity-title>"
+            "<div class=activity-heading><div><p class=section-kicker>함께 쌓는 활동 기록</p>"
+            "<h2 id=activity-title>이번 주 활동 순위</h2></div>"
+            f"<span class=activity-period>{start}–{end} · 한국 시간</span></div>"
+            "<div class=activity-grid><div class=activity-week>"
+            f"<p class=activity-meta>이번 주 {data['participants']:,}명이 {data['weekly_posts']:,}건 등록했어요.</p>"
+            f"{ranking}<div class=my-activity><span>내 순위 <strong>{my_rank}</strong></span>"
+            f"<span>이번 주 <strong>{mine['count']:,}건</strong></span>"
+            f"<span>내 누적 <strong>{mine['total']:,}건</strong></span></div></div>"
+            "<div class=activity-total><h3>파트너스 누적 등록 링크</h3>"
+            f"<p class=activity-number>{data['total_posts']:,}<span>건</span></p>"
+            f"<p>스레드 <strong>{data['channel_totals']['threads']:,}건</strong></p>"
+            f"<p>인스타 <strong>{data['channel_totals']['instagram']:,}건</strong></p>"
+            "<p class=activity-meta>함께 등록한 게시물 링크가 쌓여요.</p></div></div>"
+            "<details class=activity-rules><summary>순위 집계 기준</summary>"
+            "<p>스레드·인스타 게시물과 공유 링크를 등록한 시간을 기준으로, 매주 월요일 0시에 새 순위가 시작됩니다. "
+            "주간 순위는 활동 중인 파트너를 대상으로 하며, 누적 수에는 과거 참여자의 기록도 포함됩니다.</p>"
+            "<p>동일한 링크는 최초의 유효 제출 1건만 셉니다. 무효 제출과 프로필 주소는 제외하고, "
+            "등록 수가 같으면 같은 순위입니다. 공유 주소가 다른 링크는 별도로 집계될 수 있습니다.</p>"
+            "<p>플랫폼에서 업로드 여부나 조회수를 확인한 수치가 아닌, 작업실에 등록된 링크 기준입니다.</p>"
+            "</details></section>")
 
 
 def view_me(qs) -> bytes | None:
@@ -1262,6 +1315,7 @@ def view_me(qs) -> bytes | None:
         "<p class=empty style='margin:0 0 10px'>가입부터 매일 올리는 것까지 이 영상에 다 있어요.</p>"
         f"{gembed}</div>")
 
+    activity_panel = view_activity(conn, p["id"])
     conn.close()
     setup_complete = has_handle and has_oc and n_links == need
     setup_open = " open" if not setup_complete or saved2_flag else ""
@@ -1277,7 +1331,7 @@ def view_me(qs) -> bytes | None:
                    f"<div class=fold-body>{drop_card}</div></details>")
     body = (COPY_JS + REWRITE_JS + ok_banner + saved2 + status_card + setup_hint + notice_card +
             "<section id=choose-content><h2 class=section-heading>어떤 콘텐츠를 올릴까요?</h2>"
-            + rooms_hub(token) + "</section>" + submit + hist_card + setup_panel + drops_panel + help_panel)
+            + rooms_hub(token) + "</section>" + submit + activity_panel + hist_card + setup_panel + drops_panel + help_panel)
 
     return shell_portal(name, f"{esc(name)}님의 작업실", body, token)
 
