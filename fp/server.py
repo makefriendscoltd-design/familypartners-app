@@ -148,8 +148,6 @@ background:#000;display:block;max-height:520px;object-fit:contain}
 .video-wrap iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
 .feed-date{font-size:13px;color:var(--acc);font-weight:600}
 button.ghost{background:#fff;color:var(--acc);border:1px solid var(--ln);padding:5px 12px;font-size:13px}
-form.perf{flex-wrap:wrap;align-items:center;border-top:1px solid var(--ln);padding-top:10px}
-form.perf input{width:92px}form.perf .hd{min-width:64px}
 .pick{border:1px solid var(--ln);border-radius:10px;padding:14px 16px;margin-bottom:12px;
 background:#fbfdff}.pick:last-of-type{margin-bottom:0}
 .tag{display:inline-block;font-size:12px;color:var(--acc);background:#eaf1fe;
@@ -206,7 +204,7 @@ def shell(title: str, body: str) -> bytes:
     nav = ('<a href="/">대시보드</a><a href="/#글감"><b>✍️글감쓰기</b></a>'
            '<a href="/people">인원</a>'
            '<a href="/reminders"><b>✉문자발송</b></a>'
-           '<a href="/review">검수</a><a href="/perf"><b>📊성과</b></a>'
+           '<a href="/review">검수</a>'
            '<a href="/board">랭킹</a>'
            '<a href="/library">자료실</a><a href="/op/videos">영상 배포</a><a href="/op/cardnews">카드뉴스 배포</a><a href="/feed">글감피드</a>'
            '<a href="/onboard">온보딩</a><a href="/wall">인증보드</a>'
@@ -245,11 +243,7 @@ def deployed_commit() -> str:
 
 
 def status_payload() -> dict:
-    """공개 상태 — 배포 확인 + 글감 생성기가 읽을 성과 요약.
-
-    개인정보는 넣지 않는다: 파트너 이름·개별 방 인원은 제외하고,
-    타겟/형태 축의 평균 순증과 글감 제목(이미 피드에 공개된 값)만 담는다.
-    """
+    """공개 배포 상태. 불확실한 게시물별 성과는 제공하지 않는다."""
     out = {"commit": deployed_commit(), "today": core.iso(core.today())}
     try:
         conn = db.connect()
@@ -261,13 +255,7 @@ def status_payload() -> dict:
             out["drops"] = {r["drop_date"]: r["c"] for r in rows}
             # 며칠치가 연속으로 확보돼 있나 — 0~1이면 자정에 빌 위험이다.
             out["buffer_days"] = watchdog.buffer_state(conn)["streak"]
-            st = core.room_stats(conn)
-            out["perf"] = {
-                "measured": st["measured"],          # 순증이 산출된 글 수
-                "avg_gain": st["avg_gain"],          # 글 1건당 평균 방 인원 순증
-                "fill_rate": st["fill_rate"],        # 파트너 인원 입력률(%)
-                **core.perf_summary(conn),
-            }
+            out["perf"] = {"enabled": False, "reason": "unreliable_post_attribution"}
         finally:
             conn.close()
     except Exception as e:
@@ -331,8 +319,6 @@ def drop_form() -> str:
         "<button>글감 게시</button></div></form>"
         "<p class=empty>게시 즉시 <a class=lk href='/feed'>글감 피드</a>에 올라가고, 늦게 들어온 분도 전부 봅니다. "
         "사진·영상은 자료실에도 자동 저장됩니다.<br>"
-        "<b>타겟·형태를 붙이면</b> 글감 하나로는 표본이 모자란 성과를 "
-        "<b>축 단위로 누적</b>해서 볼 수 있습니다 (<a class=lk href='/perf'>📊 성과</a> 하단). "
         "같은 날 글감은 <b>서로 다른 타겟·형태</b>로 내는 게 좋습니다 — "
         "파트너가 자기 계정에 맞는 걸 골라 갑니다.</p></div>"
     )
@@ -999,10 +985,7 @@ def view_me(qs) -> bytes | None:
                        f"<h2 class=b-yel>오늘 아직 미발행 ⏳</h2>"
                        f"<div class=empty>현재 {streak}일 연속 · <b>자정 전 1건 발행</b> 안 하면 강퇴됩니다.</div></div>")
 
-    if saved == "perf":
-        ok_banner = ("<div class=card style='border-color:var(--grn)'>"
-                     "<b class=b-grn>성과 저장 완료! 유입 랭킹에 바로 반영됩니다.</b></div>")
-    elif saved:
+    if saved:
         ok_banner = ("<div class=card style='border-color:var(--grn)'>"
                      "<b class=b-grn>제출 완료! 오늘 출석 처리됐습니다.</b></div>")
     else:
@@ -1013,19 +996,16 @@ def view_me(qs) -> bytes | None:
     recent = core.published_drops(conn, core.today(), 30)
     today_drops = core.latest_drop_day(conn, core.today())
 
-    # 제출 폼 — 어떤 글감으로 썼는지 같이 받는다(글감별 성과 집계의 근거).
+    # 사용한 글감은 선택사항으로 기록한다.
     drop_opts = "".join(
         f"<option value='{r['id']}'>{esc(r['drop_date'])} · {esc((r['title'] or '')[:34])}"
         f"{(' [' + esc(r['target']) + ']') if (r['target'] or '').strip() else ''}</option>"
         for r in recent[:12])
-    # 필수 — 안 고르면 글감별 성과가 비어버린다. 대신 '자유글' 선택지를 둬서 항상 답할 수 있게.
-    drop_pick = (f"<select name=drop_id required>"
-                 f"<option value='' disabled selected>어떤 글감으로 썼나요?</option>"
+    # 영상·카드뉴스·자유글도 글감 선택 없이 제출할 수 있다.
+    drop_pick = (f"<select name=drop_id>"
+                 f"<option value='' selected>사용한 글감 (선택)</option>"
                  f"{drop_opts}<option value='free'>글감 없이 자유글</option></select>"
                  ) if drop_opts else ""
-    last_room = core.last_room_members(conn, p["id"])
-    room_hint = (f"직전 입력 {last_room}명" if last_room is not None
-                 else "카톡 오픈채팅 상단 참여자 수")
     submit = (f"<div class=card><h2>오늘 글 제출</h2>"
               f"<form method=post action=/submit style='flex-wrap:wrap'>"
               f"<input type=hidden name=t value='{esc(token)}'>"
@@ -1033,22 +1013,10 @@ def view_me(qs) -> bytes | None:
               f"<select name=channel><option value=threads>스레드</option>"
               f"<option value=instagram>인스타</option><option value=blog>블로그</option>"
               f"<option value=etc>기타</option></select>"
-              f"{drop_pick}"
-              f"<input name=room type=number min=0 required style='width:150px;"
-              f"border-color:var(--acc)' placeholder='지금 방 인원 *'>"
-              f"<input name=replies type=number min=0 style='width:150px'"
-              f" placeholder='어제 글 답글 수'>"
-              f"<button>제출</button></form>"
-              f"<p class=empty>제출이 곧 출석입니다. "
-              f"<b>지금 내 오픈톡방 인원</b>도 같이 넣어주세요 — {esc(room_hint)}. "
-              f"직접 계산하실 것 없이 <b>보이는 숫자 그대로</b> 넣으시면 됩니다.<br>"
-              f"어제 넣은 값과 비교해서 <b>어제 올린 글이 몇 명을 데려왔는지</b>가 자동으로 계산되고, "
-              f"그걸로 다음 글감이 정해집니다.<br>"
-              f"<b>어제 올린 글의 답글 수</b>도 같이 넣어주시면 훨씬 정확해집니다 — "
-              f"실측해보니 답글이 붙은 글만 방으로 사람이 들어왔습니다. 스레드에서 "
-              f"어제 글 밑에 보이는 숫자 그대로 넣으시면 됩니다.</p></div>")
+              f"{drop_pick}<button>제출</button></form>"
+              f"<p class=empty>게시물 링크를 제출하면 오늘 출석으로 기록됩니다. "
+              f"스레드·인스타는 링크에 맞춰 채널이 자동 저장됩니다.</p></div>")
 
-    # 성과는 제출 폼의 '방 인원' 한 칸으로 대체됐다(별도 입력 카드 없음).
     feed_link = (f"<a class=lk href='/feed?t={esc(token)}'>"
                  "📚 지난 글감 전체보기 →</a>")
     if today_drops:
@@ -1128,26 +1096,10 @@ def view_me(qs) -> bytes | None:
 
     # 내 제출 이력
     subs = core.recent_submissions(conn, p["id"], 10)
-    my_gains = core.submission_gains(conn)
-
-    def _perf_tag(s):
-        if s["room_members"] is None:
-            return "<span class=pill>인원 미입력</span>"
-        g = my_gains.get(s["id"])
-        if not g:      # 다음 제출이 아직 없어 증감을 못 냄(= 가장 최근 글)
-            return (f"<span class=meta style='margin-left:0'>방 {s['room_members']}명 "
-                    f"<span class=pill>다음 제출 때 집계</span></span>")
-        sign = "+" if g["gain"] >= 0 else ""
-        cls = "b-grn" if g["gain"] > 0 else ("b-red" if g["gain"] < 0 else "")
-        span = "" if g["span"] == 1 else f" <span class=pill>{g['span']}일치</span>"
-        return (f"<span class=meta style='margin-left:0'>방 {s['room_members']}명 · "
-                f"<b class={cls}>{sign}{g['gain']}</b>{span}</span>")
-
     hist = "".join(
         f"<div class=row><span class=hd>{s['post_date']}</span>"
         f"<a class='lk' style='flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;"
         f"white-space:nowrap' href='{esc(s['post_url'])}' target=_blank>{esc(s['post_url'])}</a>"
-        f"{_perf_tag(s)}"
         f"{'' if s['valid'] else ' <span class=b-red>✗무효</span>'}</div>"
         for s in subs)
     hist_card = (f"<div class=card><h2>내 제출 이력</h2>"
@@ -1352,122 +1304,7 @@ def view_board(qs) -> str:
             f"<span class=hd>{esc(r['handle'] or '-')}</span>"
             f"<span class=meta>🔥 {r['streak']}일 · 오늘 {today} · 누적 {r['total']}건</span></div>")
     return (f"<div class=card><h2>활동 랭킹 <span class=pill>연속일 순</span></h2>"
-            f"<p class=empty>이건 <b>성실도</b> 랭킹입니다. 실제로 카톡방에 사람을 데려온 순서는 "
-            f"<a class=lk href='/perf'>📊 성과</a>에서 보세요.</p>{''.join(rows)}</div>")
-
-
-def view_perf(qs) -> str:
-    """운영자 성과 대시보드 — 어떤 글감이 실제로 유입을 만들었나.
-
-    다음 글감을 감이 아니라 이 화면 보고 정하는 게 목적.
-    """
-    conn = db.connect()
-    st = core.room_stats(conn)
-    dperf = core.drop_performance(conn, 60)
-    tops = core.top_posts(conn, 15)
-    lb = core.lead_board(conn)
-    tag_perf = {f: core.tag_performance(conn, f) for f in ("target", "fmt")}
-    conn.close()
-
-    kpi = (f"<div class=kpi>"
-           f"<div class=card><div class=big>{st['total_gain']}</div>"
-           f"<div class=lb>카톡방 총 순증</div></div>"
-           f"<div class=card><div class=big>{st['avg_gain']}</div>"
-           f"<div class=lb>글 1건당 평균 순증</div></div>"
-           f"<div class=card><div class=big>{st['fill_rate']}%</div>"
-           f"<div class=lb>인원 입력률 ({st['filled']}/{st['submissions']})</div></div></div>")
-
-    how = ("<div class=card style='border-color:var(--acc)'>"
-           "<h2>이 숫자가 어떻게 나오나 <span class=pill>읽는 법</span></h2>"
-           "<p class=empty style='margin:0'>파트너는 제출할 때 <b>그 시점의 오픈톡방 인원</b>을 "
-           "같이 넣습니다. 하루 1건 발행 규칙이라 <b>어제→오늘 인원 증가분 = 어제 올린 글 1건의 성과</b>가 "
-           "됩니다.<br>그래서 오늘 넣은 증가분은 <b>어제 쓴 글감</b>에 붙습니다. "
-           "며칠 빼먹어서 증가분이 여러 날 뭉친 건은 글감별 평균에서 빼고 "
-           "(‘측정’ 칸에서 제외), 아래 랭킹 총합에만 넣습니다.</p></div>")
-
-    if st["measured"] == 0:
-        note = ("<div class=card style='border-color:var(--yel)'>"
-                "<h2 class=b-yel>아직 순증 데이터가 없습니다</h2>"
-                "<p class=empty>증가분은 <b>같은 파트너가 두 번 제출해야</b> 처음 나옵니다"
-                "(1회차 = 기준값). 그러니 공지 후 <b>이틀째부터</b> 숫자가 보이기 시작합니다.</p></div>")
-    else:
-        note = ""
-
-    # 글감별 성과 — 평균 순증 순. 이게 다음 글감 결정 근거.
-    drows = "".join(
-        f"<tr><td>{esc(d['drop_date'])}</td>"
-        f"<td>{esc((d['title'] or '')[:38])}</td>"
-        f"<td class=num>{d['used']}</td>"
-        f"<td class=num>{d['measured']}{('+' + str(d['multi'])) if d['multi'] else ''}</td>"
-        f"<td class=num><b>{d['avg_gain'] if d['measured'] else '–'}</b></td>"
-        f"<td class=num>{d['gain'] if d['measured'] else '–'}</td></tr>"
-        for d in dperf if d["used"])
-    drop_card = (
-        "<div class=card><h2>글감별 성과 <span class=pill>평균 순증 높은 순</span></h2>"
-        "<p class=empty>‘쓴 사람’ 대비 ‘측정’이 적으면 평균은 참고만 하세요. "
-        "위쪽 글감의 <b>소재·후킹 각도를 다음 글감에 재활용</b>하면 됩니다. "
-        "측정 칸의 <b>+N</b> 은 여러 날이 뭉쳐 평균에서 뺀 건수입니다.</p>"
-        "<table><tr><th>날짜</th><th>글감</th><th class=num>쓴 사람</th>"
-        "<th class=num>측정</th><th class=num>평균 순증</th>"
-        f"<th class=num>총 순증</th></tr>{drows}</table></div>"
-        if drows else
-        "<div class=card><h2>글감별 성과</h2><div class=empty>"
-        "아직 글감이 연결된 제출이 없습니다. 파트너가 제출할 때 글감을 골라야 집계됩니다.</div></div>")
-
-    # 순증 상위 개별 게시물 — 파트너가 쓴 글이 다음 글감의 소스가 된다.
-    trows = "".join(
-        f"<tr><td>{esc(t['pname'])}</td><td>{esc(t['post_date'])}</td>"
-        f"<td><a class=lk href='{esc(t['post_url'])}' target=_blank>글 열기 ↗</a></td>"
-        f"<td>{esc((t['dtitle'] or '자유글')[:26])}</td>"
-        f"<td class=num><b class={'b-grn' if t['gain'] > 0 else ''}>"
-        f"{'+' if t['gain'] >= 0 else ''}{t['gain']}</b></td></tr>"
-        for t in tops)
-    top_card = (
-        "<div class=card><h2>순증 상위 게시물 <span class=pill>다음 글감 후보</span></h2>"
-        "<p class=empty>여기 위쪽 글들이 <b>다음 주 글감 뱅크</b>에 들어갈 것들입니다. "
-        "글감 소스를 운영자 머리에서 파트너 실적으로 옮기는 지점이에요.</p>"
-        "<table><tr><th>파트너</th><th>올린 날</th><th>게시물</th><th>사용 글감</th>"
-        f"<th class=num>다음날 순증</th></tr>{trows}</table></div>"
-        if trows else "")
-
-    # 유입 랭킹 — 출석(연속일)이 아니라 방을 얼마나 키웠는지
-    lrows = "".join(
-        f"<div class=row><span style='min-width:34px'>{'🥇🥈🥉'[i] if i < 3 else i + 1}</span>"
-        f"<a class='nm lk' href='/partner?id={r['id']}'>{esc(r['name'])}</a>"
-        f"<span class=hd>{esc(r['handle'] or '-')}</span>"
-        f"<span class=meta>순증 <b class=b-grn>{'+' if r['gain'] >= 0 else ''}{r['gain']}</b>명 · "
-        f"현재 방 {r['members'] if r['members'] is not None else '–'}명 · "
-        f"측정 {r['measured']}건</span></div>"
-        for i, r in enumerate(lb[:20]))
-    lead_card = (f"<div class=card><h2>유입 랭킹 <span class=pill>방을 얼마나 키웠나</span></h2>"
-                 f"<p class=empty>연속일 랭킹(<a class=lk href='/board'>활동 랭킹</a>)은 성실도, "
-                 f"이건 <b>돈이 되는 숫자</b>입니다.</p>{lrows}</div>") if lb else ""
-
-    # 태그별 성과 — 글감 하나는 표본이 2~3명뿐이라 못 믿는다. 축으로 누적해야 읽힌다.
-    def tag_table(field, title, hint):
-        rows = tag_perf[field]
-        if not rows:
-            return ""
-        body = "".join(
-            f"<tr><td>{esc(t['tag'])}</td><td class=num>{t['used']}</td>"
-            f"<td class=num>{t['measured']}</td>"
-            f"<td class=num><b>{t['avg_gain'] if t['measured'] else '–'}</b></td>"
-            f"<td class=num>{t['gain'] if t['measured'] else '–'}</td></tr>"
-            for t in rows)
-        return (f"<div class=card><h2>{title} <span class=pill>평균 순증 높은 순</span></h2>"
-                f"<p class=empty>{hint}</p>"
-                "<table><tr><th>구분</th><th class=num>쓴 글</th><th class=num>측정</th>"
-                f"<th class=num>평균 순증</th><th class=num>총 순증</th></tr>{body}</table></div>")
-
-    tag_cards = (
-        tag_table("target", "🎯 타겟별 성과",
-                  "누구에게 말 거는 글이 우리 파트너 계정에서 먹히는지. "
-                  "글감 하나는 표본이 2~3명이라 못 믿지만, 타겟은 2주 모으면 10건 넘어 읽을 수 있습니다.") +
-        tag_table("fmt", "✍ 형태별 성과",
-                  "리스트형만 반복하면 피드가 똑같아 보입니다. "
-                  "어떤 <b>글의 형태</b>가 반응이 좋은지 보고 다음 글감의 틀을 바꾸세요."))
-
-    return kpi + note + how + drop_card + top_card + lead_card + tag_cards
+            f"<p class=empty>제출한 날과 연속 출석일을 기준으로 표시합니다.</p>{''.join(rows)}</div>")
 
 
 def view_people(qs) -> str:
@@ -2041,13 +1878,14 @@ class Handler(BaseHTTPRequestHandler):
                 p = core.find_by_token(conn, token)
                 did = (f.get("drop_id") or "").strip()
                 if p and url and p["status"] != "kicked":
-                    # 답글 수는 '어제 올린 글'의 값이라 직전 제출에 붙인다.
-                    # 반드시 새 제출을 넣기 전에 — 안 그러면 방금 올린 글에 붙는다.
-                    core.set_prev_replies(conn, p["id"], f.get("replies"))
-                    core.add_submission(conn, p["id"], url,
-                                        (f.get("channel") or "threads"),
-                                        drop_id=int(did) if did.isdigit() else None,
-                                        room_members=f.get("room"))
+                    channel = (f.get("channel") or "threads")
+                    host = (urlparse(url).hostname or "").lower()
+                    if host == "instagram.com" or host.endswith(".instagram.com"):
+                        channel = "instagram"
+                    elif host in ("threads.net", "threads.com") or host.endswith((".threads.net", ".threads.com")):
+                        channel = "threads"
+                    core.add_submission(conn, p["id"], url, channel,
+                                        drop_id=int(did) if did.isdigit() else None)
                 conn.close()
                 return self._redirect(f"/me?t={token}&ok=1")
             if u.path == "/rewrite":  # 파트너: 글감 본문 리라이팅(표현만 변형) — JSON 응답
@@ -2378,7 +2216,7 @@ class Handler(BaseHTTPRequestHandler):
             elif u.path == "/review":
                 body = shell("제출 검수", view_review(qs))
             elif u.path == "/perf":
-                body = shell("성과", view_perf(qs))
+                return self._redirect("/board")
             elif u.path == "/board":
                 body = shell("활동 랭킹", view_board(qs))
             elif u.path == "/people":
