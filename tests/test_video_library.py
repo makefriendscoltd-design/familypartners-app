@@ -149,7 +149,7 @@ class VideoHTTPTest(unittest.TestCase):
         code,_,html=self.request('GET','/',cookie=self.admin)   # 관리자 대시보드는 미리보기 유지
         self.assertEqual(code,200);self.assertIn('id=partner-videos',html.decode());self.assertIn('테스트 영상',html.decode())
         code,_,html=self.request('GET','/me?t=token-a')           # 작업실은 방 3개 버튼 + 개수
-        self.assertEqual(code,200);self.assertIn('받을 수 있는 영상 1편',html.decode())
+        self.assertEqual(code,200);self.assertIn('남은 영상 1편',html.decode())
         self.assertEqual(self.request('GET','/feed?t=token-a')[0],200)
         self.assertEqual(self.request('GET',f'/videos/file/{vid}')[0],403)
         bad=urlencode(dict(id=vid,name='테스트나',csrf=v.csrf('token-a')))

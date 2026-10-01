@@ -200,21 +200,50 @@ def esc(s) -> str:
     return html.escape(str(s if s is not None else ""))
 
 
+CSS += """
+:root{--bg:#f5f7fb;--txt:#172b4d;--acc:#245be8;--ln:#dce4ef}
+html{scroll-behavior:smooth;scroll-padding-top:120px}main{max-width:1080px;padding:30px 24px 70px}
+header{flex-wrap:wrap;gap:12px 18px;background:#fff}header h1{font-size:18px;margin:0;white-space:nowrap}
+header nav{display:flex;align-items:center;flex-wrap:wrap;gap:8px 18px}header nav a{margin:0;padding:9px 0}
+.role-label{font-size:12px;color:#52637c;border-left:1px solid var(--ln);padding-left:14px;white-space:nowrap}
+.nav-more{position:relative}.nav-more summary{cursor:pointer;font-size:14px;color:var(--mut);padding:9px 0}
+.nav-more>div{position:absolute;z-index:10;right:0;min-width:180px;padding:10px 16px;background:white;border:1px solid var(--ln);border-radius:10px;box-shadow:0 12px 28px #172b4d15}
+.nav-more>div>a{display:block}.workflow-hero{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:8px 0 24px}
+.workflow-hero h2{font-size:30px;line-height:1.3;letter-spacing:-1px;margin:8px 0 12px;font-weight:750;word-break:keep-all}
+.workflow-hero p{max-width:620px;margin:8px 0;color:var(--mut)}.section-kicker{font-size:14px;font-weight:600}
+.action-primary,.action-secondary{display:inline-flex;align-items:center;justify-content:center;padding:13px 18px;border-radius:8px;text-decoration:none;font-weight:650;font-size:15px;white-space:nowrap}
+.action-primary{background:var(--acc);color:white}.action-secondary{border:1px solid var(--ln);background:white;color:var(--txt)}
+.attendance-state{display:inline-block;font-size:13px;color:#24593f;background:#eaf5ee;padding:5px 10px;border-radius:5px;margin-top:6px}
+.workflow-steps{display:flex;list-style:decimal inside;gap:28px;padding:14px 0;margin:0 0 24px;border-top:1px solid var(--ln);border-bottom:1px solid var(--ln);color:var(--mut);font-size:14px}
+.section-heading{font-size:19px;margin:26px 0 14px}.setup-hint{font-size:14px;color:var(--mut)}.setup-hint a{color:var(--acc)}
+.submit-panel{background:#fff;border:1px solid #adc4f7;border-top:3px solid var(--acc);border-radius:10px;padding:24px;margin:28px 0}
+.submit-panel h2{font-size:22px;margin:0 0 18px}.submit-panel form{gap:10px}.submit-panel input,.submit-panel select,.submit-panel button{min-height:46px;font-size:16px;min-width:0;max-width:100%;box-sizing:border-box}.submit-panel input[name=url]{flex-basis:100%!important}
+.card{box-shadow:none}.workspace-fold{background:white;border:1px solid var(--ln);border-radius:10px;margin:16px 0}
+.workspace-fold>summary{cursor:pointer;padding:19px 22px;font-size:17px;font-weight:650;list-style-position:inside}
+.workspace-fold>summary>span{float:right;color:var(--mut);font-size:13px;font-weight:400}.fold-body{padding:0 18px 18px}.fold-body pre{overflow-wrap:anywhere}.fold-body>.card:last-child{margin-bottom:0}
+.admin-actions{display:flex;flex-wrap:wrap;gap:12px;margin:8px 0 26px}.admin-actions a{color:var(--acc);background:#fff;border:1px solid var(--ln);border-radius:7px;padding:12px 16px;text-decoration:none;font-weight:600}
+a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #80a7ff;outline-offset:3px}
+@media(max-width:640px){main{padding:20px 16px 50px}header{padding:14px 16px}header nav{margin-left:0!important;gap:4px 16px;width:100%}.role-label{font-size:11px}.workflow-hero{align-items:flex-start;flex-direction:column;gap:14px}.workflow-hero h2{font-size:26px}.workflow-hero .action-primary{width:100%;box-sizing:border-box}.workflow-steps{gap:8px;justify-content:space-between;font-size:12px}.submit-panel{padding:20px 16px}.submit-panel form>button{width:100%}.workspace-fold>summary{padding:17px 14px;font-size:16px}.workspace-fold>summary>span{float:none;display:block;margin:5px 0 0 19px}.fold-body{padding:0 10px 12px}.admin-actions{display:grid;grid-template-columns:1fr 1fr}.admin-actions a{font-size:14px}.admin-view .row{flex-wrap:wrap}.admin-view .row .meta{margin-left:0}.nav-more{position:static}.nav-more>div{right:16px;left:16px;min-width:0}header{position:relative}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.room:hover{transform:none}}
+"""
+FOLD_JS = """<script>function fpOpenSection(){try{var el=document.getElementById(decodeURIComponent(location.hash.slice(1)));if(!el)return;for(var p=el;p;p=p.parentElement)if(p.tagName==='DETAILS')p.open=true;}catch(e){}}window.addEventListener('hashchange',fpOpenSection);fpOpenSection();</script>"""
+
+
 def shell(title: str, body: str) -> bytes:
-    nav = ('<a href="/">대시보드</a><a href="/#글감"><b>✍️글감쓰기</b></a>'
-           '<a href="/people">인원</a>'
-           '<a href="/reminders"><b>✉문자발송</b></a>'
-           '<a href="/review">검수</a>'
-           '<a href="/board">랭킹</a>'
-           '<a href="/library">자료실</a><a href="/op/videos">영상 배포</a><a href="/op/cardnews">카드뉴스 배포</a><a href="/feed">글감피드</a>'
-           '<a href="/onboard">온보딩</a><a href="/wall">인증보드</a>'
-           '<a href="/logout" style="margin-left:auto">로그아웃</a>')
+    nav = ('<a href="/">오늘 현황</a><a href="/review">제출 확인</a><a href="/people">파트너 관리</a>'
+           '<details class=nav-more><summary>콘텐츠 관리</summary><div>'
+           '<a href="/#글감">글감 작성</a><a href="/op/videos">영상 배포</a>'
+           '<a href="/op/cardnews">카드뉴스 배포</a><a href="/library">자료실</a><a href="/feed">글감 피드</a></div></details>'
+           '<details class=nav-more><summary>운영 도구</summary><div>'
+           '<a href="/reminders">문자 발송</a><a href="/board">활동 랭킹</a>'
+           '<a href="/onboard">가입 안내</a><a href="/wall">인증 보드</a>'
+           '<a href="/logout">로그아웃</a></div></details>')
     doc = (f"<!doctype html><html lang=ko><head><meta charset=utf-8>"
            f"<meta name=viewport content='width=device-width,initial-scale=1'>"
-           f"<title>{esc(title)}</title><style>{CSS}</style></head><body>"
-           f"<header><a href='/' style='text-decoration:none'><h1>🏠 패밀리 파트너스</h1></a>"
+           f"<title>{esc(title)}</title><style>{CSS}</style></head><body class=admin-view>"
+           f"<header><a href='/' style='text-decoration:none'><h1>패밀리 파트너스</h1></a><span class=role-label>운영자 화면</span>"
            f"<nav>{nav}</nav></header>"
-           f"<main>{body}</main></body></html>")
+           f"<main>{body}</main>" + FOLD_JS + "</body></html>")
     return doc.encode("utf-8")
 
 
@@ -300,7 +329,7 @@ def _sel(name: str, label: str, options: list) -> str:
 def drop_form() -> str:
     """대시보드: 오늘 글감 등록(본문 + 사진·영상 직접 업로드 + 외부 링크)."""
     return (
-        "<div class=card id=글감 style='border:2px solid var(--acc)'>"
+        "<div class=card style='border:2px solid var(--acc)'>"
         "<h2>📝 오늘 글감 올리기 <span class=pill>여기에 매일 콘텐츠 작성 → 피드에 게시</span></h2>"
         "<form method=post action=/op/drop enctype='multipart/form-data' "
         "style='flex-direction:column;align-items:stretch'>"
@@ -346,15 +375,16 @@ def view_dashboard(qs) -> str:
 
     # 오늘(자정~다음날 자정, KST) 기준 단일 판정:
     #   완료 = 오늘 제출함(=미션완료) / 미이행 = 오늘 안 한 활성자 전체
-    done_list = b["done"]
-    undone_list = b["at_risk"] + b["kick"]   # 오늘 미제출 활성자 전부
+    all_statuses = b["done"] + b["at_risk"] + b["kick"]
+    done_list = [st for st in all_statuses if st.posted_today]
+    undone_list = [st for st in all_statuses if not st.posted_today]
     kick_n = len(b["kick"])                   # 그중 어제도 빵꾸(강퇴 대상)
 
     kpi = (f"<div class=kpi>"
            f"<div class=card><div class='big b-grn'>{len(done_list)}</div>"
            f"<div class=lb>오늘 완료(미션완료)</div></div>"
            f"<div class=card><div class='big b-yel'>{len(undone_list)}</div>"
-           f"<div class=lb>미제출 (어제미완 <b class=b-red>{kick_n}</b>)</div></div>"
+           f"<div class=lb>오늘 미제출</div></div>"
            f"<div class=card><div class=big>{b['active_count']}</div>"
            f"<div class=lb>활성 파트너</div></div>"
            f"</div>")
@@ -387,7 +417,7 @@ def view_dashboard(qs) -> str:
                 "<div class=row>"
                 f"<a class='nm lk b-red' href='/partner?id={s.row['id']}'>{esc(s.name)}</a>"
                 f"<span class=hd>{esc(s.handle or '-')}</span>"
-                f"<span class=meta>{undone_meta(s)}</span>"
+                f"<span class=meta>{'오늘 제출 완료 · ' if s.posted_today else ''}{undone_meta(s)}</span>"
                 f"<form method=post action=/op/excuse style='margin:0 0 0 10px' "
                 f"onsubmit=\"return confirm('{esc(s.name)}님 어제 출석을 인정(봐주기)할까요?')\">"
                 f"<input type=hidden name=pid value={s.row['id']}>"
@@ -444,8 +474,7 @@ def view_dashboard(qs) -> str:
 
     enforce_note = ("" if not kick_n else
                     f"<p class=empty>⚠️ 어제 빵꾸 {kick_n}명(강퇴 대상) — "
-                    "<a class=lk href='/enforce'>강퇴 집행</a> 또는 터미널 "
-                    "<code>python -m fp enforce --yes</code></p>")
+                    "<a class=lk href='/enforce'>처리 대상 확인</a></p>")
     kick_card = (
         f"<div class=card style='border-color:var(--red)'>"
         f"<h2 class=b-red>🔴 어제 미완료 — {len(b['kick'])}명 "
@@ -457,10 +486,24 @@ def view_dashboard(qs) -> str:
         f"<div class=card><h2>⏳ 오늘 아직 미제출 — {len(b['at_risk'])}명 "
         f"<span class=pill>어제는 함 · 마감 전 독려</span></h2>{atrisk_rows}"
         f"<p class=empty>문자/리마인더는 <a class=lk href='/reminders'>✉ 보낼 메시지</a>에서 보냅니다.</p></div>")
-    return (video_library.dashboard_card(admin=True) + cardnews_library.dashboard_card(admin=True) + flash + drop_form() + sched_card + quick_actions() +
-            f"<p class=pill>{b['date']} 기준 (자정~다음날 자정, KST)</p>{kpi}"
-            f"<div class=card><h2>✅ 오늘 완료(미션완료) — {len(done_list)}명</h2>{done}</div>"
-            + kick_card + atrisk_card)
+    intro = (f"<section class=workflow-hero><div><p class=section-kicker>{b['date']} · 한국 시간 기준</p>"
+             "<h2>오늘 운영 현황</h2><p>제출 현황을 확인하고, 필요한 작업으로 이동하세요.</p></div>"
+             "<a class=action-secondary href='/people'>파트너 작업실 확인</a></section>")
+    actions = ("<nav class=admin-actions aria-label='자주 하는 작업'>"
+               "<a href='/review'>제출 게시물 확인</a><a href='/#글감'>글감 작성</a>"
+               "<a href='/op/videos'>영상 배포</a><a href='/op/cardnews'>카드뉴스 배포</a></nav>")
+    content = ("<details class=workspace-fold id=content-management><summary>콘텐츠 배포 현황</summary><div class=fold-body>"
+               + video_library.dashboard_card(admin=True) + cardnews_library.dashboard_card(admin=True) + "</div></details>")
+    writing = ("<details class=workspace-fold id=글감><summary>새 글감 작성</summary><div class=fold-body>"
+               + drop_form() + "</div></details>")
+    scheduled_panel = ("<details class=workspace-fold><summary>예약된 글감 확인</summary><div class=fold-body>"
+                       + sched_card + "</div></details>") if scheduled else ""
+    extra = ("<details class=workspace-fold><summary>기타 운영 작업</summary><div class=fold-body>"
+             + quick_actions() + "</div></details>")
+    return (flash + intro + kpi + actions + (kick_card if kick_n else "") + atrisk_card +
+            f"<details class=workspace-fold><summary>오늘 제출 완료 {len(done_list)}명</summary>"
+            f"<div class=fold-body>{done}</div></details>" + content + writing + scheduled_panel + extra)
+
 
 
 def view_settle(qs) -> str:
@@ -843,15 +886,15 @@ def rooms_hub(token: str | None) -> str:
                 f"<span class=room-line>{line}</span><span class=room-left>{left}</span></a>")
     return ("<style>.rooms{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:0 0 16px}"
             ".room{display:flex;flex-direction:column;gap:6px;padding:18px;border:2px solid var(--acc);border-radius:14px;"
-            "background:var(--card,#fff);color:inherit;text-decoration:none}.room:hover{transform:translateY(-2px)}"
-            ".room-icon{font-size:30px}.room b{font-size:20px}.room-line{font-size:14px;opacity:.75}"
-            ".room-left{font-weight:700}@media(max-width:640px){.rooms{grid-template-columns:1fr}}</style>"
+            "background:var(--card,#fff);color:inherit;text-decoration:none}.room:hover{border-color:#173ea8}"
+            ".rooms .room{white-space:normal;margin:0;min-width:0}.room-icon{font-size:30px}.room b{font-size:20px}.room-line{font-size:14px;opacity:.75}"
+            ".room-left{font-weight:700;font-size:14px}@media(max-width:640px){.rooms{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.room{padding:12px 9px;border-width:1px;gap:5px}.room b{font-size:15px}.room-icon{font-size:24px}.room-line,.room-left{font-size:12px;overflow-wrap:anywhere}}</style>"
             "<nav class=rooms aria-label='방 선택'>"
-            + tile("✍️", "글감방", "오늘 글감 보고 내 글 올리기", "오늘 글감 보러 가기 →", f"/feed{t}")
-            + tile("🎬", "영상방", f"받을 수 있는 영상 {videos}편",
-                   f"오늘 {got_v}/{video_library.DAILY_VIDEO_LIMIT}편 받음 →", f"/videos{t}")
-            + tile("🗂", "카드뉴스방", f"받을 수 있는 카드뉴스 {decks}개",
-                   f"오늘 {got_c}/{cardnews_library.DAILY_CARDNEWS_LIMIT}개 받음 →", f"/cardnews{t}")
+            + tile("✍️", "글감방", "복사해서 쓰는 글", "오늘 글감 보기", f"/feed{t}")
+            + tile("🎬", "영상방", f"남은 영상 {videos}편",
+                   f"오늘 {got_v}/{video_library.DAILY_VIDEO_LIMIT}편 받음", f"/videos{t}")
+            + tile("🗂", "카드뉴스방", f"남은 카드뉴스 {decks}개",
+                   f"오늘 {got_c}/{cardnews_library.DAILY_CARDNEWS_LIMIT}개 받음", f"/cardnews{t}")
             + "</nav>")
 
 
@@ -862,20 +905,19 @@ def shell_portal(title: str, sub: str, body: str, token: str | None = None) -> b
     me_link = (f"<a href='/me{t}'>🏠 내 작업실</a>" if token
                else "<a href='/find'>🏠 내 작업실 찾기</a>")
     nav = (me_link
-           + f"<a href='/guide{t}'>📖 사용법</a>"
-           + f"<a href='/feed{t}'>✍️ 글감방</a>"
-           + f"<a href='/videos{t}'>🎬 영상방</a>"
-           + f"<a href='/cardnews{t}'>🗂 카드뉴스방</a>"
-           + f"<a href='/files{t}'>📁 자료실</a>"
-           + f"<a href='/wall{t}'>🏆 인증보드</a>")
+           + (f"<a href='/me{t}#submit'>링크 제출</a>" if token else "")
+           + f"<details class=nav-more><summary>콘텐츠 받기</summary><div>"
+           + f"<a href='/feed{t}'>✍️ 글감방</a><a href='/videos{t}'>🎬 영상방</a>"
+           + f"<a href='/cardnews{t}'>🗂 카드뉴스방</a><a href='/files{t}'>자료실</a></div></details>"
+           + f"<a href='/guide{t}'>사용법</a>")
     doc = (f"<!doctype html><html lang=ko><head><meta charset=utf-8>"
            f"<meta name=viewport content='width=device-width,initial-scale=1'>"
            f"<title>{esc(title)}</title><style>{CSS}</style></head><body>"
            f"<header><a href='{home}' style='text-decoration:none'>"
            f"<h1>🤝 패밀리 파트너스</h1></a>"
-           f"<span class=pill>{esc(sub)}</span>"
+           f"<span class=role-label>파트너 작업실</span>"
            f"<nav style='margin-left:auto'>{nav}</nav></header>"
-           f"<main>{body}</main></body></html>")
+           f"<main>{body}</main>" + FOLD_JS + "</body></html>")
     return doc.encode("utf-8")
 
 
@@ -975,15 +1017,16 @@ def view_me(qs) -> bytes | None:
     streak = core.streak_for(conn, p, as_of)
     posted = core.posted_today(conn, p["id"], as_of)
 
-    # 오늘 상태 카드
-    if posted:
-        status_card = (f"<div class=card><h2>오늘 발행 ✅</h2>"
-                       f"<div class='big b-grn' style='font-size:34px'>🔥 {streak}일 연속</div>"
-                       f"<p class=empty>오늘 몫 완료! 내일도 이어가세요.</p></div>")
-    else:
-        status_card = (f"<div class=card style='border-color:var(--yel)'>"
-                       f"<h2 class=b-yel>오늘 아직 미발행 ⏳</h2>"
-                       f"<div class=empty>현재 {streak}일 연속 · <b>자정 전 1건 발행</b> 안 하면 강퇴됩니다.</div></div>")
+    # 매일 사용하는 작업실의 첫 화면: 현재 상태와 다음 행동.
+    state_title = "오늘 발행·제출 완료" if posted else "오늘 올릴 콘텐츠를 골라보세요"
+    state_copy = ("오늘 출석이 기록됐어요. 추가로 올린 게시물도 제출할 수 있어요." if posted else
+                  "글감·영상·카드뉴스 중 하나를 골라 SNS에 올리고, 게시물 링크를 제출하세요.")
+    status_card = (f"<section class=workflow-hero><div><p class=section-kicker>{esc(name)}님의 작업실</p>"
+                   f"<h2>{state_title}</h2><p>{state_copy}</p>"
+                   f"<span class=attendance-state>{'출석 완료' if posted else '오늘 제출 전'} · {streak}일 연속</span></div>"
+                   "<a class=action-primary href='#submit'>이미 올렸어요 · 링크 제출</a></section>"
+                   "<ol class=workflow-steps aria-label='매일 하는 순서'><li>콘텐츠 선택</li>"
+                   "<li>내 SNS에 업로드</li><li>링크 제출로 출석</li></ol>")
 
     if saved:
         ok_banner = ("<div class=card style='border-color:var(--grn)'>"
@@ -1002,20 +1045,20 @@ def view_me(qs) -> bytes | None:
         f"{(' [' + esc(r['target']) + ']') if (r['target'] or '').strip() else ''}</option>"
         for r in recent[:12])
     # 영상·카드뉴스·자유글도 글감 선택 없이 제출할 수 있다.
-    drop_pick = (f"<select name=drop_id>"
+    drop_pick = (f"<select name=drop_id aria-label=사용한글감>"
                  f"<option value='' selected>사용한 글감 (선택)</option>"
                  f"{drop_opts}<option value='free'>글감 없이 자유글</option></select>"
                  ) if drop_opts else ""
-    submit = (f"<div class=card><h2>오늘 글 제출</h2>"
+    submit = (f"<section class=submit-panel id=submit><h2>올렸다면, 링크만 제출하세요</h2>"
               f"<form method=post action=/submit style='flex-wrap:wrap'>"
               f"<input type=hidden name=t value='{esc(token)}'>"
-              f"<input name=url placeholder='발행한 게시물 링크 붙여넣기' required style='flex:1 1 220px'>"
-              f"<select name=channel><option value=threads>스레드</option>"
+              f"<input name=url aria-label='게시물 링크' placeholder='발행한 게시물 링크 붙여넣기' required style='flex:1 1 220px'>"
+              f"<select name=channel aria-label=채널><option value=threads>스레드</option>"
               f"<option value=instagram>인스타</option><option value=blog>블로그</option>"
               f"<option value=etc>기타</option></select>"
-              f"{drop_pick}<button>제출</button></form>"
+              f"{drop_pick}<button>링크 제출하고 출석하기</button></form>"
               f"<p class=empty>게시물 링크를 제출하면 오늘 출석으로 기록됩니다. "
-              f"스레드·인스타는 링크에 맞춰 채널이 자동 저장됩니다.</p></div>")
+              f"스레드·인스타는 링크에 맞춰 채널이 자동 저장됩니다.</p></section>")
 
     feed_link = (f"<a class=lk href='/feed?t={esc(token)}'>"
                  "📚 지난 글감 전체보기 →</a>")
@@ -1056,7 +1099,7 @@ def view_me(qs) -> bytes | None:
                 "오늘 것 중 <b>내 계정 색깔·내 팔로워에 맞는 하나</b>를 골라 올리세요. "
                 "전원이 같은 글을 올리면 스레드에 똑같은 글이 도배돼서 오히려 반응이 죽습니다.<br>"
                 "⚠️ <b>어제 이전 글감은 올리면 안 됩니다.</b> "
-                "제출할 때 <b>고른 글감을 그대로 선택</b>해 주세요."
+                "사용한 글감은 제출할 때 선택할 수 있어요."
                 if n > 1 else
                 "<h2>📌 오늘 올릴 글감</h2>"
                 "<p class=empty style='margin:-4px 0 12px'>"
@@ -1198,14 +1241,12 @@ def view_me(qs) -> bytes | None:
         f"<div><pre>{esc(notice)}</pre>"
         "<button type=button class=ghost onclick=fpCopy(this)>📋 카톡방 공지 복사</button></div></div>")
     step4 = (
-        "<div class=card><h2>⬜ STEP 4. 매일 콘텐츠 올리고 제출</h2>"
-        "<p>① 아래 <b>‘오늘 올릴 글감’</b>에서 <b>본문은 복사</b>(그대로 또는 단어만 바꿔서), "
-        "<b>영상·사진은 꼭 다운로드</b>해서 함께 스레드에 올리세요. "
-        "<span class=b-red>텍스트만 올리고 영상 빼먹으면 반응 안 옵니다.</span></p>"
-        "<p>② <b>댓글·반응이 오면 → 내 오픈톡방 링크로 유도</b>하세요 "
-        "(대댓글로 방 초대링크 안내). 답변하기 어려우면 운영진이 대신 답변해드립니다.</p>"
-        "<p>③ <b>매일 1건 발행 후 아래 ‘오늘 글 제출’에 링크 제출 = 출석</b>입니다. "
-        "(카톡 말고 <b>여기 작업실에 제출</b>해야 출석 처리됩니다.)</p></div>")
+        "<div class=card><h2>STEP 4. 매일 콘텐츠 올리고 제출</h2>"
+        "<p>글감방·영상방·카드뉴스방에서 올릴 콘텐츠를 고르세요. "
+        "영상과 이미지는 다운로드한 뒤 스레드나 인스타에 올리면 됩니다.</p>"
+        "<p>올린 게시물 링크를 작업실에 제출하면 출석으로 기록됩니다. "
+        "카톡으로 링크를 보내는 것만으로는 출석 처리되지 않습니다.</p>"
+        "<p>매일 자정 전 1건 이상 제출해야 합니다. 미제출 시 기존 강퇴 규칙이 적용됩니다.</p></div>")
     setup = intro + step1 + step2 + step3 + step4
     find_note = ("<div class=card><p class=empty>💡 이 작업실 링크는 북마크하세요. 잃어버려도 "
                  "<a class=lk href='/find'>내 작업실 찾기</a>(성함+연락처)로 다시 들어올 수 있습니다.</p></div>")
@@ -1222,9 +1263,22 @@ def view_me(qs) -> bytes | None:
         f"{gembed}</div>")
 
     conn.close()
-    body = (COPY_JS + REWRITE_JS + rooms_hub(token) + notice_card + saved2 + ok_banner + status_card +
-            guide_banner + setup + submit + drop_card + files_link + hist_card + link_card +
-            wall_link + find_note)
+    setup_complete = has_handle and has_oc and n_links == need
+    setup_open = " open" if not setup_complete or saved2_flag else ""
+    setup_panel = (f"<details class=workspace-fold id=setup{setup_open}><summary>"
+                   f"{'계정·판매 링크 설정' if setup_complete else '처음이라면, 계정 설정부터'}"
+                   f"<span>{'입력 완료' if setup_complete else '확인 필요'}</span></summary>"
+                   f"<div class=fold-body>{setup}{link_card}{find_note}</div></details>")
+    setup_hint = ("" if setup_complete else "<p class=setup-hint>처음 참여하셨나요? "
+                  "<a href='#setup'>계정과 판매 링크 설정을 확인하세요.</a></p>")
+    help_panel = ("<details class=workspace-fold id=help><summary>사용법 영상과 자료실</summary>"
+                  f"<div class=fold-body>{guide_banner}{files_link}{wall_link}</div></details>")
+    drops_panel = ("<details class=workspace-fold><summary>오늘 글감 미리 보기</summary>"
+                   f"<div class=fold-body>{drop_card}</div></details>")
+    body = (COPY_JS + REWRITE_JS + ok_banner + saved2 + status_card + setup_hint + notice_card +
+            "<section id=choose-content><h2 class=section-heading>어떤 콘텐츠를 올릴까요?</h2>"
+            + rooms_hub(token) + "</section>" + submit + hist_card + setup_panel + drops_panel + help_panel)
+
     return shell_portal(name, f"{esc(name)}님의 작업실", body, token)
 
 
