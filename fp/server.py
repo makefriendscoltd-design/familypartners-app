@@ -224,6 +224,9 @@ header nav{display:flex;align-items:center;flex-wrap:wrap;gap:8px 18px}header na
 .admin-actions{display:flex;flex-wrap:wrap;gap:12px;margin:8px 0 26px}.admin-actions a{color:var(--acc);background:#fff;border:1px solid var(--ln);border-radius:7px;padding:12px 16px;text-decoration:none;font-weight:600}
 a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #80a7ff;outline-offset:3px}
 @media(max-width:640px){main{padding:20px 16px 50px}header{padding:14px 16px}header nav{margin-left:0!important;gap:4px 16px;width:100%}.role-label{font-size:11px}.workflow-hero{align-items:flex-start;flex-direction:column;gap:14px}.workflow-hero h2{font-size:26px}.workflow-hero .action-primary{width:100%;box-sizing:border-box}.workflow-steps{gap:8px;justify-content:space-between;font-size:12px}.submit-panel{padding:20px 16px}.submit-panel form>button{width:100%}.workspace-fold>summary{padding:17px 14px;font-size:16px}.workspace-fold>summary>span{float:none;display:block;margin:5px 0 0 19px}.fold-body{padding:0 10px 12px}.admin-actions{display:grid;grid-template-columns:1fr 1fr}.admin-actions a{font-size:14px}.admin-view .row{flex-wrap:wrap}.admin-view .row .meta{margin-left:0}.nav-more{position:static}.nav-more>div{right:16px;left:16px;min-width:0}header{position:relative}}
+.public-home{padding:24px 0 28px}.public-home h2{font-size:40px}.home-actions{display:flex;flex-wrap:wrap;gap:12px;margin:24px 0 16px}
+.home-rooms{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:0 0 28px}.home-rooms>a{display:block;padding:24px;background:white;border:1px solid var(--ln);border-radius:10px;color:var(--txt);text-decoration:none}.home-rooms>a:hover{border-color:var(--acc)}.home-rooms span{font-size:22px;font-weight:700}.home-rooms p{color:var(--mut);font-size:14px;min-height:44px}.home-rooms b{color:var(--acc);font-size:14px}.home-help{display:flex;justify-content:space-between;gap:16px;padding:20px 0;border-top:1px solid var(--ln)}
+@media(max-width:640px){.public-home h2{font-size:30px}.home-actions{width:100%}.home-actions>a{width:100%;box-sizing:border-box}.home-rooms{grid-template-columns:1fr;gap:10px}.home-rooms>a{padding:18px}.home-rooms p{min-height:0;margin:8px 0}.public-home{padding-top:8px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.room:hover{transform:none}}
 """
 CSS += """
@@ -911,7 +914,7 @@ def rooms_hub(token: str | None) -> str:
 def shell_portal(title: str, sub: str, body: str, token: str | None = None) -> bytes:
     # 토큰이 있으면(=내 작업실에서 온 경우) 작업실 링크가 토큰을 유지하도록 함
     t = ("?t=" + _q(token)) if token else ""
-    home = f"/me{t}" if token else "/feed"
+    home = f"/me{t}" if token else "/"
     me_link = (f"<a href='/me{t}'>🏠 내 작업실</a>" if token
                else "<a href='/find'>🏠 내 작업실 찾기</a>")
     nav = (me_link
@@ -1742,17 +1745,26 @@ def view_enforce(qs) -> str:
 
 def view_landing() -> bytes:
     body = (
-        "<div class=card><h2>패밀리 파트너스 운영 시스템</h2>"
-        "<p class=empty>매일 콘텐츠 챌린지로 함께 성장하는 파트너 프로그램.</p>"
-        "<p style='margin-top:14px;font-size:15px'>"
-        "<a class=lk href='/guide'>📖 사용법 가이드</a>　·　"
-        "<a class=lk href='/join'>🙌 파트너로 등록</a>　·　"
-        "<a class=lk href='/login'>🔑 관리자 로그인</a></p></div>"
-        "<div class=card><h2>처음이세요?</h2>"
-        "<p class=empty>먼저 <a class=lk href='/guide'>사용법 가이드</a>를 보세요 — "
-        "캡처와 함께 단계별로 안내합니다.</p></div>"
+        "<section class='workflow-hero public-home' id=partner-home><div>"
+        "<p class=section-kicker>패밀리 파트너스</p>"
+        "<h2>오늘 올릴 콘텐츠,<br>여기서 준비하세요.</h2>"
+        "<p>글감·영상·카드뉴스를 골라 내 채널에 올리고, 작업실에 링크를 제출하세요.</p>"
+        "<div class=home-actions><a class=action-primary href='/find'>내 작업실 찾기 →</a>"
+        "<a class=action-secondary href='/join'>처음이라면 파트너 등록</a></div>"
+        "<p class=setup-hint>제출 내역과 활동 순위는 내 작업실에서 확인하세요.</p></div></section>"
+        "<ol class=workflow-steps aria-label='참여 순서'><li>콘텐츠 받기</li>"
+        "<li>내 채널에 올리기</li><li>작업실에 링크 제출</li></ol>"
+        "<h2 class=section-heading>오늘은 어떤 콘텐츠를 올릴까요?</h2>"
+        "<nav class=home-rooms aria-label='콘텐츠 선택'>"
+        "<a href='/feed'><span>글감방</span><p>글을 골라 내 말투로 다듬어 올리세요.</p><b>글감 보기 →</b></a>"
+        "<a href='/videos'><span>영상방</span><p>영상과 캡션을 받아 올리세요.</p><b>영상 받기 →</b></a>"
+        "<a href='/cardnews'><span>카드뉴스방</span><p>이미지와 캡션을 받아 올리세요.</p><b>카드뉴스 받기 →</b></a>"
+        "</nav>"
+        + video_library.dashboard_card()
+        + "<footer class=home-help><a class=lk href='/guide'>사용법 가이드</a>"
+        "<a class=lk href='/login'>관리자 로그인</a></footer>"
     )
-    return shell_portal("패밀리 파트너스", "함께 성장하는 파트너", video_library.dashboard_card() + body)
+    return shell_portal("패밀리 파트너스", "함께 성장하는 파트너", body)
 
 
 GUIDE_VIDEO = "https://youtube.com/live/bqXinSUY9wo"

@@ -36,6 +36,26 @@ class WorkspaceLayoutTest(unittest.TestCase):
         self.assertEqual(code, 200)
         return body.decode()
 
+    def test_public_home_shows_workspace_first_on_desktop_and_mobile(self):
+        pages = []
+        for ua in ('Mozilla/5.0 (Macintosh; Intel Mac OS X) Chrome/130.0',
+                   'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X)'):
+            code, headers, body = self.request('GET', '/', headers={'User-Agent': ua})
+            self.assertEqual(code, 200)
+            self.assertEqual(headers['Cache-Control'], 'no-store')
+            html = body.decode()
+            self.assertLess(html.index('id=partner-home'), html.index('id=partner-videos'))
+            self.assertNotIn('패밀리 파트너스 운영 시스템', html)
+            links = PageElements(html).links
+            for path in ('/', '/find', '/join', '/feed', '/videos', '/cardnews', '/login'):
+                self.assertIn(path, links)
+            self.assertNotIn('token-a', html)
+            pages.append(html)
+        self.assertEqual(*pages)
+        admin = self.page('/', cookie=self.admin)
+        self.assertIn('오늘 운영 현황', admin)
+        self.assertNotIn('id=partner-home', admin)
+
     def complete_setup(self):
         conn = db.connect()
         try:
