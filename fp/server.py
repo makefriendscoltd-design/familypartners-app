@@ -918,6 +918,7 @@ def shell_portal(title: str, sub: str, body: str, token: str | None = None) -> b
     me_link = (f"<a href='/me{t}'>🏠 내 작업실</a>" if token
                else "<a href='/find'>🏠 내 작업실 찾기</a>")
     nav = (me_link
+           + f"<a href='/my-content{t}'>내가 받은 콘텐츠</a>"
            + (f"<a href='/me{t}#submit'>링크 제출</a>" if token else "")
            + f"<details class=nav-more><summary>콘텐츠 받기</summary><div>"
            + f"<a href='/feed{t}'>✍️ 글감방</a><a href='/videos{t}'>🎬 영상방</a>"
@@ -1347,7 +1348,7 @@ def view_me(qs) -> bytes | None:
                    f"<div class=fold-body>{drop_card}</div></details>")
     body = (COPY_JS + REWRITE_JS + ok_banner + saved2 + status_card + setup_hint + notice_card +
             "<section id=choose-content><h2 class=section-heading>어떤 콘텐츠를 올릴까요?</h2>"
-            + rooms_hub(token) + "</section>" + submit + activity_panel + hist_card + setup_panel + drops_panel + help_panel)
+            + rooms_hub(token) + f"<p><a class=action-secondary href='/my-content?t={_q(token)}'>내가 받은 콘텐츠 모아보기 →</a></p></section>" + submit + activity_panel + hist_card + setup_panel + drops_panel + help_panel)
 
     return shell_portal(name, f"{esc(name)}님의 작업실", body, token)
 
@@ -2289,6 +2290,9 @@ class Handler(BaseHTTPRequestHandler):
                 return self._guide_img(u.path[len("/guide-img/"):])
             if u.path == "/cron/sms":   # Vercel Cron(매일 21시 KST) — 시크릿 인증
                 return self._cron_sms()
+            if u.path == "/my-content":
+                from . import owned_content
+                return owned_content.handle(self, qs)
             if u.path == "/" and not self._admin_ok():
                 return self._send(view_landing())   # 비로그인 메인 = 랜딩
             # 관리자 영역 게이트 — 공개 경로 외에는 로그인 필요

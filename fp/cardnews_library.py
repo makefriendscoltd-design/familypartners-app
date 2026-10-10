@@ -208,7 +208,7 @@ def listing(h, conn, p, got=None):
                "<p>아래 캡션을 복사해서 카드뉴스와 같이 올리면 됩니다.</p>"
                + vl.caption_box(fresh['caption'] or '') + vl.source_link(fresh)
                + "<script>document.getElementById('fresh-deck').click()</script></section>")
-    body = (vl.GALLERY_STYLE + DECK_STYLE + top + "<section class=card><h2>🗂 받을 수 있는 카드뉴스 "
+    body = (f"<p><a class=action-secondary href='/my-content?t={quote(p['portal_token'], safe='')}'>내가 받은 콘텐츠 모아보기 →</a></p>" + vl.GALLERY_STYLE + DECK_STYLE + top + "<section class=card><h2>🗂 받을 수 있는 카드뉴스 "
             f"<span>{len(rows)}개</span></h2><p>마음에 드는 카드뉴스를 골라 받아 가세요. 먼저 받은 사람에게 배정되고, "
             f"계정당 하루 {DAILY_CARDNEWS_LIMIT}개, 한국 시간 자정에 초기화됩니다.</p>"
             "<div class=video-grid>" + ''.join(card(r, p['portal_token'], True) for r in rows) + '</div>')

@@ -335,7 +335,7 @@ def listing(h, conn, p):
     available = conn.execute(f'SELECT * FROM exclusive_videos WHERE {AVAILABLE_SQL} ORDER BY id DESC').fetchall()
     owned = conn.execute('SELECT * FROM exclusive_videos WHERE claimed_by=? ORDER BY claimed_at DESC', (p['id'],)).fetchall()
     cafe_by_id = {row['id']: match for row in available if (match := video_cafe.public_record(conn,row['id']))}
-    body = (GALLERY_STYLE + "<section id=partner-videos><div class=card><h2>받을 수 있는 영상 "
+    body = (f"<p><a class=action-secondary href='/my-content?t={quote(p['portal_token'], safe='')}'>내가 받은 콘텐츠 모아보기 →</a></p>" + GALLERY_STYLE + "<section id=partner-videos><div class=card><h2>받을 수 있는 영상 "
             f"<span data-available-count>{len(available)}편</span></h2><p>계정당 하루 {DAILY_VIDEO_LIMIT}편만 받을 수 있어요. 한국 시간 자정에 한도가 초기화됩니다. 이미 받은 영상은 다시 받을 수 있어요.</p></div>"
             + gallery(available, cafe_by_id, p['portal_token']) + '</section>' + GALLERY_SCRIPT)
     body += '<div class=card><h2>내가 받은 영상</h2>'
