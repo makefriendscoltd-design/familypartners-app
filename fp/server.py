@@ -51,7 +51,7 @@ def _admin_token() -> str:
     return hmac.new(_secret(), b"admin-v1", hashlib.sha256).hexdigest()
 # 로그인 없이 접근 가능한 경로
 PUBLIC_GET = {"/login", "/logout", "/join", "/me", "/wall", "/files", "/feed",
-              "/guide", "/find", "/favicon.ico", "/status"}
+              "/guide", "/find", "/notice", "/favicon.ico", "/status"}
 PUBLIC_POST = {"/login", "/join", "/submit", "/find", "/me/save", "/me/links", "/rewrite"}
 
 
@@ -242,7 +242,7 @@ FOLD_JS = """<script>function fpOpenSection(){try{var el=document.getElementById
 
 
 def shell(title: str, body: str) -> bytes:
-    nav = ('<a href="/">오늘 현황</a><a href="/review">제출 확인</a><a href="/people">파트너 관리</a><a href="/board">활동 순위</a>'
+    nav = ('<a href="/">오늘 현황</a><a href="/review">제출 확인</a><a href="/people">파트너 관리</a><a href="/board">활동 순위</a><a href="/notice">공통공지</a>'
            '<details class=nav-more><summary>콘텐츠 관리</summary><div>'
            '<a href="/#글감">글감 작성</a><a href="/op/videos">영상 배포</a>'
            '<a href="/op/cardnews">카드뉴스 배포</a><a href="/library">자료실</a><a href="/feed">글감 피드</a></div></details>'
@@ -924,6 +924,7 @@ def shell_portal(title: str, sub: str, body: str, token: str | None = None) -> b
            + f"<a href='/feed{t}'>✍️ 글감방</a><a href='/videos{t}'>🎬 영상방</a>"
            + f"<a href='/cardnews{t}'>🗂 카드뉴스방</a><a href='/files{t}'>자료실</a></div></details>"
            + (f"<a href='/me{t}#activity'>활동 순위</a>" if token else "")
+           + (f"<a href='/me{t}#school-notice'>공통공지</a>" if token else "<a href='/notice'>공통공지</a>")
            + f"<a href='/guide{t}'>사용법</a>")
     doc = (f"<!doctype html><html lang=ko><head><meta charset=utf-8>"
            f"<meta name=viewport content='width=device-width,initial-scale=1'>"
@@ -934,6 +935,24 @@ def shell_portal(title: str, sub: str, body: str, token: str | None = None) -> b
            f"<nav style='margin-left:auto'>{nav}</nav></header>"
            f"<main>{body}</main>" + FOLD_JS + "</body></html>")
     return doc.encode("utf-8")
+
+
+def school_notice_card(notice: str) -> str:
+    return (
+        "<section class=card id=school-notice>"
+        "<h2>AI학교 공통공지</h2>"
+        "<p>전체를 복사해서 내 카톡방 공지에 붙여넣으세요. "
+        "개인 모집 링크가 비어 있다면 발급받은 뒤 넣어주세요.</p>"
+        f"<div><button type=button onclick=fpCopy(this)>공통공지 전체 복사</button>"
+        f"<pre style='white-space:pre-wrap;overflow-wrap:anywhere'>{esc(notice)}</pre></div>"
+        "</section>"
+    )
+
+
+def view_school_notice() -> bytes:
+    return shell_portal("AI학교 공통공지", "", COPY_JS
+                        + school_notice_card(onboard.notice_text())
+                        + "<p><a class=lk href='/find'>내 작업실에서 개인 모집 링크 설정하기 →</a></p>")
 
 
 NOTION_URL = "https://makefriends.notion.site/372b31f1da558017943ce42c44793754"
@@ -1294,8 +1313,8 @@ def view_me(qs) -> bytes | None:
         for key, label in slots)
     step3 = (
         f"<div class=card id=notice style='border-color:{'var(--grn)' if n_links == need else 'var(--ln)'}'>"
-        f"<h2>{ck(n_links == need)} STEP 3. 판매 링크 넣기 <span class=pill>{n_links}/{need}</span></h2>"
-        "<p>운영자에게 카톡으로 <b>“판매 링크 발급 요청합니다”</b> → 받은 링크를 아래에 넣고 저장하세요. "
+        f"<h2>{ck(n_links == need)} STEP 3. AI학교 개인 모집 링크 넣기 <span class=pill>{n_links}/{need}</span></h2>"
+        "<p>운영자에게 카톡으로 <b>“AI학교 개인 모집 링크 발급 요청합니다”</b> → 받은 링크를 아래에 넣고 저장하세요. "
         "(이 링크로 들어온 결제가 내 실적)</p>"
         "<form method=post action=/me/links style='flex-wrap:wrap'>"
         f"<input type=hidden name=t value='{esc(token)}'>"
@@ -1348,7 +1367,7 @@ def view_me(qs) -> bytes | None:
                    f"<div class=fold-body>{drop_card}</div></details>")
     body = (COPY_JS + REWRITE_JS + ok_banner + saved2 + status_card + setup_hint + notice_card +
             "<section id=choose-content><h2 class=section-heading>어떤 콘텐츠를 올릴까요?</h2>"
-            + rooms_hub(token) + f"<p><a class=action-secondary href='/my-content?t={_q(token)}'>내가 받은 콘텐츠 모아보기 →</a></p></section>" + submit + activity_panel + hist_card + setup_panel + drops_panel + help_panel)
+            + rooms_hub(token) + f"<p><a class=action-secondary href='/my-content?t={_q(token)}'>내가 받은 콘텐츠 모아보기 →</a></p></section>" + submit + school_notice_card(notice) + activity_panel + hist_card + setup_panel + drops_panel + help_panel)
 
     return shell_portal(name, f"{esc(name)}님의 작업실", body, token)
 
@@ -2304,6 +2323,8 @@ class Handler(BaseHTTPRequestHandler):
                 return self._send(view_join(qs))
             if u.path == "/find":
                 return self._send(view_find(qs))
+            if u.path == "/notice":
+                return self._send(view_school_notice())
             if u.path == "/me":
                 page = view_me(qs)
                 if page is None:

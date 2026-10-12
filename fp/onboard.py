@@ -48,49 +48,17 @@ def _account_id(code: str | None) -> str:
 
 # 파트너 유형별: 공지 템플릿 + 판매링크 슬롯(키, 라벨)
 TYPE_REGISTRY = {
-    "family": {
-        "label": "메이크패밀리 파트너스",
-        "desc": "기존 패밀리회원(평생회원) · 강의 3종 판매",
-        "file": "kakao_notice.txt",
-        "slots": [
-            ("LINK_FAMILYDAY", "패밀리데이 모집링크"),
-            ("LINK_AIMAX", "AIMAX 창업프로그램 링크"),
-            ("LINK_SECONDBRAIN", "제2의 뇌 링크"),
-            ("LINK_FAMILYMEMBER", "패밀리 회원 모집"),
-        ],
-    },
-    "aimax": {
-        "label": "AIMAX 파트너스",
-        "desc": "AIMAX 창업프로그램 수강생 · AI 직원/서비스 판매",
-        "file": "kakao_notice_aimax.txt",
-        "slots": [
-            ("AI_YERI", "블로그 직원 예리씨"),
-            ("AI_NAKYUNG", "판서쌤 나경씨"),
-            ("AI_SANGSOO", "경리 상수씨"),
-            ("AI_YUNMI", "스크립트 작가 윤미씨"),
-            ("AI_SONGI", "자료조사원 송이씨"),
-            ("AI_JIEUN", "오피스매니저 지은씨"),
-            ("AI_MAX", "PC 알람앱 맥스"),
-        ],
-    },
-    "both": {
-        "label": "둘 다 (통합)",
-        "desc": "둘 다 수강 · 강의 + AI 직원 전부 판매",
-        "file": "kakao_notice_both.txt",
-        "slots": [
-            ("B_FAMILYDAY", "패밀리데이 모집링크"),
-            ("B_STARTUP", "AIMAX 창업프로그램 링크"),
-            ("B_SECONDBRAIN", "제2의 뇌 링크"),
-            ("B_FAMILYMEMBER", "패밀리 회원 모집"),
-            ("B_YERI", "블로그 직원 예리씨"),
-            ("B_NAKYUNG", "판서쌤 나경씨"),
-            ("B_SANGSOO", "경리 상수씨"),
-            ("B_YUNMI", "스크립트 작가 윤미씨"),
-            ("B_SONGI", "자료조사원 송이씨"),
-            ("B_JIEUN", "오피스매니저 지은씨"),
-            ("B_MAX", "PC 알람앱 맥스"),
-        ],
-    },
+    key: {
+        "label": label,
+        "desc": "AI 직원 양성학교 모집",
+        "file": "kakao_notice_school.txt",
+        "slots": [("LINK_SCHOOL", "AI학교 개인 모집 링크")],
+    }
+    for key, label in (
+        ("family", "메이크패밀리 파트너스"),
+        ("aimax", "AIMAX 파트너스"),
+        ("both", "둘 다 (통합)"),
+    )
 }
 
 
@@ -216,6 +184,6 @@ def notice_text(ptype: str | None = "family", links: dict | None = None) -> str:
     for token, fname in COMMON_BLOCKS.items():
         notice = notice.replace("{{" + token + "}}", _read(fname).rstrip("\n"))
     for key, label in cfg["slots"]:
-        val = (links.get(key) or "").strip() or "(별도 발급 — 운영진에게 받아 넣기)"
+        val = (links.get(key) or "").strip() or "[개인 모집 링크 — 발급받은 뒤 넣어주세요]"
         notice = notice.replace("{{" + key + "}}", val)
     return notice
