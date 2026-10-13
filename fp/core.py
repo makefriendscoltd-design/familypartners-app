@@ -923,13 +923,14 @@ def all_drops(conn, limit: int = 365) -> list[sqlite3.Row]:
     ).fetchall()
 
 
-def published_drops(conn, as_of: date, limit: int = 365) -> list[sqlite3.Row]:
+def published_drops(conn, as_of: date, limit: int = 365, oldest_first: bool = False) -> list[sqlite3.Row]:
     """공개된 글감만 — drop_date <= 오늘(최신순). 미래(예약) 글감 제외.
 
     drop_date 는 'YYYY-MM-DD' 텍스트라 사전식 비교 = 날짜 비교(SQLite/PG 공통).
     """
+    direction = "ASC" if oldest_first else "DESC"
     return conn.execute(
-        "SELECT * FROM drops WHERE drop_date <= ? ORDER BY drop_date DESC, id DESC LIMIT ?",
+        f"SELECT * FROM drops WHERE drop_date <= ? ORDER BY drop_date {direction}, id {direction} LIMIT ?",
         (iso(as_of), limit),
     ).fetchall()
 

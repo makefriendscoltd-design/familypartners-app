@@ -677,11 +677,16 @@ def view_feed(qs, is_admin: bool = False) -> bytes:
     예약분은 파트너에게는 그 날짜가 되기 전까지 계속 숨겨진다.
     """
     conn = db.connect()
+    as_of = core.today()
+    total = conn.execute("SELECT COUNT(*) AS n FROM drops WHERE drop_date <= ?",
+                         (core.iso(as_of),)).fetchone()["n"]
+    order = "oldest" if qs.get("order", [""])[0] == "oldest" else "latest"
     try:
-        show = max(12, min(365, int((qs.get("n", ["60"])[0]))))
+        requested = max(12, int(qs.get("n", ["60"])[0]))
     except (ValueError, TypeError):
-        show = 60
-    rows = core.published_drops(conn, core.today(), show + 1)
+        requested = 60
+    show = min(requested, max(12, total))
+    rows = core.published_drops(conn, as_of, show + 1, oldest_first=order == "oldest")
     more = len(rows) > show
     rows = rows[:show]
     tiles, modals = [], []
@@ -770,10 +775,18 @@ def view_feed(qs, is_admin: bool = False) -> bytes:
     if tiles and more:
         _t = f"&t={esc(token)}" if token else ""
         body_html += (f"<div class=card style='text-align:center'>"
-                      f"<a class=lk href='/feed?n={show + 60}{_t}'>더 보기 ↓</a></div>")
+                      f"<a class=lk href='/feed?n={show + 60}&order={order}{_t}'>더 보기 ↓</a></div>")
+    sort_token = f"&t={esc(_q(token))}" if token else ""
+    sort_links = " ".join(
+        f"<a class=lk href='/feed?order={key}{sort_token}'"
+        + (" aria-current=true style='font-weight:700'" if order == key else "")
+        + f">{label}</a>"
+        for key, label in (("latest", "최신순"), ("oldest", "1일차부터 보기")))
     intro = ("<div class=card style='border-color:var(--acc)'><h2>📚 글감 피드</h2>"
              "<p class=empty>매일 올라오는 콘텐츠 보관함입니다. <b>늦게 들어와도 1일차부터 전부</b> 볼 수 있어요. "
-             "<b>썸네일을 누르면</b> 본문(복사)·사진·영상이 펼쳐집니다.</p></div>")
+             "<b>썸네일을 누르면</b> 본문(복사)·사진·영상이 펼쳐집니다.</p>"
+             f"<nav aria-label='글감 정렬'>{sort_links}</nav>"
+             f"<p class=empty>전체 {total}개 중 {len(rows)}개 표시</p></div>")
     return shell_portal("글감 피드", "매일 콘텐츠 보관함",
                         COPY_JS + LAZY_JS + intro + sched_html + body_html, token)
 
