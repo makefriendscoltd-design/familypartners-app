@@ -1,4 +1,4 @@
-"""패밀리 파트너스 일일 챌린지 운영 CLI.
+"""AI사장학교 서포터즈 일일 챌린지 운영 CLI.
 
 사용 예:
     python -m fp init
@@ -59,7 +59,7 @@ def cmd_partner(args):
         if not p:
             _p(f"파트너를 찾을 수 없음: {args.who}"); sys.exit(1)
         if args.action == "reactivate":
-            # 복구는 강퇴 때 걸린 그 달 수익 몰수까지 같이 푼다
+            # 복구는 경고를 0회로 되돌리고, 이전 규칙의 몰수 표시가 있으면 같이 푼다
             res = core.restore_partner(conn, p["id"], args.reason)
             extra = f" · {res['month']} 몰수 해제" if res["unforfeited"] else ""
             _p(f"{p['name']} → active" + (f" ({args.reason})" if args.reason else "") + extra)
@@ -140,9 +140,10 @@ def cmd_report(args):
     _p(f"\n{C_YEL}⏳ 위험군 — 오늘 아직 미제출 ({len(b['at_risk'])}){C_RESET}")
     for s in b["at_risk"]:
         _p(f"   {s.name:<10} {C_DIM}{s.handle or '-'}{C_RESET}  현재 {s.streak}일 연속 · 마감 전 리마인더 필요")
-    _p(f"\n{C_RED}⛔ 강퇴 후보 — 어제 빵꾸 ({len(b['kick'])}){C_RESET}")
+    _p(f"\n{C_RED}⚠️ 경고/자격 종료 대상 — 어제 누락 ({len(b['kick'])}){C_RESET}")
     for s in b["kick"]:
-        _p(f"   {s.name:<10} {C_DIM}{s.handle or '-'}{C_RESET}  {s.row['contact'] or '-'}")
+        _p(f"   {s.name:<10} {C_DIM}{s.handle or '-'}{C_RESET}  {s.row['contact'] or '-'}"
+           f"  경고 {s.warns}/{core.WARN_LIMIT}")
     if not b["kick"]:
         _p(f"   {C_DIM}없음{C_RESET}")
     _p(f"\n{C_DIM}리마인더 메시지: python -m fp reminders"
@@ -161,7 +162,7 @@ def cmd_reminders(args):
             tgt = s.row["contact"] or (s.handle or s.name)
             _p(f"\n▶ {s.name}  ({tgt})\n{messages.reminder(s.name, s.streak)}")
     if b["kick"]:
-        _p(f"\n[강퇴 후보 — 경고]")
+        _p(f"\n[어제 누락 — 경고 안내]")
         for s in b["kick"]:
             tgt = s.row["contact"] or (s.handle or s.name)
             _p(f"\n▶ {s.name}  ({tgt})\n{messages.warning(s.name)}")
@@ -183,7 +184,7 @@ def cmd_sms(args):
            f"발신번호 {_os.environ.get('PPURIO_CALLER_NUMBER')}")
         return
     if args.to:
-        text = args.text or "[패밀리 파트너스] 테스트 문자입니다."
+        text = args.text or "[AI사장학교 서포터즈] 테스트 문자입니다."
         res = ppurio.send_sms([{"phone": args.to}], text)
         _p(f"{C_GREEN}발송 완료{C_RESET} — {res['type']} {res['sent']}건"
            + (f", 건너뜀 {res['skipped']}" if res['skipped'] else ""))
@@ -319,14 +320,17 @@ def cmd_enforce(args):
     conn = db.connect()
     as_of = core.parse_date(args.date)
     targets = core.enforce(conn, as_of, dry_run=not args.yes)
+    _p(f"{C_DIM}경고 시행일 {core.iso(core.warn_start(conn))} (이전 누락은 경고 안 함){C_RESET}")
     if not targets:
-        _p("강퇴 대상 없음 — 어제 전원 발행 완료 👍"); conn.close(); return
-    head = "강퇴 집행 완료" if args.yes else "강퇴 대상 (미리보기 — 실제 집행하려면 --yes)"
-    _p(f"{C_RED}⛔ {head} ({len(targets)}명){C_RESET}")
+        _p("경고 대상 없음 👍"); conn.close(); return
+    head = "경고 집행 완료" if args.yes else "경고 대상 (미리보기 — 실제 집행하려면 --yes)"
+    _p(f"{C_RED}⚠️ {head} ({len(targets)}명){C_RESET}")
     for t in targets:
-        _p(f"   {t['name']:<10} {t['handle'] or '-'}  {t['contact'] or '-'}  → {t['month']} 수익 몰수")
+        end = "  → 자격 종료" if t["kicked"] else ""
+        _p(f"   {t['name']:<10} {t['handle'] or '-'}  {t['contact'] or '-'}  누락 "
+           f"{', '.join(t['dates']) or '-'}  경고 {t['warns_before']}→{t['warns']}/{core.WARN_LIMIT}{end}")
     if args.yes:
-        _p(f"\n{C_DIM}강퇴 + 당월 수익 몰수 처리됨.{C_RESET}")
+        _p(f"\n{C_DIM}경고 기록 + 경고 {core.WARN_LIMIT}회 자격 종료 처리됨(몰수 없음).{C_RESET}")
     conn.close()
 
 
@@ -344,7 +348,7 @@ def cmd_settle(args):
     _p(f"{'이름':<10} {'상태':<8} {'건수':>4} {'매출':>12} {'쉐어정산':>12}  비고")
     tot_g = tot_s = 0
     for r in sorted(rep, key=lambda x: -x["gross"]):
-        note = "몰수" if r["forfeited"] else ""
+        note = "몰수(이전 규칙)" if r["forfeited"] else ""
         _p(f"{r['name']:<10} {r['status']:<8} {r['count']:>4} "
            f"{products.won(r['gross']):>12} {products.won(r['share']):>12}  {note}")
         tot_g += r["gross"]; tot_s += r["share"]
@@ -421,7 +425,7 @@ def cmd_serve(args):
 
 # --------------------------------------------------------------------------- #
 def build_parser() -> argparse.ArgumentParser:
-    ap = argparse.ArgumentParser(prog="fp", description="패밀리 파트너스 일일 챌린지 운영")
+    ap = argparse.ArgumentParser(prog="fp", description="AI사장학교 서포터즈 일일 챌린지 운영")
     sub = ap.add_subparsers(dest="cmd", required=True)
 
     sub.add_parser("init", help="DB 초기화").set_defaults(func=cmd_init)
@@ -481,7 +485,7 @@ def build_parser() -> argparse.ArgumentParser:
     sl.add_argument("--who"); sl.add_argument("--product"); sl.add_argument("--amount")
     sl.add_argument("--date"); sl.add_argument("--ref"); sl.add_argument("--csv")
 
-    ep = sub.add_parser("enforce", help="규칙 집행: 누락자 즉시 강퇴+당월 몰수")
+    ep = sub.add_parser("enforce", help="규칙 집행: 누락 1일=경고 1회, 경고 2회=자격 종료")
     ep.set_defaults(func=cmd_enforce)
     ep.add_argument("--date"); ep.add_argument("--yes", action="store_true", help="실제 집행")
 

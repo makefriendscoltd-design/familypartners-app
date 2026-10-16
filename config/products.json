@@ -33,6 +33,14 @@
       "share": 0.30,
       "base": "https://makefriends.example/membership",
       "desc": "평생 무제한 강의 수강 + 오프라인 모임 무료 참석"
+    },
+    {
+      "key": "ai-ceo-school",
+      "name": "AI사장학교",
+      "price": 3300000,
+      "share": 0.30,
+      "base": "https://TODO-ai-ceo-school-url",
+      "desc": "AI사장학교 입학"
     }
   ]
 }

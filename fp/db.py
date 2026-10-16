@@ -149,7 +149,7 @@ CREATE TABLE IF NOT EXISTS partners (
     link_familyday   TEXT,                    -- (구) 상품별 판매링크 — links_json 으로 대체
     link_aimax       TEXT,
     link_secondbrain TEXT,
-    partner_type TEXT DEFAULT 'family',       -- family / aimax / both (유형별 공지)
+    partner_type TEXT DEFAULT 'supporter',    -- supporter (구: family / aimax / both)
     links_json   TEXT                         -- 유형별 판매링크 {슬롯키: url} JSON
 );
 CREATE UNIQUE INDEX IF NOT EXISTS idx_partner_token ON partners(portal_token);
@@ -251,7 +251,7 @@ CREATE INDEX IF NOT EXISTS idx_sub_partner_date ON submissions(partner_id, post_
 CREATE TABLE IF NOT EXISTS events (
     id         INTEGER PRIMARY KEY AUTOINCREMENT,
     partner_id INTEGER REFERENCES partners(id) ON DELETE CASCADE,
-    type       TEXT NOT NULL,               -- kick / pause / reactivate / join / forfeit
+    type       TEXT NOT NULL,               -- kick / pause / reactivate / join / warn / warn_reset / forfeit(구)
     date       TEXT NOT NULL,               -- YYYY-MM-DD (forfeit 은 YYYY-MM)
     reason     TEXT
 );
@@ -336,7 +336,7 @@ def init_db() -> None:
                         "link_aimax", "link_secondbrain", "links_json"):
                 conn.execute(f"ALTER TABLE partners ADD COLUMN IF NOT EXISTS {col} TEXT")
             conn.execute("ALTER TABLE partners ADD COLUMN IF NOT EXISTS "
-                         "partner_type TEXT DEFAULT 'family'")
+                         "partner_type TEXT DEFAULT 'supporter'")
             conn.execute("ALTER TABLE library ADD COLUMN IF NOT EXISTS data_b64 TEXT")
             conn.execute("ALTER TABLE exclusive_videos ADD COLUMN IF NOT EXISTS "
                          "queued INTEGER NOT NULL DEFAULT 0")
@@ -363,7 +363,7 @@ def init_db() -> None:
                 if col not in cols:
                     conn.execute(f"ALTER TABLE partners ADD COLUMN {col} TEXT")
             if "partner_type" not in cols:
-                conn.execute("ALTER TABLE partners ADD COLUMN partner_type TEXT DEFAULT 'family'")
+                conn.execute("ALTER TABLE partners ADD COLUMN partner_type TEXT DEFAULT 'supporter'")
             lcols = {r["name"] for r in conn.execute("PRAGMA table_info(library)")}
             if "data_b64" not in lcols:
                 conn.execute("ALTER TABLE library ADD COLUMN data_b64 TEXT")
@@ -387,5 +387,31 @@ def init_db() -> None:
                     conn.execute(f"ALTER TABLE drops ADD COLUMN {col} {typ}")
             conn.execute("CREATE INDEX IF NOT EXISTS idx_sub_drop ON submissions(drop_id)")
             conn.commit()
+        _migrate_supporter(conn)
     finally:
         conn.close()
+
+
+def _setting(conn, key):
+    r = conn.execute("SELECT value FROM settings WHERE key=?", (key,)).fetchone()
+    return r["value"] if r else None
+
+
+def _put_setting(conn, key, value) -> None:
+    # ON CONFLICT 를 붙여야 Postgres 어댑터가 RETURNING id 를 덧붙이지 않는다(settings 엔 id 없음).
+    conn.execute("INSERT INTO settings(key, value) VALUES (?,?) "
+                 "ON CONFLICT(key) DO NOTHING", (key, value))
+
+
+def _migrate_supporter(conn) -> None:
+    """2026-10 서포터즈 장학제도 전환 — 마커로 1회만 실행(자동배포가 init 을 매번 부른다).
+    ① 기존 파트너 전원(상태 무관) partner_type='supporter'. links_json 등 데이터는 그대로 둔다.
+    ② 경고 시행일 warn_start_date 가 없으면 오늘(KST)로 기록 — 이전 누락은 경고하지 않는다."""
+    from datetime import datetime, timedelta, timezone
+    if _setting(conn, "warn_start_date") is None:
+        kst_today = datetime.now(timezone(timedelta(hours=9))).strftime("%Y-%m-%d")
+        _put_setting(conn, "warn_start_date", kst_today)
+    if _setting(conn, "migrated_supporter_v1") is None:
+        conn.execute("UPDATE partners SET partner_type='supporter'")
+        _put_setting(conn, "migrated_supporter_v1", "1")
+    conn.commit()

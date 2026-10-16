@@ -108,7 +108,7 @@ class WorkspaceLayoutTest(unittest.TestCase):
         self.assertEqual(kpis['오늘 완료(미션완료)'], 1)
         self.assertEqual(kpis['오늘 미제출'], 1)
         self.assertIn('오늘 제출 완료 1명', html)
-        self.assertIn('강퇴 대상', html)
+        self.assertIn('경고 대상', html)
         self.assertIn(f"/partner?id={pid}", html)
         self.assertLess(html.index('오늘 운영 현황'), html.index('id=content-management'))
         self.assertEqual(len(PageElements(html).ids), len(set(PageElements(html).ids)))

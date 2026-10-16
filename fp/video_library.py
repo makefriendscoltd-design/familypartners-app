@@ -164,7 +164,7 @@ def claim(conn, vid, token, name):
             conn.commit()
             return row
         if not row['published'] or row['claimed_at'] or row['claimed_by']:
-            raise LookupError('다른 파트너가 먼저 받았거나 배포가 끝난 영상이에요.')
+            raise LookupError('다른 서포터즈가 먼저 받았거나 배포가 끝난 영상이에요.')
         stamp = core.now_iso()  # Existing history uses Korea local timestamps.
         if daily_claim_count(conn, p['id'], stamp[:10]) >= DAILY_VIDEO_LIMIT:
             raise LookupError('오늘 받을 수 있는 영상을 이미 받았어요. 한국 시간 자정 이후에 새 영상을 받을 수 있어요. 이미 받은 영상은 다시 받을 수 있어요.')
@@ -174,7 +174,7 @@ def claim(conn, vid, token, name):
             "WHERE id=? AND published=1 AND claimed_at IS NULL AND claimed_by IS NULL RETURNING id",
             (p['id'], p['name'], stamp, vid)).fetchone()
         if not won:
-            raise LookupError('다른 파트너가 먼저 받은 영상이에요.')
+            raise LookupError('다른 서포터즈가 먼저 받은 영상이에요.')
         allocated = get_video(conn, vid)
         conn.commit()
         return allocated
@@ -224,7 +224,7 @@ def json_response(h, obj, status=200):
 
 def page(h, title, body, token=None, admin=False, status=200):
     from .server import shell, shell_portal
-    response(h, shell(title, body) if admin else shell_portal(title, '파트너 전용 영상', body, token), status)
+    response(h, shell(title, body) if admin else shell_portal(title, '서포터즈 전용 영상', body, token), status)
 
 
 def checked_csrf(h, fields, actor):
@@ -346,7 +346,7 @@ def listing(h, conn, p):
         body += f"<div class=card><h3>{esc(row['title'])}</h3>{again}" + source_link(row) + cafe_html + caption_box(caption_text(conn,row['id'])) + '</div>'
     if not owned:
         body += '<p>아직 받은 영상이 없어요.</p>'
-    page(h, '파트너 전용 영상', body + '</div>' + CAPTION_SCRIPT, p['portal_token'])
+    page(h, '서포터즈 전용 영상', body + '</div>' + CAPTION_SCRIPT, p['portal_token'])
 
 
 def dashboard_card(token=None, admin=False):
@@ -402,7 +402,7 @@ def admin_listing(h, conn):
     from .server import esc
     rows = conn.execute('SELECT * FROM exclusive_videos ORDER BY id DESC').fetchall()
     body = ("<div class=card><h2>영상 원본 올리기</h2><p>MP4 파일을 올려 주세요. "
-            f"최대 {MAX_VIDEO_BYTES // (1024*1024)}MB까지 받을 수 있어요. 올린 뒤 공개 버튼을 눌러야 파트너에게 보여요.</p>"
+            f"최대 {MAX_VIDEO_BYTES // (1024*1024)}MB까지 받을 수 있어요. 올린 뒤 공개 버튼을 눌러야 서포터즈에게 보여요.</p>"
             "<form id=video-upload><label>영상 제목 <input name=title required maxlength=120></label>"
             "<label>원본 파일 <input name=file type=file accept='.mp4,video/mp4' required></label>"
             "<button>비공개로 올리기</button><p id=upload-status role=status></p></form></div>")
@@ -624,17 +624,17 @@ def handle(h):
         if re.fullmatch(r'/videos/caption/\d+',u.path) and h.command=='GET':
             row=get_video(conn,int(u.path.rsplit('/',1)[1]))
             if not row or not (admin or sync or (p and row['claimed_by']==p['id'])):
-                raise PermissionError('배정받은 파트너만 캡션을 복사할 수 있어요.')
+                raise PermissionError('배정받은 서포터즈만 캡션을 복사할 수 있어요.')
             json_response(h,{'caption':caption_text(conn,row['id'])});return True
         if re.fullmatch(r'/videos/file/\d+',u.path) and h.command in ('GET','HEAD'):
             row=get_video(conn,int(u.path.rsplit('/',1)[1]))
             if not row or not (admin or sync or (p and row['claimed_by']==p['id'])):
-                raise PermissionError('배정받은 파트너만 원본을 받을 수 있어요.')
+                raise PermissionError('배정받은 서포터즈만 원본을 받을 수 있어요.')
             if row['purged_at']:
                 response(h,'보관 기간이 지나 원본을 정리했어요.',410);return True
             stream(h,row);return True
         if not p:
-            page(h,'파트너 전용 영상','<div class=card><h2>내 작업실에서 들어와 주세요</h2><p>파트너 확인 후 영상을 받을 수 있어요.</p><a href=/find>내 작업실 찾기</a></div>',status=403);return True
+            page(h,'서포터즈 전용 영상','<div class=card><h2>내 작업실에서 들어와 주세요</h2><p>서포터즈 확인 후 영상을 받을 수 있어요.</p><a href=/find>내 작업실 찾기</a></div>',status=403);return True
         if u.path=='/videos' and h.command=='GET':
             listing(h,conn,p)
         elif u.path=='/videos/available' and h.command=='GET':

@@ -1,8 +1,8 @@
-"""패밀리 파트너스 운영 대시보드 (로컬 웹 서버).
+"""AI사장학교 서포터즈 운영 대시보드 (로컬 웹 서버).
 
 표준 라이브러리 http.server 만 사용. 외부 의존성 0.
 읽기 전용 대시보드 — 오늘 챌린지 보드 / 리마인더 / 월 정산 / 온보딩 키트 / 오늘 글감.
-실제 변경(강퇴 집행 등)은 안전하게 CLI(`python -m fp enforce --yes`)로 둔다.
+경고/자격 종료 판정은 매일 00:10 /cron/enforce(systemd 타이머)와 CLI(`python -m fp enforce --yes`)로 돈다.
 
 실행:  python -m fp serve --port 8000  →  http://localhost:8000
 """
@@ -253,7 +253,7 @@ def shell(title: str, body: str) -> bytes:
     doc = (f"<!doctype html><html lang=ko><head><meta charset=utf-8>"
            f"<meta name=viewport content='width=device-width,initial-scale=1'>"
            f"<title>{esc(title)}</title><style>{CSS}</style></head><body class=admin-view>"
-           f"<header><a href='/' style='text-decoration:none'><h1>패밀리 파트너스</h1></a><span class=role-label>운영자 화면</span>"
+           f"<header><a href='/' style='text-decoration:none'><h1>AI사장학교 서포터즈</h1></a><span class=role-label>운영자 화면</span>"
            f"<nav>{nav}</nav></header>"
            f"<main>{body}</main>" + FOLD_JS + "</body></html>")
     return doc.encode("utf-8")
@@ -321,12 +321,12 @@ def quick_actions() -> str:
         f"<form method=post action=/op/partner>{_ipt('name','파트너 이름',True)}"
         f"{_ipt('handle','@핸들(비우면 자동발급)')}{_ipt('contact','연락처',False,True)}"
         f"<button>① 파트너 등록</button></form>"
-        "<p class=empty>판매링크 3개는 등록 후 <b>인원→상세→정보 수정</b>에서 넣으면 키트에 자동 삽입됩니다.</p>"
+        "<p class=empty>추천 입학 링크는 서포터즈가 작업실 STEP 3에서 넣으면 키트·공지에 자동으로 들어갑니다.</p>"
         f"<form method=post action=/op/submit>{_ipt('who','이름/@핸들',True)}"
         f"{_ipt('url','게시물 링크',True,True)}<button>② 제출 입력(출석)</button></form>"
         "<p class=empty style='margin-top:10px'>"
         "<a class=lk href=/reminders>✉ 보낼 메시지(리마인더)</a> · "
-        "<a class=lk href=/enforce>⛔ 강퇴 집행</a> · "
+        "<a class=lk href=/enforce>⚠️ 경고 집행</a> · "
         "<a class=lk href=/onboard>📋 온보딩 키트</a> · "
         "<a class=lk href=/library>📁 자료실(사진·영상)</a></p></div>"
     )
@@ -390,7 +390,7 @@ def view_dashboard(qs) -> str:
     all_statuses = b["done"] + b["at_risk"] + b["kick"]
     done_list = [st for st in all_statuses if st.posted_today]
     undone_list = [st for st in all_statuses if not st.posted_today]
-    kick_n = len(b["kick"])                   # 그중 어제도 빵꾸(강퇴 대상)
+    kick_n = len(b["kick"])                   # 그중 어제도 빵꾸(경고 대상)
 
     kpi = (f"<div class=kpi>"
            f"<div class=card><div class='big b-grn'>{len(done_list)}</div>"
@@ -429,7 +429,7 @@ def view_dashboard(qs) -> str:
                 "<div class=row>"
                 f"<a class='nm lk b-red' href='/partner?id={s.row['id']}'>{esc(s.name)}</a>"
                 f"<span class=hd>{esc(s.handle or '-')}</span>"
-                f"<span class=meta>{'오늘 제출 완료 · ' if s.posted_today else ''}{undone_meta(s)}</span>"
+                f"<span class=meta>{'오늘 제출 완료 · ' if s.posted_today else ''}{undone_meta(s)} · 경고 {s.warns}/{core.WARN_LIMIT}</span>"
                 f"<form method=post action=/op/excuse style='margin:0 0 0 10px' "
                 f"onsubmit=\"return confirm('{esc(s.name)}님 어제 출석을 인정(봐주기)할까요?')\">"
                 f"<input type=hidden name=pid value={s.row['id']}>"
@@ -486,14 +486,15 @@ def view_dashboard(qs) -> str:
     conn.close()
 
     enforce_note = ("" if not kick_n else
-                    f"<p class=empty>⚠️ 어제 빵꾸 {kick_n}명(강퇴 대상) — "
+                    f"<p class=empty>⚠️ 어제 누락 {kick_n}명(경고 대상) — 매일 00:10 자동 판정 · "
                     "<a class=lk href='/enforce'>처리 대상 확인</a></p>")
     kick_card = (
         f"<div class=card style='border-color:var(--red)'>"
         f"<h2 class=b-red>🔴 어제 미완료 — {len(b['kick'])}명 "
-        f"<span class=pill>강퇴 대상</span></h2>"
+        f"<span class=pill>경고 대상</span></h2>"
         f"<p class=empty style='margin:-4px 0 8px'>어제(필수일) 게시물이 확인되지 않은 분들입니다. "
-        f"사정이 있으면 <b>🙏 봐주기</b>로 어제 출석을 인정해 강퇴 대상에서 뺄 수 있습니다.</p>"
+        f"누락 1일 = 경고 1회, 경고 {core.WARN_LIMIT}회 = 자격 종료(시행일 이전 누락은 제외). "
+        f"사정이 있으면 <b>🙏 봐주기</b>로 어제 출석을 인정하면 그날 경고가 무효 처리됩니다.</p>"
         f"{kick_rows}{enforce_note}</div>")
     atrisk_card = (
         f"<div class=card><h2>⏳ 오늘 아직 미제출 — {len(b['at_risk'])}명 "
@@ -532,7 +533,7 @@ def view_settle(qs) -> str:
             "<th class=num>매출</th><th class=num>쉐어정산</th><th>비고</th></tr>"]
     tg = ts = 0
     for r in sorted(rep, key=lambda x: -x["gross"]):
-        note = "<span class=b-red>몰수</span>" if r["forfeited"] else ""
+        note = "<span class=b-red>몰수(이전 규칙)</span>" if r["forfeited"] else ""
         body.append(f"<tr><td>{esc(r['name'])}</td><td>{esc(r['status'])}</td>"
                     f"<td class=num>{r['count']}</td>"
                     f"<td class=num>{products.won(r['gross'])}</td>"
@@ -943,8 +944,8 @@ def shell_portal(title: str, sub: str, body: str, token: str | None = None) -> b
            f"<meta name=viewport content='width=device-width,initial-scale=1'>"
            f"<title>{esc(title)}</title><style>{CSS}</style></head><body>"
            f"<header><a href='{home}' style='text-decoration:none'>"
-           f"<h1>🤝 패밀리 파트너스</h1></a>"
-           f"<span class=role-label>파트너 작업실</span>"
+           f"<h1>🤝 AI사장학교 서포터즈</h1></a>"
+           f"<span class=role-label>서포터즈 작업실</span>"
            f"<nav style='margin-left:auto'>{nav}</nav></header>"
            f"<main>{body}</main>" + FOLD_JS + "</body></html>")
     return doc.encode("utf-8")
@@ -955,7 +956,7 @@ def school_notice_card(notice: str) -> str:
         "<section class=card id=school-notice>"
         "<h2>AI학교 공통공지</h2>"
         "<p>전체를 복사해서 내 카톡방 공지에 붙여넣으세요. "
-        "개인 모집 링크가 비어 있다면 발급받은 뒤 넣어주세요.</p>"
+        "추천 입학 링크가 비어 있다면 서포터즈 방에서 요청해 개별 링크를 받은 뒤 넣어주세요.</p>"
         f"<div><button type=button onclick=fpCopy(this)>공통공지 전체 복사</button>"
         f"<pre style='white-space:pre-wrap;overflow-wrap:anywhere'>{esc(notice)}</pre></div>"
         "</section>"
@@ -965,7 +966,7 @@ def school_notice_card(notice: str) -> str:
 def view_school_notice() -> bytes:
     return shell_portal("AI학교 공통공지", "", COPY_JS
                         + school_notice_card(onboard.notice_text())
-                        + "<p><a class=lk href='/find'>내 작업실에서 개인 모집 링크 설정하기 →</a></p>")
+                        + "<p><a class=lk href='/find'>내 작업실에서 추천 입학 링크 설정하기 →</a></p>")
 
 
 NOTION_URL = "https://makefriends.notion.site/372b31f1da558017943ce42c44793754"
@@ -978,56 +979,49 @@ def view_join(qs) -> bytes:
                "<b class=b-red>성함은 필수입니다.</b></div>")
     elif qs.get("blocked"):
         err = ("<div class=card style='border-color:var(--red)'>"
-               "<b class=b-red>강퇴 이력이 있어 재참여가 불가합니다.</b></div>")
+               "<b class=b-red>서포터즈 자격이 종료된 이력이 있어 다시 신청할 수 없습니다.</b></div>")
     elif qs.get("dup"):
         err = ("<div class=card style='border-color:var(--red)'>"
-               "<b class=b-red>이미 등록된 성함입니다.</b> 본인이면 운영자에게 작업실 링크를 요청하세요. "
-               "동명이인이면 성함 뒤에 구분을 붙여 등록하세요(예: 박상철A).</div>")
+               "<b class=b-red>이미 등록된 성함입니다.</b> 본인이면 운영진에게 작업실 링크를 요청하세요. "
+               "동명이인이면 성함 뒤에 구분을 붙여 등록하세요(예: 홍길동A).</div>")
     rules = (
-        "<div class=card style='border-color:var(--yel)'>"
-        "<h2 class=b-yel>📢 버는 만큼 빡셉니다</h2>"
-        "<p class=empty>참여비 없는 자율 프로그램입니다. 시작 전에 꼭 읽어주세요.</p></div>"
+        "<div class=card style='border-color:var(--acc)'>"
+        "<h2>AI사장학교 서포터즈 장학제도</h2>"
+        "<p class=empty>AI사장학교 재학생·졸업생이 신청할 수 있습니다. 상시 모집하며 기수는 없고, "
+        "졸업한 뒤에도 계속 활동할 수 있습니다.</p></div>"
 
-        "<div class=card><h2>1. 매일 업로드 해야 합니다</h2>"
-        "<p>· 누락 시 <b class=b-red>즉시 강퇴</b>됩니다.</p>"
-        "<p>· 개인 사정 안 봐드립니다.</p>"
-        "<p>· 강퇴되면 다시 참여 불가합니다.</p></div>"
+        "<div class=card><h2>1. 매일 하는 일</h2>"
+        "<p>· 매일 드리는 콘텐츠(인스타·유튜브 숏폼 영상, 스레드 글, 카드뉴스)를 본인 SNS에 올립니다.</p>"
+        "<p>· 올린 게시물 링크를 작업실에 제출하면 인증됩니다.</p>"
+        "<p>· 본인 오픈톡방을 운영합니다. 운영 안내는 서포터즈 단톡방에서 드립니다.</p></div>"
 
-        "<div class=card><h2>2. 할 일은 단순합니다</h2>"
-        "<p>· 스레드 아이디를 만든다</p>"
-        "<p>· 올리라는 콘텐츠를 올린다 <span class=empty>(콘텐츠 소스 다 드립니다)</span></p>"
-        "<p>· 본인 카톡방으로 유입시킨다 <span class=empty>(공지 설정 다 해드립니다)</span></p>"
-        "<p>· 질의에 답변만 해준다 <span class=empty>(모르면 대신 답변해드립니다)</span></p>"
-        "<p>· 판매되면 정산받는다</p></div>"
+        "<div class=card><h2>2. 추천 입학 장학금</h2>"
+        "<p>· 내 추천 입학 링크로 AI사장학교에 입학한 1명당 <b>990,000원</b>을 드립니다. "
+        "<span class=empty>(등록금 3,300,000원의 30%)</span></p>"
+        "<p>· 장학금은 매월 지급합니다.</p></div>"
 
-        "<div class=card><h2>3. 주마다 피드백합니다</h2>"
-        "<p>· 라이브 콘텐츠 피드백 · 자세한 일정은 추후 공지</p></div>"
+        "<div class=card style='border-color:var(--yel)'><h2>3. 경고 규칙</h2>"
+        "<p>· 인증이 빠진 날 하루마다 <b>경고 1회</b>가 쌓입니다. 주말·공휴일도 포함입니다.</p>"
+        "<p>· <b class=b-red>경고 2회</b>가 되면 서포터즈 자격이 종료되고, 다시 신청할 수 없습니다.</p>"
+        "<p>· 자격이 종료돼도 이미 확정된 추천 입학 장학금은 지급합니다.</p></div>"
 
-        "<div class=card><h2>4. 매월 정산합니다</h2>"
-        "<p>· 월초마다 판매된 만큼 정산</p>"
-        f"<p>· 정산 비율은 <a class=lk href='{NOTION_URL}' target=_blank>여기(노션 페이지)</a>에 기재</p></div>"
+        "<div class=card><h2>4. 매주 SNS 피드백</h2>"
+        "<p>· AI사장학교 박조교가 매주 SNS 피드백을 드립니다.</p></div>"
     )
     form = (
-        f"{err}<div class=card style='border-color:var(--acc)'><h2>참여 등록</h2>"
-        "<p class=empty>카톡방에 입장하셨다면 아래로 등록하세요. 등록하면 "
-        "<b>나만의 작업실 링크</b>(비번 없는 개인 페이지)가 생깁니다.</p>"
-        "<p class=empty><b>내 유형</b>을 골라주세요 — 수강한 프로그램에 따라 파는 상품이 달라요:</p>"
+        f"{err}<div class=card style='border-color:var(--acc)'><h2>서포터즈 신청</h2>"
+        "<p class=empty>신청하면 <b>나만의 작업실 링크</b>(비밀번호 없는 개인 페이지)가 만들어집니다.</p>"
         "<form method=post action=/join style='flex-wrap:wrap'>"
-        "<select name=ptype style=flex:1>"
-        "<option value=family>메이크패밀리 파트너스 — 기존 패밀리회원(강의 3종)</option>"
-        "<option value=aimax>AIMAX 파트너스 — 창업프로그램 수강생(AI 직원)</option>"
-        "<option value=both>둘 다 수강 — 통합(전부 판매)</option>"
-        "</select>"
+        "<input type=hidden name=ptype value=supporter>"
         "<input name=name placeholder='성함 (필수)' required>"
         "<input name=contact placeholder='연락처 (필수)' required style=flex:1>"
-        "<button>등록하고 내 작업실 링크 받기</button></form>"
-        "<p class=empty>※ 스레드 아이디는 등록 후 작업실 STEP 1에서 직접 만들어 입력합니다.<br>"
-        "※ 운영 단톡방 닉네임은 <b>성함+연락처 뒤 4자리</b>로 변경해주세요. (예: 홍길동5678)</p></div>"
+        "<button>신청하고 내 작업실 링크 받기</button></form>"
+        "<p class=empty>※ SNS 계정은 신청 후 작업실 STEP 1에서 입력합니다.<br>"
+        "※ 서포터즈 단톡방 닉네임은 <b>성함+연락처 뒤 4자리</b>로 바꿔 주세요. (예: 홍길동5678)</p></div>"
     )
-    closing = ("<div class=card><p class=empty>안 하실 분은 나가셔도 됩니다. 감사합니다.<br>"
-               "이미 등록했는데 작업실 링크를 잃어버렸다면 → "
+    closing = ("<div class=card><p class=empty>이미 신청했는데 작업실 링크를 잃어버렸다면 → "
                "<a class=lk href='/find'>내 작업실 찾기</a></p></div>")
-    return shell_portal("합류", "참여 안내", rules + form + closing)
+    return shell_portal("서포터즈 신청", "AI사장학교 서포터즈", rules + form + closing)
 
 
 def view_find(qs) -> bytes:
@@ -1054,7 +1048,7 @@ def view_activity(conn, pid, *, admin=False, full=False) -> str:
     entries = data["all_active"] if full else data["leaders"]
     for entry in entries:
         handle = (entry["handle"] or "").strip().lstrip("@")
-        name = entry["name"] or "파트너"
+        name = entry["name"] or "서포터즈"
         masked = name[0] + "*" + (name[-1] if len(name) > 2 else "")
         label = ("@" + handle[:40]) if handle else masked
         if admin:
@@ -1068,16 +1062,16 @@ def view_activity(conn, pid, *, admin=False, full=False) -> str:
                     f"<td>{label}{' <span class=me-mark>나</span>' if is_me else ''}</td>"
                     f"<td class=num>{entry['count']:,}건</td>{total_cell}</tr>")
     total_header = "<th scope=col class=num>누적</th>" if admin else ""
-    caption = "활동 중인 파트너 전체 주간 순위" if full else "이번 주 등록 링크 순위 상위 5명"
+    caption = "활동 중인 서포터즈 전체 주간 순위" if full else "이번 주 등록 링크 순위 상위 5명"
     ranking = (f"<table class=activity-table><caption class=sr-only>{caption}</caption>"
-               f"<thead><tr><th scope=col>순위</th><th scope=col>파트너</th><th scope=col class=num>이번 주</th>{total_header}</tr></thead>"
+               f"<thead><tr><th scope=col>순위</th><th scope=col>서포터즈</th><th scope=col class=num>이번 주</th>{total_header}</tr></thead>"
                f"<tbody>{''.join(rows)}</tbody></table>") if rows else (
                "<p class=activity-empty>이번 주 등록된 링크가 아직 없어요. 첫 게시물을 등록해보세요.</p>")
     personal = (f"<div class=my-activity><span>내 순위 <strong>{my_rank}</strong></span>"
                 f"<span>이번 주 <strong>{mine['count']:,}건</strong></span>"
                 f"<span>내 누적 <strong>{mine['total']:,}건</strong></span></div>") if not admin else (
-                "<p><a class=lk href='/board'>전체 파트너 순위 보기 →</a></p>" if not full else
-                "<p class=activity-meta>활동 중인 파트너 전체를 표시합니다. 이름을 누르면 상세 기록을 볼 수 있어요.</p>")
+                "<p><a class=lk href='/board'>전체 서포터즈 순위 보기 →</a></p>" if not full else
+                "<p class=activity-meta>활동 중인 서포터즈 전체를 표시합니다. 이름을 누르면 상세 기록을 볼 수 있어요.</p>")
     return ("<section class=activity-panel id=activity aria-labelledby=activity-title>"
             "<div class=activity-heading><div><p class=section-kicker>함께 쌓는 활동 기록</p>"
             "<h2 id=activity-title>이번 주 활동 순위</h2></div>"
@@ -1085,14 +1079,14 @@ def view_activity(conn, pid, *, admin=False, full=False) -> str:
             "<div class=activity-grid><div class=activity-week>"
             f"<p class=activity-meta>이번 주 {data['participants']:,}명이 {data['weekly_posts']:,}건 등록했어요.</p>"
             f"{ranking}{personal}</div>"
-            "<div class=activity-total><h3>파트너스 누적 등록 링크</h3>"
+            "<div class=activity-total><h3>서포터즈 누적 등록 링크</h3>"
             f"<p class=activity-number>{data['total_posts']:,}<span>건</span></p>"
             f"<p>스레드 <strong>{data['channel_totals']['threads']:,}건</strong></p>"
             f"<p>인스타 <strong>{data['channel_totals']['instagram']:,}건</strong></p>"
             "<p class=activity-meta>함께 등록한 게시물 링크가 쌓여요.</p></div></div>"
             "<details class=activity-rules><summary>순위 집계 기준</summary>"
             "<p>스레드·인스타 게시물과 공유 링크를 등록한 시간을 기준으로, 매주 월요일 0시에 새 순위가 시작됩니다. "
-            "주간 순위는 활동 중인 파트너를 대상으로 하며, 누적 수에는 과거 참여자의 기록도 포함됩니다.</p>"
+            "주간 순위는 활동 중인 서포터즈를 대상으로 하며, 누적 수에는 과거 참여자의 기록도 포함됩니다.</p>"
             "<p>동일한 링크는 최초의 유효 제출 1건만 셉니다. 무효 제출과 프로필 주소는 제외하고, "
             "등록 수가 같으면 같은 순위입니다. 공유 주소가 다른 링크는 별도로 집계될 수 있습니다.</p>"
             "<p>플랫폼에서 업로드 여부나 조회수를 확인한 수치가 아닌, 작업실에 등록된 링크 기준입니다.</p>"
@@ -1112,12 +1106,16 @@ def view_me(qs) -> bytes | None:
 
     if p["status"] == "kicked":
         conn.close()
-        body = (f"<div class=card><h2 class=b-red>강퇴 처리됨</h2>"
-                f"<p class=empty>{esc(name)}님은 현재 강퇴 상태입니다. 재입장은 불가합니다.</p></div>")
-        return shell_portal(name, "강퇴", body)
+        body = (f"<div class=card><h2 class=b-red>서포터즈 자격 종료</h2>"
+                f"<p class=empty>{esc(name)}님은 서포터즈 자격이 종료됐습니다. 다시 신청할 수 없습니다.<br>"
+                f"이미 확정된 추천 입학 장학금은 지급합니다.</p></div>")
+        return shell_portal(name, "자격 종료", body)
 
     streak = core.streak_for(conn, p, as_of)
     posted = core.posted_today(conn, p["id"], as_of)
+    warns = core.warn_count(conn, p["id"])
+    warn_pill = (f"<span class='attendance-state{' b-red' if warns else ''}'>"
+                 f"경고 {warns}/{core.WARN_LIMIT}</span>")
 
     # 매일 사용하는 작업실의 첫 화면: 현재 상태와 다음 행동.
     state_title = "오늘 발행·제출 완료" if posted else "오늘 올릴 콘텐츠를 골라보세요"
@@ -1125,7 +1123,11 @@ def view_me(qs) -> bytes | None:
                   "글감·영상·카드뉴스 중 하나를 골라 SNS에 올리고, 게시물 링크를 제출하세요.")
     status_card = (f"<section class=workflow-hero><div><p class=section-kicker>{esc(name)}님의 작업실</p>"
                    f"<h2>{state_title}</h2><p>{state_copy}</p>"
-                   f"<span class=attendance-state>{'출석 완료' if posted else '오늘 제출 전'} · {streak}일 연속</span></div>"
+                   f"<span class=attendance-state>{'출석 완료' if posted else '오늘 제출 전'} · {streak}일 연속</span> {warn_pill}"
+                   + ("" if posted else
+                      f"<p class=empty>자정 전까지 1건 올리고 인증하지 않으면 경고 1회가 쌓입니다. "
+                      f"경고 {core.WARN_LIMIT}회면 서포터즈 자격이 종료됩니다.</p>")
+                   + "</div>"
                    "<a class=action-primary href='#submit'>이미 올렸어요 · 링크 제출</a></section>"
                    "<ol class=workflow-steps aria-label='매일 하는 순서'><li>콘텐츠 선택</li>"
                    "<li>내 SNS에 업로드</li><li>링크 제출로 출석</li></ol>")
@@ -1156,7 +1158,8 @@ def view_me(qs) -> bytes | None:
               f"<input type=hidden name=t value='{esc(token)}'>"
               f"<input name=url aria-label='게시물 링크' placeholder='발행한 게시물 링크 붙여넣기' required style='flex:1 1 220px'>"
               f"<select name=channel aria-label=채널><option value=threads>스레드</option>"
-              f"<option value=instagram>인스타</option><option value=blog>블로그</option>"
+              f"<option value=instagram>인스타</option><option value=youtube>유튜브</option>"
+              f"<option value=blog>블로그</option>"
               f"<option value=etc>기타</option></select>"
               f"{drop_pick}<button>링크 제출하고 출석하기</button></form>"
               f"<p class=empty>게시물 링크를 제출하면 오늘 출석으로 기록됩니다. "
@@ -1217,7 +1220,7 @@ def view_me(qs) -> bytes | None:
                      f"<p class=empty>{feed_link}</p></div>")
     # 제출 폼 드롭다운의 글감 목록도 오늘 것이 위로 오도록 이미 정렬돼 있다.
 
-    # 내 판매 링크 (유형별 상품 — 운영진이 발급, 공지에 자동삽입)
+    # 내 추천 입학 링크 (서포터즈 방에서 요청 → 운영진이 개별 발급, 공지에 자동삽입)
     plinks = onboard.links_of(p)
     pslots = onboard.type_slots(p["partner_type"])
     lk_items = "".join(
@@ -1226,8 +1229,9 @@ def view_me(qs) -> bytes | None:
            if (plinks.get(key) or '').strip() else "<span class=meta>발급 대기</span>")
         + "</div>"
         for key, label in pslots)
-    link_card = (f"<div class=card><h2>내 판매 링크 — {esc(onboard.type_label(p['partner_type']))}</h2>{lk_items}"
-                 "<p class=empty>이 링크들이 단톡방 공지에 자동으로 들어갑니다. 이 링크로 들어온 결제가 내 실적입니다.</p></div>")
+    link_card = (f"<div class=card><h2>내 추천 입학 링크 — {esc(onboard.type_label(p['partner_type']))}</h2>{lk_items}"
+                 "<p class=empty>이 링크가 단톡방 공지에 자동으로 들어갑니다. "
+                 "이 링크로 입학한 분이 내 추천 실적이고, 1명당 장학금 990,000원을 매월 지급합니다.</p></div>")
 
     # 운영 공지 배너
     notices = core.active_notices(conn)
@@ -1284,34 +1288,33 @@ def view_me(qs) -> bytes | None:
              f"위에서부터 <b>순서대로</b> 따라하세요. ✅ = 완료된 단계입니다.</p></div>")
     step1 = (
         f"<div class=card style='border-color:{'var(--grn)' if has_handle else 'var(--yel)'}'>"
-        f"<h2>{ck(has_handle)} STEP 1. 스레드 계정 만들기</h2>"
-        "<p>① 스레드(Threads) 앱에서 <b>새 계정</b>을 만드세요. 아이디는 "
-        "<b>자유롭게</b> 정하면 됩니다. <b>자동으로 안 만들어지니 직접 만들어 주세요.</b></p>"
+        f"<h2>{ck(has_handle)} STEP 1. 본인 SNS 계정 준비</h2>"
+        "<p>① 콘텐츠를 올릴 <b>본인 SNS 계정</b>(인스타그램·유튜브·스레드)을 준비하세요. "
+        "스레드는 새 계정을 만들어도 됩니다. 아이디는 <b>자유롭게</b> 정하세요.</p>"
         "<p style='background:#fff7e6;border-left:3px solid var(--yel);padding:8px 10px;border-radius:6px'>"
-        "📷 <b>계정 생성 후 꼭 설정:</b> 모바일 우측 상단 <b>☰(짝대기 2~3개)</b> 클릭 → "
+        "📷 <b>스레드 계정을 만들었다면 꼭 설정:</b> 모바일 우측 상단 <b>☰(짝대기 2~3개)</b> 클릭 → "
         "<b>계정</b> → <b>미디어</b> → <b>‘고화질로 업로드’ 체크 필수</b></p>"
         "<p>② 프로필 소개글은 아래 그대로 복붙:</p>"
         f"<pre>{esc(profile)}</pre>"
-        "<p>③ <b>만든 스레드 아이디</b>를 입력하고 저장:</p>"
+        "<p>③ <b>스레드 아이디</b>(스레드를 안 쓰면 대표 SNS 아이디)를 입력하고 저장:</p>"
         "<form method=post action=/me/save>"
         f"<input type=hidden name=t value='{esc(token)}'>"
         f"<input name=handle value='{esc(p['handle'] or '')}' "
-        "placeholder='내가 만든 스레드 아이디' style=flex:1>"
+        "placeholder='내 SNS 아이디' style=flex:1>"
         "<button>저장</button></form></div>")
     step2 = (
         f"<div class=card style='border-color:{'var(--grn)' if has_oc else 'var(--ln)'}'>"
         f"<h2>{ck(has_oc)} STEP 2. 오픈톡방 개설</h2>"
         "<p>① 카카오톡 <b>오픈채팅(그룹) 3,000명</b>으로 개설.</p>"
         "<p style='background:#fff7e6;border-left:3px solid var(--yel);padding:8px 10px;border-radius:6px'>"
-        "👤 <b>내 방 프로필 닉네임을 아래로 변경하세요</b> (예전엔 ‘AIMAX 매니저’로 통일했는데, "
-        "이제 <b>성함을 붙입니다</b>):</p>"
-        f"<pre>AIMAX 매니저 ({esc(name)})</pre>"
+        "👤 <b>내 방 프로필 닉네임을 아래로 바꿔 주세요:</b></p>"
+        f"<pre>AI사장학교 서포터즈 ({esc(name)})</pre>"
         "<p>② 방 제목·소개(통일):</p>"
         f"<pre>[제목] {esc(onboard.OPENCHAT_TITLE)}\n\n[소개]\n{esc(onboard.OPENCHAT_INTRO)}</pre>"
         "<p>③ 아래 <b>공지를 복사</b>해서 <b>내 카톡방 ‘공지’에 직접 붙여넣으세요.</b></p>"
         "<p style='background:#fdecec;border-left:3px solid var(--red);padding:8px 10px;border-radius:6px'>"
         "⚠️ <b>카톡에 자동으로 안 올라갑니다.</b> 아래 [📋 공지 복사] 누르고 → 내 카톡방 공지에 붙여넣어야 해요. "
-        "(STEP 3에서 판매 링크를 넣으면 이 공지에 자동으로 채워지니, <b>링크 넣은 뒤 다시 복사</b>하세요.)</p>"
+        "(STEP 3에서 추천 입학 링크를 넣으면 이 공지에 자동으로 채워지니, <b>링크 넣은 뒤 다시 복사</b>하세요.)</p>"
         f"<div><pre>{esc(notice)}</pre>"
         "<button type=button class=ghost onclick=fpCopy(this)>📋 공지 복사</button></div>"
         "<p>④ <b>만든 오픈톡방 링크</b>를 입력하고 저장:</p>"
@@ -1326,9 +1329,9 @@ def view_me(qs) -> bytes | None:
         for key, label in slots)
     step3 = (
         f"<div class=card id=notice style='border-color:{'var(--grn)' if n_links == need else 'var(--ln)'}'>"
-        f"<h2>{ck(n_links == need)} STEP 3. AI학교 개인 모집 링크 넣기 <span class=pill>{n_links}/{need}</span></h2>"
-        "<p>운영자에게 카톡으로 <b>“AI학교 개인 모집 링크 발급 요청합니다”</b> → 받은 링크를 아래에 넣고 저장하세요. "
-        "(이 링크로 들어온 결제가 내 실적)</p>"
+        f"<h2>{ck(n_links == need)} STEP 3. 추천 입학 링크 넣기 <span class=pill>{n_links}/{need}</span></h2>"
+        "<p>서포터즈 방에 “추천 입학 링크 발급 요청합니다”라고 남기면 개별 링크를 만들어 드립니다. "
+        "받은 링크를 아래에 넣고 저장하세요.</p>"
         "<form method=post action=/me/links style='flex-wrap:wrap'>"
         f"<input type=hidden name=t value='{esc(token)}'>"
         f"{link_inputs}"
@@ -1343,12 +1346,14 @@ def view_me(qs) -> bytes | None:
         f"<div><pre>{esc(notice)}</pre>"
         "<button type=button class=ghost onclick=fpCopy(this)>📋 카톡방 공지 복사</button></div></div>")
     step4 = (
-        "<div class=card><h2>STEP 4. 매일 콘텐츠 올리고 제출</h2>"
+        "<div class=card><h2>STEP 4. 매일 콘텐츠 올리고 인증</h2>"
         "<p>글감방·영상방·카드뉴스방에서 올릴 콘텐츠를 고르세요. "
-        "영상과 이미지는 다운로드한 뒤 스레드나 인스타에 올리면 됩니다.</p>"
-        "<p>올린 게시물 링크를 작업실에 제출하면 출석으로 기록됩니다. "
-        "카톡으로 링크를 보내는 것만으로는 출석 처리되지 않습니다.</p>"
-        "<p>매일 자정 전 1건 이상 제출해야 합니다. 미제출 시 기존 강퇴 규칙이 적용됩니다.</p></div>")
+        "영상과 이미지는 다운로드한 뒤 본인 SNS(인스타·유튜브·스레드)에 올리면 됩니다.</p>"
+        "<p>올린 게시물 링크를 작업실에 제출하면 인증으로 기록됩니다. "
+        "카톡으로 링크를 보내는 것만으로는 인증되지 않습니다.</p>"
+        f"<p>매일 자정 전 1건 이상 제출해야 합니다. 인증이 빠진 날 하루마다 경고 1회가 쌓이고, "
+        f"경고 {core.WARN_LIMIT}회면 서포터즈 자격이 종료됩니다.</p>"
+        "<p>AI사장학교 박조교가 <b>매주 SNS 피드백</b>을 드립니다.</p></div>")
     setup = intro + step1 + step2 + step3 + step4
     find_note = ("<div class=card><p class=empty>💡 이 작업실 링크는 북마크하세요. 잃어버려도 "
                  "<a class=lk href='/find'>내 작업실 찾기</a>(성함+연락처)로 다시 들어올 수 있습니다.</p></div>")
@@ -1369,11 +1374,11 @@ def view_me(qs) -> bytes | None:
     setup_complete = has_handle and has_oc and n_links == need
     setup_open = " open" if not setup_complete or saved2_flag else ""
     setup_panel = (f"<details class=workspace-fold id=setup{setup_open}><summary>"
-                   f"{'계정·판매 링크 설정' if setup_complete else '처음이라면, 계정 설정부터'}"
+                   f"{'계정·추천 입학 링크 설정' if setup_complete else '처음이라면, 계정 설정부터'}"
                    f"<span>{'입력 완료' if setup_complete else '확인 필요'}</span></summary>"
                    f"<div class=fold-body>{setup}{link_card}{find_note}</div></details>")
     setup_hint = ("" if setup_complete else "<p class=setup-hint>처음 참여하셨나요? "
-                  "<a href='#setup'>계정과 판매 링크 설정을 확인하세요.</a></p>")
+                  "<a href='#setup'>계정과 추천 입학 링크 설정을 확인하세요.</a></p>")
     help_panel = ("<details class=workspace-fold id=help><summary>사용법 영상과 자료실</summary>"
                   f"<div class=fold-body>{guide_banner}{files_link}{wall_link}</div></details>")
     drops_panel = ("<details class=workspace-fold><summary>오늘 글감 미리 보기</summary>"
@@ -1392,7 +1397,7 @@ def view_wall(qs=None) -> bytes:
     kpi = (f"<div class=kpi>"
            f"<div class=card><div class='big b-grn'>{s['posted_today']}</div>"
            f"<div class=lb>오늘 발행</div></div>"
-           f"<div class=card><div class=big>{s['total']}</div><div class=lb>전체 파트너</div></div>"
+           f"<div class=card><div class=big>{s['total']}</div><div class=lb>전체 서포터즈</div></div>"
            f"<div class=card><div class='big b-yel'>{s['avg_streak']}</div>"
            f"<div class=lb>평균 연속일</div></div></div>")
     medals = ["🥇", "🥈", "🥉"]
@@ -1408,7 +1413,7 @@ def view_wall(qs=None) -> bytes:
             f"<div class=card><h2>오늘의 실행 랭킹</h2>{''.join(rows) or '<div class=empty>없음</div>'}"
             f"<p class=empty>혼자 가면 빠를 수 있습니다. 함께 가면 훨씬 크게 갈 수 있습니다.</p></div>")
     token = (qs or {}).get("t", [None])[0]
-    return shell_portal("인증 보드", "함께 성장하는 파트너", body, token)
+    return shell_portal("인증 보드", "서포터즈 인증 현황", body, token)
 
 
 def view_review(qs) -> str:
@@ -1462,6 +1467,7 @@ def view_people(qs) -> str:
     rows = core.all_partners(conn)
     conn.close()
     TYPE_BADGE = {
+        "supporter": ("서포터즈", "#eef2ff", "#4338ca"),
         "family": ("패밀리", "#e8f0fe", "#2563eb"),
         "aimax": ("AIMAX", "#e7f6ec", "#15803d"),
         "both": ("통합", "#fdf0e3", "#b45309"),
@@ -1471,7 +1477,7 @@ def view_people(qs) -> str:
         st_cls = {"active": "b-grn", "kicked": "b-red", "paused": "b-yel"}.get(r["status"], "")
         handle = (r["handle"] or "").strip()
         oc = (r["openchat_url"] or "").strip()
-        tlabel, tbg, tfg = TYPE_BADGE.get(r["partner_type"], TYPE_BADGE["family"])
+        tlabel, tbg, tfg = TYPE_BADGE.get(r["partner_type"], TYPE_BADGE["supporter"])
         type_badge = (f"<span style='background:{tbg};color:{tfg};font-size:12px;font-weight:600;"
                       f"padding:2px 9px;border-radius:10px;min-width:54px;text-align:center'>{tlabel}</span>")
         handle_html = (
@@ -1496,7 +1502,7 @@ def view_people(qs) -> str:
     listing = (f"<div class=card><h2>전체 인원 ({len(rows)})</h2>"
                f"<p class=empty>이름=상세 · <b>@아이디</b>=스레드 계정 열기 · "
                f"<b>💬톡방</b>=오픈톡방 열기 · <b>작업실</b>=참여자 화면. "
-               f"강퇴는 상세에서, 삭제는 완전 제거.</p>"
+               f"자격 종료·복구는 상세에서, 삭제는 완전 제거.</p>"
                f"{''.join(items) or '<div class=empty>아직 없음</div>'}</div>")
     reset = ("<div class=card style='border-color:var(--red)'>"
              "<h2 class=b-red>전체 초기화 (테스트 정리)</h2>"
@@ -1517,6 +1523,7 @@ def view_partner(qs) -> str:
         conn.close()
         return "<div class=card><h2>파트너를 찾을 수 없음</h2></div>"
     d = core.partner_detail(conn, p, core.today())
+    warns = core.warn_count(conn, p["id"])
     conn.close()
     r = d["row"]
     st_cls = {"active": "b-grn", "kicked": "b-red", "paused": "b-yel"}.get(r["status"], "")
@@ -1543,9 +1550,11 @@ def view_partner(qs) -> str:
             f"{'발행 ✅' if d['posted_today'] else '미발행 ⏳'} · 🔥 {d['streak']}일 연속</span></div>"
             f"<div class=row><span class=hd>제출</span><span class=meta>"
             f"유효 {d['total_valid']}건 / 무효 {d['total_void']}건</span></div>"
-            f"<div class=row><span class=hd>판매링크</span><span class=meta>"
+            f"<div class=row><span class=hd>경고</span><span class=meta>"
+            f"{warns}/{core.WARN_LIMIT}</span></div>"
+            f"<div class=row><span class=hd>추천 입학 링크</span><span class=meta>"
             f"{n_lk}/{len(pslots)} 입력됨 "
-            f"<span class=pill>파트너가 STEP 3에서 입력</span></span></div>"
+            f"<span class=pill>서포터즈가 STEP 3에서 입력</span></span></div>"
             f"<div class=row><span class=hd>작업실</span><span class=meta>"
             f"<a class=lk href='/me?t={esc(r['portal_token'] or '')}' target=_blank>"
             f"🔗 참여자가 보는 화면 열기</a></span></div></div>")
@@ -1553,9 +1562,9 @@ def view_partner(qs) -> str:
         head += (f"<div class=card style='border-color:var(--red)'>"
                  f"<h2 class=b-red>⛔ 현재 {esc(r['status'])} 상태</h2>"
                  f"<p class=empty>지금은 작업실에 접속할 수 없습니다"
-                 + (f" (강퇴일 {esc(r['kicked_date'])})" if r['kicked_date'] else "")
+                 + (f" (자격 종료일 {esc(r['kicked_date'])})" if r['kicked_date'] else "")
                  + ". 잘못 눌렀거나 사정을 봐주기로 했으면 아래로 되돌립니다 — "
-                 "접속이 바로 열리고, 강퇴 때 걸린 그 달 수익 몰수도 같이 풀립니다.</p>"
+                 "접속이 바로 열리고, 자격 종료였다면 경고는 0회로 초기화됩니다.</p>"
                  f"<form method=post action=/op/restore>"
                  f"<input type=hidden name=id value='{r['id']}'>"
                  f"<input name=reason placeholder='복구 사유(선택)' style=flex:1>"
@@ -1577,16 +1586,15 @@ def view_partner(qs) -> str:
             f"<form method=post action=/op/edit style='flex-wrap:wrap'>"
             f"<input type=hidden name=id value='{r['id']}'>"
             f"<select name=ptype style=flex:1>"
-            f"<option value=family{' selected' if r['partner_type']=='family' else ''}>메이크패밀리 파트너스</option>"
-            f"<option value=aimax{' selected' if r['partner_type']=='aimax' else ''}>AIMAX 파트너스</option>"
-            f"<option value=both{' selected' if r['partner_type']=='both' else ''}>둘 다</option>"
+            + "".join(f"<option value={k}{' selected' if onboard.norm_type(r['partner_type']) == k else ''}>"
+                      f"{esc(c['label'])}</option>" for k, c in onboard.TYPE_REGISTRY.items()) +
             f"</select>"
             f"<input name=handle value='{esc(r['handle'] or '')}' placeholder='스레드 아이디'>"
             f"<input name=contact value='{esc(r['contact'] or '')}' placeholder='연락처'>"
             f"<input name=openchat value='{esc(r['openchat_url'] or '')}' placeholder='오픈톡방 링크' style=flex:1>"
             f"<button>저장</button></form>"
-            f"<p class=empty>유형을 바꾸면 공지·판매링크 슬롯이 그 유형에 맞게 바뀝니다. "
-            f"판매링크는 파트너가 작업실 STEP 3에서 입력(여기선 위에 현황만).</p></div>")
+            f"<p class=empty>신규는 서포터즈만 씁니다(이전 유형은 기존 데이터 호환용). "
+            f"추천 입학 링크는 서포터즈가 작업실 STEP 3에서 입력(여기선 위에 현황만).</p></div>")
     return head + edit + sub_card + ev_card
 
 
@@ -1656,7 +1664,7 @@ def view_library(qs) -> str:
     return flash + upload + listing
 
 
-SMS_DEFAULT = ("[패밀리 파트너스] 오늘 콘텐츠 아직 안 올라왔어요!\n"
+SMS_DEFAULT = ("[AI사장학교 서포터즈] 오늘 콘텐츠 아직 안 올라왔어요!\n"
                "자정 전까지 1건 올리고 링크만 답장 주세요.\n"
                "하루 한 번이 쌓여 매출이 됩니다 🔥")
 
@@ -1756,34 +1764,47 @@ def view_reminders(qs=None) -> str:
 def view_enforce(qs) -> str:
     conn = db.connect()
     targets = core.enforce(conn, core.today(), dry_run=True)
+    start = core.warn_start(conn)
+    last = core.get_setting(conn, "enforce_last_run")
     conn.close()
+    head = (f"<div class=card><p class=empty>경고 시행일 <b>{core.iso(start)}</b> · "
+            "매일 00:10(KST) 자동 판정(문자 발송 없음)"
+            + (f" · 마지막 자동 실행: {esc(last)}" if last else "")
+            + ". 시행일 이전 누락은 경고하지 않습니다.</p></div>")
     done = qs.get("done")
-    head = ""
     if done:
         head = (f"<div class=card style='border-color:var(--grn)'>"
-                f"<b class=b-grn>{esc(done[0])}명 강퇴·몰수 처리 완료.</b></div>")
+                f"<b class=b-grn>경고 집행 완료 — {esc(done[0])}명 처리.</b></div>") + head
     if not targets:
-        return head + "<div class=card><h2>강퇴 집행</h2><div class=empty>어제 빵꾸난 사람 없음 👍</div></div>"
+        return head + "<div class=card><h2>경고 집행</h2><div class=empty>새로 경고할 사람 없음 👍</div></div>"
+
+    def _meta(t):
+        miss = ", ".join(t["dates"]) or "-"
+        end = " · <b class=b-red>자격 종료</b>" if t["kicked"] else ""
+        return (f"{esc(t['contact'] or '-')} · 누락 {esc(miss)} → "
+                f"경고 {t['warns_before']}→{t['warns']}/{core.WARN_LIMIT}{end}")
     rows = "".join(f"<div class=row><span class='nm b-red'>{esc(t['name'])}</span>"
                    f"<span class=hd>{esc(t['handle'] or '-')}</span>"
-                   f"<span class=meta>{esc(t['contact'] or '-')} → {t['month']} 수익 몰수</span></div>"
+                   f"<span class=meta>{_meta(t)}</span></div>"
                    for t in targets)
     return (head + f"<div class=card style='border-color:var(--red)'>"
-            f"<h2 class=b-red>⛔ 강퇴 대상 ({len(targets)}명)</h2>{rows}"
-            "<p class=empty>아래를 누르면 즉시 강퇴 + 그 달 수익 몰수됩니다. 되돌릴 수 없습니다.</p>"
+            f"<h2 class=b-red>⚠️ 경고 대상 ({len(targets)}명)</h2>{rows}"
+            f"<p class=empty>누르면 누락일마다 경고 1회가 기록되고, 경고 {core.WARN_LIMIT}회가 된 분은 "
+            "서포터즈 자격이 종료됩니다. 몰수는 없습니다. 잘못 처리된 자격 종료는 상세 화면의 복구로 되돌립니다.</p>"
             "<form method=post action=/op/enforce><button "
             "style='background:#fff;border-color:var(--red);color:var(--red)'>"
-            "강퇴 집행</button></form></div>")
+            "경고 집행</button></form></div>")
 
 
 def view_landing() -> bytes:
     body = (
         "<section class='workflow-hero public-home' id=partner-home><div>"
-        "<p class=section-kicker>패밀리 파트너스</p>"
+        "<p class=section-kicker>AI사장학교 서포터즈</p>"
         "<h2>오늘 올릴 콘텐츠,<br>여기서 준비하세요.</h2>"
-        "<p>글감·영상·카드뉴스를 골라 내 채널에 올리고, 작업실에 링크를 제출하세요.</p>"
+        "<p>글감·영상·카드뉴스를 골라 내 채널에 올리고, 작업실에 링크를 제출하세요. "
+        "추천으로 입학한 1명당 장학금 990,000원을 매월 지급합니다.</p>"
         "<div class=home-actions><a class=action-primary href='/find'>내 작업실 찾기 →</a>"
-        "<a class=action-secondary href='/join'>처음이라면 파트너 등록</a></div>"
+        "<a class=action-secondary href='/join'>처음이라면 서포터즈 신청</a></div>"
         "<p class=setup-hint>제출 내역과 활동 순위는 내 작업실에서 확인하세요.</p></div></section>"
         "<ol class=workflow-steps aria-label='참여 순서'><li>콘텐츠 받기</li>"
         "<li>내 채널에 올리기</li><li>작업실에 링크 제출</li></ol>"
@@ -1797,7 +1818,7 @@ def view_landing() -> bytes:
         + "<footer class=home-help><a class=lk href='/guide'>사용법 가이드</a>"
         "<a class=lk href='/login'>관리자 로그인</a></footer>"
     )
-    return shell_portal("패밀리 파트너스", "함께 성장하는 파트너", body)
+    return shell_portal("AI사장학교 서포터즈", "장학제도", body)
 
 
 GUIDE_VIDEO = "https://youtube.com/live/bqXinSUY9wo"
@@ -1811,7 +1832,7 @@ def view_guide(qs=None) -> bytes:
              if vid else
              f"<p><a class=lk href='{esc(GUIDE_VIDEO)}' target=_blank>▶ 가이드 영상 열기</a></p>")
     body = ("<div class=card style='border:2px solid var(--acc)'>"
-            "<h2>📖 패밀리 파트너스 사용법 영상</h2>"
+            "<h2>📖 서포터즈 사용법 영상</h2>"
             "<p class=empty style='margin-bottom:12px'>아래 영상 하나면 가입부터 매일 올리는 것까지 전부 나옵니다. "
             "막히면 이 영상부터 보세요.</p>"
             f"{embed}"
@@ -1882,6 +1903,30 @@ class Handler(BaseHTTPRequestHandler):
         msg = (f"cron-sms {core.iso(core.today())}: targets={len(stats)} "
                f"sent={sent} no_phone={len(stats) - len(recips)}"
                + (f" ERROR={err}" if err else ""))
+        return self._send(msg.encode("utf-8"), 500 if err else 200)
+
+    def _cron_enforce(self):
+        """매일 00:10(KST) 경고/자격 종료 자동 판정. CRON_SECRET 베어러 인증 필수.
+        문자·카톡은 보내지 않는다. 결과는 events(warn/kick)와 settings.enforce_last_run 에 남는다."""
+        secret = os.environ.get("CRON_SECRET")
+        auth = self.headers.get("Authorization") or ""
+        if not secret or auth != f"Bearer {secret}":
+            return self._send(b"unauthorized", 401)
+        as_of = core.today()
+        err = ""
+        conn = db.connect()
+        try:
+            done = core.enforce(conn, as_of, dry_run=False)
+            msg = (f"cron-enforce {core.iso(as_of)}: partners={len(done)} "
+                   f"warns={sum(len(t['dates']) for t in done)} "
+                   f"ended={sum(1 for t in done if t['kicked'])}")
+            core.set_setting(conn, "enforce_last_run", f"{core.now_iso()} {msg}")
+        except Exception as e:
+            err = str(e)
+            msg = f"cron-enforce {core.iso(as_of)}: ERROR={err}"
+        finally:
+            conn.close()
+        print(msg, flush=True)
         return self._send(msg.encode("utf-8"), 500 if err else 200)
 
     def _redirect(self, location: str):
@@ -2019,7 +2064,7 @@ class Handler(BaseHTTPRequestHandler):
                     return self._redirect("/join?dup=1")
                 try:
                     row = core.self_register(conn, name, None, contact or None,
-                                             partner_type=(f.get("ptype") or "family"))
+                                             partner_type=onboard.DEFAULT_TYPE)  # 가입 유형은 supporter 하나
                     token = row["portal_token"]
                 except Exception:
                     conn.close()
@@ -2039,6 +2084,8 @@ class Handler(BaseHTTPRequestHandler):
                         channel = "instagram"
                     elif host in ("threads.net", "threads.com") or host.endswith((".threads.net", ".threads.com")):
                         channel = "threads"
+                    elif host in ("youtube.com", "youtu.be") or host.endswith(".youtube.com"):
+                        channel = "youtube"
                     core.add_submission(conn, p["id"], url, channel,
                                         drop_id=int(did) if did.isdigit() else None)
                 conn.close()
@@ -2178,9 +2225,7 @@ class Handler(BaseHTTPRequestHandler):
             if u.path == "/op/edit":  # 운영자: 파트너 핸들/연락처 수정
                 pid = (f.get("id") or "").strip()
                 conn = db.connect()
-                ptype = (f.get("ptype") or "family")
-                if ptype not in ("family", "aimax", "both"):
-                    ptype = "family"
+                ptype = onboard.norm_type(f.get("ptype"))
                 conn.execute(
                     "UPDATE partners SET handle=?, contact=?, openchat_url=?, partner_type=? WHERE id=?",
                     ((f.get("handle") or "").strip() or None,
@@ -2188,7 +2233,7 @@ class Handler(BaseHTTPRequestHandler):
                      (f.get("openchat") or "").strip() or None, ptype, int(pid)))
                 conn.commit(); conn.close()
                 return self._redirect(f"/partner?id={pid}")
-            if u.path == "/op/restore":  # 운영자: 강퇴/중지 파트너 복구
+            if u.path == "/op/restore":  # 운영자: 자격 종료/중지 파트너 복구
                 pid = int(f.get("id", 0) or 0)
                 if not pid:
                     return self._redirect("/people?msg=" + _q("잘못된 요청입니다."))
@@ -2201,7 +2246,7 @@ class Handler(BaseHTTPRequestHandler):
                 if res["unforfeited"]:
                     msg += f" ({res['month']} 수익 몰수도 해제)"
                 return self._redirect(f"/partner?id={pid}&msg=" + _q(msg))
-            if u.path == "/op/enforce":  # 운영자: 강퇴 집행
+            if u.path == "/op/enforce":  # 운영자: 경고 집행(자동 판정과 같은 로직, 멱등)
                 conn = db.connect()
                 done = core.enforce(conn, core.today(), dry_run=False)
                 conn.close()
@@ -2218,7 +2263,7 @@ class Handler(BaseHTTPRequestHandler):
                                             post_date=yday, note="관리자 봐주기(수동 출석 인정)")
                     conn.close()
                     nm = p["name"] if p else "파트너"
-                    msg = f"{nm}님 어제({yday}) 출석을 수동 인정했습니다 — 강퇴 대상에서 제외."
+                    msg = f"{nm}님 어제({yday}) 출석을 수동 인정했습니다 — 그날 경고는 무효 처리."
                 return self._redirect("/?msg=" + _q(msg))
             if u.path == "/op/sms":  # 운영자: 미인증자 1명에게 문자 발송
                 conn = db.connect()
@@ -2322,6 +2367,8 @@ class Handler(BaseHTTPRequestHandler):
                 return self._guide_img(u.path[len("/guide-img/"):])
             if u.path == "/cron/sms":   # Vercel Cron(매일 21시 KST) — 시크릿 인증
                 return self._cron_sms()
+            if u.path == "/cron/enforce":   # systemd 타이머(매일 00:10 KST) — 시크릿 인증
+                return self._cron_enforce()
             if u.path == "/my-content":
                 from . import owned_content
                 return owned_content.handle(self, qs)
@@ -2366,13 +2413,13 @@ class Handler(BaseHTTPRequestHandler):
 
             # 운영자 대시보드
             if not db.is_postgres() and not db.db_path().exists() and u.path != "/favicon.ico":
-                body = shell("패밀리 파트너스", _no_db())
+                body = shell("AI사장학교 서포터즈", _no_db())
             elif u.path == "/":
                 body = shell("대시보드", view_dashboard(qs))
             elif u.path == "/reminders":
                 body = shell("보낼 메시지", view_reminders(qs))
             elif u.path == "/enforce":
-                body = shell("강퇴 집행", view_enforce(qs))
+                body = shell("경고 집행", view_enforce(qs))
             elif u.path == "/review":
                 body = shell("제출 검수", view_review(qs))
             elif u.path == "/perf":

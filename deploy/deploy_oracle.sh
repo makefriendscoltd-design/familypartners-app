@@ -66,10 +66,13 @@ FP_DB="$REMOTE_DIR/data/challenge.db" python3 -m fp init
 sudo cp "$REMOTE_DIR/deploy/familypartners.service"      /etc/systemd/system/familypartners.service
 sudo cp "$REMOTE_DIR/deploy/familypartners-sms.service"  /etc/systemd/system/familypartners-sms.service
 sudo cp "$REMOTE_DIR/deploy/familypartners-sms.timer"    /etc/systemd/system/familypartners-sms.timer
+sudo cp "$REMOTE_DIR/deploy/familypartners-enforce.service" /etc/systemd/system/familypartners-enforce.service
+sudo cp "$REMOTE_DIR/deploy/familypartners-enforce.timer"   /etc/systemd/system/familypartners-enforce.timer
 sudo systemctl daemon-reload
 sudo systemctl enable --now familypartners.service
 sudo systemctl restart familypartners.service
 sudo systemctl enable --now familypartners-sms.timer
+sudo systemctl enable --now familypartners-enforce.timer
 
 # Caddy 서브도메인 라우트 주입 + reload
 sudo python3 "$REMOTE_DIR/deploy/deploy_caddy_route.py"

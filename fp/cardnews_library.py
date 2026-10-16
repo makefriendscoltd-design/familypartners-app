@@ -96,7 +96,7 @@ def claim(conn, did, token, name):
             conn.commit()
             return row
         if not row['published'] or row['claimed_at'] or row['claimed_by']:
-            raise LookupError('다른 파트너가 먼저 받았거나 받을 수 없는 카드뉴스예요.')
+            raise LookupError('다른 서포터즈가 먼저 받았거나 받을 수 없는 카드뉴스예요.')
         stamp = core.now_iso()
         if daily_count(conn, p['id'], stamp[:10]) >= DAILY_CARDNEWS_LIMIT:
             raise LookupError('오늘 받을 수 있는 카드뉴스를 이미 받았어요. 한국 시간 자정 이후에 새로 받을 수 있어요.')
@@ -104,7 +104,7 @@ def claim(conn, did, token, name):
         won = conn.execute('UPDATE cardnews_decks SET claimed_by=?,claimed_name=?,claimed_at=? '
                            f'WHERE id=? AND {AVAILABLE} RETURNING id', (p['id'], p['name'], stamp, did)).fetchone()
         if not won:
-            raise LookupError('다른 파트너가 먼저 받은 카드뉴스예요.')
+            raise LookupError('다른 서포터즈가 먼저 받은 카드뉴스예요.')
         got = get_deck(conn, did)
         conn.commit()
         return got
@@ -350,7 +350,7 @@ def handle(h):
                     raise PermissionError('볼 수 없는 카드뉴스예요.')
                 vl.response(h, thumb_path(row).read_bytes(), kind='image/jpeg'); return True
             if not row or not (admin or sync or owner):
-                raise PermissionError('배정받은 파트너만 받을 수 있어요.')
+                raise PermissionError('배정받은 서포터즈만 받을 수 있어요.')
             if row['purged_at']:
                 vl.response(h, '보관 기간이 지나 원본을 정리했어요.', 410); return True
             path = deck_path(row)
@@ -358,7 +358,7 @@ def handle(h):
             vl.response(h, path.read_bytes(), kind='application/zip',
                         headers=[('Content-Disposition', f"attachment; filename*=UTF-8''{name}")]); return True
         if not p:
-            vl.page(h, '카드뉴스방', '<div class=card><h2>내 작업실에서 들어와 주세요</h2><p>파트너 확인 후 카드뉴스를 받을 수 있어요.</p>'
+            vl.page(h, '카드뉴스방', '<div class=card><h2>내 작업실에서 들어와 주세요</h2><p>서포터즈 확인 후 카드뉴스를 받을 수 있어요.</p>'
                     '<a href=/find>내 작업실 찾기</a></div>', status=403); return True
         if u.path == '/cardnews' and h.command == 'GET':
             got = qs.get('got', [''])[0]

@@ -16,7 +16,7 @@ class SchoolNoticeTest(unittest.TestCase):
             core.update_links(conn, 'token-a', {'LINK_SCHOOL': 'https://example.org/my-school'})
             links = onboard.links_of(core.find_by_token(conn, 'token-a'))
             self.assertEqual(links['LINK_AIMAX'], 'https://example.org/old-course')
-            for kind in ('family', 'aimax', 'both'):
+            for kind in ('supporter', 'family', 'aimax', 'both'):
                 notice = onboard.notice_text(kind, links)
                 self.assertIn('https://aixschool.kr/admission/', notice)
                 self.assertIn('https://example.org/my-school', notice)

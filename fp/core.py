@@ -1,11 +1,12 @@
 """일일 챌린지 판정 엔진.
 
-규칙
+규칙 (2026-10 AI사장학교 서포터즈 장학제도)
 ----
-- 파트너는 joined_date 부터 '매일' 콘텐츠를 1건 이상 제출해야 한다.
+- 서포터즈는 joined_date 부터 '매일' 콘텐츠를 1건 이상 제출해야 한다.
 - 어떤 날(post_date)에 제출이 1건이라도 있으면 그 날은 '커버됨'.
-- 오늘은 아직 마감 전이므로 강퇴 판정에서 제외(리마인더 대상).
-- 어제(이전 필수일)가 커버 안 됐으면 = 위반 = 강퇴 후보.
+- 오늘은 아직 마감 전이므로 판정에서 제외(리마인더 대상).
+- 커버 안 된 날 하루 = 경고 1회(warn 이벤트). 경고 2회 = 자격 종료(status kicked).
+- 시행일(settings.warn_start_date) 이전 누락은 경고하지 않는다. 몰수 없음.
 """
 from __future__ import annotations
 
@@ -15,7 +16,7 @@ import sqlite3
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta, timezone
 
-from . import db
+from . import db, onboard
 
 # 한국 표준시(UTC+9, DST 없음) — 모든 날짜/시각 판정 기준.
 # Vercel 서버리스는 UTC라서 이걸 안 쓰면 한국 자정과 9시간 어긋난다.
@@ -103,10 +104,9 @@ def gen_handle() -> str:
 
 
 def add_partner(conn, name, handle=None, contact=None, code=None, joined=None,
-                sales_url=None, partner_type="family") -> int:
+                sales_url=None, partner_type="supporter") -> int:
     handle = (handle or "").strip().lstrip("@") or None  # 자동생성 X — 본인이 만든 ID를 직접 입력
-    if partner_type not in ("family", "aimax", "both"):
-        partner_type = "family"
+    partner_type = onboard.norm_type(partner_type)
     j = iso(parse_date(joined))
     cur = conn.execute(
         "INSERT INTO partners(name, handle, contact, referral_code, joined_date, "
@@ -122,7 +122,7 @@ def add_partner(conn, name, handle=None, contact=None, code=None, joined=None,
     return pid
 
 
-def self_register(conn, name, handle=None, contact=None, partner_type="family") -> sqlite3.Row:
+def self_register(conn, name, handle=None, contact=None, partner_type="supporter") -> sqlite3.Row:
     """파트너 셀프 등록(포털). 추적코드 자동 발급, 가입일=오늘. 등록된 행 반환."""
     add_partner(conn, name, handle, contact, code=gen_code(), joined=None,
                 partner_type=partner_type)
@@ -130,7 +130,7 @@ def self_register(conn, name, handle=None, contact=None, partner_type="family") 
 
 
 def is_rejoin_blocked(conn, name, contact) -> bool:
-    """강퇴자 재참여 차단 — 이름 또는 연락처가 강퇴 명단과 일치하면 True."""
+    """자격 종료(kicked)자 재신청 차단 — 이름 또는 연락처가 종료 명단과 일치하면 True."""
     name = (name or "").strip()
     contact = (contact or "").strip()
     if not name and not contact:
@@ -197,8 +197,7 @@ def update_links(conn, token, links: dict) -> bool:
 
 
 def set_type(conn, pid, ptype) -> None:
-    if ptype not in ("family", "aimax", "both"):
-        ptype = "family"
+    ptype = onboard.norm_type(ptype)
     conn.execute("UPDATE partners SET partner_type=? WHERE id=?", (ptype, pid))
     conn.commit()
 
@@ -770,8 +769,9 @@ class PartnerStatus:
     row: sqlite3.Row
     posted_today: bool
     streak: int
-    missed_yesterday: bool      # 어제(이전 필수일) 빵꾸 → 강퇴 후보
+    missed_yesterday: bool      # 어제(이전 필수일) 빵꾸 → 경고 대상(시행일 이후일 때)
     total_posts: int
+    warns: int = 0              # 현재 유효 경고 수(WARN_LIMIT 에 닿으면 자격 종료)
 
     @property
     def name(self):
@@ -783,8 +783,9 @@ class PartnerStatus:
 
 
 def daily_board(conn, as_of: date) -> dict:
-    """오늘 운영 보드: 완료 / 위험군(오늘 미제출) / 강퇴후보(어제 빵꾸)."""
+    """오늘 운영 보드: 완료 / 위험군(오늘 미제출) / 어제 누락(경고 대상). 읽기 전용."""
     rows = conn.execute("SELECT * FROM partners WHERE status='active' ORDER BY id").fetchall()
+    start = warn_start(conn)
     done, at_risk, kick = [], [], []
     for r in rows:
         joined = datetime.strptime(r["joined_date"], "%Y-%m-%d").date()
@@ -802,6 +803,7 @@ def daily_board(conn, as_of: date) -> dict:
             streak=current_streak(conn, r["id"], joined, as_of),
             missed_yesterday=missed_yday,
             total_posts=total,
+            warns=warn_count(conn, r["id"], start),
         )
         if missed_yday:
             kick.append(st)
@@ -990,8 +992,8 @@ def unforfeit_month(conn, pid, ym: str) -> int:
 
 
 def restore_partner(conn, pid, reason=None) -> dict:
-    """강퇴/일시중지된 파트너를 다시 활성으로 되돌린다.
-    강퇴 시 걸린 그 달 수익 몰수도 같이 푼다(강퇴가 오조작이었을 때가 대부분)."""
+    """자격 종료/일시중지된 파트너를 다시 활성으로 되돌린다.
+    자격 종료였으면 경고 수를 0으로 되돌리고(warn_reset 이벤트), 이전 규칙에서 걸린 그 달 몰수 표시도 같이 푼다."""
     row = conn.execute(
         "SELECT name, status, kicked_date FROM partners WHERE id=?", (pid,)
     ).fetchone()
@@ -999,6 +1001,10 @@ def restore_partner(conn, pid, reason=None) -> dict:
         return {"ok": False, "name": "", "unforfeited": 0}
     ym = (row["kicked_date"] or "")[:7] or None
     set_status(conn, pid, "active", reason=reason or "운영자 복구")
+    if row["status"] == "kicked":   # 일시정지 해제는 경고를 그대로 둔다
+        conn.execute("INSERT INTO events(partner_id, type, date, reason) VALUES (?,?,?,?)",
+                     (pid, "warn_reset", iso(today()), "복구로 경고 초기화"))
+        conn.commit()
     n = unforfeit_month(conn, pid, ym) if ym else 0
     return {"ok": True, "name": row["name"], "was": row["status"],
             "month": ym, "unforfeited": n}
@@ -1011,25 +1017,107 @@ def is_forfeited(conn, pid, ym: str) -> bool:
     ).fetchone() is not None
 
 
-def enforce(conn, as_of: date, dry_run: bool = True) -> list[dict]:
-    """규칙 집행: 어제 누락한 활성 파트너를 즉시 강퇴 + 그 달 수익 몰수.
-    dry_run=True 면 대상만 반환하고 실제 변경하지 않음."""
-    board = daily_board(conn, as_of)
+# --------------------------------------------------------------------------- #
+# 경고 / 자격 종료 (서포터즈 장학제도)
+# --------------------------------------------------------------------------- #
+WARN_LIMIT = 2              # 경고 2회 = 서포터즈 자격 종료
+AUTO_WARN_TAG = "인증 누락"  # 자동 경고 reason 접두어(봐주기로 출석 인정되면 무효 처리 기준)
+
+
+def warn_start(conn, write: bool = False) -> date:
+    """경고 시행일. 이 날짜 이전 누락은 경고하지 않는다(배포 직후 일괄 자격 종료 방지).
+    설정이 없으면 오늘(KST). write=True 면 그 값을 settings 에 최초 1회 기록한다."""
+    v = get_setting(conn, "warn_start_date")
+    if v:
+        try:
+            return parse_date(v)
+        except ValueError:
+            pass
+    d = today()
+    if write:
+        set_setting(conn, "warn_start_date", iso(d))
+    return d
+
+
+def _judge_from(conn, row, start: date) -> date:
+    """경고 판정 시작일 = max(시행일, 가입일, 마지막 재활성일).
+    일시정지 → 재활성된 사람은 정지 기간을 누락으로 세지 않는다."""
+    d = max(start, datetime.strptime(row["joined_date"], "%Y-%m-%d").date())
+    r = conn.execute("SELECT MAX(date) d FROM events WHERE partner_id=? AND type='reactivate'",
+                     (row["id"],)).fetchone()
+    if r and r["d"]:
+        d = max(d, parse_date(r["d"]))
+    return d
+
+
+def warn_events(conn, pid, start: date | None = None) -> list:
+    """현재 유효한 경고 목록. 시행일 이전·마지막 warn_reset(복구) 이전 경고는 제외.
+    자동 경고는 그 날짜가 나중에 출석 인정(봐주기)되면 무효로 본다."""
+    start = start or warn_start(conn)
+    r = conn.execute("SELECT MAX(id) m FROM events WHERE partner_id=? AND type='warn_reset'",
+                     (pid,)).fetchone()
+    reset_id = (r["m"] if r else None) or 0
+    rows = conn.execute(
+        "SELECT id, date, reason FROM events WHERE partner_id=? AND type='warn' "
+        "AND id>? AND date>=? ORDER BY date, id", (pid, reset_id, iso(start)),
+    ).fetchall()
+    cov = covered_dates(conn, pid)
+    return [e for e in rows
+            if not ((e["reason"] or "").startswith(AUTO_WARN_TAG) and e["date"] in cov)]
+
+
+def warn_count(conn, pid, start: date | None = None) -> int:
+    return len(warn_events(conn, pid, start))
+
+
+def missed_dates(conn, row, as_of: date, start: date | None = None) -> list[str]:
+    """경고할 누락일: 판정 시작일 ~ 어제 중 인증이 없고 아직 경고하지 않은 날짜(밀린 날 포함)."""
+    start = start or warn_start(conn)
+    d = _judge_from(conn, row, start)
     yday = as_of - timedelta(days=1)
-    ym = yday.strftime("%Y-%m")
+    cov = covered_dates(conn, row["id"])
+    warned = {e["date"] for e in conn.execute(
+        "SELECT date FROM events WHERE partner_id=? AND type='warn'", (row["id"],))}
     out = []
-    for s in board["kick"]:
-        out.append({"id": s.row["id"], "name": s.name,
-                    "handle": s.handle, "contact": s.row["contact"], "month": ym})
-        if not dry_run:
-            reason = f"{iso(yday)} 미발행(1회 누락 즉시 강퇴)"
-            set_status(conn, s.row["id"], "kicked", iso(as_of), reason)
-            forfeit_month(conn, s.row["id"], ym, "누락 강퇴로 당월 수익 몰수")
+    while d <= yday:
+        if iso(d) not in cov and iso(d) not in warned:
+            out.append(iso(d))
+        d += timedelta(days=1)
+    return out
+
+
+def enforce(conn, as_of: date, dry_run: bool = True) -> list[dict]:
+    """규칙 집행: 활성 서포터즈의 누락일마다 경고 1회, 경고 2회면 자격 종료(kicked).
+    몰수 없음. 같은 날짜 경고는 다시 넣지 않으므로 하루에 여러 번 돌려도 같다.
+    dry_run=True 면 대상만 반환하고 실제 변경하지 않음."""
+    start = warn_start(conn, write=not dry_run)
+    rows = conn.execute("SELECT * FROM partners WHERE status='active' ORDER BY id").fetchall()
+    out = []
+    for r in rows:
+        new = missed_dates(conn, r, as_of, start)
+        before = warn_count(conn, r["id"], start)
+        after = before + len(new)
+        kick = after >= WARN_LIMIT
+        if not new and not kick:
+            continue
+        out.append({"id": r["id"], "name": r["name"], "handle": r["handle"],
+                    "contact": r["contact"], "dates": new,
+                    "warns_before": before, "warns": after, "kicked": kick})
+        if dry_run:
+            continue
+        for d in new:
+            conn.execute("INSERT INTO events(partner_id, type, date, reason) VALUES (?,?,?,?)",
+                         (r["id"], "warn", d, f"{AUTO_WARN_TAG} {d}"))
+        conn.commit()
+        if kick:
+            set_status(conn, r["id"], "kicked", iso(as_of),
+                       f"경고 {after}회 — 서포터즈 자격 종료")
     return out
 
 
 def settle(conn, year: int, month: int) -> list[dict]:
-    """월 정산: 파트너별 매출·쉐어액. 그 달 몰수 대상이면 정산액 0."""
+    """월 정산: 파트너별 매출·쉐어액.
+    서포터즈 전환(2026-10) 후에는 몰수를 새로 걸지 않는다. 이전 규칙으로 남은 forfeit 표시만 반영."""
     from . import products as _products
     ym = f"{year}-{month:02d}"
     first = date(year, month, 1)

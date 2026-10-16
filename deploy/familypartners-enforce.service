@@ -1,0 +1,11 @@
+[Unit]
+Description=Family Partners daily warning check (서포터즈 경고/자격 종료 자동 판정 — 문자 발송 없음)
+After=network.target familypartners.service
+Requires=familypartners.service
+
+[Service]
+Type=oneshot
+EnvironmentFile=/home/ubuntu/familypartners/.env
+# /cron/enforce 는 GET + Authorization: Bearer $CRON_SECRET 인증 (fp/server.py _cron_enforce)
+# 결과 한 줄이 journal 에 남는다: journalctl -u familypartners-enforce
+ExecStart=/usr/bin/curl -fsS -m 90 -H "Authorization: Bearer ${CRON_SECRET}" http://127.0.0.1:18790/cron/enforce

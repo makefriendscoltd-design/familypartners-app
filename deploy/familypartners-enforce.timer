@@ -1,0 +1,10 @@
+[Unit]
+Description=Family Partners warning check — 매일 00:10 KST
+
+[Timer]
+# systemd v252+ 는 OnCalendar 에 타임존 지정 가능 (Ubuntu 24.04 = systemd 255)
+OnCalendar=*-*-* 00:10:00 Asia/Seoul
+Persistent=true
+
+[Install]
+WantedBy=timers.target
