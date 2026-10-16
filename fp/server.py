@@ -26,6 +26,7 @@ from . import activity, core, db, dropqueue, gemini, messages, onboard, ppurio, 
 
 LIB_DIR = db.ROOT / "assets" / "library"
 GUIDE_DIR = db.ROOT / "assets" / "guide"
+SUPPORTERS_DIR = db.ROOT / "assets" / "supporters"   # 서포터즈 모집 랜딩(메인) 페이지와 이미지
 
 # Vercel 서버리스 요청 본문 한도(4.5MB)보다 약간 아래로 — 초과 시 업로드 거부.
 MAX_UPLOAD = 4_000_000
@@ -51,7 +52,7 @@ def _admin_token() -> str:
     return hmac.new(_secret(), b"admin-v1", hashlib.sha256).hexdigest()
 # 로그인 없이 접근 가능한 경로
 PUBLIC_GET = {"/login", "/logout", "/join", "/me", "/wall", "/files", "/feed",
-              "/guide", "/find", "/notice", "/favicon.ico", "/status"}
+              "/guide", "/find", "/notice", "/today", "/favicon.ico", "/status"}
 PUBLIC_POST = {"/login", "/join", "/submit", "/find", "/me/save", "/me/links", "/rewrite"}
 
 
@@ -1796,7 +1797,12 @@ def view_enforce(qs) -> str:
             "경고 집행</button></form></div>")
 
 
-def view_landing() -> bytes:
+def view_supporters_landing() -> bytes:
+    """비로그인 메인 — 서포터즈 장학제도 모집 랜딩(정적 HTML)."""
+    return (SUPPORTERS_DIR / "landing.html").read_bytes()
+
+
+def view_today() -> bytes:
     body = (
         "<section class='workflow-hero public-home' id=partner-home><div>"
         "<p class=section-kicker>AI사장학교 서포터즈</p>"
@@ -1948,10 +1954,10 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
-    def _guide_img(self, name: str):
+    def _guide_img(self, name: str, base=GUIDE_DIR):
         # 안전: 파일명만 허용(경로 이동 차단)
         safe = os.path.basename(name)
-        path = GUIDE_DIR / safe
+        path = base / safe
         if "/" in name or "\\" in name or not path.exists() or not path.is_file():
             self.send_response(404); self.end_headers(); return
         data = path.read_bytes()
@@ -2365,6 +2371,10 @@ class Handler(BaseHTTPRequestHandler):
                 return self._send(view_guide(qs))
             if u.path.startswith("/guide-img/"):
                 return self._guide_img(u.path[len("/guide-img/"):])
+            if u.path.startswith("/supporters-img/"):
+                return self._guide_img(u.path[len("/supporters-img/"):], SUPPORTERS_DIR)
+            if u.path == "/today":
+                return self._send(view_today())   # 기존 서포터즈용 오늘의 콘텐츠 화면(옛 메인)
             if u.path == "/cron/sms":   # Vercel Cron(매일 21시 KST) — 시크릿 인증
                 return self._cron_sms()
             if u.path == "/cron/enforce":   # systemd 타이머(매일 00:10 KST) — 시크릿 인증
@@ -2373,7 +2383,7 @@ class Handler(BaseHTTPRequestHandler):
                 from . import owned_content
                 return owned_content.handle(self, qs)
             if u.path == "/" and not self._admin_ok():
-                return self._send(view_landing())   # 비로그인 메인 = 랜딩
+                return self._send(view_supporters_landing())   # 비로그인 메인 = 서포터즈 모집 랜딩
             # 관리자 영역 게이트 — 공개 경로 외에는 로그인 필요
             if (u.path not in PUBLIC_GET and not u.path.startswith("/dl/")
                     and not u.path.startswith("/m/") and not self._admin_ok()):

@@ -1,0 +1,555 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AI 사장학교 서포터즈 장학제도</title>
+<meta name="description" content="AI사장학교 재학생·졸업생이 매일 콘텐츠로 내 톡방에 사람을 모으고, 추천 입학 1명당 장학금 990,000원을 받는 서포터즈 장학제도">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap">
+<style>
+/* 레이아웃: aixschool.kr 홈페이지 문법을 따름.
+   남색 히어로(좌측 카피 + 우측 콘텐츠 흐름 벽) → 흰 개념 → 남색 성과 → 연회색 탭 콘텐츠 → 남색 장학금 → 남색 입학 패널 → 흰 FAQ.
+   색·글꼴 값은 aixschool.kr css/tokens.css 기준 (실서버 반영 시 SchoolPretendard 사용) */
+:root{
+  color-scheme:light;
+  --font-sans:"Pretendard Variable","Pretendard",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;
+  --content-width:1104px;
+  --ink:#111827; --blue:#2563eb; --blue-dark:#1d4ed8; --blue-soft:#e8eefb; --blue-hi:#6a9bff; --blue-kick:#8fb4ff;
+  --gray-600:#4b5563; --gray-500:#6b7280; --gray-300:#d1d5db; --gray-200:#e5e7eb;
+  --line-soft:#dde3ea; --text-body:#4a5a6c; --bg-soft:#eef3f8; --white:#fff;
+  --dark:#0a1224; --dark2:#0d1a36; --panel:#091329; --on-dark:#f3f6fb; --on-dark-2:#b8c3d6; --on-dark-3:#93a4be; --dark-line:rgba(255,255,255,.14);
+}
+*{box-sizing:border-box}
+body{background:var(--white);color:var(--ink);font-family:var(--font-sans);font-size:16px;line-height:1.7;margin:0;-webkit-font-smoothing:antialiased;word-break:keep-all;overflow-wrap:break-word}
+.inner{max-width:calc(var(--content-width) + 96px);margin:0 auto;padding-left:max(48px,env(safe-area-inset-left,0px));padding-right:max(48px,env(safe-area-inset-right,0px))}
+h1,h2,h3,h4{margin:0;letter-spacing:-.03em;text-wrap:balance}
+p{margin:0}
+a{color:inherit}
+a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid var(--blue-hi);outline-offset:3px}
+.kicker{font-size:13px;font-weight:700;letter-spacing:.08em;color:var(--blue)}
+.on-dark .kicker{color:var(--blue-kick)}
+em{font-style:normal}
+.num{font-variant-numeric:tabular-nums}
+
+.cta{display:inline-flex;align-items:center;justify-content:space-between;gap:36px;background:var(--blue);color:#fff;border:1px solid var(--blue);border-radius:2px;padding:20px 30px;font-size:18px;font-weight:650;text-decoration:none;transition:background .2s}
+.cta:hover{background:var(--blue-dark);border-color:var(--blue-dark)}
+.cta span{font-size:22px;line-height:1}
+.cta.ghost{background:transparent;border-color:rgba(255,255,255,.55)}
+.cta.ghost:hover{background:rgba(255,255,255,.12);border-color:#fff}
+
+.topbar{background:var(--dark);color:#c7d5ec;font-size:14px}
+.topbar .inner{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 14px;padding-block:9px}
+.topbar a{color:#fff;font-weight:700;text-decoration:none;border-bottom:1px solid rgba(255,255,255,.4)}
+/* 헤더 */
+.header{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;background:rgba(255,255,255,.94);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-bottom:1px solid var(--gray-200)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:41;background:#fff}
+.header .inner{display:flex;align-items:center;justify-content:space-between;height:68px;gap:24px}
+.logo{font-weight:800;font-size:19px;letter-spacing:-.03em;text-decoration:none}
+.logo small{font-size:14px;font-weight:600;color:var(--blue);margin-left:8px;letter-spacing:0}
+.header nav{display:flex;gap:28px;font-size:15px;font-weight:600;color:var(--gray-600)}
+.header nav a{text-decoration:none}
+.header nav a:hover{color:var(--ink)}
+.header .mini{background:var(--blue);color:#fff;text-decoration:none;font-weight:650;font-size:15px;padding:10px 18px;border-radius:2px}
+
+/* 히어로 */
+.hero{position:relative;overflow:hidden;background:var(--dark);color:#fff;min-height:720px;display:flex;align-items:center}
+.hero>.inner{width:100%}
+.hero__wall{position:absolute;top:0;bottom:84px;right:max(40px,calc(50% - 552px));width:min(540px,44%);display:grid;grid-template-columns:repeat(3,1fr);gap:16px;overflow:hidden;-webkit-mask-image:linear-gradient(transparent,#000 12%,#000 88%,transparent);mask-image:linear-gradient(transparent,#000 12%,#000 88%,transparent)}
+.hero__col{overflow:hidden}
+.hero__strip{display:flex;flex-direction:column;gap:16px;animation:flowUp 60s linear infinite}
+.hero__col--2 .hero__strip{animation-name:flowDown;animation-duration:70s}
+.hero__col--3 .hero__strip{animation-duration:66s}
+@keyframes flowUp{from{transform:translateY(0)}to{transform:translateY(calc(-50% - 8px))}}
+@keyframes flowDown{from{transform:translateY(calc(-50% - 8px))}to{transform:translateY(0)}}
+.hero__face{position:relative;margin:0;border-radius:14px;overflow:hidden;background:#13223f;box-shadow:0 12px 40px rgba(0,0,0,.4)}
+.hero__face img{display:block;width:100%;height:auto}
+.hero__face figcaption{position:absolute;left:8px;right:8px;bottom:8px;padding:7px 9px;border-radius:9px;background:rgba(11,23,48,.86);font-size:12px;font-weight:700;line-height:1.3}
+.hero__face figcaption small{display:block;font-size:10.5px;font-weight:600;color:#93b4ff;margin-bottom:1px}
+.hero__overlay{position:absolute;inset:0;background:linear-gradient(100deg,rgba(8,16,34,.97) 40%,rgba(8,16,34,.55));pointer-events:none}
+.hero__content{position:relative;z-index:2;padding-block:180px 200px}
+.hero__wall{bottom:0!important}
+.hero__content .copy{max-width:580px}
+.hero .eyebrow{font-size:15px;font-weight:500;color:#dce6ff}
+.hero h1{font-size:clamp(40px,5vw,66px);line-height:1.16;letter-spacing:-.04em;font-weight:800;margin:24px 0 26px}
+.hero h1 em{color:var(--blue-hi)}
+.hero .lead{font-size:20px;line-height:1.7;color:#f8fafc;font-weight:500}
+.hero .lead b{color:#fff;font-weight:700}
+.hero__chips{list-style:none;margin:28px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:10px}
+.hero__chips li{font-size:14px;font-weight:600;color:#dce6ff;border:1px solid rgba(255,255,255,.28);border-radius:999px;padding:8px 16px}
+.hero__actions{display:flex;flex-wrap:wrap;gap:14px;margin-top:40px}
+.hero__why{margin-top:20px;font-size:15px;color:#c7d5ec}
+.hero__why b{color:#fff}
+.hero__flow{position:absolute;z-index:2;bottom:0;left:0;right:0;border-top:1px solid rgba(255,255,255,.22)}
+.hero__flow .inner{display:flex;justify-content:space-between;gap:16px;padding-block:26px;font-size:14px;color:#f8fafc}
+.hero__flow span b{color:var(--blue-kick);margin-right:8px;font-weight:700}
+
+/* 섹션 공통 */
+.sec{padding-block:128px}
+.sec-head{max-width:760px;margin-bottom:64px}
+.sec-head h2{font-size:clamp(32px,4vw,48px);line-height:1.25;font-weight:800;margin-top:20px}
+.sec-head h2 em{color:var(--blue)}
+.on-dark .sec-head h2 em{color:var(--blue-hi)}
+.sec-head p{font-size:18px;line-height:1.75;color:var(--text-body);margin-top:24px}
+.on-dark .sec-head p{color:var(--on-dark-2)}
+
+/* 개념: 4단계 */
+.steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,1fr);border-top:2px solid var(--ink)}
+.steps li{padding:32px 28px 8px 0;min-width:0}
+.steps li+li{padding-left:28px;border-left:1px solid var(--gray-200)}
+.steps .n{font-size:14px;font-weight:700;color:var(--blue)}
+.steps h3{font-size:24px;font-weight:700;line-height:1.4;margin:14px 0 12px}
+.steps p{font-size:16px;line-height:1.75;color:var(--gray-600)}
+.support{margin-top:64px;padding:28px 32px;background:var(--bg-soft);display:flex;flex-wrap:wrap;align-items:center;gap:14px 36px}
+.support h3{font-size:16px;font-weight:700;margin-right:8px}
+.support span{font-size:16px;color:var(--gray-600)}
+.support span b{color:var(--blue);font-weight:700;margin-right:6px}
+
+/* 성과 (남색) */
+.results{background:linear-gradient(var(--dark),var(--dark2));color:#fff}
+.result-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
+.result-card{padding:36px 32px;border-radius:24px;background:rgba(255,255,255,.04);border:1px solid var(--dark-line);display:flex;flex-direction:column;gap:6px;min-width:0}
+.result-card .v{font-size:clamp(40px,4.6vw,58px);font-weight:800;line-height:1.1;letter-spacing:-.03em}
+.result-card .v small{font-size:.42em;font-weight:700;color:var(--on-dark-2);margin-left:4px}
+.result-card .k{font-size:17px;font-weight:600;color:var(--on-dark)}
+.result-card .d{font-size:14px;color:var(--on-dark-3)}
+.result-card.hi{background:linear-gradient(160deg,rgba(37,99,235,.35),rgba(37,99,235,.08));border-color:rgba(106,155,255,.45)}
+.sub-metrics{margin-top:24px;display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--dark-line);border-bottom:1px solid var(--dark-line)}
+.sub-metrics div{padding:26px 32px}
+.sub-metrics div+div{border-left:1px solid var(--dark-line)}
+.sub-metrics dt{font-size:12px;letter-spacing:.06em;color:var(--on-dark-3);margin-bottom:6px}
+.sub-metrics dd{margin:0;font-size:26px;font-weight:700}
+.crowd-wrap{margin-top:72px;display:grid;grid-template-columns:320px 1fr;gap:48px;align-items:center}
+.crowd-wrap>*{min-width:0}
+.crowd-wrap .big{font-size:clamp(56px,7vw,88px);font-weight:800;line-height:1;letter-spacing:-.04em;color:var(--blue-hi)}
+.crowd-wrap .big small{font-size:.36em;color:#fff;margin-left:4px}
+.crowd-wrap h3{font-size:22px;font-weight:700;margin-top:14px}
+.crowd-wrap p{font-size:16px;color:var(--on-dark-2);margin-top:8px}
+.crowd{display:grid;grid-template-columns:repeat(30,1fr);gap:5px}
+.crowd i{aspect-ratio:1/1.35;position:relative}
+.crowd i::before{content:"";position:absolute;left:28%;top:0;width:44%;aspect-ratio:1;border-radius:50%;background:var(--blue-hi)}
+.crowd i::after{content:"";position:absolute;left:12%;bottom:0;width:76%;height:42%;border-radius:50% 50% 3px 3px;background:var(--blue-hi)}
+.crowd i:nth-child(6n)::before,.crowd i:nth-child(6n)::after{background:#fff}
+.crowd i.off{opacity:.08}
+.crowd i.pop{animation:pop .3s ease-out}
+@keyframes pop{0%{transform:translateY(8px) scale(.3);opacity:0}100%{transform:none;opacity:1}}
+.rank{margin-top:72px;border-top:1px solid var(--dark-line)}
+.rank h3{font-size:18px;font-weight:700;padding:28px 0 8px}
+.rank ol{list-style:none;margin:0;padding:0}
+.rank li{display:grid;grid-template-columns:40px 90px 1fr 110px 110px;gap:16px;align-items:center;padding:16px 0;border-bottom:1px solid var(--dark-line);font-size:16px}
+.rank .r{color:var(--blue-kick);font-weight:700}
+.rank .bar{height:6px;background:rgba(255,255,255,.08);border-radius:99px;overflow:hidden}
+.rank .bar i{display:block;height:100%;background:var(--blue-hi);border-radius:99px}
+.rank .dd{font-weight:700;text-align:right}
+.rank .cc{color:var(--on-dark-3);text-align:right;font-size:14px}
+.note{margin-top:28px;font-size:13px;line-height:1.8;color:#8a97a5}
+.note a{color:var(--blue-kick);font-weight:600}
+
+/* 콘텐츠 탭 (연회색) */
+.practice{background:var(--bg-soft)}
+.tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-block:1px solid #cbd5e1}
+.tabs button{font:inherit;display:flex;flex-direction:column;align-items:flex-start;text-align:left;gap:6px;padding:28px 28px;border:0;border-right:1px solid #cbd5e1;background:transparent;color:var(--ink);cursor:pointer;min-width:0}
+.tabs button:last-child{border-right:0}
+.tabs button[aria-selected="true"]{background:#fff;box-shadow:inset 0 4px 0 var(--blue)}
+.tabs button:hover{background:#f8fafc}
+.tabs .idx{font-size:14px;font-weight:600;color:var(--blue)}
+.tabs .nm{font-size:22px;font-weight:700}
+.tabs .ds{font-size:15px;color:var(--gray-600)}
+.panel{padding-top:44px}
+.panel[hidden]{display:none!important}
+.shorts{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:20px}
+.shorts img{display:block;width:100%;aspect-ratio:9/16;object-fit:cover;border-radius:14px;border:1px solid var(--line-soft);background:#fff}
+.posts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.post{background:#fff;border:1px solid var(--line-soft);border-radius:14px;padding:24px;font-size:15.5px;line-height:1.75;color:var(--ink);min-width:0}
+.post .who{display:flex;align-items:center;gap:10px;margin-bottom:14px;font-size:14px;font-weight:700}
+.post .who i{width:30px;height:30px;border-radius:50%;background:var(--blue-soft);border:1px solid var(--line-soft)}
+.post .who span{margin-left:auto;color:var(--gray-500);font-weight:500;font-size:13px}
+.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px}
+.cards img{display:block;width:100%;aspect-ratio:1;object-fit:cover;border-radius:14px;border:1px solid var(--line-soft)}
+.cap-row{margin-top:20px;font-size:14px;color:var(--gray-500)}
+.cap-row b{color:var(--blue)}
+
+/* 장학금 (남색 밴드) */
+.ctaband{background:linear-gradient(140deg,var(--dark),#16305c);color:#fff}
+.grant{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center}
+.grant>*{min-width:0}
+.grant h2{font-size:clamp(32px,4vw,50px);line-height:1.22;font-weight:800;margin-top:20px}
+.grant h2 em{color:var(--blue-hi)}
+.grant .lead{font-size:18px;color:#c7d5ec;margin-top:20px}
+.calc{background:rgba(255,255,255,.05);border:1px solid var(--dark-line);border-radius:24px;padding:36px}
+.calc .lbl{font-size:13px;letter-spacing:.06em;color:var(--on-dark-3)}
+.picker{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:14px 0 30px}
+.picker button{font:inherit;font-weight:700;font-size:16px;min-height:52px;border-radius:2px;border:1px solid rgba(255,255,255,.28);background:transparent;color:#fff;cursor:pointer}
+.picker button[aria-pressed="true"]{background:var(--blue);border-color:var(--blue)}
+.calc .total{font-size:clamp(40px,5vw,60px);font-weight:800;line-height:1.1;letter-spacing:-.03em}
+.calc .eq{margin-top:8px;font-size:15px;color:var(--on-dark-2)}
+
+/* 입학 패널 */
+.admission{background:var(--white);padding-block:0}
+.admission__panel{background:var(--panel);color:#f8fafc;padding:120px 64px 96px;max-width:calc(var(--content-width) + 128px);margin:0 auto}
+.admission__intro{display:grid;grid-template-columns:1.5fr 1fr;gap:64px;align-items:end;margin-bottom:72px}
+.admission__intro h2{font-size:clamp(32px,3.8vw,46px);line-height:1.3;font-weight:800;color:#fff;letter-spacing:-.04em;margin-top:24px}
+.admission__intro p{font-size:17px;line-height:1.8;color:var(--on-dark-2)}
+.facts{display:flex;margin:0;padding:34px 0;border-top:1px solid var(--dark-line);border-bottom:1px solid var(--dark-line)}
+.facts>div{padding:0 36px;flex:1 1 0;min-width:0}
+.facts>div:first-child{padding-left:0}
+.facts>div+div{border-left:1px solid var(--dark-line)}
+.facts dt{font-size:11px;letter-spacing:.08em;color:var(--on-dark-3);margin-bottom:7px}
+.facts dd{margin:0;font-size:24px;line-height:1.4;font-weight:600;color:var(--on-dark)}
+.rules{padding-top:52px}
+.rules>h3{font-size:12px;letter-spacing:.08em;color:var(--on-dark-3);margin-bottom:30px;font-weight:600}
+.rules ol{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,1fr);gap:32px}
+.rules li{display:flex;gap:10px;align-items:baseline;min-width:0}
+.rules .no{font-size:12px;font-weight:600;color:#85aaff}
+.rules h4{font-size:19px;line-height:1.5;color:var(--on-dark);margin-bottom:8px}
+.rules p{font-size:15px;line-height:1.75;color:#c0cada}
+.rules li.warn h4{color:#fda4af}
+.decision{display:flex;justify-content:space-between;align-items:center;gap:48px;margin-top:72px;padding-top:40px;border-top:1px solid var(--dark-line)}
+.decision h3{font-size:28px;line-height:1.5;font-weight:600;color:#fff}
+.decision .why{margin-top:10px;font-size:15px;color:var(--on-dark-2)}
+.decision .why b{color:#a9beef}
+
+/* FAQ */
+.faq-wrap{max-width:calc(var(--content-width) + 128px);margin:0 auto;padding:120px 64px 128px}
+.faq h2{font-size:clamp(30px,3vw,42px);font-weight:700;letter-spacing:-.035em;margin-bottom:28px}
+.faq details{border-bottom:1px solid var(--gray-200)}
+.faq summary{cursor:pointer;list-style:none;padding:24px 36px 24px 0;position:relative;font-size:19px;font-weight:600}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";position:absolute;right:0;top:20px;color:var(--blue);font-size:24px}
+.faq details[open] summary::after{content:"−"}
+.faq details p{font-size:16px;line-height:1.8;color:var(--gray-600);padding:0 32px 24px 0}
+.closing{margin-top:96px;padding-top:64px;border-top:1px solid var(--gray-200);display:flex;justify-content:space-between;align-items:center;gap:40px;flex-wrap:wrap}
+.closing h2{font-size:clamp(28px,3vw,40px);line-height:1.35;font-weight:700;letter-spacing:-.03em}
+.footer{border-top:1px solid var(--gray-200);padding-block:40px;font-size:14px;color:var(--gray-500)}
+
+.dock{display:none}
+
+@media (max-width:1050px){
+  .inner{padding-left:max(32px,env(safe-area-inset-left,0px));padding-right:max(32px,env(safe-area-inset-right,0px))}
+  .hero__wall{grid-template-columns:repeat(2,1fr);width:40%}
+  .hero__col--3{display:none}
+  .steps{grid-template-columns:1fr 1fr}
+  .steps li:nth-child(3){padding-left:0;border-left:0}
+  .steps li:nth-child(n+3){border-top:1px solid var(--gray-200)}
+  .shorts{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .shorts img:nth-child(n+4){display:none}
+  .grant{grid-template-columns:1fr;gap:40px}
+  .admission__panel{padding:96px 40px 80px}
+  .admission__intro{grid-template-columns:1fr;gap:24px}
+  .rules ol{grid-template-columns:1fr 1fr}
+  .faq-wrap{padding:88px 40px 96px}
+  .header nav{display:none}
+}
+@media (max-width:760px){
+  body{padding-bottom:76px}
+  .inner{padding-left:max(24px,env(safe-area-inset-left,0px));padding-right:max(24px,env(safe-area-inset-right,0px))}
+  .sec{padding-block:88px}
+  .hero{min-height:0}
+  .hero__wall{right:0;width:auto;left:0;grid-template-columns:repeat(3,1fr);gap:10px;padding:0 10px;opacity:.32}
+  .hero__col--3{display:block}
+  .hero__face figcaption{display:none}
+  .hero__content{padding-block:120px 120px}
+  .hero h1{font-size:38px}
+  .hero .lead{font-size:17px}
+  .hero__actions{flex-direction:column;align-items:stretch}
+  .hero__actions .cta{justify-content:center}
+  .hero__flow{position:relative}
+  .hero__flow .inner{flex-direction:column;gap:10px}
+  .steps{grid-template-columns:1fr}
+  .steps li,.steps li+li{padding:26px 0 18px;border-left:0}
+  .steps li+li{border-top:1px solid var(--gray-200)}
+  .result-grid,.sub-metrics{grid-template-columns:1fr}
+  .sub-metrics div+div{border-left:0;border-top:1px solid var(--dark-line)}
+  .sub-metrics div{padding:20px 0}
+  .crowd-wrap{grid-template-columns:1fr;gap:28px}
+  .crowd{grid-template-columns:repeat(20,1fr);gap:4px}
+  .rank li{grid-template-columns:28px 64px 1fr 70px;gap:10px;font-size:15px}
+  .rank .cc{display:none}
+  .tabs button{padding:18px 12px}
+  .tabs .nm{font-size:17px}
+  .tabs .ds{display:none}
+  .shorts{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .shorts img:nth-child(3){display:none}
+  .posts{grid-template-columns:1fr}
+  .cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .calc{padding:24px}
+  .picker{grid-template-columns:repeat(5,1fr);gap:6px}
+  .picker button{font-size:14px}
+  .admission__panel{padding:64px 24px 56px}
+  .facts{flex-direction:column;gap:18px}
+  .facts>div,.facts>div:first-child{padding:0}
+  .facts>div+div{border-left:0;border-top:1px solid var(--dark-line);padding-top:18px}
+  .facts dd{font-size:20px}
+  .rules ol{grid-template-columns:1fr}
+  .decision{flex-direction:column;align-items:stretch;gap:24px}
+  .decision .cta{justify-content:center}
+  .decision h3{font-size:23px}
+  .faq-wrap{padding:64px 24px 72px}
+  .faq summary{font-size:17px;padding:20px 32px 20px 0}
+  .closing{margin-top:56px;padding-top:40px}
+  .closing .cta{width:100%;justify-content:center}
+  .dock{display:block;position:fixed;left:0;right:0;bottom:0;z-index:30;background:#fff;border-top:1px solid var(--gray-200);padding:10px max(16px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+  .dock .cta{width:100%;justify-content:center;padding:15px 20px;font-size:16px}
+  .header .mini{display:none}
+}
+@media (prefers-reduced-motion:reduce){.hero__strip{animation:none}.crowd i.pop{animation:none}}
+</style>
+</head>
+<body>
+
+
+<div class="topbar"><div class="inner"><span>이미 서포터즈라면</span><a href="/find">내 작업실 찾기 →</a><a href="/today">오늘 콘텐츠 받기 →</a></div></div>
+
+<header class="header"><div class="inner">
+  <a class="logo" href="#top">AI 사장학교<small>서포터즈</small></a>
+  <nav aria-label="페이지 메뉴"><a href="#concept">서포터즈란</a><a href="#results">성과</a><a href="#content">제공 콘텐츠</a><a href="#grant">장학금</a><a href="#admission">모집 안내</a></nav>
+  <a class="mini" href="https://familypartners.aimax.ai.kr/join">서포터즈 신청하기</a>
+</div></header>
+
+<section class="hero" id="top" aria-labelledby="hero-h">
+  <div class="hero__wall" aria-hidden="true">
+    <div class="hero__col"><div class="hero__strip">
+      <figure class="hero__face"><img src="/supporters-img/v1.jpg" alt=""><figcaption><small>숏폼 영상</small>광고 에이전시 구축</figcaption></figure>
+      <figure class="hero__face"><img src="/supporters-img/c1.jpg" alt=""><figcaption><small>카드뉴스</small>클로드로 에이전트 앱</figcaption></figure>
+      <figure class="hero__face"><img src="/supporters-img/v4.jpg" alt=""><figcaption><small>숏폼 영상</small>에이아이 비서 구축법</figcaption></figure>
+    </div></div>
+    <div class="hero__col hero__col--2"><div class="hero__strip">
+      <figure class="hero__face"><img src="/supporters-img/c2.jpg" alt=""><figcaption><small>카드뉴스</small>오늘의 글감</figcaption></figure>
+      <figure class="hero__face"><img src="/supporters-img/v2.jpg" alt=""><figcaption><small>숏폼 영상</small>AI 비서 만들기</figcaption></figure>
+      <figure class="hero__face"><img src="/supporters-img/c3.jpg" alt=""><figcaption><small>카드뉴스</small>오늘의 글감</figcaption></figure>
+    </div></div>
+    <div class="hero__col hero__col--3"><div class="hero__strip">
+      <figure class="hero__face"><img src="/supporters-img/v5.jpg" alt=""><figcaption><small>숏폼 영상</small>AI 비즈니스 구축법</figcaption></figure>
+      <figure class="hero__face"><img src="/supporters-img/c4.jpg" alt=""><figcaption><small>카드뉴스</small>사진형 디자인</figcaption></figure>
+      <figure class="hero__face"><img src="/supporters-img/v7.jpg" alt=""><figcaption><small>숏폼 영상</small>안 잊는 에이전트</figcaption></figure>
+    </div></div>
+  </div>
+  <div class="hero__overlay"></div>
+  <div class="inner hero__content">
+    <div class="copy">
+      <p class="eyebrow">AI 사장학교 서포터즈 장학제도</p>
+      <h1 id="hero-h">모든 비즈니스는<br><em>사람을 모으는 데서</em><br>시작합니다.</h1>
+      <p class="lead">AI 사장학교 서포터즈는 매일 콘텐츠로 내 톡방에 사람을 모읍니다.</p>
+      <div class="hero__actions">
+        <a class="cta" href="https://familypartners.aimax.ai.kr/join">서포터즈 신청하기 <span>→</span></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="concept" aria-labelledby="concept-h">
+  <div class="inner">
+    <div class="sec-head">
+      <p class="kicker">서포터즈란</p>
+      <h2 id="concept-h">배운 AI로 <em>내 사람을 모으는</em><br>AI 사장학교 학생들입니다.</h2>
+      <p>사람이 모여야 알릴 수 있고 알려야 팔 수 있습니다. 서포터즈는 그 첫 단계부터 함께합니다.</p>
+    </div>
+    <ol class="steps">
+      <li><span class="n">01</span><h3>내 톡방이 생깁니다</h3><p>서포터즈는 각자 자기 오픈톡방을 운영합니다. 처음 여는 것부터 도와드립니다.</p></li>
+      <li><span class="n">02</span><h3>사람이 모입니다</h3><p>매일 올리는 콘텐츠를 보고 사람들이 내 톡방으로 들어옵니다.</p></li>
+      <li><span class="n">03</span><h3>내 AI 결과물을 알립니다</h3><p>모인 사람들에게 내가 만든 AI 결과물을 직접 소개할 수 있습니다.</p></li>
+      <li><span class="n">04</span><h3>수익이 생깁니다</h3><p>내 결과물 판매, 그리고 추천 입학 1명당 장학금 990,000원.</p></li>
+    </ol>
+    <div class="support">
+      <h3>그 과정에서 지원합니다</h3>
+      <span><b>매일</b>올릴 콘텐츠</span><span><b>매주</b>박조교 SNS 피드백</span><span><b>함께</b>서포터즈 단톡방</span><span><b>졸업 후</b>자격 유지</span>
+    </div>
+  </div>
+</section>
+
+<section class="sec results on-dark" id="results" aria-labelledby="results-h">
+  <div class="inner">
+    <div class="sec-head">
+      <p class="kicker">서포터즈 성과</p>
+      <h2 id="results-h">먼저 시작한 서포터즈는<br><em>이만큼</em> 모으고 벌었습니다.</h2>
+      <p>인증보드에 기록된 실제 활동입니다.</p>
+    </div>
+    <div class="result-grid">
+      <div class="result-card hi"><div class="v num">300<small>명+</small></div><div class="k">1인당 평균 커뮤니티</div><div class="d">서포터즈 한 명이 운영하는 톡방 평균</div></div>
+      <div class="result-card hi"><div class="v num">43<small>일</small></div><div class="k">평균 수익 달성 기간</div><div class="d">첫 활동부터 첫 수익까지 평균</div></div>
+      <div class="result-card"><div class="v num">1,493<small>건</small></div><div class="k">인증된 게시물</div><div class="d">서포터즈 11명 누적</div></div>
+    </div>
+    <dl class="sub-metrics">
+      <div><dt>최장 연속 활동</dt><dd class="num">131일</dd></div>
+      <div><dt>평균 연속 활동</dt><dd class="num">34.2일</dd></div>
+      <div><dt>오늘 이미 올린 서포터즈</dt><dd class="num">8 / 11명</dd></div>
+    </dl>
+    <div class="crowd-wrap">
+      <div>
+        <div class="big num"><span id="crowdN">300</span><small>명+</small></div>
+        <h3>서포터즈 1인당 평균 커뮤니티</h3>
+        <p>콘텐츠를 올릴 때마다 내 톡방에 사람이 쌓입니다.</p>
+      </div>
+      <div class="crowd" id="crowd" aria-hidden="true"></div>
+    </div>
+    <div class="rank">
+      <h3>연속 활동 상위 5명</h3>
+      <ol>
+        <li><span class="r">1</span><b>유○재</b><span class="bar"><i style="width:100%"></i></span><span class="dd num">131일 연속</span><span class="cc num">누적 133건</span></li>
+        <li><span class="r">2</span><b>유○용</b><span class="bar"><i style="width:70.2%"></i></span><span class="dd num">92일 연속</span><span class="cc num">누적 127건</span></li>
+        <li><span class="r">3</span><b>이○정</b><span class="bar"><i style="width:44.3%"></i></span><span class="dd num">58일 연속</span><span class="cc num">누적 165건</span></li>
+        <li><span class="r">4</span><b>전○경</b><span class="bar"><i style="width:29.8%"></i></span><span class="dd num">39일 연속</span><span class="cc num">누적 125건</span></li>
+        <li><span class="r">5</span><b>장○제</b><span class="bar"><i style="width:28.2%"></i></span><span class="dd num">37일 연속</span><span class="cc num">누적 56건</span></li>
+      </ol>
+    </div>
+    <p class="note">2026년 10월 16일 인증보드 기준. 이름 일부는 가렸습니다. <a href="https://familypartners.aimax.ai.kr/wall">실시간 인증보드 보기 →</a></p>
+  </div>
+</section>
+
+<section class="sec practice" id="content" aria-labelledby="content-h">
+  <div class="inner">
+    <div class="sec-head">
+      <p class="kicker">제공 콘텐츠</p>
+      <h2 id="content-h">매일 — 숏폼 영상, 스레드 글 4개,<br>카드뉴스가 도착합니다.</h2>
+      <p>실제로 서포터즈에게 나간 콘텐츠입니다. 받아서 내 계정에 올리기만 하면 됩니다.</p>
+    </div>
+    <div class="tabs" role="tablist" aria-label="콘텐츠 종류">
+      <button role="tab" id="t1" aria-controls="p1" aria-selected="true"><span class="idx">01</span><span class="nm">숏폼 영상</span><span class="ds">인스타 릴스 · 유튜브 쇼츠용 세로 영상</span></button>
+      <button role="tab" id="t2" aria-controls="p2" aria-selected="false" tabindex="-1"><span class="idx">02</span><span class="nm">스레드 글</span><span class="ds">복사해서 그대로 올리는 글, 하루 4개</span></button>
+      <button role="tab" id="t3" aria-controls="p3" aria-selected="false" tabindex="-1"><span class="idx">03</span><span class="nm">카드뉴스</span><span class="ds">인스타 피드용 이미지 묶음</span></button>
+    </div>
+    <div class="panel" id="p1" role="tabpanel" aria-labelledby="t1">
+      <div class="shorts">
+        <img src="/supporters-img/v1.jpg" alt="숏폼 영상 표지: 하루 만에 AI 창업? 광고 에이전시 구축" loading="lazy">
+        <img src="/supporters-img/v2.jpg" alt="숏폼 영상 표지: 24시간 일하죠? AI 비서 만들기" loading="lazy">
+        <img src="/supporters-img/v3.jpg" alt="숏폼 영상 표지: 나만의 유튜브 만들기" loading="lazy">
+        <img src="/supporters-img/v5.jpg" alt="숏폼 영상 표지: 혼자 일하나요? AI 비즈니스 구축법" loading="lazy">
+        <img src="/supporters-img/v7.jpg" alt="숏폼 영상 표지: 매번 다 잊어버리죠? 안 잊는 에이전트" loading="lazy">
+      </div>
+      <p class="cap-row">영상은 영상방에서 <b>내 계정용으로 바로 받아</b> 올립니다.</p>
+    </div>
+    <div class="panel" id="p2" role="tabpanel" aria-labelledby="t2" hidden>
+      <div class="posts">
+        <article class="post"><div class="who"><i></i>내 계정<span>방금</span></div>카드뉴스 만드는 앱을 다 지웠음<br><br>이것저것 깔아 써봤는데<br>템플릿 고르고 글자 앉히다 진 다 빠지더라<br><br>클로드에 내용만 툭 넣으니<br>카드 다섯 장이 한 번에 나옴<br><br>받을 사람은 댓글에 '카드공장'</article>
+        <article class="post"><div class="who"><i></i>내 계정<span>방금</span></div>장비부터 사려다 돈 굳혔습니다<br><br>시원한 음료 사진 하나 못 건져서<br>전문가 부르고 조명 살 생각까지 했거든요<br><br>근데 챗GPT에 음료 이름만 넣으니<br>얼음 튀는 장면이 삼 초 만에 나왔어요<br><br>필요하면 댓글에 '물방울' 남겨주세요</article>
+        <article class="post"><div class="who"><i></i>내 계정<span>방금</span></div>옆 가게 사장은 외국 손님이 안 무섭대요<br><br>전엔 외국인이 들어오면<br>번역기 켜고 타이핑하느라 진땀 뺐잖아요<br><br>이제 챗GPT한테 말로 물으면<br>그 자리서 두 나라 말을 통역해 줘요<br><br>궁금하면 댓글에 '번역'</article>
+      </div>
+      <p class="cap-row">글감방에 <b>매일 4개</b>씩 올라옵니다. 내 상황에 맞게 바꿔 써도 됩니다.</p>
+    </div>
+    <div class="panel" id="p3" role="tabpanel" aria-labelledby="t3" hidden>
+      <div class="cards">
+        <img src="/supporters-img/c1.jpg" alt="카드뉴스 표지: 클로드로 에이전트 앱" loading="lazy">
+        <img src="/supporters-img/c2.jpg" alt="카드뉴스 표지 예시" loading="lazy">
+        <img src="/supporters-img/c3.jpg" alt="카드뉴스 표지 예시" loading="lazy">
+        <img src="/supporters-img/c4.jpg" alt="카드뉴스 표지 예시: 같은 주제의 사진형 디자인" loading="lazy">
+      </div>
+      <p class="cap-row">같은 주제를 <b>여러 디자인</b>으로 드립니다.</p>
+    </div>
+  </div>
+</section>
+
+<section class="sec ctaband on-dark" id="grant" aria-labelledby="grant-h">
+  <div class="inner grant">
+    <div>
+      <p class="kicker">장학금</p>
+      <h2 id="grant-h">추천으로 한 분이 입학하면<br><em>990,000원</em>을 드립니다.</h2>
+      <p class="lead">등록금 3,300,000원의 30%를 장학금으로 매월 지급합니다.</p>
+    </div>
+    <div class="calc">
+      <p class="lbl">추천 입학 인원</p>
+      <div class="picker" role="group" aria-label="추천 입학 인원">
+        <button type="button" data-n="1" aria-pressed="true">1명</button>
+        <button type="button" data-n="2" aria-pressed="false">2명</button>
+        <button type="button" data-n="3" aria-pressed="false">3명</button>
+        <button type="button" data-n="5" aria-pressed="false">5명</button>
+        <button type="button" data-n="10" aria-pressed="false">10명</button>
+      </div>
+      <p class="lbl">받는 장학금</p>
+      <div class="total num" id="total" aria-live="polite">990,000원</div>
+      <p class="eq num" id="eq">990,000원 × 1명</p>
+    </div>
+  </div>
+</section>
+
+<section class="admission" id="admission" aria-labelledby="adm-h">
+  <div class="admission__panel on-dark">
+    <div class="admission__intro">
+      <div>
+        <p class="kicker">SUPPORTERS</p>
+        <h2 id="adm-h">내 사람을 모으는 첫 단계,<br>서포터즈로 시작하세요.</h2>
+      </div>
+      <p>신청하면 바로 서포터즈 작업실이 열리고 다음 날부터 올릴 콘텐츠를 받습니다.</p>
+    </div>
+    <dl class="facts">
+      <div><dt>대상</dt><dd>재학생 · 졸업생</dd></div>
+      <div><dt>모집</dt><dd>상시 모집</dd></div>
+      <div><dt>장학금</dt><dd class="num">1명당 990,000원</dd></div>
+      <div><dt>운영</dt><dd>AI 사장학교 박조교</dd></div>
+    </dl>
+    <div class="rules">
+      <h3>서포터즈 유지 조건</h3>
+      <ol>
+        <li><span class="no">01</span><div><h4>매일 1개 인증</h4><p>제공 콘텐츠 1개를 내 SNS에 올리고 링크로 인증합니다. 주말과 공휴일도 포함입니다.</p></div></li>
+        <li><span class="no">02</span><div><h4>누락 1일 = 경고 1회</h4><p>인증 없이 하루가 지나면 경고가 1회 쌓입니다.</p></div></li>
+        <li class="warn"><span class="no">03</span><div><h4>경고 2회 = 자격 종료</h4><p>경고가 2회 쌓이면 서포터즈 자격이 종료되고 다시 신청할 수 없습니다.</p></div></li>
+        <li><span class="no">04</span><div><h4>졸업 후에도 유지</h4><p>AI 사장학교를 졸업해도 활동과 장학금이 그대로 이어집니다.</p></div></li>
+      </ol>
+    </div>
+    <div class="decision">
+      <div>
+        <h3>장학금은 매월 지급합니다.</h3>
+        <p class="why">추천 입학 1명당 <b>990,000원</b> · 매주 <b>박조교 SNS 피드백</b></p>
+      </div>
+      <a class="cta" href="https://familypartners.aimax.ai.kr/join">서포터즈 신청하기 <span>→</span></a>
+    </div>
+  </div>
+
+  <div class="faq-wrap">
+    <div class="faq">
+      <h2>신청 전, 궁금한 점</h2>
+      <details><summary>팔로워가 없어도 신청할 수 있나요?</summary><p>네. 올릴 콘텐츠를 매일 드리기 때문에 막 시작한 계정도 괜찮습니다.</p></details>
+      <details><summary>피드백은 누가 해주나요?</summary><p>AI 사장학교 박조교가 매주 계정을 직접 보고 피드백합니다.</p></details>
+      <details><summary>하루에 시간이 얼마나 드나요?</summary><p>받은 콘텐츠를 올리고 링크를 제출하면 끝납니다. 직접 기획하거나 만들 필요가 없습니다.</p></details>
+      <details><summary>장학금은 언제 받나요?</summary><p>매월 지급합니다. 추천으로 입학한 한 분당 990,000원입니다.</p></details>
+      <details><summary>졸업하면 활동이 끝나나요?</summary><p>아니요. 졸업한 뒤에도 활동과 장학금이 그대로 이어집니다.</p></details>
+    </div>
+    <div class="closing">
+      <h2>오늘 신청하고<br>내 톡방부터 만들어 보세요.</h2>
+      <a class="cta" href="https://familypartners.aimax.ai.kr/join">서포터즈 신청하기 <span>→</span></a>
+    </div>
+  </div>
+</section>
+
+<footer class="footer"><div class="inner">AI 사장학교 서포터즈 장학제도 · 운영 AI 사장학교 박조교</div></footer>
+
+<div class="dock"><a class="cta" href="https://familypartners.aimax.ai.kr/join">서포터즈 신청하기 <span>→</span></a></div>
+
+<script>
+(function(){
+  var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function f(v){return Math.round(v).toLocaleString('ko-KR')}
+
+  /* 히어로 벽: 끊김 없이 흐르도록 복제 */
+  document.querySelectorAll('.hero__strip').forEach(function(s){ s.innerHTML+=s.innerHTML; });
+
+  /* 콘텐츠 탭 */
+  var tabs=[].slice.call(document.querySelectorAll('.tabs [role=tab]'));
+  function select(t){ tabs.forEach(function(x){ var on=x===t; x.setAttribute('aria-selected',on); x.tabIndex=on?0:-1; document.getElementById(x.getAttribute('aria-controls')).hidden=!on; }); }
+  tabs.forEach(function(t,i){
+    t.addEventListener('click',function(){select(t)});
+    t.addEventListener('keydown',function(e){ var d=e.key==='ArrowRight'?1:e.key==='ArrowLeft'?-1:0; if(!d) return; var n=tabs[(i+d+tabs.length)%tabs.length]; select(n); n.focus(); });
+  });
+
+  /* 300명 쌓임 — 정지 상태는 300명 전부 표시 */
+  var crowd=document.getElementById('crowd'), cn=document.getElementById('crowdN'), dots=[];
+  for(var i=0;i<300;i++){var d=document.createElement('i');crowd.appendChild(d);dots.push(d);}
+  if(!reduce && 'IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){
+      if(!es[0].isIntersecting) return; io.disconnect();
+      dots.forEach(function(d){d.classList.add('off')}); cn.textContent='0'; var k=0;
+      (function step(){ var b=k<30?2:k<180?6:10; for(var j=0;j<b&&k<300;j++,k++){dots[k].classList.remove('off');dots[k].classList.add('pop');} cn.textContent=k; if(k<300)setTimeout(step,26); })();
+    },{threshold:.35}); io.observe(crowd);
+  }
+
+  /* 장학금 계산 */
+  var PER=3300000*0.3, total=document.getElementById('total'), eq=document.getElementById('eq'), btns=document.querySelectorAll('.picker button');
+  btns.forEach(function(b){ b.addEventListener('click',function(){ var n=Number(b.dataset.n);
+    btns.forEach(function(x){x.setAttribute('aria-pressed',String(x===b))});
+    total.textContent=f(PER*n)+'원'; eq.textContent=f(PER)+'원 × '+n+'명'; }); });
+})();
+</script>
+
+</body>
+</html>

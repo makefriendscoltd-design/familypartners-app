@@ -40,7 +40,7 @@ class WorkspaceLayoutTest(unittest.TestCase):
         pages = []
         for ua in ('Mozilla/5.0 (Macintosh; Intel Mac OS X) Chrome/130.0',
                    'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X)'):
-            code, headers, body = self.request('GET', '/', headers={'User-Agent': ua})
+            code, headers, body = self.request('GET', '/today', headers={'User-Agent': ua})
             self.assertEqual(code, 200)
             self.assertEqual(headers['Cache-Control'], 'no-store')
             html = body.decode()
@@ -55,6 +55,22 @@ class WorkspaceLayoutTest(unittest.TestCase):
         admin = self.page('/', cookie=self.admin)
         self.assertIn('오늘 운영 현황', admin)
         self.assertNotIn('id=partner-home', admin)
+
+    def test_root_is_supporters_landing_with_way_back_for_members(self):
+        code, headers, body = self.request('GET', '/')
+        self.assertEqual(code, 200)
+        html = body.decode()
+        self.assertIn('서포터즈 장학제도', html)
+        links = PageElements(html).links
+        for path in ('/find', '/today', 'https://familypartners.aimax.ai.kr/join'):
+            self.assertIn(path, links)
+        self.assertNotIn('id=partner-home', html)
+        for name in ('v1.jpg', 'c1.jpg'):
+            code, headers, img = self.request('GET', '/supporters-img/' + name)
+            self.assertEqual(code, 200)
+            self.assertTrue(headers['Content-Type'].startswith('image/'))
+        code, _, _ = self.request('GET', '/supporters-img/../landing.html')
+        self.assertEqual(code, 404)
 
     def complete_setup(self):
         conn = db.connect()
