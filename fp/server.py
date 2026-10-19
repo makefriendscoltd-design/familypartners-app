@@ -692,7 +692,7 @@ def view_feed(qs, is_admin: bool = False) -> bytes:
     tiles, modals = [], []
     for r in rows:
         did = f"d{r['id']}"
-        thumb = _drop_thumb(conn, r["assets"])
+        thumb = _drop_thumb(conn, r["assets"]) or thread_copy.thumbnail(r)
         has_assets = bool((r["assets"] or "").strip())
         if thumb:
             tcls = "tile lazy"
@@ -2362,6 +2362,11 @@ class Handler(BaseHTTPRequestHandler):
                 return
             if u.path == "/guide":
                 return self._send(view_guide(qs))
+            if u.path.startswith("/thread-img/"):
+                name = u.path[len("/thread-img/"):]
+                if not re.fullmatch(r"[A-Za-z0-9_-]+\.jpg", name):
+                    self.send_response(404); self.end_headers(); return
+                return self._guide_img(name, db.ROOT / "assets" / "thread-images")
             if u.path.startswith("/guide-img/"):
                 return self._guide_img(u.path[len("/guide-img/"):])
             if u.path.startswith("/supporters-img/"):

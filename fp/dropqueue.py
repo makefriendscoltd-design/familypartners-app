@@ -49,7 +49,7 @@ def _fingerprint(d: dict) -> str:
                       for k in ("body", "target", "fmt", "type"))
     if d.get("format") == "case_thread" or d.get("previous_title"):
         raw += "\x1f" + json.dumps({k: d.get(k) for k in
-            ("title", "replies", "link_comment", "format")}, ensure_ascii=False, sort_keys=True)
+            ("title", "replies", "link_comment", "format", "main_images")}, ensure_ascii=False, sort_keys=True)
     return hashlib.sha1(raw.encode("utf-8")).hexdigest()[:16]
 
 

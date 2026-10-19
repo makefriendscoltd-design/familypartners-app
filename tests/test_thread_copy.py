@@ -35,3 +35,23 @@ class ThreadCopyTest(unittest.TestCase):
         for d in json.loads(dropqueue.QUEUE_PATH.read_text())['drops']:
             for text in d.get('replies',[])+([d['link_comment']] if d.get('link_comment') else []):
                 self.assertLessEqual(len(text),500)
+
+    def test_case_images_are_downloadable_and_paths_cannot_escape(self):
+        import hashlib
+        from urllib.parse import urlsplit
+        cases=[d for d in json.loads(dropqueue.QUEUE_PATH.read_text())['drops'] if d.get('format')=='case_thread']
+        self.assertEqual(len(cases),20)
+        for d in cases:
+            self.assertEqual(len(d['main_images']),2)
+            row=dict(d,drop_date=d['date'])
+            html=thread_copy.render(row)
+            self.assertIn('이미지 1 저장',html)
+            self.assertIn('이미지 2 저장',html)
+            self.assertNotIn('로그인 후',html)
+            for image in d['main_images']:
+                status,headers,body=self.request('GET',image['src'])
+                self.assertEqual(status,200)
+                self.assertEqual(headers['Content-Type'],'image/jpeg')
+                self.assertEqual(hashlib.sha256(body).hexdigest(),image['sha256'])
+        for path in ['/thread-img/../../config/assets.json','/thread-img/%2e%2e%2f.env','/thread-img/missing.jpg']:
+            self.assertEqual(self.request('GET',path)[0],404)
