@@ -123,7 +123,7 @@ def check_one(d: dict, cfg: dict) -> list[str]:
     # ③ 직관성 — 본문에 도구·기관 이름이 하나는 있어야 뭘 하는 건지 안다
     #    (참여형 marketing 은 주는 게 없으니 면제)
     if dtype == "ai":
-        if not any(p in body for p in cfg["proper"]):
+        if not any(p.casefold() in body.casefold() for p in cfg["proper"]):
             bad.append("도구·서비스 이름이 본문에 없음(직관성)")
 
     # ④ CTA 줄이 지시대명사로 뭉개지지 않았는가

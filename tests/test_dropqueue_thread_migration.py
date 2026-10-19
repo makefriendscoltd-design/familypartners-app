@@ -17,7 +17,8 @@ class ThreadMigrationTest(unittest.TestCase):
         self.assertEqual(first['added'],62)
         c=db.connect();before={r['id']:dict(r) for r in c.execute('SELECT * FROM drops')};c.close()
         changes=dropqueue.sync(verbose=False)
-        self.assertEqual(changes,{'added':0,'updated':20,'skipped':42,'bad':0})
+        # Twenty reservations and two supplemental posts now have revised copy.
+        self.assertEqual(changes,{'added':0,'updated':22,'skipped':40,'bad':0})
         c=db.connect();after={r['id']:dict(r) for r in c.execute('SELECT * FROM drops')};c.close()
         self.assertEqual(set(before),set(after))
         changed=[]
@@ -26,7 +27,7 @@ class ThreadMigrationTest(unittest.TestCase):
             self.assertEqual(r['created_at'],after[i]['created_at'])
             self.assertEqual(r['assets'],after[i]['assets'])
             if r!=after[i]:changed.append(i)
-        self.assertEqual(len(changed),20)
+        self.assertEqual(len(changed),22)
         self.assertEqual(dropqueue.sync(verbose=False),{'added':0,'updated':0,'skipped':62,'bad':0})
 
     def test_deleted_reservation_is_not_recreated_under_new_title(self):
