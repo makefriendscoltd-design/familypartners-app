@@ -26,6 +26,6 @@ def render(row):
     guide = ('<p class=empty>본문을 먼저 올리고, 내 글에 댓글을 순서대로 달아주세요. 자료 링크는 마지막 댓글에 넣으면 돼요.</p>' if len(blocks) > 1 else '')
     return guide + ''.join(
         f'<section class=thread-copy-block style="margin:12px 0;padding:14px;border:1px solid #ddd;border-radius:12px">'
-        f'<h3>{escape(label)}</h3><pre>{escape(text)}</pre>'
+        f'<h3>{escape(label)}</h3><pre style="white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word">{escape(text)}</pre>'
         f'<button type=button class=ghost onclick=fpCopy(this)>{escape(label)} 복사</button></section>'
         for label, text in blocks)
