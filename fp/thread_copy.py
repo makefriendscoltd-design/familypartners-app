@@ -49,7 +49,7 @@ def render(row):
                           f'<figcaption class=empty>원본 시연 · {escape(image.get("credit", ""))}</figcaption>'
                           f'<a class=lk href="{src}" download="{src.rsplit("/", 1)[-1]}">이미지 {number} 저장</a></figure>')
         rendered.append(
-            f'<section class=thread-copy-block style="margin:12px 0;padding:14px;border:1px solid #ddd;border-radius:12px">'
-            f'<h3>{escape(label)}</h3><pre style="white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word">{escape(text)}</pre>'
+            f'<section class=thread-copy-block style="margin:12px 0;padding:8px;border:1px solid #ddd;border-radius:12px">'
+            f'<h3>{escape(label)}</h3><pre style="padding:8px;font-family:inherit;font-size:15px;line-height:1.7;text-align:left;white-space:pre-wrap;overflow-wrap:anywhere;word-break:keep-all">{escape(text)}</pre>'
             f'<button type=button class=ghost onclick=fpCopy(this)>{escape(label)} 복사</button>{media}</section>')
     return guide + ''.join(rendered)
