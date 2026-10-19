@@ -77,3 +77,17 @@ class ThreadCopyTest(unittest.TestCase):
                 self.assertEqual(hashlib.sha256(body).hexdigest(),image['sha256'])
         for path in ['/thread-img/../../config/assets.json','/thread-img/%2e%2e%2f.env','/thread-img/missing.jpg']:
             self.assertEqual(self.request('GET',path)[0],404)
+
+    def test_today_example_pngs_render_and_download_unchanged(self):
+        import hashlib
+        entries=json.loads(dropqueue.QUEUE_PATH.read_text())['drops']
+        d=next(d for d in entries if d['title']=='사진 한 장 · 봉제인형과 픽셀 그림 만들기')
+        self.assertEqual(len(d['main_images']),4)
+        html=thread_copy.render(dict(d,drop_date=d['date']))
+        self.assertIn('이미지 4 저장',html)
+        for image in d['main_images']:
+            self.assertIn(image['src'],html)
+            status,headers,body=self.request('GET',image['src'])
+            self.assertEqual(status,200)
+            self.assertEqual(headers['Content-Type'],'image/png')
+            self.assertEqual(hashlib.sha256(body).hexdigest(),image['sha256'])

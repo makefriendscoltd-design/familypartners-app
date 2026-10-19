@@ -20,7 +20,7 @@ def entry_for(row):
 
 def images_for(entry):
     return [image for image in entry.get('main_images', [])
-            if isinstance(image, dict) and re.fullmatch(r'/thread-img/[A-Za-z0-9_-]+\.jpg', image.get('src', ''))]
+            if isinstance(image, dict) and re.fullmatch(r'/thread-img/[A-Za-z0-9_-]+\.(?:jpg|png)', image.get('src', ''))]
 
 
 def thumbnail(row):

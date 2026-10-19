@@ -1322,7 +1322,37 @@
           "verified_at": "2026-10-19T06:00:00Z"
         }
       ],
-      "supplemental": true
+      "supplemental": true,
+      "main_images": [
+        {
+          "src": "/thread-img/20261019-image-keywords-original.png",
+          "alt": "사진 한 장을 세 가지 질감으로 바꾼 AI 제작 예시",
+          "credit": "AIMAX 라운지 · AI 제작 예시",
+          "source_url": "https://lounge.aimax.ai.kr/worldclass/free/image-keywords-100/original.png",
+          "sha256": "63521942b1fea86c3cff771645a83361e8d5a38a69189042c344de64754943b2"
+        },
+        {
+          "src": "/thread-img/20261019-image-keywords-plushie.png",
+          "alt": "봉제인형 질감 예시",
+          "credit": "AIMAX 라운지 · AI 제작 예시",
+          "source_url": "https://lounge.aimax.ai.kr/worldclass/free/image-keywords-100/plushie.png",
+          "sha256": "0b4f22ae36474f7b43d4fdadfa5837e24a4be7a225341d3333e3cf64dd78855e"
+        },
+        {
+          "src": "/thread-img/20261019-image-keywords-pixelart.png",
+          "alt": "픽셀 그림 예시",
+          "credit": "AIMAX 라운지 · AI 제작 예시",
+          "source_url": "https://lounge.aimax.ai.kr/worldclass/free/image-keywords-100/pixelart.png",
+          "sha256": "2c46a73404849c07ccacdf559574b26d03d2e181cf8ca972eac38f1d8812fb83"
+        },
+        {
+          "src": "/thread-img/20261019-image-keywords-papercut.png",
+          "alt": "종이 공예 질감 예시",
+          "credit": "AIMAX 라운지 · AI 제작 예시",
+          "source_url": "https://lounge.aimax.ai.kr/worldclass/free/image-keywords-100/papercut.png",
+          "sha256": "346468c7fbe1236dbef0ff549c5280693241a06ee578d5c7a7215e3a7e841b87"
+        }
+      ]
     },
     {
       "date": "2026-10-19",

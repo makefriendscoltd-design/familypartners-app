@@ -2364,7 +2364,7 @@ class Handler(BaseHTTPRequestHandler):
                 return self._send(view_guide(qs))
             if u.path.startswith("/thread-img/"):
                 name = u.path[len("/thread-img/"):]
-                if not re.fullmatch(r"[A-Za-z0-9_-]+\.jpg", name):
+                if not re.fullmatch(r"[A-Za-z0-9_-]+\.(?:jpg|png)", name):
                     self.send_response(404); self.end_headers(); return
                 return self._guide_img(name, db.ROOT / "assets" / "thread-images")
             if u.path.startswith("/guide-img/"):
