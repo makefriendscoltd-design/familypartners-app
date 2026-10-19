@@ -66,7 +66,7 @@ def check_one(d: dict, cfg: dict) -> list[str]:
 
     # 이미 예약된 글은 보존하고, 이후 신규 작성분에는 확인한 원문 기록을 요구한다.
     source_after = cfg.get("sources_required_after")
-    if source_after and (d.get("date") or "") > source_after:
+    if d.get("format") == "case_thread" or (source_after and (d.get("date") or "") > source_after):
         sources = d.get("sources")
         if not isinstance(sources, list) or not sources:
             bad.append("새 글에 확인한 원문 sources 없음")
@@ -107,12 +107,13 @@ def check_one(d: dict, cfg: dict) -> list[str]:
 
     # 무료자료 신청이나 명시한 댓글 키워드는 안내가 필요하다.
     # 정보·의견 글은 내용만으로 끝낼 수 있다.
-    needs_cta = dtype == "evergreen" or bool(d.get("cta_keyword"))
+    is_thread = d.get("format") == "case_thread"
+    needs_cta = not is_thread and (dtype == "evergreen" or bool(d.get("cta_keyword")))
     if needs_cta and not any(w in tail for w in CTA_WORDS):
         bad.append("마지막 두 줄에 댓글 유도 없음")
 
     # ② 약속한 자료가 실재하는가 (evergreen 만 자료를 준다)
-    if dtype == "evergreen":
+    if dtype == "evergreen" and not is_thread:
         code = d.get("asset")
         if not code:
             bad.append("evergreen 인데 asset 코드 없음")
@@ -137,6 +138,23 @@ def check_one(d: dict, cfg: dict) -> list[str]:
     kw = d.get("cta_keyword")
     if kw and kw in cfg["used_kw_before"]:
         bad.append(f"댓글 키워드 '{kw}' 가 이미 쓴 것과 중복")
+    if is_thread:
+        replies = d.get("replies")
+        if not isinstance(replies, list) or len(replies) < 2:
+            bad.append("사례 댓글 최소 2개 필요")
+        elif any(not isinstance(t, str) or not t.strip() or len(t) > 500 for t in replies):
+            bad.append("댓글 내용 없음 또는 500자 초과")
+        closing = d.get("link_comment") or ""
+        if len(closing) > 500 or "https://lounge.aimax.ai.kr/worldclass/" not in closing:
+            bad.append("마지막 댓글에 라운지 활용노트 링크 필요")
+        if not d.get("sources"):
+            bad.append("사례 원문 출처 필요")
+        if d.get("asset") or d.get("cta_keyword"):
+            bad.append("사례 댓글형에 예전 자료 신청 코드·키워드가 남음")
+        if re.search(r"https?://", body + "\n" + "\n".join(replies or [])):
+            bad.append("링크는 마지막 댓글에만 배치")
+        if re.search(r"\([^)]*(?:v[0-9]+|내부용|테스트용)[^)]*\)", body, re.I):
+            bad.append("본문에 내부 작업 표기 노출")
     return bad
 
 

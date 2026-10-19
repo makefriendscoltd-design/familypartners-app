@@ -1,0 +1,8 @@
+# Scheduled case-thread rewrite review
+- Authoritative inputs: current lounge source feed ~/.local/share/ai-overseas-note/feed.json and repository article JSON. source-notes.json snapshots 20 selected notes. Current public catalog rediscovered: 44 resources; every selected slug/title matches.
+- Scope: 20 reservations Oct20–24, content207–226. Dates and DB IDs preserved. Each has new main post, three numbered case replies, final note-link comment.
+- Source gate: faithful attributed summaries; do not promote source claims into independent performance facts. Deliberately omitted production time, revenue, universal accuracy, conversion and numerical performance claims. Synthetic invoice/contract demos and unconfirmed sending outcomes remain qualified.
+- Each source is attributed in first reply. Original video URLs recorded alongside note links. Published dates unknown and kept null. Freshest three notes included; no claim all examples were published today.
+- Humanize review: short colloquial Korean, no invented first-person use; proper nouns and source qualifications preserved; no internal version labels. Automatic change/meaning/register gates OK; 0% rewrite after manual review (no needless edits). Numbered comments intentionally retained per user requirement.
+- Main examples use questions/opinions as hooks, not invented testimonials. Consumer details and credentials absent.
+- Most important deployment risk: renaming creates duplicate scheduled rows or resurrects deleted entries. Existing 62-entry queue migration tested with ID/date preservation, exact20updates/0adds, second-run idempotency and deleted-item case.

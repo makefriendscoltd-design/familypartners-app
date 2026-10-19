@@ -47,6 +47,9 @@ def _fingerprint(d: dict) -> str:
     """큐 항목의 내용 지문. 본문을 고치면 값이 달라진다."""
     raw = "\x1f".join((d.get(k) or "").strip()
                       for k in ("body", "target", "fmt", "type"))
+    if d.get("format") == "case_thread" or d.get("previous_title"):
+        raw += "\x1f" + json.dumps({k: d.get(k) for k in
+            ("title", "replies", "link_comment", "format")}, ensure_ascii=False, sort_keys=True)
     return hashlib.sha1(raw.encode("utf-8")).hexdigest()[:16]
 
 
@@ -112,6 +115,9 @@ def sync(path: Path | None = None, verbose: bool = True) -> dict:
                 mark = f"seeded_drop:{date}:{title}"
                 fp = _fingerprint(d)
                 seen = core.get_setting(conn, mark)
+                previous_title = (d.get("previous_title") or "").strip()
+                if not seen and previous_title:
+                    seen = core.get_setting(conn, f"seeded_drop:{date}:{previous_title}")
                 if seen == fp:
                     stats["skipped"] += 1
                     continue
@@ -124,14 +130,18 @@ def sync(path: Path | None = None, verbose: bool = True) -> dict:
                 row = conn.execute(
                     "SELECT id FROM drops WHERE drop_date=? AND title=? LIMIT 1",
                     (date, title)).fetchone()
+                if row is None and previous_title:
+                    row = conn.execute(
+                        "SELECT id FROM drops WHERE drop_date=? AND title=? LIMIT 1",
+                        (date, previous_title)).fetchone()
                 if row is not None:
                     # 이미 있는 글감 — 큐가 바뀌었으니 내용만 갈아끼운다.
                     # (표식이 없던 옛 항목도 여기로 와서 지문만 새로 남긴다)
                     if seen:
                         conn.execute(
-                            "UPDATE drops SET body=?, target=?, fmt=?, dtype=? "
-                            "WHERE drop_date=? AND title=?",
-                            (body, target, fmt, dtype, date, title))
+                            "UPDATE drops SET title=?, body=?, target=?, fmt=?, dtype=? "
+                            "WHERE id=?",
+                            (title, body, target, fmt, dtype, row["id"]))
                         conn.commit()
                         stats["updated"] += 1
                         if verbose:
