@@ -38,6 +38,12 @@ def render(row):
     if entry.get('link_comment'):
         blocks.append(('마지막 댓글 · 자료 링크', entry['link_comment']))
     guide = ('<p class=empty>본문과 이미지를 먼저 올리고, 내 글에 댓글을 순서대로 달아주세요. 자료 링크는 마지막 댓글에 넣으면 돼요.</p>' if images_for(entry) else '<p class=empty>본문을 먼저 올리고, 내 글에 댓글을 순서대로 달아주세요. 자료 링크는 마지막 댓글에 넣으면 돼요.</p>') if len(blocks) > 1 else ''
+    if entry.get('format') == 'standalone':
+        label = escape(entry.get('fmt') or '단독 글')
+        guide = f'<p class=empty><b>{label}</b> · 본문 하나로 완결되는 글입니다.'
+        if entry.get('link_comment'):
+            guide += ' 자료를 안내하려면 아래 링크 댓글을 별도로 붙여주세요.'
+        guide += '</p>'
     rendered = []
     for index, (label, text) in enumerate(blocks):
         media = ''

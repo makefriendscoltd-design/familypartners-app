@@ -10,20 +10,20 @@ class ThreadMigrationTest(unittest.TestCase):
     setUp = fixture.VideoHTTPTest.setUp
     tearDown = fixture.VideoHTTPTest.tearDown
 
-    def test_community_replacement_preserves_existing_ids_without_new_posts(self):
-        old = json.loads(subprocess.check_output(['git', 'show', '881c29d:config/drops_queue.json']))
+    def test_mixed_formats_preserve_existing_ids_without_new_posts(self):
+        old = json.loads(subprocess.check_output(['git', 'show', 'b0c7804:config/drops_queue.json']))
         path = Path(self.tmp.name) / 'official-before.json'
         path.write_text(json.dumps(old))
         dropqueue.sync(path, verbose=False)
         c = db.connect()
         before = {r['id']: dict(r) for r in c.execute('SELECT * FROM drops')}
         c.close()
-        self.assertEqual(dropqueue.sync(verbose=False), {'added': 0, 'updated': 3, 'skipped': 62, 'bad': 0})
+        self.assertEqual(dropqueue.sync(verbose=False), {'added': 0, 'updated': 20, 'skipped': 45, 'bad': 0})
         c = db.connect()
         after = {r['id']: dict(r) for r in c.execute('SELECT * FROM drops')}
         c.close()
         self.assertEqual(set(before), set(after))
-        self.assertEqual(sum(before[i] != after[i] for i in before), 3)
+        self.assertEqual(sum(before[i] != after[i] for i in before), 20)
         for i in before:
             self.assertEqual(before[i]['created_at'], after[i]['created_at'])
             self.assertEqual(before[i]['drop_date'], after[i]['drop_date'])

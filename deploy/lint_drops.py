@@ -66,7 +66,7 @@ def check_one(d: dict, cfg: dict) -> list[str]:
 
     # 이미 예약된 글은 보존하고, 이후 신규 작성분에는 확인한 원문 기록을 요구한다.
     source_after = cfg.get("sources_required_after")
-    if d.get("format") == "case_thread" or (source_after and (d.get("date") or "") > source_after):
+    if d.get("format") in ("case_thread", "standalone") or (source_after and (d.get("date") or "") > source_after):
         sources = d.get("sources")
         if not isinstance(sources, list) or not sources:
             bad.append("새 글에 확인한 원문 sources 없음")
@@ -92,11 +92,20 @@ def check_one(d: dict, cfg: dict) -> list[str]:
         return ["본문이 비었음"]
     max_lines = FREE_MAX_LINES if dtype == "evergreen" else MAX_LINES
     max_chars = FREE_MAX_CHARS if dtype == "evergreen" else MAX_CHARS
+    is_standalone = d.get("format") == "standalone"
+    if is_standalone:
+        max_lines, max_chars = 20, 500
+        if len(body) > 500:
+            bad.append("단독 본문 500자 초과(줄바꿈 포함)")
+        if d.get("replies"):
+            bad.append("단독 글에 이어지는 본문 댓글이 있음")
+        if len((d.get("link_comment") or "")) > 500:
+            bad.append("링크 댓글 500자 초과")
     if len(lines) > max_lines:
         bad.append(f"줄 수 {len(lines)} (최대 {max_lines})")
     if chars > max_chars:
         bad.append(f"글자 수 {chars} (최대 {max_chars})")
-    if dtype == "evergreen":
+    if dtype == "evergreen" and not is_standalone:
         if any(len(line) > FREE_MAX_LINE_CHARS for line in lines):
             bad.append(f"한 줄 {FREE_MAX_LINE_CHARS}자 초과")
         paragraphs = re.split(r"\n\s*\n", body.strip())
@@ -108,12 +117,12 @@ def check_one(d: dict, cfg: dict) -> list[str]:
     # 무료자료 신청이나 명시한 댓글 키워드는 안내가 필요하다.
     # 정보·의견 글은 내용만으로 끝낼 수 있다.
     is_thread = d.get("format") == "case_thread"
-    needs_cta = not is_thread and (dtype == "evergreen" or bool(d.get("cta_keyword")))
+    needs_cta = not is_thread and not is_standalone and (dtype == "evergreen" or bool(d.get("cta_keyword")))
     if needs_cta and not any(w in tail for w in CTA_WORDS):
         bad.append("마지막 두 줄에 댓글 유도 없음")
 
     # ② 약속한 자료가 실재하는가 (evergreen 만 자료를 준다)
-    if dtype == "evergreen" and not is_thread:
+    if dtype == "evergreen" and not is_thread and not is_standalone:
         code = d.get("asset")
         if not code:
             bad.append("evergreen 인데 asset 코드 없음")
@@ -171,6 +180,11 @@ def check_day(date: str, group: list[dict]) -> tuple[list[str], list[str]]:
         return bad, warn
     if len(group) != 4:
         bad.append(f"{len(group)}건 (하루 4건이어야 함)")
+    if all((d.get("date") or "") >= "2026-10-20" for d in group):
+        if sum(d.get("format") == "case_thread" for d in group) != 1:
+            bad.append("일일 타래 1개 필요")
+        if sum(d.get("format") == "standalone" for d in group) != 3:
+            bad.append("일일 단독 글 3개 필요")
     tg = [d.get("target") for d in group]
     fm = [d.get("fmt") for d in group]
     if len(set(tg)) != len(tg):
