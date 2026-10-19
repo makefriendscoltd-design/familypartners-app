@@ -22,7 +22,7 @@ from http.client import HTTPMessage
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, quote, urlparse
 
-from . import activity, core, db, dropqueue, gemini, messages, onboard, ppurio, products, watchdog, video_library, cardnews_library
+from . import thread_copy, activity, core, db, dropqueue, gemini, messages, onboard, ppurio, products, watchdog, video_library, cardnews_library
 
 LIB_DIR = db.ROOT / "assets" / "library"
 GUIDE_DIR = db.ROOT / "assets" / "guide"
@@ -459,9 +459,7 @@ def view_dashboard(qs) -> str:
                 if parts:
                     solo = " solo" if len(parts) == 1 else ""
                     media = f"<div class='media-grid{solo}'>{''.join(parts)}</div>"
-            body_html = (f"<pre>{esc(r['body'])}</pre>"
-                         "<button type=button class=ghost onclick=fpCopy(this)>📋 본문 복사</button>"
-                         ) if (r["body"] or "").strip() else "<p class=empty>본문 없음</p>"
+            body_html = thread_copy.render(r) if (r["body"] or "").strip() else "<p class=empty>본문 없음</p>"
             items.append(
                 "<details class=sched>"
                 f"<summary>📅 {esc(r['drop_date'])} <b class=b-yel>D-{dd}</b> "
@@ -598,7 +596,7 @@ COPY_JS = (
     ".then(ok,function(){"
     "var r=document.createRange();r.selectNodeContents(t);"
     "var sel=getSelection();sel.removeAllRanges();sel.addRange(r);"
-    "try{document.execCommand('copy');ok();}catch(e){}});}</script>"
+    "try{if(!document.execCommand('copy'))throw Error('copy');ok();}catch(e){b.textContent='복사 실패 · 글을 선택해서 직접 복사해주세요';}});}</script>"
 )
 
 LAZY_JS = (
@@ -721,9 +719,7 @@ def view_feed(qs, is_admin: bool = False) -> bytes:
             if parts:
                 solo = " solo" if len(parts) == 1 else ""
                 media = f"<div class='media-grid{solo}'>{''.join(parts)}</div>"
-        body = (f"<pre>{esc(r['body'])}</pre>"
-                "<button type=button class=ghost onclick=fpCopy(this)>📋 본문 복사</button>"
-                ) if (r["body"] or "").strip() else ""
+        body = thread_copy.render(r) if (r["body"] or "").strip() else ""
         modals.append(
             f"<div id={did} class=lightbox><div class=lb-inner>"
             f"<a class=lb-close href='#' title='닫기'>✕</a>"
@@ -745,8 +741,7 @@ def view_feed(qs, is_admin: bool = False) -> bytes:
                     dd = 0
                 b = r["body"] or ""
                 n_lines = len([l for l in b.split("\n") if l.strip()])
-                sbody = ((f"<pre>{esc(b)}</pre>"
-                          "<button type=button class=ghost onclick=fpCopy(this)>📋 본문 복사</button>")
+                sbody = (thread_copy.render(r)
                          if b.strip() else "<p class=empty>본문 없음</p>")
                 tags = "".join(f"<span class=tag>{esc(v)}</span>"
                                for v in (r["target"], r["fmt"]) if (v or "").strip())
@@ -1187,9 +1182,7 @@ def view_me(qs) -> bytes | None:
                     f"<button type=button class=ghost data-t='{esc(token)}' data-id='{r['id']}' "
                     "onclick=fpRewrite(this)>✨ 리라이팅 (형식 그대로, 표현만 바꾸기)</button>"
                     "<div class=rw-out></div></div>")
-            body_html = ((f"<pre>{esc(r['body'])}</pre>"
-                          "<button type=button class=ghost onclick=fpCopy(this)>📋 본문 복사</button>"
-                          + rewrite_html) if has_body else "")
+            body_html = (thread_copy.render(r) + rewrite_html if has_body else "")
             tags = "".join(
                 f"<span class=tag>{esc(v)}</span>"
                 for v in (r["target"], r["fmt"]) if (v or "").strip())

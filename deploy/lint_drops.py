@@ -147,6 +147,10 @@ def check_day(date: str, group: list[dict]) -> tuple[list[str], list[str]]:
     나쁜 건 아니다. ai 유형이 없어도 콘텐츠 목적에 따라 허용한다.
     """
     bad, warn = [], []
+    # Additional reviewed cases do not replace the four scheduled daily posts.
+    group = [d for d in group if not d.get("supplemental")]
+    if not group:
+        return bad, warn
     if len(group) != 4:
         bad.append(f"{len(group)}건 (하루 4건이어야 함)")
     tg = [d.get("target") for d in group]
