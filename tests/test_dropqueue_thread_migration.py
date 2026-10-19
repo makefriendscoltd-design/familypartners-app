@@ -10,6 +10,25 @@ class ThreadMigrationTest(unittest.TestCase):
     setUp = fixture.VideoHTTPTest.setUp
     tearDown = fixture.VideoHTTPTest.tearDown
 
+    def test_community_replacement_preserves_existing_ids_without_new_posts(self):
+        old = json.loads(subprocess.check_output(['git', 'show', '881c29d:config/drops_queue.json']))
+        path = Path(self.tmp.name) / 'official-before.json'
+        path.write_text(json.dumps(old))
+        dropqueue.sync(path, verbose=False)
+        c = db.connect()
+        before = {r['id']: dict(r) for r in c.execute('SELECT * FROM drops')}
+        c.close()
+        self.assertEqual(dropqueue.sync(verbose=False), {'added': 0, 'updated': 3, 'skipped': 62, 'bad': 0})
+        c = db.connect()
+        after = {r['id']: dict(r) for r in c.execute('SELECT * FROM drops')}
+        c.close()
+        self.assertEqual(set(before), set(after))
+        self.assertEqual(sum(before[i] != after[i] for i in before), 3)
+        for i in before:
+            self.assertEqual(before[i]['created_at'], after[i]['created_at'])
+            self.assertEqual(before[i]['drop_date'], after[i]['drop_date'])
+        self.assertEqual(dropqueue.sync(verbose=False), {'added': 0, 'updated': 0, 'skipped': 65, 'bad': 0})
+
     def test_real_reserved_queue_renames_in_place_preserves_dates_and_replays_safely(self):
         old=json.loads(subprocess.check_output(['git','show','9c5c341:config/drops_queue.json']))
         path=Path(self.tmp.name)/'before.json';path.write_text(json.dumps(old))

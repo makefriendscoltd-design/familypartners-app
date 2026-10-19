@@ -1329,60 +1329,69 @@
       "type": "marketing",
       "target": "전체",
       "fmt": "단독글",
-      "title": "단독 사례 · 코딩 다음에 맡길 업무",
-      "body": "코딩 AI로 홈페이지만 만들고 끝내면 아까움\n\nOpenAI가 소개한 Amp 팀은\n문서 작성과 페이지 디자인에도 AI를 씀.\n새 사용자가 서비스를 익히는 과정도 다루고.\n\n만들어놓고 설명이 어려운 상품이 있다면\n고객용 사용 안내부터 맡겨보셈.",
+      "title": "사례 · 영화 속 방을 AI로 재현",
+      "body": "영화 속 방까지 AI로 만드는 사람이 있음 ㄷㄷ\n\n레딧 제작자가 Claude와 Blender로\n매트릭스 속 네오의 방을 재현함.\n\n한 번에 뽑은 게 아니라\n화면에 수정할 곳을 그려가며 고쳤다고.\n결과만큼 이 피드백 방식이 볼 만함.",
       "format": "standalone",
       "editorial_kind": "short_case",
       "supplemental": true,
       "sources": [
         {
-          "url": "https://openai.com/index/amp-beyond-coding",
-          "title": "Amp puts AI agents to work beyond code with OpenAI models",
-          "published_at": "2026-10-14",
-          "collected_at": "2026-10-19T08:55:44.386556+00:00",
-          "verified_at": "2026-10-19T08:55:44.386556+00:00"
+          "url": "https://www.reddit.com/r/ClaudeAI/comments/1x6x6x7/3d_recreation_of_neo_apartment_from_the_matrix/",
+          "title": "Repulsive-Rush3505 · 네오의 방 제작 과정",
+          "published_at": null,
+          "collected_at": "2026-10-19T09:10:18.878961+00:00",
+          "verified_at": "2026-10-19T09:10:18.878961+00:00",
+          "platform": "reddit",
+          "verification_scope": "original_author_account_read; performance_not_independently_verified"
         }
-      ]
+      ],
+      "previous_title": "단독 사례 · 코딩 다음에 맡길 업무"
     },
     {
       "date": "2026-10-19",
       "type": "marketing",
       "target": "전체",
       "fmt": "단독글",
-      "title": "비교 · 이미지 분위기와 위치 바꾸기",
-      "body": "AI 이미지 수정할 때 이 둘은 구분하셈\n\n분위기 변경 → 같은 장면을 낮에서 밤으로.\n위치 변경 → 특정 대상만 원하는 자리로.\n\nHugging Face의 FLUX.3 예시에는\n참조 이미지 수정과 영역 좌표 지정이 나옴.\n\n원하는 게 색감인지 배치인지부터 정하는 거임.",
-      "format": "standalone",
-      "editorial_kind": "comparison",
-      "supplemental": true,
-      "sources": [
-        {
-          "url": "https://huggingface.co/blog/flux-3",
-          "title": "Welcome FLUX.3 Image Klein in Diffusers",
-          "published_at": "2026-10-15",
-          "collected_at": "2026-10-19T08:55:44.386556+00:00",
-          "verified_at": "2026-10-19T08:55:44.386556+00:00"
-        }
-      ]
-    },
-    {
-      "date": "2026-10-19",
-      "type": "marketing",
-      "target": "전체",
-      "fmt": "단독글",
-      "title": "활용법 · AI에게 질문받으며 공부하기",
-      "body": "AI 답 읽을 땐 알겠는데 설명은 못 하겠음?\n\nChatGPT 공부 모드에서 이렇게 요청해보셈.\n\n“질문을 하나씩 하고 내 답을 기다려줘.\n내가 복습할 부분을 짚어줘.”\n\nOpenAI가 소개한 학습 예시임.\n이번엔 답부터 읽지 말고 먼저 대답해보셈.",
+      "title": "활용법 · 청구서 생성부터 메일까지",
+      "body": "청구서 만들고 저장하고 메일까지 따로 하고 있음?\n\n레딧에 올라온 n8n 시연은\n청구서 데이터 → PDF → 보관 → 메일까지 연결함.\n\n제작자가 작업 흐름 코드도 공개했음.\n실제 고객에게 쓰려면 중복 발송과\n실패 처리부터 보완해야 한다고.",
       "format": "standalone",
       "editorial_kind": "howto",
       "supplemental": true,
       "sources": [
         {
-          "url": "https://openai.com/index/teaching-students-to-think-and-learn-through-questions",
-          "title": "Teaching students to think and learn through questions",
-          "published_at": "2026-10-15",
-          "collected_at": "2026-10-19T08:55:44.386556+00:00",
-          "verified_at": "2026-10-19T08:55:44.386556+00:00"
+          "url": "https://www.reddit.com/r/n8n/comments/1w7qjr7/built_an_endtoend_invoice_workflow_with_n8n/",
+          "title": "cuebicai · 청구서 자동화 시연과 코드",
+          "published_at": null,
+          "collected_at": "2026-10-19T09:10:18.878961+00:00",
+          "verified_at": "2026-10-19T09:10:18.878961+00:00",
+          "platform": "reddit",
+          "verification_scope": "original_author_account_read; performance_not_independently_verified"
         }
-      ]
+      ],
+      "previous_title": "비교 · 이미지 분위기와 위치 바꾸기"
+    },
+    {
+      "date": "2026-10-19",
+      "type": "marketing",
+      "target": "전체",
+      "fmt": "단독글",
+      "title": "경험담 · 저장했는데 계속 도는 자동화",
+      "body": "자동화 줄였는데 예전 설정으로 계속 돌고 있었다고?\n\n레딧의 n8n 사용자가 겪었다는 일임.\n실행 주기를 바꾸고 저장만 해둔 채\n실제 실행 버전에는 반영하지 않았다고.\n\n설정 화면만 보면 놓치기 쉬움.\n실행 기록에서 진짜 바뀌었는지 봐야 함.",
+      "format": "standalone",
+      "editorial_kind": "failure_case",
+      "supplemental": true,
+      "sources": [
+        {
+          "url": "https://www.reddit.com/r/n8n/comments/1wu5xjg/one_workflow_was_75_of_my_llm_bill_how_i_measured/",
+          "title": "Competitive-Joke-408 · 저장과 실행 버전이 달랐던 경험",
+          "published_at": null,
+          "collected_at": "2026-10-19T09:10:18.878961+00:00",
+          "verified_at": "2026-10-19T09:10:18.878961+00:00",
+          "platform": "reddit",
+          "verification_scope": "original_author_account_read; performance_not_independently_verified"
+        }
+      ],
+      "previous_title": "활용법 · AI에게 질문받으며 공부하기"
     }
   ],
   "_작성기준": "글감 작성 전 AGENTS.md와 config/brands/makefamily.md의 최신 사용자 기준을 읽는다. 과거 루틴 문구와 충돌하면 최신 사용자 기준을 적용한다."

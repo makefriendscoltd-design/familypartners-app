@@ -486,6 +486,21 @@
     ],
     "lounge_catalog_url": "https://lounge.aimax.ai.kr/worldclass?tab=free",
     "lounge_url": "https://lounge.aimax.ai.kr/worldclass",
-    "sources_required_after": "2026-10-24"
+    "sources_required_after": "2026-10-24",
+    "discovery_priority": [
+      "x",
+      "reddit",
+      "lounge"
+    ],
+    "official_role": "verification_only",
+    "community_queries": {
+      "x": [
+        "site:x.com AI workflow built demo after:{since}"
+      ],
+      "reddit": [
+        "site:reddit.com/r/ClaudeAI built demo workflow after:{since}",
+        "site:reddit.com/r/n8n workflow demo after:{since}"
+      ]
+    }
   }
 }

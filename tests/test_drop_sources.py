@@ -2,11 +2,33 @@ import unittest
 import json
 from datetime import datetime, timezone
 
-from deploy.collect_drop_sources import candidates, lounge_notes
+from deploy.collect_drop_sources import candidates, lounge_notes, community_candidates
 from deploy.lint_drops import check_one
 
 
 class SourceCollectionTests(unittest.TestCase):
+    def test_community_search_rejects_offsite_removed_and_duplicates(self):
+        raw = '''Title: Blog fallback
+URL: https://example.com/post
+Title: Actual post
+URL: https://www.reddit.com/r/n8n/comments/abc123/demo/
+Title: Duplicate
+URL: https://www.reddit.com/r/n8n/comments/abc123/demo/?utm_source=search
+Title: Removed
+URL: https://www.reddit.com/r/n8n/comments/abc124/demo/
+Text: [removed]
+Title: X post
+URL: https://x.com/creator/status/12345
+'''
+        now = datetime(2026, 10, 19, tzinfo=timezone.utc)
+        reddit = community_candidates(raw, 'reddit', now)
+        self.assertEqual(len(reddit), 1)
+        self.assertIsNone(reddit[0]['published_at'])
+        self.assertFalse(reddit[0]['original_read'])
+        self.assertEqual(len(community_candidates(raw, 'x', now)), 1)
+        with self.assertRaises(ValueError):
+            community_candidates("You've hit Exa's free MCP rate limit.", 'x', now)
+
     def test_current_notes_distinguish_free_material_from_overseas_case(self):
         props = {'articles': [{'slug': 'case-1', 'title': 'Case'}],
                  'resources': [{'slug': 'free-1', 'title': 'Material'}]}

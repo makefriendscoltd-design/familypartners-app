@@ -9,6 +9,8 @@ import argparse
 import hashlib
 import json
 import re
+import subprocess
+from urllib.parse import urlsplit
 from datetime import datetime, timedelta, timezone
 from email.utils import parsedate_to_datetime
 from pathlib import Path
@@ -79,12 +81,41 @@ def candidates(raw: bytes, feed_url: str, now: datetime, days: int) -> list[dict
     return sorted(rows, key=lambda r: r['published_at'], reverse=True)
 
 
-def collect(out: Path) -> dict:
+def community_candidates(raw: str, platform: str, now: datetime) -> list[dict]:
+    """Keep only original post URLs; search may silently drop its site filter."""
+    if any(x in raw.lower() for x in ('rate limit', 'api key', 'quota exceeded')):
+        raise ValueError('Search backend unavailable or rate limited')
+    rows, seen = [], set()
+    for block in re.split(r'(?m)^Title:', raw):
+        if '[removed]' in block.lower() or '[deleted]' in block.lower():
+            continue
+        match = re.search(r'(?m)^URL:\s*(https://\S+)', block)
+        if not match:
+            continue
+        u = urlsplit(match[1])
+        host = (u.hostname or '').removeprefix('www.')
+        valid = (platform == 'x' and host in ('x.com', 'twitter.com')
+                 and re.fullmatch(r'/[^/]+/status/\d+/?', u.path)) or (
+                 platform == 'reddit' and host == 'reddit.com'
+                 and re.fullmatch(r'/r/[^/]+/comments/[a-z0-9]+/[^/]+/?', u.path))
+        url = f'https://{host}{u.path}'
+        if not valid or url in seen:
+            continue
+        seen.add(url)
+        rows.append({'title': block.strip().splitlines()[0], 'url': url,
+                     'platform': platform, 'published_at': None,
+                     'collected_at': now.isoformat(), 'original_read': False,
+                     'status': 'candidate_date_and_original_not_verified'})
+    return rows
+
+
+def collect(out: Path, include_official: bool = False) -> dict:
     policy = json.loads((ROOT / 'config/assets.json').read_text())['_research']
     now = datetime.now(timezone.utc)
     out.mkdir(parents=True, exist_ok=False)
     result = {'collected_at': now.isoformat(), 'candidates': [], 'resources': [],
-              'errors': [], 'snapshots': [], 'publication_allowed': False}
+              'errors': [], 'snapshots': [], 'publication_allowed': False,
+              'platform_status': {}, 'verification_references': []}
 
     def fetch(url: str, filename: str) -> bytes:
         req = urllib.request.Request(url, headers={'User-Agent': 'FamilyPartners-source-review/1.0'})
@@ -95,10 +126,33 @@ def collect(out: Path) -> dict:
                                     'sha256': hashlib.sha256(raw).hexdigest()})
         return raw
 
-    for i, url in enumerate(policy['official_feeds']):
+    since = (now - timedelta(days=policy['discovery_days'])).date().isoformat()
+    for platform, queries in policy['community_queries'].items():
+        found, failed = [], False
+        for i, template in enumerate(queries):
+            try:
+                query = template.format(since=since)
+                proc = subprocess.run(['mcporter', 'call', 'exa.web_search_exa',
+                                       f'query={query}', 'numResults=8'],
+                                      capture_output=True, text=True, timeout=60, check=True)
+                filename = f'{platform}-{i}.txt'
+                (out / filename).write_text(proc.stdout)
+                result['snapshots'].append({'query': query, 'file': filename,
+                    'sha256': hashlib.sha256(proc.stdout.encode()).hexdigest()})
+                found.extend(community_candidates(proc.stdout, platform, now))
+            except Exception as exc:
+                failed = True
+                result['errors'].append({'source': platform, 'error': type(exc).__name__})
+                break
+        result['platform_status'][platform] = ('partial' if found and failed else
+            'candidates_need_review' if found else 'unavailable' if failed else 'no_verified_post_results')
+        if not found and not failed:
+            result['errors'].append({'source': platform, 'error': 'NoOriginalPostResults'})
+        result['candidates'].extend(found)
+    for i, url in enumerate(policy['official_feeds'] if include_official else []):
         try:
             raw = fetch(url, f'feed-{i}.xml')
-            result['candidates'].extend(candidates(raw, url, now, policy['discovery_days']))
+            result['verification_references'].extend(candidates(raw, url, now, policy['discovery_days']))
         except Exception as exc:
             result['errors'].append({'source': url, 'error': type(exc).__name__})
     try:
@@ -106,7 +160,7 @@ def collect(out: Path) -> dict:
             fetch(policy['lounge_catalog_url'], 'lounge-notes.html'), policy['lounge_url'])
     except Exception as exc:
         result['errors'].append({'source': policy['lounge_catalog_url'], 'error': type(exc).__name__})
-    result['candidates'].sort(key=lambda r: r['published_at'], reverse=True)
+    result['candidates'] = list({r['url']: r for r in result['candidates']}.values())
     (out / 'discovery.json').write_text(json.dumps(result, ensure_ascii=False, indent=2) + '\n')
     return result
 
@@ -114,8 +168,9 @@ def collect(out: Path) -> dict:
 if __name__ == '__main__':
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--out', type=Path, required=True)
+    p.add_argument('--include-official', action='store_true', help='Verification references only')
     args = p.parse_args()
-    r = collect(args.out)
+    r = collect(args.out, args.include_official)
     print(json.dumps({'candidates': len(r['candidates']), 'lounge_resources': len(r['resources']),
                       'errors': r['errors'], 'output': str(args.out / 'discovery.json')}, ensure_ascii=False))
     raise SystemExit(1 if r['errors'] or not r['candidates'] or not r['resources'] else 0)
