@@ -2,11 +2,21 @@ import unittest
 import json
 from datetime import datetime, timezone
 
-from deploy.collect_drop_sources import candidates, lounge_notes, community_candidates
+from deploy.collect_drop_sources import candidates, lounge_notes, community_candidates, catalog_rows
 from deploy.lint_drops import check_one
 
 
 class SourceCollectionTests(unittest.TestCase):
+    def test_hycli_rejects_rendered_first_page_and_login_payloads(self):
+        for raw in ({'items': [{'title': 'Only the visible first page'}]},
+                    {'text': 'Log in'}, {'articles': [], 'resources': []}):
+            with self.assertRaises(ValueError):
+                catalog_rows(raw, 'https://example.org/worldclass')
+        payload = {'articles': [{'slug': 'case', 'title': 'Case'}],
+                   'resources': [{'slug': 'case', 'title': 'Duplicate'}]}
+        with self.assertRaises(ValueError):
+            catalog_rows(payload, 'https://example.org/worldclass')
+
     def test_community_search_rejects_offsite_removed_and_duplicates(self):
         raw = '''Title: Blog fallback
 URL: https://example.com/post

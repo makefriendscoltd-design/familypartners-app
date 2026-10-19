@@ -10,6 +10,7 @@ import hashlib
 import json
 import re
 import subprocess
+import shutil
 from urllib.parse import urlsplit
 from datetime import datetime, timedelta, timezone
 from email.utils import parsedate_to_datetime
@@ -18,6 +19,27 @@ import urllib.request
 import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parent.parent
+
+
+def catalog_rows(catalog: dict, base_url: str) -> list[dict]:
+    if not isinstance(catalog, dict) or not all(isinstance(catalog.get(k), list) for k in ('articles', 'resources')):
+        raise ValueError('Current lounge catalog missing; reject login or partial page')
+    rows = []
+    for key, kind in [('articles', 'overseas_case'), ('resources', 'free_material')]:
+        for row in catalog[key]:
+            slug = row.get('slug')
+            if not isinstance(slug, str) or not re.fullmatch(r'[A-Za-z0-9_-]+', slug):
+                raise ValueError('Invalid lounge slug')
+            if not isinstance(row.get('title'), str) or not row['title'].strip():
+                raise ValueError('Missing source title')
+            rows.append({'slug': slug, 'title': row['title'],
+                         'description': row.get('description'), 'kind': kind,
+                         'channel': row.get('channel'), 'topic': row.get('topic'),
+                         'url': f'{base_url}/{slug}', 'published_at': None,
+                         'body_verified': False, 'requires_auth': True})
+    if not rows or len({r['slug'] for r in rows}) != len(rows):
+        raise ValueError('Empty or duplicate catalog')
+    return rows
 
 
 def lounge_notes(raw: bytes, base_url: str) -> list[dict]:
@@ -47,18 +69,7 @@ def lounge_notes(raw: bytes, base_url: str) -> list[dict]:
         except (ValueError, IndexError):
             continue
         for catalog in walk(value):
-            rows = []
-            for key, kind in [('articles', 'overseas_case'), ('resources', 'free_material')]:
-                for row in catalog[key]:
-                    slug = row.get('slug')
-                    if not isinstance(slug, str) or not re.fullmatch(r'[A-Za-z0-9_-]+', slug):
-                        raise ValueError('Invalid lounge slug')
-                    rows.append({'slug': slug, 'title': row['title'],
-                                 'description': row.get('description'), 'kind': kind,
-                                 'channel': row.get('channel'), 'topic': row.get('topic'),
-                                 'url': f'{base_url}/{slug}', 'published_at': None,
-                                 'body_verified': False, 'requires_auth': True})
-            return rows
+            return catalog_rows(catalog, base_url)
     raise ValueError('Current lounge catalog not found; do not substitute legacy resources')
 
 
@@ -109,7 +120,7 @@ def community_candidates(raw: str, platform: str, now: datetime) -> list[dict]:
     return rows
 
 
-def collect(out: Path, include_official: bool = False) -> dict:
+def collect(out: Path, include_official: bool = False, lounge_cli: str | None = None) -> dict:
     policy = json.loads((ROOT / 'config/assets.json').read_text())['_research']
     now = datetime.now(timezone.utc)
     out.mkdir(parents=True, exist_ok=False)
@@ -156,8 +167,19 @@ def collect(out: Path, include_official: bool = False) -> dict:
         except Exception as exc:
             result['errors'].append({'source': url, 'error': type(exc).__name__})
     try:
-        result['resources'] = lounge_notes(
-            fetch(policy['lounge_catalog_url'], 'lounge-notes.html'), policy['lounge_url'])
+        if lounge_cli:
+            proc = subprocess.run([lounge_cli, 'run', 'fp-lounge', 'catalog', '--format', 'json'],
+                                  capture_output=True, text=True, timeout=60, check=True)
+            raw = proc.stdout.encode()
+            (out / 'lounge-hycli.json').write_bytes(raw)
+            result['snapshots'].append({'url': policy['lounge_catalog_url'],
+                'file': 'lounge-hycli.json', 'sha256': hashlib.sha256(raw).hexdigest()})
+            result['resources'] = catalog_rows(json.loads(raw), policy['lounge_url'])
+            result['lounge_backend'] = 'hycli'
+        else:
+            result['resources'] = lounge_notes(
+                fetch(policy['lounge_catalog_url'], 'lounge-notes.html'), policy['lounge_url'])
+            result['lounge_backend'] = 'http'
     except Exception as exc:
         result['errors'].append({'source': policy['lounge_catalog_url'], 'error': type(exc).__name__})
     result['candidates'] = list({r['url']: r for r in result['candidates']}.values())
@@ -169,8 +191,10 @@ if __name__ == '__main__':
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--out', type=Path, required=True)
     p.add_argument('--include-official', action='store_true', help='Verification references only')
+    p.add_argument('--lounge-cli', default=shutil.which('fp-hycli'),
+                   help='Installed Hycli wrapper; empty string uses existing HTTP reader')
     args = p.parse_args()
-    r = collect(args.out, args.include_official)
+    r = collect(args.out, args.include_official, args.lounge_cli)
     print(json.dumps({'candidates': len(r['candidates']), 'lounge_resources': len(r['resources']),
                       'errors': r['errors'], 'output': str(args.out / 'discovery.json')}, ensure_ascii=False))
     raise SystemExit(1 if r['errors'] or not r['candidates'] or not r['resources'] else 0)

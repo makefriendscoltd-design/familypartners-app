@@ -1,0 +1,32 @@
+{
+  "spec_version": 1,
+  "site": {
+    "name": "fp-lounge",
+    "title": "FamilyPartners source catalog",
+    "base_url": "https://lounge.aimax.ai.kr"
+  },
+  "operations": [
+    {
+      "name": "catalog",
+      "desc": "Read current public source catalog; no article body or login access",
+      "method": "GET",
+      "path": "/worldclass",
+      "effect": "read",
+      "query": {
+        "tab": {
+          "type": "string",
+          "default": "free"
+        }
+      },
+      "evidence": "Public GET /worldclass?tab=free embeds a Next.js Flight payload with articles/resources arrays. Existing collector verifies 44 records, including records beyond the first rendered page. Read-only source metadata, not logged-in article bodies.",
+      "response": {
+        "format": "json",
+        "ssr_json": "__NEXT_F__",
+        "required_pointers": [
+          "/articles",
+          "/resources"
+        ]
+      }
+    }
+  ]
+}
