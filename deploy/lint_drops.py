@@ -7,12 +7,11 @@
 
 왜 있나
 -------
-글감 규칙(줄 수, 댓글 유도, 없는 자료 약속 금지 …)을 루틴 프롬프트에 계속
+글감 규칙(줄 수, 자료 신청 안내, 없는 자료 약속 금지 …)을 루틴 프롬프트에 계속
 쌓아왔는데, 같은 프롬프트가 "10분 안에 push 하라"고도 해서 서로 부딪혔다.
 기계가 볼 수 있는 건 기계가 보고, 프롬프트는 판단이 필요한 것만 남긴다.
 
 실제로 2026-08-04 에 세 번 사고가 났고 그중 둘은 여기서 잡힌다:
-  - 댓글 유도 없이 끝낸 글감 20건 (반응 0)
   - 자료실에 없는 자료를 준다고 약속한 10건 (보낼 게 없음)
 그리고 파트너 피드백 "표현이 직관적이지 않다" → 본문에 도구 이름이 없었다.
 
@@ -45,8 +44,6 @@ CTA_WORDS = ("댓글", "답글")
 # CTA 줄에 있으면 "뭘 주는지 모르겠는" 문장이 된다
 VAGUE = ("이렇게", "이 순서", "이거 보고", "그걸", "이런 식으로", "이 방법")
 BANMAL = ("음", "임", "함", "거임", "더라", "잖아", "해봐", "줄게", "거든", "네요?")
-NUM = re.compile(r"[0-9]|한|두|세|네|다섯|여섯|일곱|여덟|아홉|열|십|스무|서른|마흔|"
-                 r"쉰|예순|백|천|만|절반|두세")
 
 
 def load(path: Path):
@@ -83,8 +80,10 @@ def check_one(d: dict, cfg: dict) -> list[str]:
         if any(len(lines_of(p)) > FREE_MAX_PARAGRAPH_LINES for p in paragraphs):
             bad.append(f"한 문단 {FREE_MAX_PARAGRAPH_LINES}줄 초과")
 
-    # ① 댓글 유도 — 이게 없으면 실측상 답글이 0~1개다
-    if not any(w in tail for w in CTA_WORDS):
+    # 무료자료 신청이나 명시한 댓글 키워드는 안내가 필요하다.
+    # 정보·의견 글은 내용만으로 끝낼 수 있다.
+    needs_cta = dtype == "evergreen" or bool(d.get("cta_keyword"))
+    if needs_cta and not any(w in tail for w in CTA_WORDS):
         bad.append("마지막 두 줄에 댓글 유도 없음")
 
     # ② 약속한 자료가 실재하는가 (evergreen 만 자료를 준다)
@@ -103,13 +102,11 @@ def check_one(d: dict, cfg: dict) -> list[str]:
 
     # ④ CTA 줄이 지시대명사로 뭉개지지 않았는가
     for v in VAGUE:
-        if v in tail:
+        if needs_cta and v in tail:
             bad.append(f"CTA에 모호한 표현 '{v}'")
             break
 
-    # ⑤ 구체적 숫자
-    if dtype != "evergreen" and not NUM.search(body):
-        bad.append("구체적 숫자 없음")
+    # 숫자는 근거가 있을 때만 쓴다. 형식상 필수로 요구하지 않는다.
 
     # ⑥ 댓글 키워드가 이미 쓴 것과 겹치는가
     kw = d.get("cta_keyword")
@@ -122,7 +119,7 @@ def check_day(date: str, group: list[dict]) -> tuple[list[str], list[str]]:
     """하루치 4건 사이의 규칙. (불합격, 경고) 를 돌려준다.
 
     구성 비율 같은 건 판단 영역이라 경고로만 알린다 — 자료를 하나 더 주는 날이
-    나쁜 건 아니다. 다만 ai 가 빠지면 그날은 오픈톡방 유도가 없다는 뜻이라 알린다.
+    나쁜 건 아니다. ai 유형이 없어도 콘텐츠 목적에 따라 허용한다.
     """
     bad, warn = [], []
     if len(group) != 4:
@@ -140,8 +137,6 @@ def check_day(date: str, group: list[dict]) -> tuple[list[str], list[str]]:
     types = sorted(d.get("type") for d in group)
     if types != ["ai", "evergreen", "evergreen", "marketing"]:
         warn.append(f"구성 {types} — 권장은 evergreen2/ai1/marketing1")
-    if "ai" not in types:
-        warn.append("ai(최신 소식)가 없어 이날은 오픈톡방 유도가 빠진다")
     return bad, warn
 
 
