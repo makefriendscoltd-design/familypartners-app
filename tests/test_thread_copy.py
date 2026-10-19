@@ -10,7 +10,8 @@ class ThreadCopyTest(unittest.TestCase):
     request = fixture.VideoHTTPTest.request
 
     def test_feed_and_workspace_show_separate_blocks(self):
-        entries=json.loads(dropqueue.QUEUE_PATH.read_text())['drops'][-2:]
+        entries=[d for d in json.loads(dropqueue.QUEUE_PATH.read_text())['drops']
+                 if d.get('supplemental') and d.get('replies')]
         c=db.connect()
         for d in entries:
             core.add_drop(c,d['title'],d['body'],drop_date=d['date'])
@@ -35,6 +36,27 @@ class ThreadCopyTest(unittest.TestCase):
         for d in json.loads(dropqueue.QUEUE_PATH.read_text())['drops']:
             for text in d.get('replies',[])+([d['link_comment']] if d.get('link_comment') else []):
                 self.assertLessEqual(len(text),500)
+
+    def test_standalone_copy_has_one_post_with_sources_outside_copy(self):
+        from html.parser import HTMLParser
+        class Blocks(HTMLParser):
+            def __init__(self):
+                super().__init__(); self.in_pre=False; self.texts=[]
+            def handle_starttag(self,tag,attrs):
+                if tag=='pre':self.in_pre=True;self.texts.append('')
+            def handle_endtag(self,tag):
+                if tag=='pre':self.in_pre=False
+            def handle_data(self,text):
+                if self.in_pre:self.texts[-1]+=text
+        entries=[d for d in json.loads(dropqueue.QUEUE_PATH.read_text())['drops'] if d.get('format')=='standalone']
+        self.assertEqual(len(entries),3)
+        for d in entries:
+            html=thread_copy.render(dict(d,drop_date=d['date']))
+            parser=Blocks();parser.feed(html)
+            self.assertEqual(parser.texts,[d['body']])
+            self.assertIn('원문 출처 확인',html)
+            self.assertIn(d['sources'][0]['url'],html)
+            self.assertNotIn('댓글 1 복사',html)
 
     def test_case_images_are_downloadable_and_paths_cannot_escape(self):
         import hashlib

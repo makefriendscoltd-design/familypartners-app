@@ -1,0 +1,142 @@
+{
+  "claim_decisions": [
+    {
+      "claim_id": "clm_amp",
+      "claim_type": "descriptive",
+      "content_wording": "OpenAI가 소개한 Amp 사례에서 팀은 에이전트를 문서 작성, 페이지 디자인과 신규 사용자 경험 개선에 활용한다고 설명한다.",
+      "reasons": [],
+      "risk": "normal",
+      "sources": [
+        {
+          "locator": "Writing, designing, and creating with GPT-6 Astra",
+          "organization": "openai",
+          "publisher": "OpenAI",
+          "source_id": "src_amp",
+          "source_type": "official",
+          "title": "Amp puts AI agents to work beyond code with OpenAI models",
+          "url": "https://openai.com/index/amp-beyond-coding"
+        }
+      ],
+      "status": "verified",
+      "text": "OpenAI가 소개한 Amp 사례에서 팀은 에이전트를 문서 작성, 페이지 디자인과 신규 사용자 경험 개선에 활용한다고 설명한다.",
+      "valid_at": "2026-10-19"
+    },
+    {
+      "claim_id": "clm_flux",
+      "claim_type": "descriptive",
+      "content_wording": "Hugging Face의 FLUX.3 설명은 참조 이미지의 분위기를 바꾸는 예시와 영역 좌표로 특정 대상을 옮기는 예시를 구분해 제공한다.",
+      "reasons": [],
+      "risk": "normal",
+      "sources": [
+        {
+          "locator": "Image-to-image and Layout control",
+          "organization": "hugging-face",
+          "publisher": "Hugging Face",
+          "source_id": "src_flux",
+          "source_type": "official",
+          "title": "Welcome FLUX.3 Image Klein in Diffusers",
+          "url": "https://huggingface.co/blog/flux-3"
+        }
+      ],
+      "status": "verified",
+      "text": "Hugging Face의 FLUX.3 설명은 참조 이미지의 분위기를 바꾸는 예시와 영역 좌표로 특정 대상을 옮기는 예시를 구분해 제공한다.",
+      "valid_at": "2026-10-19"
+    },
+    {
+      "claim_id": "clm_questions",
+      "claim_type": "descriptive",
+      "content_wording": "OpenAI는 ChatGPT Study Mode에서 질문을 하나씩 받고 답한 뒤 복습할 부분을 확인하는 학습 예시를 소개한다.",
+      "reasons": [],
+      "risk": "normal",
+      "sources": [
+        {
+          "locator": "Learning through active participation, step by step",
+          "organization": "openai",
+          "publisher": "OpenAI",
+          "source_id": "src_questions",
+          "source_type": "official",
+          "title": "Teaching students to think and learn through questions",
+          "url": "https://openai.com/index/teaching-students-to-think-and-learn-through-questions"
+        }
+      ],
+      "status": "verified",
+      "text": "OpenAI는 ChatGPT Study Mode에서 질문을 하나씩 받고 답한 뒤 복습할 부분을 확인하는 학습 예시를 소개한다.",
+      "valid_at": "2026-10-19"
+    }
+  ],
+  "contract_errors": [],
+  "generated_at": "2026-10-19T08:55:12.678708+00:00",
+  "run_dir": "/private/tmp/fp-threads-20261019/.content-research/20261019-mixed-formats",
+  "summary": {
+    "claims": 3,
+    "contract_errors": 0,
+    "refuted": 0,
+    "unresolved": 0,
+    "verified": 3
+  },
+  "verified_facts": [
+    {
+      "claim_id": "clm_amp",
+      "claim_type": "descriptive",
+      "content_wording": "OpenAI가 소개한 Amp 사례에서 팀은 에이전트를 문서 작성, 페이지 디자인과 신규 사용자 경험 개선에 활용한다고 설명한다.",
+      "reasons": [],
+      "risk": "normal",
+      "sources": [
+        {
+          "locator": "Writing, designing, and creating with GPT-6 Astra",
+          "organization": "openai",
+          "publisher": "OpenAI",
+          "source_id": "src_amp",
+          "source_type": "official",
+          "title": "Amp puts AI agents to work beyond code with OpenAI models",
+          "url": "https://openai.com/index/amp-beyond-coding"
+        }
+      ],
+      "status": "verified",
+      "text": "OpenAI가 소개한 Amp 사례에서 팀은 에이전트를 문서 작성, 페이지 디자인과 신규 사용자 경험 개선에 활용한다고 설명한다.",
+      "valid_at": "2026-10-19"
+    },
+    {
+      "claim_id": "clm_flux",
+      "claim_type": "descriptive",
+      "content_wording": "Hugging Face의 FLUX.3 설명은 참조 이미지의 분위기를 바꾸는 예시와 영역 좌표로 특정 대상을 옮기는 예시를 구분해 제공한다.",
+      "reasons": [],
+      "risk": "normal",
+      "sources": [
+        {
+          "locator": "Image-to-image and Layout control",
+          "organization": "hugging-face",
+          "publisher": "Hugging Face",
+          "source_id": "src_flux",
+          "source_type": "official",
+          "title": "Welcome FLUX.3 Image Klein in Diffusers",
+          "url": "https://huggingface.co/blog/flux-3"
+        }
+      ],
+      "status": "verified",
+      "text": "Hugging Face의 FLUX.3 설명은 참조 이미지의 분위기를 바꾸는 예시와 영역 좌표로 특정 대상을 옮기는 예시를 구분해 제공한다.",
+      "valid_at": "2026-10-19"
+    },
+    {
+      "claim_id": "clm_questions",
+      "claim_type": "descriptive",
+      "content_wording": "OpenAI는 ChatGPT Study Mode에서 질문을 하나씩 받고 답한 뒤 복습할 부분을 확인하는 학습 예시를 소개한다.",
+      "reasons": [],
+      "risk": "normal",
+      "sources": [
+        {
+          "locator": "Learning through active participation, step by step",
+          "organization": "openai",
+          "publisher": "OpenAI",
+          "source_id": "src_questions",
+          "source_type": "official",
+          "title": "Teaching students to think and learn through questions",
+          "url": "https://openai.com/index/teaching-students-to-think-and-learn-through-questions"
+        }
+      ],
+      "status": "verified",
+      "text": "OpenAI는 ChatGPT Study Mode에서 질문을 하나씩 받고 답한 뒤 복습할 부분을 확인하는 학습 예시를 소개한다.",
+      "valid_at": "2026-10-19"
+    }
+  ]
+}

@@ -1323,6 +1323,66 @@
         }
       ],
       "supplemental": true
+    },
+    {
+      "date": "2026-10-19",
+      "type": "marketing",
+      "target": "전체",
+      "fmt": "단독글",
+      "title": "단독 사례 · 코딩 다음에 맡길 업무",
+      "body": "코딩 AI로 홈페이지만 만들고 끝내면 아까움\n\nOpenAI가 소개한 Amp 팀은\n문서 작성과 페이지 디자인에도 AI를 씀.\n새 사용자가 서비스를 익히는 과정도 다루고.\n\n만들어놓고 설명이 어려운 상품이 있다면\n고객용 사용 안내부터 맡겨보셈.",
+      "format": "standalone",
+      "editorial_kind": "short_case",
+      "supplemental": true,
+      "sources": [
+        {
+          "url": "https://openai.com/index/amp-beyond-coding",
+          "title": "Amp puts AI agents to work beyond code with OpenAI models",
+          "published_at": "2026-10-14",
+          "collected_at": "2026-10-19T08:55:44.386556+00:00",
+          "verified_at": "2026-10-19T08:55:44.386556+00:00"
+        }
+      ]
+    },
+    {
+      "date": "2026-10-19",
+      "type": "marketing",
+      "target": "전체",
+      "fmt": "단독글",
+      "title": "비교 · 이미지 분위기와 위치 바꾸기",
+      "body": "AI 이미지 수정할 때 이 둘은 구분하셈\n\n분위기 변경 → 같은 장면을 낮에서 밤으로.\n위치 변경 → 특정 대상만 원하는 자리로.\n\nHugging Face의 FLUX.3 예시에는\n참조 이미지 수정과 영역 좌표 지정이 나옴.\n\n원하는 게 색감인지 배치인지부터 정하는 거임.",
+      "format": "standalone",
+      "editorial_kind": "comparison",
+      "supplemental": true,
+      "sources": [
+        {
+          "url": "https://huggingface.co/blog/flux-3",
+          "title": "Welcome FLUX.3 Image Klein in Diffusers",
+          "published_at": "2026-10-15",
+          "collected_at": "2026-10-19T08:55:44.386556+00:00",
+          "verified_at": "2026-10-19T08:55:44.386556+00:00"
+        }
+      ]
+    },
+    {
+      "date": "2026-10-19",
+      "type": "marketing",
+      "target": "전체",
+      "fmt": "단독글",
+      "title": "활용법 · AI에게 질문받으며 공부하기",
+      "body": "AI 답 읽을 땐 알겠는데 설명은 못 하겠음?\n\nChatGPT 공부 모드에서 이렇게 요청해보셈.\n\n“질문을 하나씩 하고 내 답을 기다려줘.\n내가 복습할 부분을 짚어줘.”\n\nOpenAI가 소개한 학습 예시임.\n이번엔 답부터 읽지 말고 먼저 대답해보셈.",
+      "format": "standalone",
+      "editorial_kind": "howto",
+      "supplemental": true,
+      "sources": [
+        {
+          "url": "https://openai.com/index/teaching-students-to-think-and-learn-through-questions",
+          "title": "Teaching students to think and learn through questions",
+          "published_at": "2026-10-15",
+          "collected_at": "2026-10-19T08:55:44.386556+00:00",
+          "verified_at": "2026-10-19T08:55:44.386556+00:00"
+        }
+      ]
     }
   ],
   "_작성기준": "글감 작성 전 AGENTS.md와 config/brands/makefamily.md의 최신 사용자 기준을 읽는다. 과거 루틴 문구와 충돌하면 최신 사용자 기준을 적용한다."

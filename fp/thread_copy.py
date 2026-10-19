@@ -52,4 +52,13 @@ def render(row):
             f'<section class=thread-copy-block style="margin:12px 0;padding:8px;border:1px solid #ddd;border-radius:12px">'
             f'<h3>{escape(label)}</h3><pre style="padding:8px;font-family:inherit;font-size:15px;line-height:1.7;text-align:left;white-space:pre-wrap;overflow-wrap:anywhere;word-break:keep-all">{escape(text)}</pre>'
             f'<button type=button class=ghost onclick=fpCopy(this)>{escape(label)} 복사</button>{media}</section>')
-    return guide + ''.join(rendered)
+    references = ''
+    if entry.get('format') == 'standalone':
+        from urllib.parse import urlsplit
+        for source in entry.get('sources', []):
+            url = str(source.get('url', ''))
+            if urlsplit(url).scheme == 'https' and urlsplit(url).netloc:
+                references += f'<p><a href="{escape(url)}" target="_blank" rel="noopener noreferrer">{escape(source.get("title", "원문"))}</a></p>'
+        if references:
+            references = '<details class=empty><summary>원문 출처 확인</summary>' + references + '</details>'
+    return guide + ''.join(rendered) + references
