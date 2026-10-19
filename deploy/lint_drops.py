@@ -25,6 +25,7 @@ import sys
 from collections import defaultdict
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from urllib.parse import urlsplit
 
 KST = timezone(timedelta(hours=9))
 
@@ -62,6 +63,30 @@ def check_one(d: dict, cfg: dict) -> list[str]:
     chars = len(body.replace("\n", ""))
     tail = "\n".join(lines[-2:])
     dtype = d.get("type")
+
+    # 이미 예약된 글은 보존하고, 이후 신규 작성분에는 확인한 원문 기록을 요구한다.
+    source_after = cfg.get("sources_required_after")
+    if source_after and (d.get("date") or "") > source_after:
+        sources = d.get("sources")
+        if not isinstance(sources, list) or not sources:
+            bad.append("새 글에 확인한 원문 sources 없음")
+        else:
+            for source in sources:
+                if not isinstance(source, dict):
+                    bad.append("원문 출처 형식 오류")
+                    continue
+                url = urlsplit(str(source.get("url") or ""))
+                if url.scheme != "https" or not url.netloc or not source.get("title"):
+                    bad.append("원문 HTTPS URL 또는 제목 없음")
+                if "published_at" not in source:
+                    bad.append("원문 발행일 필드 없음 (미확인은 null)")
+                for field in ("collected_at", "verified_at"):
+                    try:
+                        stamp = datetime.fromisoformat(str(source.get(field) or "").replace("Z", "+00:00"))
+                        if stamp.tzinfo is None or stamp > datetime.now(KST) + timedelta(minutes=5):
+                            raise ValueError
+                    except ValueError:
+                        bad.append(f"원문 {field} 확인 시각 없음/오류")
 
     if not lines:
         return ["본문이 비었음"]
@@ -157,6 +182,7 @@ def main(argv: list[str]) -> int:
         "by_code": {x["code"]: x for x in a["assets"]},
         "proper": a["_고유명사"],
         "used_kw_before": set(a["_이미쓴_댓글키워드"]) - now_kw,
+        "sources_required_after": a.get("_research", {}).get("sources_required_after"),
     }
 
     # 기본은 오늘 이후 검사. 기존 글 수정은 --include-published로 전부 검사한다.

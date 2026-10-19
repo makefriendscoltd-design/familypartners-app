@@ -476,5 +476,15 @@
     "전광판",
     "카드뉴스 제작기",
     "업무지시서"
-  ]
+  ],
+  "_research": {
+    "discovery_days": 7,
+    "official_feeds": [
+      "https://openai.com/news/rss.xml",
+      "https://huggingface.co/blog/feed.xml"
+    ],
+    "lounge_catalog_url": "https://lounge.aimax.ai.kr/worldclass?tab=free",
+    "lounge_url": "https://lounge.aimax.ai.kr/worldclass",
+    "sources_required_after": "2026-10-24"
+  }
 }
