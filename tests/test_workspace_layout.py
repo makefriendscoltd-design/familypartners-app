@@ -62,7 +62,7 @@ class WorkspaceLayoutTest(unittest.TestCase):
         html = body.decode()
         self.assertIn('서포터즈 장학제도', html)
         links = PageElements(html).links
-        for path in ('/find', '/today', 'https://familypartners.aimax.ai.kr/join'):
+        for path in ('/find', '/today', 'https://open.kakao.com/o/gffYT1xi'):
             self.assertIn(path, links)
         self.assertNotIn('id=partner-home', html)
         for name in ('v1.jpg', 'c1.jpg'):
