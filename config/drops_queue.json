@@ -6,80 +6,6 @@
   "_형태기준": "fmt 는 '겉모양'이 아니라 '후킹 각도'다. 번호 매기기는 어느 각도에서나 쓰는 도구일 뿐이므로 번호가 있다고 리스트형이 아니다. 리스트형 = 각도 없이 정보만 나열하는 기본형.",
   "drops": [
     {
-      "date": "2026-10-10",
-      "type": "evergreen",
-      "target": "자영업자",
-      "fmt": "실패담",
-      "asset": "birthday",
-      "cta_keyword": "생일판",
-      "title": "컨텐츠 167 (*생일 전광판/현수막 사진 OR 만든 전광판 화면 캡처. 없으면 글만 올려도 됩니다)",
-      "body": "해마다 이맘때면 돈이 샜음\n\n단골 생일 챙겨주고 싶은데\n플래카드 맡기면 몇만 원씩 깨지더라\n\n전광판에 넣을 것만 골라봐\n1. 누구 생일인지\n2. 어떤 혜택 주는지\n\n생일 이벤트 전광판 만드는 자료 있어\n댓글에 '생일판' 남겨줘"
-    },
-    {
-      "date": "2026-10-10",
-      "type": "evergreen",
-      "target": "N잡러",
-      "fmt": "숫자대비",
-      "asset": "cardnews3",
-      "cta_keyword": "카드틀",
-      "title": "컨텐츠 168 (*만든 카드뉴스 화면 캡처. 없어도 됩니다)",
-      "body": "카드뉴스 외주 한 장에 만 원씩 나갔음\n\n열 장이면 십만 원이더라\n이제 클로드한테 내용만 넘기면\n초안이 한 번에 잡혀\n\n넣을 내용부터 적어봐\n1. 이번에 알릴 소식\n2. 어디로 오라고 할지\n\n클로드로 카드뉴스 만드는 프롬프트 있어\n댓글에 '카드틀' 남겨줘"
-    },
-    {
-      "date": "2026-10-10",
-      "type": "ai",
-      "target": "전체",
-      "fmt": "남의사례",
-      "cta_keyword": "수식",
-      "title": "컨텐츠 169 (*사진·영상 없어도 됩니다)",
-      "body": "옆자리 후배는 엑셀 함수를 안 외워요\n\n전엔 수식 하나 쓰려고\n인터넷을 한참 뒤졌잖아요\n\n이제 챗GPT에 원하는 계산을 말로 풀면\n함수 수십 개를 십 초 만에 짜줘요\n\n이런 소식 매일 도는 방 있어요\n궁금하면 댓글에 '수식'"
-    },
-    {
-      "date": "2026-10-10",
-      "type": "marketing",
-      "target": "입문자",
-      "fmt": "역발상",
-      "title": "컨텐츠 170 (*사진·영상 없어도 됩니다. 본인 경험으로 바꿔 쓰면 더 좋아요)",
-      "body": "잘 쓰는 법부터 배우려 하지 마\n\n나도 책만 세 권 사두고\n정작 챗GPT는 안 열었거든\n\n근데 매일 한 번씩 그냥 말 걸어보니\n어느새 손에 붙더라\n\n요령보다 매일 여는 게 먼저임\n\n너는 이번 주 며칠이나 열어봤어?\n댓글에 숫자만 적어봐"
-    },
-    {
-      "date": "2026-10-11",
-      "type": "evergreen",
-      "target": "자영업자",
-      "fmt": "과정공개",
-      "asset": "menu",
-      "cta_keyword": "메뉴장",
-      "title": "컨텐츠 171 (*메뉴판/가격표 사진 OR 만든 차림표 화면 캡처. 없으면 글만 올려도 됩니다)",
-      "body": "메뉴판을 십 년째 그대로 둔 사장님\n\n바꿀 것부터 적어보세요\n\n1. 이번에 뺄 메뉴\n2. 새로 올릴 메뉴\n3. 가격을 어디에 둘지\n\n챗GPT로 메뉴판 만드는 법 있어요\n댓글에 '메뉴장' 남겨주세요"
-    },
-    {
-      "date": "2026-10-11",
-      "type": "evergreen",
-      "target": "입문자",
-      "fmt": "숫자대비",
-      "asset": "gpt100",
-      "cta_keyword": "질문법",
-      "title": "컨텐츠 172 (*명령어 붙여넣은 화면 캡처. 없어도 됩니다)",
-      "body": "같은 질문인데 답이 왜 다를까\n\n나는 한 줄로만 물어봤고\n잘 쓰는 사람은 코드 한 줄을 더 붙이더라\n\n챗GPT 답변 좋아지는 코드 100개\n그중 세 개만 써도 답이 달라져요\n\n받아서 붙여쓸 입문자는\n댓글에 '질문법' 남겨주세요"
-    },
-    {
-      "date": "2026-10-11",
-      "type": "ai",
-      "target": "전체",
-      "fmt": "남의사례",
-      "cta_keyword": "요약방",
-      "title": "컨텐츠 173 (*사진·영상 없어도 됩니다)",
-      "body": "옆자리 후배는 긴 영상을 다 안 봐요\n\n전엔 한 시간짜리 강의를\n끝까지 틀어놓고 졸았잖아요\n\n이제 제미나이에 영상 링크만 넣으면\n십 분 안에 요점만 추려줘요\n\n이런 소식 매일 도는 방 있어요\n궁금하면 댓글에 '요약방'"
-    },
-    {
-      "date": "2026-10-11",
-      "type": "marketing",
-      "target": "직장인",
-      "fmt": "한줄질문",
-      "title": "컨텐츠 174 (*사진·영상 없어도 됩니다. 본인 경험으로 바꿔 쓰면 더 좋아요)",
-      "body": "일 빨리 끝내는 사람의 비밀이 뭔 줄 알아\n\n나는 메일 오는 족족 다 붙잡았거든\n그 선배는 하루 두 번만 열어보더라\n\n쌓아두고 몰아 보는 게 더 빠르더라고\n\n너는 하루에 메일함 몇 번 열어?\n댓글에 숫자만 적어봐"
-    },
-    {
       "date": "2026-10-12",
       "type": "evergreen",
       "target": "직장인",
@@ -1347,6 +1273,99 @@
         }
       ],
       "previous_title": "활용법 · AI에게 질문받으며 공부하기"
+    },
+    {
+      "date": "2026-10-25",
+      "type": "evergreen",
+      "target": "자영업자",
+      "fmt": "사례타래",
+      "title": "컨텐츠 227 · 영수증 정리 메일함에서 시트까지",
+      "body": "영수증 메일 열어서 시트에 옮기는 사람 보셈\n\n메일함에 쌓인 영수증을\n직접 치지 않고 정리한 사례임.\n\nThe AI가 보여준 건\n거래처·날짜·금액을 읽어\nGoogle Sheets에 넣는 흐름이었음.",
+      "replies": [
+        "The AI가 보여준 영수증\n정리는 메일에서 시작함.\n\n받은 영수증에서 거래처,\n날짜, 금액을 읽어내는\n과정을 먼저 보여줬음.\n\n손으로 옮겨 적던 걸\n읽기부터 맡긴 거임.",
+        "읽은 값은 Google Sheets에\n줄로 쌓이게 했음.\n\n여기서 끝이 아니라\n같은 영수증을 두 번 낸 건 아닌지,\n첨부가 빠진 메일은 없는지\n함께 확인하는 과정도 담았음.\n\n숫자만 옮기고 끝내지\n않은 게 포인트임.",
+        "따라 한다면 영수증이\n들어오는 메일함부터 정해보셈.\n\n읽어낼 항목을 거래처·날짜·금액으로\n먼저 정하고, 시트에 한 줄씩\n쌓이는지 확인하는 순서임.\n\n영상은 시연 자료로 진행했음.\n옮긴 금액이 원본과 맞는지는\n직접 대조해야 함."
+      ],
+      "link_comment": "사례 화면과 만드는 과정은\n여기서 볼 수 있음.\n\nhttps://lounge.aimax.ai.kr/worldclass/Z_Pt4TVl3GU",
+      "format": "case_thread",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/Z_Pt4TVl3GU",
+          "title": "영수증 정리, 메일함에서 시트까지 자동으로",
+          "published_at": null,
+          "collected_at": "2026-10-21T12:17:38+00:00",
+          "verified_at": "2026-10-21T12:17:38+00:00",
+          "source_url": "https://youtu.be/Z_Pt4TVl3GU",
+          "source_channel": "The AI"
+        }
+      ],
+      "style_reference": "https://www.threads.com/@binx_lab"
+    },
+    {
+      "date": "2026-10-25",
+      "type": "ai",
+      "target": "직장인",
+      "fmt": "단독사례",
+      "title": "컨텐츠 228 · 경쟁사 조사부터 보고서까지",
+      "body": "경쟁사 조사 매번 검색창부터 여는 사람 보셈\n\nNate Herk는 이 조사를 Claude Code에 맡겼음.\n경쟁사를 찾아보고\n회사 로고와 디자인을 반영한\nPDF 보고서로 뽑는 과정을 시연했음.\n\n검색 결과를 그대로 믿긴 이르고,\n보고서에 담긴 내용이 맞는지는 확인해야 함.\n\n조사부터 보고서까지 한 번에 맡기기 전에\n무엇을 비교할지부터 정해보셈.",
+      "link_comment": "사례 화면과 만드는 과정은\n여기서 볼 수 있음.\n\nhttps://lounge.aimax.ai.kr/worldclass/tDGiWn0flK8",
+      "format": "standalone",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/tDGiWn0flK8",
+          "title": "경쟁사 조사부터 보고서 작성까지, AI에 맡길 업무를 설계하는 방법",
+          "published_at": null,
+          "collected_at": "2026-10-21T12:17:38+00:00",
+          "verified_at": "2026-10-21T12:17:38+00:00",
+          "source_url": "https://youtu.be/tDGiWn0flK8",
+          "source_channel": "Nate Herk | AI Automation"
+        }
+      ],
+      "style_reference": "https://www.threads.com/@binx_lab"
+    },
+    {
+      "date": "2026-10-25",
+      "type": "evergreen",
+      "target": "N잡러",
+      "fmt": "비교형",
+      "title": "컨텐츠 229 · 지출 요약 초안과 예산 비교 나누기",
+      "body": "지출 정리랑 예산 비교를 따로 하고 있음?\n\nExcel University의 Jeff는\nExcel용 Claude 추가 기능으로\n지출 요약과 예산 비교 보고서를\n만드는 과정을 보여줬음.\n\n초안은 Claude에 맡기더라도\n예산과 실제 지출이 맞는지는\n원본 숫자로 다시 확인하라고 했음.\n\n보고서 초안과 검토를 나눠서 보셈.",
+      "link_comment": "사례 화면과 만드는 과정은\n여기서 볼 수 있음.\n\nhttps://lounge.aimax.ai.kr/worldclass/7AIRNcN6H3s",
+      "format": "standalone",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/7AIRNcN6H3s",
+          "title": "엑셀 지출 보고서 초안은 Claude에 맡기고, 예산 비교는 이렇게 확인하세요",
+          "published_at": null,
+          "collected_at": "2026-10-21T12:17:38+00:00",
+          "verified_at": "2026-10-21T12:17:38+00:00",
+          "source_url": "https://youtu.be/7AIRNcN6H3s",
+          "source_channel": "Excel University"
+        }
+      ],
+      "style_reference": "https://www.threads.com/@binx_lab"
+    },
+    {
+      "date": "2026-10-25",
+      "type": "marketing",
+      "target": "입문자",
+      "fmt": "체크리스트",
+      "title": "컨텐츠 230 · 예약 정보 다시 옮겨적지 않기",
+      "body": "예약 받을 때마다 고객 정보 다시 옮겨적는 사람 보셈\n\nDuncan Rogoff가 보여준 건\n예약 정보를 손으로 안 옮기는 흐름이었음.\n\n1. Calendly로 들어온 예약을\n2. n8n으로 받아서\n3. Airtable에 저장하고\n4. 요청을 반영한 환영 이메일 초안까지\n\n연결하기 전에 지금 어디서\n같은 내용을 다시 적는지부터 짚어보셈.",
+      "link_comment": "사례 화면과 만드는 과정은\n여기서 볼 수 있음.\n\nhttps://lounge.aimax.ai.kr/worldclass/QtTeCNZU1IQ",
+      "format": "standalone",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/QtTeCNZU1IQ",
+          "title": "상담 예약부터 고객 정보 정리까지, n8n으로 반복 입력 줄이는 방법",
+          "published_at": null,
+          "collected_at": "2026-10-21T12:17:38+00:00",
+          "verified_at": "2026-10-21T12:17:38+00:00",
+          "source_url": "https://youtu.be/QtTeCNZU1IQ",
+          "source_channel": "Duncan Rogoff | Learn Automation"
+        }
+      ],
+      "style_reference": "https://www.threads.com/@binx_lab"
     }
   ],
   "_작성기준": "글감 작성 전 AGENTS.md와 config/brands/makefamily.md의 최신 사용자 기준을 읽는다. 과거 루틴 문구와 충돌하면 최신 사용자 기준을 적용한다."
