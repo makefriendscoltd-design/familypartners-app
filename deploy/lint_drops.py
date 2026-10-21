@@ -207,7 +207,18 @@ def main(argv: list[str]) -> int:
     parser.add_argument("path", nargs="?", type=Path, default=QUEUE)
     parser.add_argument("--include-published", action="store_true",
                         help="기존 글 수정 시 지난 날짜와 오늘도 엄격하게 검사")
+    parser.add_argument('--baseline', default='origin/main',
+                        help='Published queue Git ref for new/changed editorial review')
+    parser.add_argument('--reviews', type=Path, help='Original and humanize review manifest')
     args = parser.parse_args(argv[1:])
+    if args.path.resolve() == QUEUE.resolve():
+        import subprocess
+        command = [sys.executable, str(ROOT / 'deploy/check_drop_authoring.py'),
+                   '--baseline', args.baseline]
+        if args.reviews:
+            command += ['--reviews', str(args.reviews)]
+        if subprocess.run(command, cwd=ROOT).returncode:
+            return 1
     path = args.path
     a = load(ASSETS)
     drops = load(path).get("drops") or []

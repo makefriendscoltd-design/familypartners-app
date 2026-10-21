@@ -116,11 +116,30 @@ def community_candidates(raw: str, platform: str, now: datetime) -> list[dict]:
         rows.append({'title': block.strip().splitlines()[0], 'url': url,
                      'platform': platform, 'published_at': None,
                      'collected_at': now.isoformat(), 'original_read': False,
+                     'search_published_at': (re.search(r'(?m)^Published:\s*(.+)', block).group(1).strip()
+                         if re.search(r'(?m)^Published:\s*(.+)', block) else None),
                      'status': 'candidate_date_and_original_not_verified'})
     return rows
 
 
-def collect(out: Path, include_official: bool = False, lounge_cli: str | None = None) -> dict:
+def original_snapshot(raw: bytes, expected_url: str) -> str:
+    """HTTP 200 from a reader can still contain the upstream 403/login page."""
+    text = raw.decode('utf-8')
+    if any(marker in text.lower() for marker in (
+        'target url returned error', 'blocked by network security',
+        'quota exceeded', 'rate limit exceeded', 'javascript is not available',
+        'sign in to x', 'log in to continue', 'enable javascript')):
+        raise ValueError('OriginalBlockedOrLoginPage')
+    if f'URL Source: {expected_url}' not in text or 'Markdown Content:' not in text:
+        raise ValueError('OriginalIdentityMissing')
+    body = text.split('Markdown Content:', 1)[1].strip()
+    if len(body) < 300:
+        raise ValueError('OriginalBodyMissing')
+    return body  # A snapshot is not a reviewed source or proof of its publication date.
+
+
+def collect(out: Path, include_official: bool = False, lounge_cli: str | None = None,
+            read_originals: int = 8) -> dict:
     policy = json.loads((ROOT / 'config/assets.json').read_text())['_research']
     now = datetime.now(timezone.utc)
     out.mkdir(parents=True, exist_ok=False)
@@ -183,6 +202,21 @@ def collect(out: Path, include_official: bool = False, lounge_cli: str | None = 
     except Exception as exc:
         result['errors'].append({'source': policy['lounge_catalog_url'], 'error': type(exc).__name__})
     result['candidates'] = list({r['url']: r for r in result['candidates']}.values())
+    # Preserve original evidence separately from search excerpts. Never mark it verified here.
+    result['originals_status'] = 'not_requested' if not read_originals else 'unverified'
+    for i, row in enumerate(result['candidates'][:read_originals]):
+        try:
+            filename = f'original-{i}.txt'
+            raw = fetch('https://r.jina.ai/' + row['url'], filename)
+            original_snapshot(raw, row['url'])
+            row['original_snapshot'] = filename
+            row['original_sha256'] = hashlib.sha256(raw).hexdigest()
+            row['status'] = 'original_snapshot_needs_date_and_content_review'
+        except Exception as exc:
+            row['status'] = 'original_unavailable'
+            result['errors'].append({'source': row['url'], 'error': type(exc).__name__})
+    result['ready_to_draft'] = False
+    result['blocked_reason'] = 'Original dates, claim evidence and editorial review required'
     (out / 'discovery.json').write_text(json.dumps(result, ensure_ascii=False, indent=2) + '\n')
     return result
 
@@ -193,8 +227,10 @@ if __name__ == '__main__':
     p.add_argument('--include-official', action='store_true', help='Verification references only')
     p.add_argument('--lounge-cli', default=shutil.which('fp-hycli'),
                    help='Installed Hycli wrapper; empty string uses existing HTTP reader')
+    p.add_argument('--read-originals', type=int, default=8, choices=range(0, 21),
+                   metavar='0..20', help='Save original snapshots for review; 0 is discovery only')
     args = p.parse_args()
-    r = collect(args.out, args.include_official, args.lounge_cli)
+    r = collect(args.out, args.include_official, args.lounge_cli, args.read_originals)
     print(json.dumps({'candidates': len(r['candidates']), 'lounge_resources': len(r['resources']),
-                      'errors': r['errors'], 'output': str(args.out / 'discovery.json')}, ensure_ascii=False))
+                      'ready_to_draft': r['ready_to_draft'], 'errors': r['errors'], 'output': str(args.out / 'discovery.json')}, ensure_ascii=False))
     raise SystemExit(1 if r['errors'] or not r['candidates'] or not r['resources'] else 0)

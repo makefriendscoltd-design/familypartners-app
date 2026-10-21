@@ -61,8 +61,8 @@ class ThreadCopyTest(unittest.TestCase):
     def test_case_images_are_downloadable_and_paths_cannot_escape(self):
         import hashlib
         from urllib.parse import urlsplit
-        cases=[d for d in json.loads(dropqueue.QUEUE_PATH.read_text())['drops'] if d.get('format')=='case_thread']
-        self.assertEqual(len(cases),5)
+        cases=[d for d in json.loads(dropqueue.QUEUE_PATH.read_text())['drops'] if d.get('format')=='case_thread' and d.get('main_images')]
+        self.assertEqual(len(cases),5)  # Five existing image-bearing threads; later text-only cases are separate.
         for d in cases:
             self.assertEqual(len(d['main_images']),2)
             row=dict(d,drop_date=d['date'])

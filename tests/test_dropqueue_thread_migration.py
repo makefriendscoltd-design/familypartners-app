@@ -18,11 +18,13 @@ class ThreadMigrationTest(unittest.TestCase):
         c = db.connect()
         before = {r['id']: dict(r) for r in c.execute('SELECT * FROM drops')}
         c.close()
-        self.assertEqual(dropqueue.sync(verbose=False), {'added': 0, 'updated': 20, 'skipped': 45, 'bad': 0})
+        self.assertEqual(dropqueue.sync(verbose=False), {'added': 8, 'updated': 20, 'skipped': 37, 'bad': 0})
         c = db.connect()
         after = {r['id']: dict(r) for r in c.execute('SELECT * FROM drops')}
         c.close()
-        self.assertEqual(set(before), set(after))
+        # Oct 25/26 add eight reservations; existing IDs still stay intact.
+        self.assertTrue(set(before).issubset(after))
+        self.assertEqual(len(set(after) - set(before)), 8)
         self.assertEqual(sum(before[i] != after[i] for i in before), 20)
         for i in before:
             self.assertEqual(before[i]['created_at'], after[i]['created_at'])
@@ -37,10 +39,10 @@ class ThreadMigrationTest(unittest.TestCase):
         c=db.connect();before={r['id']:dict(r) for r in c.execute('SELECT * FROM drops')};c.close()
         changes=dropqueue.sync(verbose=False)
         # Twenty reservations and two supplemental posts now have revised copy.
-        self.assertEqual(changes,{'added':3,'updated':22,'skipped':40,'bad':0})
+        self.assertEqual(changes,{'added':11,'updated':22,'skipped':32,'bad':0})
         c=db.connect();after={r['id']:dict(r) for r in c.execute('SELECT * FROM drops')};c.close()
         self.assertTrue(set(before).issubset(after))
-        self.assertEqual(len(set(after)-set(before)),3)
+        self.assertEqual(len(set(after)-set(before)),11)
         changed=[]
         for i,r in before.items():
             self.assertEqual(r['drop_date'],after[i]['drop_date'])
