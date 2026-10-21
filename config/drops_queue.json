@@ -1366,6 +1366,99 @@
         }
       ],
       "style_reference": "https://www.threads.com/@binx_lab"
+    },
+    {
+      "date": "2026-10-26",
+      "type": "evergreen",
+      "target": "자영업자",
+      "fmt": "사례타래",
+      "title": "컨텐츠 231 · 청구서 분류부터 기록까지 한 흐름으로",
+      "body": "청구서 메일 분류부터 기록까지 손으로 하는 사람 보셈\n\n쌓이는 청구서 정리를\n한 번에 맡긴 사례임.\n\nAna Una는 n8n으로\n메일을 분류하고 문서를 읽어\n이어지게 묶었음.",
+      "replies": [
+        "Ana Una가 보여준 청구서\n정리는 메일 분류부터였음.\n\n들어온 메일에서 청구서를\n가려내고, 문서를 읽어\n필요한 내역을 꺼내는\n과정을 먼저 보여줬음.",
+        "꺼낸 내용은 그냥 두지 않고\nGoogle Drive에 저장하고\n내역으로 기록하게 했음.\n\n파일 보관과 장부 적기를\n한 흐름으로 묶은 거임.",
+        "따라 한다면 청구서가\n들어오는 메일함부터 정해보셈.\n\n분류 기준과 기록할 항목을\n먼저 정하고 한 건 돌려본 뒤\n빠진 파일이 없는지 확인하는 순서임.\n\n영상은 시연으로 진행했음.\n저장된 내역이 원본과 맞는지는\n직접 대조해야 함."
+      ],
+      "link_comment": "사례 화면과 만드는 과정은\n여기서 볼 수 있음.\n\nhttps://lounge.aimax.ai.kr/worldclass/BAZCGoX89HU",
+      "format": "case_thread",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/BAZCGoX89HU",
+          "title": "청구서 정리 자동화, 파일 저장부터 누락 확인까지 연결하는 방법",
+          "published_at": null,
+          "collected_at": "2026-10-21T12:17:38+00:00",
+          "verified_at": "2026-10-21T12:17:38+00:00",
+          "source_url": "https://youtu.be/BAZCGoX89HU",
+          "source_channel": "Ana Una"
+        }
+      ],
+      "style_reference": "https://www.threads.com/@binx_lab"
+    },
+    {
+      "date": "2026-10-26",
+      "type": "ai",
+      "target": "전체",
+      "fmt": "질문형",
+      "title": "컨텐츠 232 · 같은 답장 다시 쓰고 있다면",
+      "body": "고객 문의마다 똑같은 답장 다시 쓰고 있음?\n\nSmart AI Workspace가 보여준 건\n문의를 자동으로 나누는 흐름이었음.\n\nn8n으로 Gmail 문의를 분류해\n답변과 기록을 연결하고,\nAI가 답하기 어려운 문의는\n담당자에게 넘기게 했음.\n\n내가 받는 문의 중 어떤 걸\n사람이 꼭 봐야 하는지부터 나눠보셈.",
+      "link_comment": "사례 화면과 만드는 과정은\n여기서 볼 수 있음.\n\nhttps://lounge.aimax.ai.kr/worldclass/mS2NRbeRJsg",
+      "format": "standalone",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/mS2NRbeRJsg",
+          "title": "고객 문의 올 때마다 같은 답변을 쓰고 있다면",
+          "published_at": null,
+          "collected_at": "2026-10-21T12:17:38+00:00",
+          "verified_at": "2026-10-21T12:17:38+00:00",
+          "source_url": "https://youtu.be/mS2NRbeRJsg",
+          "source_channel": "Smart AI Workspace"
+        }
+      ],
+      "style_reference": "https://www.threads.com/@binx_lab"
+    },
+    {
+      "date": "2026-10-26",
+      "type": "evergreen",
+      "target": "직장인",
+      "fmt": "실수점검",
+      "title": "컨텐츠 233 · 메일을 상담 기록에 붙일 때",
+      "body": "고객 메일을 상담 기록에 또 옮겨적고 있음?\n\nGrist가 보여준 사례에선\nGmail로 받은 메일을 AI로 요약해\n고객별 상담 이력에 붙였음.\n\n여기서 중요한 건 하나 더 있었음.\n엉뚱한 고객 칸에 저장되지 않게\n맞는 고객인지 확인하는 과정이었음.\n\n요약만 믿지 말고 누구 기록에\n붙었는지부터 봐야 함.",
+      "link_comment": "사례 화면과 만드는 과정은\n여기서 볼 수 있음.\n\nhttps://lounge.aimax.ai.kr/worldclass/Nc1VF7yfwxk",
+      "format": "standalone",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/Nc1VF7yfwxk",
+          "title": "고객 메일을 상담 기록에 또 옮기고 있다면",
+          "published_at": null,
+          "collected_at": "2026-10-21T12:17:38+00:00",
+          "verified_at": "2026-10-21T12:17:38+00:00",
+          "source_url": "https://youtu.be/Nc1VF7yfwxk",
+          "source_channel": "Grist"
+        }
+      ],
+      "style_reference": "https://www.threads.com/@binx_lab"
+    },
+    {
+      "date": "2026-10-26",
+      "type": "marketing",
+      "target": "N잡러",
+      "fmt": "단독사례",
+      "title": "컨텐츠 234 · 영업할 시간이 없다면",
+      "body": "영업할 시간이 없다는 사람 이거 보셈\n\n컨설턴트 Ahmet은 잠재 고객 찾는 일을\nClaude Code와 Claude Cowork에 맡겼음.\n고객을 조사하고\nGmail에 메일 초안과 발송 일정까지\n준비하는 과정을 보여줬음.\n\n초안을 그대로 보내긴 이르고,\n상대가 맞는지와 내용은 확인해야 함.\n\n조사부터 메일까지 맡기기 전에\n누구에게 보낼지부터 정해보셈.",
+      "link_comment": "사례 화면과 만드는 과정은\n여기서 볼 수 있음.\n\nhttps://lounge.aimax.ai.kr/worldclass/pSFXvIUYCiM",
+      "format": "standalone",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/pSFXvIUYCiM",
+          "title": "영업할 시간이 부족하다면, Claude로 잠재 고객 조사와 제안 메일을 준비해보세요",
+          "published_at": null,
+          "collected_at": "2026-10-21T12:17:38+00:00",
+          "verified_at": "2026-10-21T12:17:38+00:00",
+          "source_url": "https://youtu.be/pSFXvIUYCiM",
+          "source_channel": "Ahmet Tat"
+        }
+      ],
+      "style_reference": "https://www.threads.com/@binx_lab"
     }
   ],
   "_작성기준": "글감 작성 전 AGENTS.md와 config/brands/makefamily.md의 최신 사용자 기준을 읽는다. 과거 루틴 문구와 충돌하면 최신 사용자 기준을 적용한다."
