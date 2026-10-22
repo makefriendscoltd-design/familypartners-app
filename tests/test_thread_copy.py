@@ -104,7 +104,8 @@ class ThreadCopyTest(unittest.TestCase):
             self.assertEqual(len({d['fmt'] for d in entries}),4)
             for d in entries:
                 self.assertEqual(d['format'],'case_thread')
-                self.assertNotIn('\n',d['body'])
+                self.assertGreaterEqual(len(d['body'].split('\n\n')),2)
+                self.assertNotIn('\n',d['body'].split('\n\n')[0])
                 self.assertGreaterEqual(len(d['replies']),2)
                 html=thread_copy.render(dict(d,drop_date=date))
                 self.assertEqual(html.count('<pre '),len(d['replies'])+2)

@@ -92,6 +92,8 @@ def check_one(d: dict, cfg: dict) -> list[str]:
         return ["본문이 비었음"]
     max_lines = FREE_MAX_LINES if dtype == "evergreen" else MAX_LINES
     max_chars = FREE_MAX_CHARS if dtype == "evergreen" else MAX_CHARS
+    if d.get("format") == "case_thread":
+        max_lines, max_chars = 16, 300
     is_standalone = d.get("format") == "standalone"
     if is_standalone:
         max_lines, max_chars = 20, 500
@@ -105,7 +107,7 @@ def check_one(d: dict, cfg: dict) -> list[str]:
         bad.append(f"줄 수 {len(lines)} (최대 {max_lines})")
     if chars > max_chars:
         bad.append(f"글자 수 {chars} (최대 {max_chars})")
-    if dtype == "evergreen" and not is_standalone:
+    if dtype == "evergreen" and not is_standalone and d.get("format") != "case_thread":
         if any(len(line) > FREE_MAX_LINE_CHARS for line in lines):
             bad.append(f"한 줄 {FREE_MAX_LINE_CHARS}자 초과")
         paragraphs = re.split(r"\n\s*\n", body.strip())
@@ -183,8 +185,8 @@ def check_day(date: str, group: list[dict]) -> tuple[list[str], list[str]]:
     if date >= "2026-10-22":
         if any(d.get('format') != 'case_thread' for d in group):
             bad.append('모든 글감은 본문 + 대댓글 구조여야 함')
-        if any('\n' in (d.get('body') or '').strip() for d in group):
-            bad.append('후킹 본문은 한 줄로 작성')
+        if any(len((d.get('body') or '').strip().split('\n\n')) < 2 for d in group):
+            bad.append('후킹만 남기지 말고 본문에 사례 소개 필요')
     elif all((d.get("date") or "") >= "2026-10-20" for d in group):
         if sum(d.get("format") == "case_thread" for d in group) != 1:
             bad.append("일일 타래 1개 필요")
