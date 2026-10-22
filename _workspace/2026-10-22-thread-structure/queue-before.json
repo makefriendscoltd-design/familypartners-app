@@ -1,0 +1,1465 @@
+{
+  "_설명": "글감 예약 큐 — 여기에 넣고 push 하면 배포 때 자동 등록됩니다(deploy/seed_drops.py).",
+  "_중복": "같은 date+title 이 이미 있으면 건너뜁니다. 여러 번 배포돼도 안전합니다.",
+  "_수정": "같은 date+title의 기존 행은 본문·태그 지문이 바뀌면 배포 시 갱신된다. 삭제된 행은 되살리지 않는다.",
+  "_태그": "target: 전체/자영업자/직장인/부모/입문자/N잡러/시니어 · fmt: 리스트형/실패담/자가진단/한줄질문/숫자대비/역발상/대화인용/남의사례/과정공개/툴비교",
+  "_형태기준": "fmt 는 '겉모양'이 아니라 '후킹 각도'다. 번호 매기기는 어느 각도에서나 쓰는 도구일 뿐이므로 번호가 있다고 리스트형이 아니다. 리스트형 = 각도 없이 정보만 나열하는 기본형.",
+  "drops": [
+    {
+      "date": "2026-10-12",
+      "type": "evergreen",
+      "target": "직장인",
+      "fmt": "자가진단",
+      "asset": "ppt",
+      "cta_keyword": "밤샘끝",
+      "title": "컨텐츠 175 (*만든 슬라이드 화면 캡처. 없어도 됩니다)",
+      "body": "둘 중 하나면 아직 혼자 끙끙대는 거임\n\n빈 화면 띄워놓고 첫 줄부터 막힘\n밤새 만들어도 장표가 엉성함\n\n나는 둘 다였는데\n노트북LM에 자료만 모아 넣으니\n장표로 알아서 엮어주더라\n\n고퀄리티 PPT 5분 만에 뽑는 법 있어요\n받아볼 직장인은 댓글에 '밤샘끝'"
+    },
+    {
+      "date": "2026-10-12",
+      "type": "evergreen",
+      "target": "자영업자",
+      "fmt": "숫자대비",
+      "asset": "header",
+      "cta_keyword": "첫페이지",
+      "title": "컨텐츠 176 (*상세페이지 헤더 화면 캡처 OR 상품 사진. 없으면 글만 올려도 됩니다)",
+      "body": "첫 화면에서 손님이 절반은 빠져나가요\n\n상세페이지 헤더 맡기면 오만 원\n계절 바뀔 때마다 또 수정비죠\n\n파는 거랑 사진만 정해서\n챗GPT에 넣으면 헤더가 한 장 나와요\n\n챗GPT로 상세페이지 헤더 만드는 법 있어요\n받아 쓸 분 댓글에 '첫페이지'"
+    },
+    {
+      "date": "2026-10-12",
+      "type": "ai",
+      "target": "전체",
+      "fmt": "남의사례",
+      "cta_keyword": "여행통역",
+      "title": "컨텐츠 177 (*사진·영상 없어도 됩니다)",
+      "body": "옆자리 후배는 해외 나가도 안 쫄아요\n\n전엔 외국인 앞에서 번역기를 켜고\n한 문장씩 번갈아 보여줬잖아요\n\n이제 챗GPT 음성 모드를 켜 두면\n서로 하는 말을 그 자리서 통역해줘요\n말이 끊기지 않고 이어져요\n\n이런 소식 매일 도는 방 있어요\n궁금하면 댓글에 '여행통역'"
+    },
+    {
+      "date": "2026-10-12",
+      "type": "marketing",
+      "target": "입문자",
+      "fmt": "한줄질문",
+      "title": "컨텐츠 178 (*사진·영상 없어도 됩니다. 본인 경험으로 바꿔 쓰면 더 좋아요)",
+      "body": "처음 AI 켜면 다들 똑같은 걸 물어보더라\n\n나는 날씨부터 물어봤거든\n누구는 메일 대신 써달라 하고\n누구는 저녁 뭐 먹을지 묻더라\n\n챗GPT는 시킬수록 느는 거라\n첫 질문이 뭐든 상관없더라고\n\n너는 챗GPT한테 처음 뭘 시켜봤어?\n댓글에 한 줄로 적어봐"
+    },
+    {
+      "date": "2026-10-13",
+      "type": "evergreen",
+      "target": "직장인",
+      "fmt": "자가진단",
+      "asset": "spec",
+      "cta_keyword": "설계판",
+      "title": "컨텐츠 179 (*피그마 화면 OR 만든 명세서 표 화면 캡처. 없어도 됩니다)",
+      "body": "둘 중 하나면 개발 요청을 반만 넘긴 거임\n\n화면만 던지고 동작 설명은 뺌\n말로 설명하다 서로 딴소리함\n\n나는 둘 다였는데\nFigma 화면을 Claude에 넣으니\n버튼별 동작을 표로 뽑아주더라\n\n개발 명세서 작성 자료 있어요\n댓글에 '설계판' 남겨주세요"
+    },
+    {
+      "date": "2026-10-13",
+      "type": "evergreen",
+      "target": "자영업자",
+      "fmt": "숫자대비",
+      "asset": "splash",
+      "cta_keyword": "탄산컷",
+      "title": "컨텐츠 180 (*음료 사진 촬영 OR 만든 스플래시 이미지 화면 캡처. 없으면 글만 올려도 됩니다)",
+      "body": "밍밍한 음료 사진 하나에 손님이 갈려요\n\n전문가 부르면 오만 원\n직접 하면 공짜예요\n\n컵에 물 튀는 컷만 넣어도\n사진이 확 시원해져요\n\n챗GPT로 음료 스플래시 만드는 법 있어요\n댓글에 '탄산컷' 남겨주세요"
+    },
+    {
+      "date": "2026-10-13",
+      "type": "ai",
+      "target": "전체",
+      "fmt": "남의사례",
+      "cta_keyword": "집밥",
+      "title": "컨텐츠 181 (*사진·영상 없어도 됩니다)",
+      "body": "옆자리 후배는 장을 또 안 봐요\n\n전엔 냉장고에 뭐가 있는지 몰라\n퇴근길에 같은 재료를 또 샀잖아요\n\n이제 챗GPT에 냉장고 속을 사진으로 찍어 올리면\n지금 있는 걸로 만들 요리 세 가지를 짚어줘요\n\n이런 소식 매일 도는 방 있어요\n궁금하면 댓글에 '집밥'"
+    },
+    {
+      "date": "2026-10-13",
+      "type": "marketing",
+      "target": "N잡러",
+      "fmt": "역발상",
+      "title": "컨텐츠 182 (*사진·영상 없어도 됩니다. 본인 경험으로 바꿔 쓰면 더 좋아요)",
+      "body": "부업은 많이 벌수록 좋은 줄 알았음\n\n근데 돈 제일 잘 버는 친구는\n벌인 일을 자꾸 접더라\n될 것 같은 거 하나만 남기고\n\n손 대는 걸 줄이니 오히려 늘더라\n\n너는 지금 부업 몇 개나 벌여놨어?\n댓글에 숫자만 적어봐"
+    },
+    {
+      "date": "2026-10-14",
+      "type": "evergreen",
+      "target": "직장인",
+      "fmt": "대화인용",
+      "asset": "minutes",
+      "cta_keyword": "회의장표",
+      "title": "컨텐츠 183 (*회의록 슬라이드 화면 캡처. 없어도 됩니다)",
+      "body": "\"그래서 오늘 뭐 정한 거죠?\"\n\n회의 끝나고 꼭 이 말 나오잖아요\n두 시간 떠들고도\n남는 게 없어서요\n\n받아 적은 걸 그냥 두지 말고\nClaude로 회의록 슬라이드 만들어보세요\n정한 것만 장표로 추려줘요\n\n댓글에 '회의장표' 남겨주세요"
+    },
+    {
+      "date": "2026-10-14",
+      "type": "evergreen",
+      "target": "N잡러",
+      "fmt": "과정공개",
+      "asset": "moving",
+      "cta_keyword": "무빙판",
+      "title": "컨텐츠 184 (*브이로그/영상 캡처 OR 무빙 넣은 전후 화면. 없어도 됩니다)",
+      "body": "영상이 밋밋해서 자꾸 지웠음\n\n카메라를 가만히 두고만 찍었더라\n움직임부터 하나씩 넣어봐\n\n1. 인물 따라 옆으로\n2. 가까이 쑥 들어가기\n3. 위에서 아래로 훑기\n\n카메라 무빙 가이드 10가지 있어\n댓글에 '무빙판' 남겨줘"
+    },
+    {
+      "date": "2026-10-14",
+      "type": "ai",
+      "target": "전체",
+      "fmt": "남의사례",
+      "cta_keyword": "옷장",
+      "title": "컨텐츠 185 (*사진·영상 없어도 됩니다)",
+      "body": "옆자리 후배는 아침마다 옷 안 고민해요\n\n전엔 옷장 앞에서 뭘 입을지\n십 분씩 서 있었잖아요\n\n이제 챗GPT에 옷장 사진을 찍어 올리면\n가진 옷으로 코디 세 벌을 짜줘요\n\n이런 소식 매일 도는 방 있어요\n궁금하면 댓글에 '옷장'"
+    },
+    {
+      "date": "2026-10-14",
+      "type": "marketing",
+      "target": "입문자",
+      "fmt": "역발상",
+      "title": "컨텐츠 186 (*사진·영상 없어도 됩니다. 본인 경험으로 바꿔 쓰면 더 좋아요)",
+      "body": "챗GPT가 자꾸 엉뚱한 답 준다고 접지 마\n\n나도 처음엔 답이 틀리길래\n역시 아직 멀었구나 했거든\n\n근데 알고 보니 내가 두루뭉술하게 물은 거였어\n한 줄만 더 자세히 적으니 답이 확 달라지더라\n\n틀린 건 AI가 아니라 질문이었음\n\n너는 오늘 몇 번이나 물어봤어?\n댓글에 숫자만 적어봐"
+    },
+    {
+      "date": "2026-10-15",
+      "type": "evergreen",
+      "target": "자영업자",
+      "fmt": "자가진단",
+      "asset": "hair",
+      "cta_keyword": "변신컷",
+      "title": "컨텐츠 187 (*추천 결과 화면 캡처 OR 미용실 사진. 없으면 글만 올려도 됩니다)",
+      "body": "둘 중 하나면 손님을 말로만 설득하는 거예요\n\n\"이 사진처럼 될까요\" 소리를 자주 들음\n잘라놓고 서로 그림이 달랐던 적 있음\n\nAI 스타일리스트에 얼굴 사진을 넣으면\n바뀔 모습을 미리 보여줘요\n\n헤어 스타일 추천 자료 있어요\n댓글에 '변신컷' 남겨주세요"
+    },
+    {
+      "date": "2026-10-15",
+      "type": "evergreen",
+      "target": "직장인",
+      "fmt": "숫자대비",
+      "asset": "brain",
+      "cta_keyword": "노트방",
+      "title": "컨텐츠 188 (*옵시디언 노트 화면 캡처. 없어도 됩니다)",
+      "body": "메모 앱 열 개 깔아도 찾는 건 늘 못 찾죠\n\n앱을 늘리지 말고 한 곳에 모아보세요\n\n옵시디언에 노트를 쌓으면\n지난 메모끼리 알아서 연결돼요\n\n제2의 뇌 만드는 가이드북 있어요\n댓글에 '노트방' 남겨주세요"
+    },
+    {
+      "date": "2026-10-15",
+      "type": "ai",
+      "target": "전체",
+      "fmt": "남의사례",
+      "cta_keyword": "글씨풀기",
+      "title": "컨텐츠 189 (*사진·영상 없어도 됩니다)",
+      "body": "옆자리 후배는 손으로 쓴 메모를 다시 안 쳐요\n\n전엔 수첩에 갈겨쓴 걸\n키보드로 하나하나 옮겼잖아요\n\n이제 챗GPT에 메모를 사진으로 찍어 올리면\n십 초 만에 깔끔한 글로 풀어줘요\n\n이런 소식 매일 도는 방 있어요\n궁금하면 댓글에 '글씨풀기'"
+    },
+    {
+      "date": "2026-10-15",
+      "type": "marketing",
+      "target": "부모",
+      "fmt": "한줄질문",
+      "title": "컨텐츠 190 (*사진·영상 없어도 됩니다. 본인 경험으로 바꿔 쓰면 더 좋아요)",
+      "body": "퇴근하고 애한테 처음 뭐라고 해?\n\n나는 맨날 숙제 했냐부터 물었거든\n\n근데 \"오늘 뭐가 제일 재밌었어\" 한마디에\n애가 십 분을 떠들더라\n\n첫마디 하나가 저녁 공기를 바꾸더라고\n\n너는 오늘 애한테 처음 뭐라고 했어?\n댓글에 한 줄로 적어봐"
+    },
+    {
+      "date": "2026-10-16",
+      "type": "evergreen",
+      "target": "자영업자",
+      "fmt": "과정공개",
+      "asset": "worker",
+      "cta_keyword": "응대봇",
+      "title": "컨텐츠 191 (*응대 문구 화면 캡처 OR 매장 사진. 없으면 글만 올려도 됩니다)",
+      "body": "문의 전화 받다 하루가 다 가는 사장님\n\nAI 직원한테 뭘 맡길지부터 적어보세요\n\n1. 영업시간 안내\n2. 주차 되냐는 질문\n3. 예약 가능한 날짜\n\n가게 정보만 먼저 넣어주면 돼요\n챗GPT로 AI 직원 만드는 기초가이드 있어요\n댓글에 '응대봇' 남겨주세요"
+    },
+    {
+      "date": "2026-10-16",
+      "type": "evergreen",
+      "target": "입문자",
+      "fmt": "숫자대비",
+      "asset": "claude10",
+      "cta_keyword": "코드첩",
+      "title": "컨텐츠 192 (*노트북에 클로드 화면 띄운 사진. 없어도 됩니다)",
+      "body": "같은 질문인데 답 길이가 두 배로 달라져요\n\n맨입으로 물어본 날은 세 줄짜리 답\n\n코드 한 줄 붙인 날은 열 줄을 풀어줘요\n\n클로드 답변 좋아지는 코드 10개 있어요\n그중 두세 개만 써도 달라져요\n받아볼 입문자는 댓글에 '코드첩' 남겨줘"
+    },
+    {
+      "date": "2026-10-16",
+      "type": "ai",
+      "target": "전체",
+      "fmt": "남의사례",
+      "cta_keyword": "첨삭",
+      "title": "컨텐츠 193 (*사진·영상 없어도 됩니다)",
+      "body": "옆자리 후배는 자기소개서를 혼자 안 붙잡아요\n\n전엔 한 문장 고치는 데\n삼십 분씩 끙끙댔잖아요\n\n이제 챗GPT에 쓰던 초안을 넣으면\n어색한 문장 열 개를 한 번에 다듬어줘요\n\n이런 소식 매일 도는 방 있어요\n궁금하면 댓글에 '첨삭'"
+    },
+    {
+      "date": "2026-10-16",
+      "type": "marketing",
+      "target": "N잡러",
+      "fmt": "역발상",
+      "title": "컨텐츠 194 (*사진·영상 없어도 됩니다. 본인 경험으로 바꿔 쓰면 더 좋아요)",
+      "body": "잘 만든 콘텐츠 하나로 터질 줄 알았음\n\n나도 한 편에 사흘씩 공들였거든\n근데 매일 한 개씩 올린 친구가\n한 달 만에 날 앞질렀더라\n\n공들인 한 편보다 꾸준한 서른 편이더라\n\n너는 이번 달에 몇 개나 올렸어?\n댓글에 숫자만 적어봐"
+    },
+    {
+      "date": "2026-10-17",
+      "type": "evergreen",
+      "target": "N잡러",
+      "fmt": "실패담",
+      "asset": "angle",
+      "cta_keyword": "앵글집",
+      "title": "컨텐츠 195 (*찍은 사진 화면 캡처 OR 촬영 장면. 없어도 됩니다)",
+      "body": "사진마다 밋밋해서 자꾸 지웠음\n\n카메라를 눈높이에만 두고 찍었더라\n각도부터 하나씩 바꿔봐\n\n1. 바닥에 바짝 붙여서\n2. 위에서 아래로 내려다보고\n3. 비스듬히 틀어서\n\n퀄리티 높이는 카메라 앵글 가이드 10가지 있어\n댓글에 '앵글집' 남겨줘"
+    },
+    {
+      "date": "2026-10-17",
+      "type": "evergreen",
+      "target": "자영업자",
+      "fmt": "과정공개",
+      "asset": "food",
+      "cta_keyword": "접시컷",
+      "title": "컨텐츠 196 (*음식 사진 촬영 OR 만든 광고컷 화면 캡처. 없으면 글만 올려도 됩니다)",
+      "body": "음식 사진은 쌓였는데 광고에 쓸 컷이 없는 사장님\n\n챗GPT에 넣기 전에 고를 것부터 정해보세요\n\n1. 간판 메뉴 한 접시\n2. 김 올라오는 따뜻한 컷\n3. 재료가 먹음직한 클로즈업\n\n챗GPT 푸드광고 이미지 만드는 법 있어요\n댓글에 '접시컷' 남겨주세요"
+    },
+    {
+      "date": "2026-10-17",
+      "type": "ai",
+      "target": "전체",
+      "fmt": "남의사례",
+      "cta_keyword": "말배경",
+      "title": "컨텐츠 197 (*사진·영상 없어도 됩니다)",
+      "body": "옆자리 후배는 배경 때문에 사진을 다시 안 찍어요\n\n전엔 장소가 별로면\n좋은 데를 찾아 다시 나갔잖아요\n\n이제 제미나이에 사진 한 장 올리고\n인물은 두고 배경만 바꿔달라 말하면\n십 초 만에 새 배경으로 갈아줘요\n\n이런 소식 매일 도는 방 있어요\n궁금하면 댓글에 '말배경'"
+    },
+    {
+      "date": "2026-10-17",
+      "type": "marketing",
+      "target": "직장인",
+      "fmt": "자가진단",
+      "title": "컨텐츠 198 (*사진·영상 없어도 됩니다. 본인 경험으로 바꿔 쓰면 더 좋아요)",
+      "body": "둘 중 하나면 아직 일을 혼자 끌어안는 거임\n\n쉬운 일부터 쳐내다 큰일을 놓침\n남한테 못 맡기고 내가 다 떠안음\n\n나는 둘 다였는데\n챗GPT한테 할 일을 쭉 넣으니\n급한 것 세 개부터 짚어주더라\n\n너는 몇 개야?\n댓글에 숫자만 적어봐"
+    },
+    {
+      "date": "2026-10-18",
+      "type": "evergreen",
+      "target": "전체",
+      "fmt": "과정공개",
+      "asset": "gif",
+      "cta_keyword": "움짤기",
+      "title": "컨텐츠 199 (*짧은 영상 캡처 OR 만든 움짤 화면 캡처. 없어도 됩니다)",
+      "body": "영상은 긴데 눈길 끄는 건 삼 초뿐이더라\n\n긴 영상 통째로 올리지 말고\n그 삼 초만 움짤로 떼어내 보세요\n\n1. 제일 잘 나온 장면\n2. 표정이 살아있는 순간\n3. 손이 움직이는 컷\n\nGIF 변환기에 영상 삼 초만 넣으면 움짤이 돼요\n댓글에 '움짤기' 남겨주세요"
+    },
+    {
+      "date": "2026-10-18",
+      "type": "evergreen",
+      "target": "부모",
+      "fmt": "대화인용",
+      "asset": "kidbook",
+      "cta_keyword": "밤책",
+      "title": "컨텐츠 200 (*아이랑 만든 동화책 화면 캡처. 아이 얼굴은 가려주세요)",
+      "body": "\"엄마 오늘은 무슨 얘기야?\"\n\n매일 밤 이 질문에 밑천이 떨어지죠\n\n아이랑 같이 정할 것부터 적어보세요\n\n1. 오늘 주인공은 누구\n2. 어디로 떠나는지\n3. 끝은 어떻게 날지\n\n제미나이로 AI 동화책 만드는 자료 있어요\n댓글에 '밤책' 남겨주세요"
+    },
+    {
+      "date": "2026-10-18",
+      "type": "ai",
+      "target": "직장인",
+      "fmt": "남의사례",
+      "cta_keyword": "메일번역",
+      "title": "컨텐츠 201 (*사진·영상 없어도 됩니다)",
+      "body": "옆자리 후배는 영어 메일에 안 쫄아요\n\n전엔 받은 영어 메일을\n번역기에 넣고 다시 답장을 썼잖아요\n\n이제 챗GPT에 영어 메일을 붙여넣으면\n뜻을 풀어주고 한국어 답장 초안까지 잡아줘요\n십 초면 한 통이 끝나요\n\n이런 소식 매일 도는 방 있어요\n궁금하면 댓글에 '메일번역'"
+    },
+    {
+      "date": "2026-10-18",
+      "type": "marketing",
+      "target": "자영업자",
+      "fmt": "역발상",
+      "title": "컨텐츠 202 (*사진·영상 없어도 됩니다. 본인 경험으로 바꿔 쓰면 더 좋아요)",
+      "body": "싸게 팔수록 손님 온다고 믿었음\n\n나도 남는 거 없이 깎아주기만 했거든\n근데 옆 가게는 값을 올리고도\n단골이 두 배로 늘더라\n\n깎는 대신 이유를 붙이니 사람이 남더라\n\n너희 가게 올해 가격 몇 번 내렸어?\n댓글에 숫자만 적어봐"
+    },
+    {
+      "date": "2026-10-19",
+      "type": "evergreen",
+      "target": "자영업자",
+      "fmt": "역발상",
+      "asset": "review-a",
+      "cta_keyword": "후기손질",
+      "title": "컨텐츠 203 (*리뷰 답변 화면 캡처 OR 매장 사진. 없으면 글만 올려도 됩니다)",
+      "body": "별점 하나짜리 리뷰에\n답글까지 화나 있으면 더 곤란해요\n\n챗GPT에 답글을 부탁할 때 써보세요\n고객의 불편, 확인된 사실, 할 조치를\n나눠 써줘. 안 정한 보상은 넣지 마\n\n초안의 사실과 약속은 직접 확인하세요\n낮은 평점 리뷰 자동 답변 자료는\n댓글에 '후기손질' 남겨주세요"
+    },
+    {
+      "date": "2026-10-19",
+      "type": "evergreen",
+      "target": "직장인",
+      "fmt": "과정공개",
+      "asset": "move",
+      "cta_keyword": "짐싸기",
+      "title": "컨텐츠 204 (*노트북에 챗GPT·클로드 화면 띄운 사진. 없어도 됩니다)",
+      "body": "AI 바꿀 때 내 소개부터 또 해야 하나?\n\n챗GPT에 이렇게 부탁해봐\n내 업무, 말투, 진행 중인 일을\n새 대화에 넘길 메모로 정리해줘\n\n빠진 내용과 민감한 정보는 직접 확인하고\n클로드에 필요한 부분만 넘기는 거임\n\n클로드로 갈아탈 때 쓰는 프롬프트는\n댓글에 '짐싸기' 남겨줘"
+    },
+    {
+      "date": "2026-10-19",
+      "type": "ai",
+      "target": "전체",
+      "fmt": "대화인용",
+      "title": "컨텐츠 205 (*사진·영상 없어도 됩니다)",
+      "body": "설명서 사진 넣고 '설명해줘'만 쓰면\n정작 궁금한 걸 빼먹을 수 있어요\n\n제미나이에 물어볼 질문 예시\n예약 설정은 어느 쪽에 나와?\n그 페이지에서 누를 버튼 순서만 알려줘\n\n답변 옆에 설명서 페이지를 펼쳐두고\n버튼 이름과 순서가 맞는지 확인하세요"
+    },
+    {
+      "date": "2026-10-19",
+      "type": "marketing",
+      "target": "N잡러",
+      "fmt": "한줄질문",
+      "title": "컨텐츠 206 (*사진·영상 없어도 됩니다. 본인 경험으로 바꿔 쓰면 더 좋아요)",
+      "body": "부업 수입 적을 때 수정한 시간도 넣어봐\n\n작업은 끝났는데 수정 요청이 또 오잖아\n견적 보내고 연락한 시간도 있고\n\n작업비 옆에 이 시간까지 써보는 거임\n다음 견적 낼 때 빠뜨리지 않게\n\n제작보다 수정에 더 오래 걸린 적 있어?"
+    },
+    {
+      "date": "2026-10-20",
+      "type": "evergreen",
+      "target": "N잡러",
+      "fmt": "사례타래",
+      "title": "컨텐츠 207 · 고객이 이해하는 제안서",
+      "body": "제안서 아직도 한 장씩 만들고 있음?\n\n고객이 궁금해한 업무 과정을 넣었더니\n설명용 흐름도와 발표 화면까지 만든 사례임.\n\nSmall AI가 공개한 결과물은 HTML 파일.\n브라우저에서 넘기면\n블록이 순서대로 연결됨.\n\n처음부터 예쁘게\n만들어달라고 한 게 아니었음.",
+      "previous_title": "컨텐츠 207 (*만든 카드뉴스 화면 캡처. 없어도 됩니다)",
+      "replies": [
+        "고객이 궁금했던 건 “블로그\n글을 AI가 어떻게 쓰는가”였음.\n\nSmall AI는 그 작업\n순서를 제안서에 넣음.\n블록이 차례로 연결되는\n흐름도와 앞으로 할 일을\n보여주는 로드맵까지 만들었음.\n\n첫 이미지가 그 설명 화면임.\n단순히 글을 슬라이드에\n옮긴 결과가 아니었음.",
+        "여기서 제작 순서가 재밌음.\n\nAI가 먼저 발표 대상,\n브랜드 자료, 슬라이드 수,\n발표 뒤 원하는 행동을 물어봄.\n\n답을 받은 뒤 장별\n계획부터 보여줌.\n제작자는 빠진 내용을\n추가하고 나서 화면\n제작을 진행시켰음.\n\n디자인을 다 만든 뒤 내용을\n뜯어고치는 순서가 아님.",
+        "반복해서 쓸 부분은\n따로 저장했음.\n\n색상, 흐름도, 화면 전환,\n제작 순서를 skills.md에\n넣고 다른 제안서에도 사용함.\n\n결과는 브라우저에서\n여는 slides.html.\n실제로 넘겨보며 설명\n흐름을 확인했음.\n\n따라 한다면 다음 상담에서\n자주 받는 질문부터 적어보셈.\n그 질문에 답하는 장별\n계획을 먼저 받는 거임."
+      ],
+      "link_comment": "사례 화면과 만드는 과정은\n여기서 볼 수 있음.\n\nhttps://lounge.aimax.ai.kr/worldclass/vHzeAJa9fBw",
+      "format": "case_thread",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/vHzeAJa9fBw",
+          "title": "고객 제안서, Claude Code로 설명 흐름부터 발표 화면까지 만드는 방법",
+          "published_at": null,
+          "collected_at": "2026-10-19T07:27:36.040788+00:00",
+          "verified_at": "2026-10-19T07:27:36.040788+00:00",
+          "source_url": "https://youtu.be/vHzeAJa9fBw",
+          "source_channel": "Small AI",
+          "evidence_sha256": "c052bf5c040d4f6a6eddaa16a0e9394bb55074f832aee787f1d71af0df080678"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/vHzeAJa9fBw-0-bb659ef3.jpg",
+          "alt": "고객이 이해하는 제안서 · 원본 시연 화면",
+          "credit": "Small AI",
+          "source_url": "https://youtu.be/vHzeAJa9fBw",
+          "sha256": "bb659ef398de1627764fdd3b4d0b8d61f2df9a1ea3d454148415d9a77a9d45a5"
+        },
+        {
+          "src": "/thread-img/vHzeAJa9fBw-5-ac559d25.jpg",
+          "alt": "고객이 이해하는 제안서 · 원본 시연 화면",
+          "credit": "Small AI",
+          "source_url": "https://youtu.be/vHzeAJa9fBw",
+          "sha256": "ac559d25c461852b5aee7fa6659b9e3db2cd7b1dcec9cb6d24e578816e65982d"
+        }
+      ],
+      "style_reference": "https://www.threads.com/@binx_lab"
+    },
+    {
+      "date": "2026-10-20",
+      "type": "evergreen",
+      "target": "직장인",
+      "fmt": "비교형",
+      "title": "컨텐츠 208 · 견적서 총액만 보면 놓치는 것",
+      "body": "견적서 싼 순서로 골랐다가 놓치는 게 있음\n\n총액만 비교하면\n어떤 작업이 빠졌는지 안 보임.\n\nTim Fairley는 전기공사 견적을 AI에 넣고\n포함 항목과 제외 항목을 나란히 놓았음.\n빠진 작업의 추정 비용까지 더하자\n처음엔 비쌌던 견적이 가장 싸게 나옴.\n\n업체가 가격을 내린 건 아님.\nAI가 추정한 돈을 더한 비교임.\n발주 문서도 없어서 실제 누락인지는 미확인.\n\n견적 비교할 땐 합계 옆에\n포함 / 제외 / 업체에 확인할 항목도 놓아보셈.",
+      "previous_title": "컨텐츠 208 (*명령어 붙여넣은 화면 캡처. 없어도 됩니다)",
+      "link_comment": "사례와 작업 과정은 여기 정리돼 있음.\n\nhttps://lounge.aimax.ai.kr/worldclass/sKX5dQza1to",
+      "format": "standalone",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/sKX5dQza1to",
+          "title": "외주 견적과 원가 계산, Claude for Excel로 비교하고 검토하는 방법",
+          "published_at": null,
+          "collected_at": "2026-10-19T07:27:36.040788+00:00",
+          "verified_at": "2026-10-19T07:27:36.040788+00:00",
+          "source_url": "https://youtu.be/sKX5dQza1to",
+          "source_channel": "Tim Fairley",
+          "evidence_sha256": "77246fe8046dde3d97c224eed9c0eda5c49c0995169294336c580117b95dc842"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/sKX5dQza1to-0-38d6a8cd.jpg",
+          "alt": "견적서 총액만 보면 놓치는 것 · 원본 시연 화면",
+          "credit": "Tim Fairley",
+          "source_url": "https://youtu.be/sKX5dQza1to",
+          "sha256": "38d6a8cd69b084a7e612aed5fd1f1e61896e3275d50a1f158bae29b82ee83ca1"
+        },
+        {
+          "src": "/thread-img/sKX5dQza1to-1-2665f10c.jpg",
+          "alt": "견적서 총액만 보면 놓치는 것 · 원본 시연 화면",
+          "credit": "Tim Fairley",
+          "source_url": "https://youtu.be/sKX5dQza1to",
+          "sha256": "2665f10cd6b318033d9dd4bb1588ecc9e10e401a2a66c186a37f248a23121535"
+        }
+      ],
+      "style_reference": "https://www.threads.com/@binx_lab"
+    },
+    {
+      "date": "2026-10-20",
+      "type": "ai",
+      "target": "전체",
+      "fmt": "따라하기",
+      "title": "컨텐츠 209 · 새 글 쓰기 전에 손볼 글 찾기",
+      "body": "블로그 새 글 쓰기 전에 이거부터 보셈\n\n검색에는 뜨는데 클릭은 적은 글.\nSemrush가 Claude로 손볼 후보를 찾은 방식임.\n\n1. Search Console에서 기간을 정해 CSV 받기\n2. 사이트가 무슨 일을 하는지 같이 설명하기\n3. 노출은 있는데 클릭이 적은 페이지 찾기\n4. 나온 결과 한 건을 원래 수치와 대조하기\n\n여기까지 하면 수정할 후보가 남음.\n이 사례에서 확인된 건 후보와 보고서까지.\n방문자가 늘었다는 성과 자료는 아님.\n\n새 글 주제 찾기 전에\n이미 쓴 글 한 편부터 확인해보셈.",
+      "previous_title": "컨텐츠 209 (*사진·영상 없어도 됩니다)",
+      "link_comment": "사례와 작업 과정은 여기 정리돼 있음.\n\nhttps://lounge.aimax.ai.kr/worldclass/quYneNBX4ck",
+      "format": "standalone",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/quYneNBX4ck",
+          "title": "Claude Code로 검색 데이터를 모아 먼저 손볼 콘텐츠 찾기",
+          "published_at": null,
+          "collected_at": "2026-10-19T07:27:36.040788+00:00",
+          "verified_at": "2026-10-19T07:27:36.040788+00:00",
+          "source_url": "https://youtu.be/quYneNBX4ck",
+          "source_channel": "Semrush",
+          "evidence_sha256": "4f55fa877b73c412a994b4bb6a0ac3c9b809eb66c231a3fdceb67152b5cdcb38"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/quYneNBX4ck-1-c7503045.jpg",
+          "alt": "새 글 쓰기 전에 손볼 글 찾기 · 원본 시연 화면",
+          "credit": "Semrush",
+          "source_url": "https://youtu.be/quYneNBX4ck",
+          "sha256": "c75030451da90ca7d717ed9de930d19ba4d2d1112776cddc188ad5399f8f134f"
+        },
+        {
+          "src": "/thread-img/quYneNBX4ck-4-d48bf9fc.jpg",
+          "alt": "새 글 쓰기 전에 손볼 글 찾기 · 원본 시연 화면",
+          "credit": "Semrush",
+          "source_url": "https://youtu.be/quYneNBX4ck",
+          "sha256": "d48bf9fcddd6c6fe8b99ac22a3b3381887127b26a251c5b25c43a2418ffa6632"
+        }
+      ],
+      "style_reference": "https://www.threads.com/@binx_lab"
+    },
+    {
+      "date": "2026-10-20",
+      "type": "marketing",
+      "target": "시니어",
+      "fmt": "질문형",
+      "title": "컨텐츠 210 · 구매 문의와 정보 문의 나누기",
+      "body": "살 사람과 구경 온 사람한테 같은 답장 보내고 있음?\n\n“지금 구매하고 싶어요”\n“일단 어떤 게 있는지 궁금해요”\n\n이 두 문의에 같은 안내문 보내고 있음?\n\nFirst Step AI는 문의를 바꿔 넣어봤음.\n구매 의사가 있는 문의에는 제안 메일,\n정보를 찾는 문의에는 후속 연락 경로가 나옴.\n\n둘 다 상품을 물었지만 다음 할 일은 달랐음.\n\n내가 받은 문의도 나눠본다면\n바로 제안할 문의와 더 물어볼 문의,\n어느 쪽이 더 많음?",
+      "previous_title": "컨텐츠 210 (*사진·영상 없어도 됩니다. 본인 경험으로 바꿔 쓰면 더 좋아요)",
+      "link_comment": "사례와 작업 과정은 여기 정리돼 있음.\n\nhttps://lounge.aimax.ai.kr/worldclass/xbC8XTtmXrA",
+      "format": "standalone",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/xbC8XTtmXrA",
+          "title": "구매 문의와 정보 문의를 구분해 제안서와 후속 메일을 보내는 AI 영업 자동화",
+          "published_at": null,
+          "collected_at": "2026-10-19T07:27:36.040788+00:00",
+          "verified_at": "2026-10-19T07:27:36.040788+00:00",
+          "source_url": "https://youtu.be/xbC8XTtmXrA",
+          "source_channel": "First Step AI",
+          "evidence_sha256": "d313ba604beecc7e4a52047cc231d614e1169ec219e670d725f0b150d0b46c96"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/xbC8XTtmXrA-0-dd16884d.jpg",
+          "alt": "구매 문의와 정보 문의 나누기 · 원본 시연 화면",
+          "credit": "First Step AI",
+          "source_url": "https://youtu.be/xbC8XTtmXrA",
+          "sha256": "dd16884df80c280f239fc8ebc4710f26c0bbece19462e2f833b88546f70bc9e2"
+        },
+        {
+          "src": "/thread-img/xbC8XTtmXrA-4-a6c60591.jpg",
+          "alt": "구매 문의와 정보 문의 나누기 · 원본 시연 화면",
+          "credit": "First Step AI",
+          "source_url": "https://youtu.be/xbC8XTtmXrA",
+          "sha256": "a6c60591360b9beb53109f5d0cb01656c5575b936cecdadf86612bffae705d10"
+        }
+      ],
+      "style_reference": "https://www.threads.com/@binx_lab"
+    },
+    {
+      "date": "2026-10-21",
+      "type": "evergreen",
+      "target": "직장인",
+      "fmt": "사례타래",
+      "title": "컨텐츠 211 · 청구서 파일 정리까지 맡기기",
+      "body": "청구서 파일 열어서 엑셀에 옮기는 사람 보셈\n\n폴더에 청구서를 넣고 정리를 맡겼더니\n파일 분류와 엑셀 기록을 함께 처리함.\n\nBart Slodyczka가 시연용 청구서로 보여준 건\n종류별 폴더와 총액·세금·소계 요약표였음.\n\n그런데 여기서 끝내지 않고 다음\n청구서에도 쓸 작업 절차까지 저장함.",
+      "previous_title": "컨텐츠 211 (*회의록 슬라이드 화면 캡처. 없어도 됩니다)",
+      "replies": [
+        "Bart Slodyczka는 시연용\n청구서를 폴더에 넣었음.\n\n요청한 건 요약 한\n문단이 아니었음.\n종류별 하위 폴더로 파일을\n나누고 분류·총액·세금·소계를\n엑셀에 적어달라는 것.\n\nCowork는 파일 이동과\n엑셀 기록을 작업\n목록으로 나눠 처리함.\n결과 화면에는 청구서\n요약표가 남았음.",
+        "그런데 청구서는 이번\n주만 오는 게 아니잖아.\n\n제작자는 정리가 끝난 다음\n“방금 한 과정을 다시 쓸\n스킬로 만들어달라”고 요청함.\n\n다음 파일에도 같은 분류와\n같은 엑셀 항목을 쓰려는 거임.\n매번 작업 내용을 다시 적는\n대신 절차를 저장한 것.",
+        "따라 한다면 청구서 복사본을\n넣을 폴더부터 따로 만들면 됨.\n\n분류 기준과 엑셀에 필요한\n항목, 정리한 파일을 둘 위치를\n적어두고 한 번 실행해보셈.\n\n원본 금액과 요약표가\n맞는지 확인한 뒤 그\n절차를 저장하는 순서임.\n\n영상은 생성한 시연용\n청구서로 진행했음.\n실제 회사의 회계 처리를\n검증한 사례는 아님."
+      ],
+      "link_comment": "사례 화면과 만드는 과정은\n여기서 볼 수 있음.\n\nhttps://lounge.aimax.ai.kr/worldclass/vMo-yRCN3QM",
+      "format": "case_thread",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/vMo-yRCN3QM",
+          "title": "청구서 정리부터 주간 반복 업무까지, Claude Cowork에 일을 맡기는 방법",
+          "published_at": null,
+          "collected_at": "2026-10-19T07:27:36.040788+00:00",
+          "verified_at": "2026-10-19T07:27:36.040788+00:00",
+          "source_url": "https://youtu.be/vMo-yRCN3QM",
+          "source_channel": "Bart Slodyczka",
+          "evidence_sha256": "7b103729e38d76b1f8ba394c68e9a3cf37a1808ebb3dc4d64c1630f1c046708a"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/vMo-yRCN3QM-0-aaa8edb8.jpg",
+          "alt": "청구서 파일 정리까지 맡기기 · 원본 시연 화면",
+          "credit": "Bart Slodyczka",
+          "source_url": "https://youtu.be/vMo-yRCN3QM",
+          "sha256": "aaa8edb8165b3b6fa6329d34f8958935982028a05a7b1e2e4cdf87e69a07365b"
+        },
+        {
+          "src": "/thread-img/vMo-yRCN3QM-3-c0de9584.jpg",
+          "alt": "청구서 파일 정리까지 맡기기 · 원본 시연 화면",
+          "credit": "Bart Slodyczka",
+          "source_url": "https://youtu.be/vMo-yRCN3QM",
+          "sha256": "c0de9584530323b464f666eac1782f6edf227c0dd269531398b029f8f6f457ef"
+        }
+      ],
+      "style_reference": "https://www.threads.com/@binx_lab"
+    },
+    {
+      "date": "2026-10-21",
+      "type": "evergreen",
+      "target": "자영업자",
+      "fmt": "체크리스트",
+      "title": "컨텐츠 212 · 자동화 상자 연결 전에 할 일",
+      "body": "자동화 만들기 전에 이 네 줄부터 적어보셈\n\n시작: 언제 실행할 건지\n입력: 어떤 정보를 받을 건지\n조건: 어디서 처리가 갈리는지\n결과: 끝나면 무엇이 남아야 하는지\n\nScott Henry는 이 흐름을 Claude Code에 설명하고\nMake로 가져올 JSON 파일을 받았음.\nMake에 넣자 작업 상자들이 연결된 구조가 나옴.\n\n여기서 끝난 건 연결 구조까지.\nX와 Gmail 계정은 따로 연결해야 했음.\n\n빈 화면에 상자부터 놓기 전에\n내가 만들 일부터 네 줄로 적어보셈.",
+      "previous_title": "컨텐츠 212 (*메뉴판/가격표 사진 OR 만든 차림표 화면 캡처. 없으면 글만 올려도 됩니다)",
+      "link_comment": "사례와 작업 과정은 여기 정리돼 있음.\n\nhttps://lounge.aimax.ai.kr/worldclass/zVSY0GFFIIE",
+      "format": "standalone",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/zVSY0GFFIIE",
+          "title": "고객 분류와 콘텐츠 배포, Claude Code로 자동화 설정 시간을 줄이는 방법",
+          "published_at": null,
+          "collected_at": "2026-10-19T07:27:36.040788+00:00",
+          "verified_at": "2026-10-19T07:27:36.040788+00:00",
+          "source_url": "https://youtu.be/zVSY0GFFIIE",
+          "source_channel": "Scott Henry",
+          "evidence_sha256": "f72dc030b78e7980e72b6ddfa9241e51796f348d415d9c8b1044f06c529ddca8"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/zVSY0GFFIIE-3-0f13a2ef.jpg",
+          "alt": "자동화 상자 연결 전에 할 일 · 원본 시연 화면",
+          "credit": "Scott Henry",
+          "source_url": "https://youtu.be/zVSY0GFFIIE",
+          "sha256": "0f13a2efeff7d4316a53f4cc13853ccc6e352abfc8b99be5bb3e059a33d9f3e4"
+        },
+        {
+          "src": "/thread-img/zVSY0GFFIIE-5-0c20cae6.jpg",
+          "alt": "자동화 상자 연결 전에 할 일 · 원본 시연 화면",
+          "credit": "Scott Henry",
+          "source_url": "https://youtu.be/zVSY0GFFIIE",
+          "sha256": "0c20cae6f489c9edd4413ca7afc110138f02fd59550d53f69dc0dcf3712e028d"
+        }
+      ],
+      "style_reference": "https://www.threads.com/@binx_lab"
+    },
+    {
+      "date": "2026-10-21",
+      "type": "ai",
+      "target": "전체",
+      "fmt": "비교형",
+      "title": "컨텐츠 213 · 계약서와 청구서에 같은 정보 넣기",
+      "body": "계약서랑 청구서에 같은 내용 두 번 쓰고 있음?\n\n따로 만들 때:\n계약서에 고객명·프로젝트·금액 입력\n청구서에도 같은 정보 다시 입력\n\nAutomate Your Gig의 n8n 시연:\n양식에 한 번 입력\n→ 같은 값으로 계약서와 선금 청구서 생성\n→ 두 파일을 저장한 뒤 완료 안내\n\n가상 고객으로 보여준 과정임.\n선금 비율과 납부 기한은 별도로 설정했음.\n\n내 문서 두 개를 나란히 놓고\n똑같이 적는 칸부터 표시해보셈.\n그 칸이 같이 쓸 입력값임.",
+      "previous_title": "컨텐츠 213 (*사진·영상 없어도 됩니다)",
+      "link_comment": "사례와 작업 과정은 여기 정리돼 있음.\n\nhttps://lounge.aimax.ai.kr/worldclass/wGow1eBzmk8",
+      "format": "standalone",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/wGow1eBzmk8",
+          "title": "신규 고객 계약서와 선금 청구서, 입력 한 번으로 만드는 업무 자동화",
+          "published_at": null,
+          "collected_at": "2026-10-19T07:27:36.040788+00:00",
+          "verified_at": "2026-10-19T07:27:36.040788+00:00",
+          "source_url": "https://youtu.be/wGow1eBzmk8",
+          "source_channel": "Automate Your Gig",
+          "evidence_sha256": "5031826ae017e1511a60e2bb64b4a7bf662b15481cfc290742e701ae7fd51079"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/wGow1eBzmk8-1-488fd862.jpg",
+          "alt": "계약서와 청구서에 같은 정보 넣기 · 원본 시연 화면",
+          "credit": "Automate Your Gig",
+          "source_url": "https://youtu.be/wGow1eBzmk8",
+          "sha256": "488fd862de0291f42f1c83b981b50a6623e168b09cea5dfa1f894669f13ed8d1"
+        },
+        {
+          "src": "/thread-img/wGow1eBzmk8-4-8640cb58.jpg",
+          "alt": "계약서와 청구서에 같은 정보 넣기 · 원본 시연 화면",
+          "credit": "Automate Your Gig",
+          "source_url": "https://youtu.be/wGow1eBzmk8",
+          "sha256": "8640cb58ed4435d9b1687d9172252f6eef7c70f0e01d5f144c6a7853b7cd55f3"
+        }
+      ],
+      "style_reference": "https://www.threads.com/@binx_lab"
+    },
+    {
+      "date": "2026-10-21",
+      "type": "marketing",
+      "target": "입문자",
+      "fmt": "단독사례",
+      "title": "컨텐츠 214 · 예약이 찼을 때 다음 시간 안내하기",
+      "body": "예약 꽉 찼다고 전화 끊으면 아까움\n\nLoxes가 공개한 예약 AI는\n요청한 시간이 차 있으면 다른 시간을 찾아줌.\n\n전화로 요청을 받고\nn8n에서 Google Calendar를 조회함.\n고객이 다른 시간을 고르면 일정 등록까지 이어짐.\n\n설정 하나도 눈에 들어옴.\n“내일 오후”를 알아듣도록\n현재 날짜와 시간을 AI에 같이 전달했음.\n\n이런 예약 기능을 시험한다면\n빈 시간만 말해보지 말고\n이미 찬 시간도 물어보셈.\n그다음 안내가 준비돼 있는지 보는 거임.",
+      "previous_title": "컨텐츠 214 (*사진·영상 없어도 됩니다. 본인 경험으로 바꿔 쓰면 더 좋아요)",
+      "link_comment": "사례와 작업 과정은 여기 정리돼 있음.\n\nhttps://lounge.aimax.ai.kr/worldclass/rl_5O73iaSY",
+      "format": "standalone",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/rl_5O73iaSY",
+          "title": "예약 전화부터 일정 등록까지, AI 음성 상담으로 연결하는 방법",
+          "published_at": null,
+          "collected_at": "2026-10-19T07:27:36.040788+00:00",
+          "verified_at": "2026-10-19T07:27:36.040788+00:00",
+          "source_url": "https://youtu.be/rl_5O73iaSY",
+          "source_channel": "Loxes",
+          "evidence_sha256": "43d01a7e358a059fd1eafede074f909663864248c0a1e88a3264044b29c6358a"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/rl_5O73iaSY-0-62ad2c98.jpg",
+          "alt": "예약이 찼을 때 다음 시간 안내하기 · 원본 시연 화면",
+          "credit": "Loxes",
+          "source_url": "https://youtu.be/rl_5O73iaSY",
+          "sha256": "62ad2c9824f22d7131f88024b42edd2ad7e3b8d2361954f8d35e05d7be292116"
+        },
+        {
+          "src": "/thread-img/rl_5O73iaSY-3-466ec066.jpg",
+          "alt": "예약이 찼을 때 다음 시간 안내하기 · 원본 시연 화면",
+          "credit": "Loxes",
+          "source_url": "https://youtu.be/rl_5O73iaSY",
+          "sha256": "466ec066e13be3d493c2322e320d041878d452e7cf8e05b78fff27285dd09dc4"
+        }
+      ],
+      "style_reference": "https://www.threads.com/@binx_lab"
+    },
+    {
+      "date": "2026-10-22",
+      "type": "evergreen",
+      "target": "자영업자",
+      "fmt": "따라하기",
+      "title": "컨텐츠 215 · 반복 업무를 스킬로 남기기",
+      "body": "AI한테 같은 설명 또 치기 전에 이거 해보셈\n\nNate Herk는 일정과 ClickUp 할 일을 같이 보는\n절차를 Morning Coffee라는 스킬로 저장했음.\n\n처음부터 긴 매뉴얼을 쓴 건 아님.\n실제 작업 하나를 해보고 남기는 순서를 권함.\n\n1. 반복하는 업무 하나를 AI와 끝까지 해보기\n2. 결과가 맞는지 확인하기\n3. 목표·작업 순서·참고 파일·규칙 저장하기\n4. 다음 작업에서 그 절차를 다시 불러보기\n\n이름만 멋있게 붙이지 말고\n무슨 자료를 읽고 뭘 해야 하는지 남겨보셈.",
+      "previous_title": "컨텐츠 215 (*상세페이지 헤더 화면 캡처 OR 상품 사진. 없으면 글만 올려도 됩니다)",
+      "link_comment": "사례와 작업 과정은 여기 정리돼 있음.\n\nhttps://lounge.aimax.ai.kr/worldclass/zKBPwDpBfhs",
+      "format": "standalone",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/zKBPwDpBfhs",
+          "title": "일정 점검부터 콘텐츠 제작까지, Claude 스킬로 반복 업무를 정리하는 방법",
+          "published_at": null,
+          "collected_at": "2026-10-19T07:27:36.040788+00:00",
+          "verified_at": "2026-10-19T07:27:36.040788+00:00",
+          "source_url": "https://youtu.be/zKBPwDpBfhs",
+          "source_channel": "Nate Herk | AI Automation",
+          "evidence_sha256": "8da82d0f4c92c64cedbc06378e3737d24958ef0521275e5f85a162e96a4094c5"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/zKBPwDpBfhs-1-3c4435dc.jpg",
+          "alt": "반복 업무를 스킬로 남기기 · 원본 시연 화면",
+          "credit": "Nate Herk | AI Automation",
+          "source_url": "https://youtu.be/zKBPwDpBfhs",
+          "sha256": "3c4435dc9acb10871c302d4fed3791b48a146248b493d7aba15ebf5498789529"
+        },
+        {
+          "src": "/thread-img/zKBPwDpBfhs-3-4a516175.jpg",
+          "alt": "반복 업무를 스킬로 남기기 · 원본 시연 화면",
+          "credit": "Nate Herk | AI Automation",
+          "source_url": "https://youtu.be/zKBPwDpBfhs",
+          "sha256": "4a516175bffe07b380d42529fce9140ab6d67f49370bb3e38c007e30f7aa2016"
+        }
+      ],
+      "style_reference": "https://www.threads.com/@binx_lab"
+    },
+    {
+      "date": "2026-10-22",
+      "type": "evergreen",
+      "target": "직장인",
+      "fmt": "비교형",
+      "title": "컨텐츠 216 · 퇴근 후 문의를 다음 상담으로 잇기",
+      "body": "AI가 예약 잡았다는 말, 어디까지 했다는 거임?\n\n희망 시간 받아두기와\n예약 최종 확정은 다른 일임.\n\nOliver Rasmussen의 치과 시연에서는\nAI가 이메일로 방문 시간과 목적을 물었음.\n그 내용을 시트에 남기고\n직원이 고객에게 연락해서 최종 확정함.\n\nAI가 남긴 것: 다음 상담에 필요한 기록\n직원이 할 것: 고객에게 연락해 예약 확정\n\n이런 흐름을 만든다면\n“예약 완료”부터 띄우지 말고\n누가 마지막 확인을 하는지부터 정해보셈.",
+      "previous_title": "컨텐츠 216 (*만든 슬라이드 화면 캡처. 없어도 됩니다)",
+      "link_comment": "사례와 작업 과정은 여기 정리돼 있음.\n\nhttps://lounge.aimax.ai.kr/worldclass/zFkFj4qldE8",
+      "format": "standalone",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/zFkFj4qldE8",
+          "title": "퇴근 후 고객 문의에 답하고 예약 요청까지 정리하는 AI 활용법",
+          "published_at": null,
+          "collected_at": "2026-10-19T07:27:36.040788+00:00",
+          "verified_at": "2026-10-19T07:27:36.040788+00:00",
+          "source_url": "https://youtu.be/zFkFj4qldE8",
+          "source_channel": "Oliver Rasmussen",
+          "evidence_sha256": "ead6bd4f18b0fd7884275a962b65be9f0d628059abbb285d6fed3bfadb49bae6"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/zFkFj4qldE8-0-768a7d60.jpg",
+          "alt": "퇴근 후 문의를 다음 상담으로 잇기 · 원본 시연 화면",
+          "credit": "Oliver Rasmussen",
+          "source_url": "https://youtu.be/zFkFj4qldE8",
+          "sha256": "768a7d6053c6f6b9a88d14a1afa90d271805c588272552845319b633d299e9dd"
+        },
+        {
+          "src": "/thread-img/zFkFj4qldE8-1-a7755859.jpg",
+          "alt": "퇴근 후 문의를 다음 상담으로 잇기 · 원본 시연 화면",
+          "credit": "Oliver Rasmussen",
+          "source_url": "https://youtu.be/zFkFj4qldE8",
+          "sha256": "a7755859d0a7483ed2dc683bc98f414ddaed8982d6c68b58d1a5aaa60e0b2ec4"
+        }
+      ],
+      "style_reference": "https://www.threads.com/@binx_lab"
+    },
+    {
+      "date": "2026-10-22",
+      "type": "ai",
+      "target": "전체",
+      "fmt": "질문형",
+      "title": "컨텐츠 217 · 자료 링크 보내고 끝내지 않기",
+      "body": "무료자료 신청서에 질문 하나만 더 넣는다면?\n\n이름, 이메일 다음에\n“무슨 일을 자동화하고 싶나요?”\n\nYouri van Hofwegen이 만든 신청서에는\n이렇게 필요한 업무를 적는 칸이 있었음.\n신청하면 n8n에서 Gmail로 가이드 링크를 보내고.\n\n자료를 받는 사람이 어디서 막혔는지\n자기 말로 남길 자리를 둔 거임.\n매출이 올랐다는 사례는 아님.\n\n내 자료를 받으러 온 사람에게\n딱 하나 물어본다면 뭐가 궁금함?",
+      "previous_title": "컨텐츠 217 (*사진·영상 없어도 됩니다)",
+      "link_comment": "사례와 작업 과정은 여기 정리돼 있음.\n\nhttps://lounge.aimax.ai.kr/worldclass/xl7Y49yLPDs",
+      "format": "standalone",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/xl7Y49yLPDs",
+          "title": "자료 발송부터 고객 문의까지, N8N으로 반복 업무를 연결하는 방법",
+          "published_at": null,
+          "collected_at": "2026-10-19T07:27:36.040788+00:00",
+          "verified_at": "2026-10-19T07:27:36.040788+00:00",
+          "source_url": "https://youtu.be/xl7Y49yLPDs",
+          "source_channel": "Youri van Hofwegen",
+          "evidence_sha256": "c4a7eaa9815a1a9e874d8e4973e06a51faf0d64360c0a33143ddea4488f9fe2f"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/xl7Y49yLPDs-0-0076ffb6.jpg",
+          "alt": "자료 링크 보내고 끝내지 않기 · 원본 시연 화면",
+          "credit": "Youri van Hofwegen",
+          "source_url": "https://youtu.be/xl7Y49yLPDs",
+          "sha256": "0076ffb6fcf7674460061cd86270979283b701292a213279af4f8003b85ada1d"
+        },
+        {
+          "src": "/thread-img/xl7Y49yLPDs-1-08462473.jpg",
+          "alt": "자료 링크 보내고 끝내지 않기 · 원본 시연 화면",
+          "credit": "Youri van Hofwegen",
+          "source_url": "https://youtu.be/xl7Y49yLPDs",
+          "sha256": "0846247325ac2aa755ea4ec9c4494d8c7abb467e782ba59b5aa1d1be3c11a22f"
+        }
+      ],
+      "style_reference": "https://www.threads.com/@binx_lab"
+    },
+    {
+      "date": "2026-10-22",
+      "type": "marketing",
+      "target": "N잡러",
+      "fmt": "사례타래",
+      "title": "컨텐츠 218 · 유튜브 레퍼런스 조사 보고서 만들기",
+      "body": "유튜브 소재 찾다가 하루 다 가겠음\n\nLiam Ottley 영상에서는 유튜브\n조사를 Claude Code에 맡겼음.\n\n실제 채널의 상위 영상과 특징을\n보고서로 받아 기획에 참고하는 방식임.\n\n바로 제작을 맡기기 전에\n보고서에 넣을 내용부터 정했음.",
+      "previous_title": "컨텐츠 218 (*사진·영상 없어도 됩니다. 본인 경험으로 바꿔 쓰면 더 좋아요)",
+      "replies": [
+        "Liam Ottley 영상에서 고른\n일은 다른 채널의 반응 좋은\n영상을 찾는 작업이었음.\n\n제목과 썸네일을 기획할\n때 참고하려는 목적.\n그래서 실제 채널의 상위\n영상과 특징을 보고서로\n확인하는 도구를 만들었음.",
+        "그런데 시작부터 코드를\n만들라고 하지 않았음.\n\n보고서에 무엇을 넣고\n어떤 형태로 보여줄지\n요구사항 문서부터 받았음.\n\n계획을 읽다가 원하지 않은\n내용이 있으면 빼고 정리된\n문서대로 구현을 요청함.\n\nAI가 임의로 늘린 기능까지\n만드는 일을 줄이려는 순서임.",
+        "완성 뒤에는 실제 채널을\n넣고 파일을 열었음.\n\n어떤 영상이 상위인지와\nAI가 그 영상에 붙인\n해석을 구분해서 봄.\n조회수는 기록이고 “왜\n잘됐는지”는 해석이니까.\n\n따라 한다면 내가 조사할\n채널과 보고서에서 비교할\n항목부터 정해보셈.\n완성된 첫 보고서를 직접\n읽는 단계까지 한 작업임."
+      ],
+      "link_comment": "사례 화면과 만드는 과정은\n여기서 볼 수 있음.\n\nhttps://lounge.aimax.ai.kr/worldclass/oC0mPBSmzfQ",
+      "format": "case_thread",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/oC0mPBSmzfQ",
+          "title": "매주 반복하는 유튜브 자료 조사, Claude Code로 보고서까지 만드는 방법",
+          "published_at": null,
+          "collected_at": "2026-10-19T07:27:36.040788+00:00",
+          "verified_at": "2026-10-19T07:27:36.040788+00:00",
+          "source_url": "https://youtu.be/oC0mPBSmzfQ",
+          "source_channel": "Liam Ottley",
+          "evidence_sha256": "c783c97ee55ba76c585613e4545825dcd96558c6e9a544ea03179af9025a79c1"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/oC0mPBSmzfQ-0-a783c920.jpg",
+          "alt": "유튜브 레퍼런스 조사 보고서 만들기 · 원본 시연 화면",
+          "credit": "Liam Ottley",
+          "source_url": "https://youtu.be/oC0mPBSmzfQ",
+          "sha256": "a783c920853c59a00b17763f6f9458cc5687eddf63e317a91e3640257ecce498"
+        },
+        {
+          "src": "/thread-img/oC0mPBSmzfQ-4-45dbb5aa.jpg",
+          "alt": "유튜브 레퍼런스 조사 보고서 만들기 · 원본 시연 화면",
+          "credit": "Liam Ottley",
+          "source_url": "https://youtu.be/oC0mPBSmzfQ",
+          "sha256": "45dbb5aaf0558368cd42d0e6a5e4decc0b304793ca71036ffbe72ca082620b29"
+        }
+      ],
+      "style_reference": "https://www.threads.com/@binx_lab"
+    },
+    {
+      "date": "2026-10-23",
+      "type": "evergreen",
+      "target": "N잡러",
+      "fmt": "실수점검",
+      "title": "컨텐츠 219 · 수정됐다는 말 대신 실행 결과 보기",
+      "body": "AI가 “고쳤습니다” 하면 그냥 믿고 있었음?\n\nData & AI Daily는 할인 계산이 틀린 데모를\nClaude Code로 고친 뒤 실제 실행까지 확인했음.\n\n수정 맡기기 전에 적어둘 것.\n\n어떤 입력에서 문제가 생기는지\n어느 파일을 봐야 하는지\n어디는 바꾸면 안 되는지\n어떤 결과가 나와야 끝난 건지\n\n그리고 수정 뒤에 볼 것.\n테스트가 통과했는지,\n문제가 났던 입력을 다시 넣어도 맞는지.\n\n“수정 완료”라는 답변만 읽고\n끝내지는 말자는 거임.",
+      "previous_title": "컨텐츠 219 (*조명 바꾼 전후 화면 캡처 OR 촬영 장면. 없어도 됩니다)",
+      "link_comment": "사례와 작업 과정은 여기 정리돼 있음.\n\nhttps://lounge.aimax.ai.kr/worldclass/d1vermK7oak",
+      "format": "standalone",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/d1vermK7oak",
+          "title": "업무용 프로그램 수정, Claude Code로 맡기고 결과까지 확인하는 방법",
+          "published_at": null,
+          "collected_at": "2026-10-19T07:27:36.040788+00:00",
+          "verified_at": "2026-10-19T07:27:36.040788+00:00",
+          "source_url": "https://youtu.be/d1vermK7oak",
+          "source_channel": "Data & AI Daily",
+          "evidence_sha256": "21cb315fc2d6211cd429ab63fcc9eaa93c6ab335697d03d66d3f4b5bafb4d437"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/d1vermK7oak-0-4866724b.jpg",
+          "alt": "수정됐다는 말 대신 실행 결과 보기 · 원본 시연 화면",
+          "credit": "Data & AI Daily",
+          "source_url": "https://youtu.be/d1vermK7oak",
+          "sha256": "4866724b5d79f0223e77030aae7e7f85a202d5ca1541ec432cd2a91b14aebacd"
+        },
+        {
+          "src": "/thread-img/d1vermK7oak-1-8684e78c.jpg",
+          "alt": "수정됐다는 말 대신 실행 결과 보기 · 원본 시연 화면",
+          "credit": "Data & AI Daily",
+          "source_url": "https://youtu.be/d1vermK7oak",
+          "sha256": "8684e78ced100210ba3c957846cfdb3ab2527889ead8c952c64f1248bcd4ef12"
+        }
+      ],
+      "style_reference": "https://www.threads.com/@binx_lab"
+    },
+    {
+      "date": "2026-10-23",
+      "type": "evergreen",
+      "target": "자영업자",
+      "fmt": "단독사례",
+      "title": "컨텐츠 220 · 상담 전에 고객 기록부터 모으기",
+      "body": "상담 전에 지난 이메일 뒤지는 사람 보셈\n\nThalita Milan은 HubSpot에 있는\n연락처·회사·거래·이메일을 연결해\n상담 요약과 후속 메일 초안을 준비했음.\n사용한 건 Breeze Assistant.\n\n고객 배경을 새 채팅에 다시 적는 대신\n이미 쌓인 기록을 참고하는 방식임.\n\n여기서 먼저 볼 건 메일 문장이 아님.\n어느 거래와 이메일을 보고 썼는지임.\n\n초안 한 건만 골라 원래 기록과 대조해보셈.\n맞는 고객에게 맞는 이야기를 쓰는지\n확인하고 상담에 가져가는 거임.",
+      "previous_title": "컨텐츠 220 (*업무지시서 화면 캡처 OR 매장 사진. 없으면 글만 올려도 됩니다)",
+      "link_comment": "사례와 작업 과정은 여기 정리돼 있음.\n\nhttps://lounge.aimax.ai.kr/worldclass/xjXe4Sggl-o",
+      "format": "standalone",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/xjXe4Sggl-o",
+          "title": "HubSpot AI로 고객 상담 준비부터 영업 후속 업무까지 연결하는 방법",
+          "published_at": null,
+          "collected_at": "2026-10-19T07:27:36.040788+00:00",
+          "verified_at": "2026-10-19T07:27:36.040788+00:00",
+          "source_url": "https://youtu.be/xjXe4Sggl-o",
+          "source_channel": "Thalita Milan - Tech & Marketing Tips",
+          "evidence_sha256": "21d6a89efa0a042ad8a918fde2dac411ade5063df286e3d93d0a3781b409f932"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/xjXe4Sggl-o-0-32d94b90.jpg",
+          "alt": "상담 전에 고객 기록부터 모으기 · 원본 시연 화면",
+          "credit": "Thalita Milan - Tech & Marketing Tips",
+          "source_url": "https://youtu.be/xjXe4Sggl-o",
+          "sha256": "32d94b90f5419aed2a596fe76952dfd72e1c7f2ec3e7913c9b8a6ae7a0d95e94"
+        },
+        {
+          "src": "/thread-img/xjXe4Sggl-o-4-96aa6a9d.jpg",
+          "alt": "상담 전에 고객 기록부터 모으기 · 원본 시연 화면",
+          "credit": "Thalita Milan - Tech & Marketing Tips",
+          "source_url": "https://youtu.be/xjXe4Sggl-o",
+          "sha256": "96aa6a9df3fd6949a259b46c770696ff7a6955b098eebe4e061a1cde06789123"
+        }
+      ],
+      "style_reference": "https://www.threads.com/@binx_lab"
+    },
+    {
+      "date": "2026-10-23",
+      "type": "ai",
+      "target": "전체",
+      "fmt": "체크리스트",
+      "title": "컨텐츠 221 · 미수금 안내 전에 대상 확인하기",
+      "body": "미수금 안내 AI에 맡기기 전에 이거부터 보셈\n\nBen Glyn은 회계 자료를 확인하면서\nClaude에 연체 안내문 초안을 요청했음.\n실제 발송까지 확인된 사례는 아님.\n\n초안에서 대조할 것:\n어느 청구서를 참고했는지\n아직 미납인 게 맞는지\n금액이 원래 자료와 같은지\n안내할 상대가 맞는지\n\n프로그램 연결과 작업 절차도 따로임.\n자료에 접근할 수 있다고 해서\n누구에게 무슨 안내를 쓸지까지 정해지진 않음.\n\n발송 버튼 누르기 전에\n초안 한 건부터 원본이랑 놓고 보셈.",
+      "previous_title": "컨텐츠 221 (*사진·영상 없어도 됩니다)",
+      "link_comment": "사례와 작업 과정은 여기 정리돼 있음.\n\nhttps://lounge.aimax.ai.kr/worldclass/x_xglkA3WKQ",
+      "format": "standalone",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/x_xglkA3WKQ",
+          "title": "미수금 확인부터 안내문 초안까지, Claude로 반복 업무를 정리하는 방법",
+          "published_at": null,
+          "collected_at": "2026-10-19T07:27:36.040788+00:00",
+          "verified_at": "2026-10-19T07:27:36.040788+00:00",
+          "source_url": "https://youtu.be/x_xglkA3WKQ",
+          "source_channel": "Ben Glyn | Leverage AI",
+          "evidence_sha256": "66e5897fc2cc472c8b2fd765694e403e8e13f850bc967f3fa82921114bc4b66c"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/x_xglkA3WKQ-1-808297d8.jpg",
+          "alt": "미수금 안내 전에 대상 확인하기 · 원본 시연 화면",
+          "credit": "Ben Glyn | Leverage AI",
+          "source_url": "https://youtu.be/x_xglkA3WKQ",
+          "sha256": "808297d81e122f8813c57b3dbfdb383cd8fb3049b81454b65bc20f457a0edf4f"
+        },
+        {
+          "src": "/thread-img/x_xglkA3WKQ-4-bd210f5b.jpg",
+          "alt": "미수금 안내 전에 대상 확인하기 · 원본 시연 화면",
+          "credit": "Ben Glyn | Leverage AI",
+          "source_url": "https://youtu.be/x_xglkA3WKQ",
+          "sha256": "bd210f5bfdc958b29e5f81da32e67dbce55fd4400603e7a235022c0f0c16f0cf"
+        }
+      ],
+      "style_reference": "https://www.threads.com/@binx_lab"
+    },
+    {
+      "date": "2026-10-23",
+      "type": "marketing",
+      "target": "직장인",
+      "fmt": "사례타래",
+      "title": "컨텐츠 222 · 고객 질문을 콘텐츠 소재로 쓰기",
+      "body": "글감 없다는 사람 고객 질문부터 다시 보셈\n\n고객이 막혔던 부분과 그때 설명했던 답.\nLara Acosta는 그걸 콘텐츠 재료로 꺼냄.\n\n통화를 Otter AI로 전사하고 문제와\n해결책을 추출하는 방식이라고 함.\n\n새 소재를 억지로 짜내기 전에\n이미 오간 대화에서 찾아보는 거임.",
+      "previous_title": "컨텐츠 222 (*사진·영상 없어도 됩니다. 본인 경험으로 바꿔 쓰면 더 좋아요)",
+      "replies": [
+        "Lara Acosta는 고객 통화를\n전사한 뒤 문제와 자신이\n제시한 해결책을 뽑는다고 함.\n\n고객이 어떤 부분을\n어려워했는지, 그때 무슨\n설명을 해줬는지가 글의 재료임.\n\n이렇게 꺼낸 사례에 찾아둔\n도입 아이디어를 연결하는 방식.",
+        "레퍼런스도 따로 모았음.\n\none of 10에서 주제와 게시\n시점 등을 정해 반응이\n좋았던 YouTube 영상을 찾고\n마음에 드는 사례를 Google\n문서에 저장한다고 함.\n\n남의 글에서 도입 아이디어를\n찾더라도 글 안을 채울 설명은\n자기 업무에서 꺼낸 거임.",
+        "생각을 놓치지 않으려고\n음성 기록도 쓴다고 함.\n\n산책하면서 떠오른 내용을\nChatGPT 프로젝트에 남기고\n나중에 글이나 발표를\n준비할 때 다시 참고함.\n\nKleo에는 도입 아이디어와\n자기 설명을 같이 넣고 특정\n문장을 바꿔가며 글을 다듬음.\n\n고객 질문, 떠오른 생각,\n찾아둔 도입 아이디어.\n이 재료를 따로 모았다가\n글을 쓸 때 합치는 방식임."
+      ],
+      "link_comment": "사례 화면과 만드는 과정은\n여기서 볼 수 있음.\n\nhttps://lounge.aimax.ai.kr/worldclass/wYIzZqpHs3Q",
+      "format": "case_thread",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/wYIzZqpHs3Q",
+          "title": "고객 상담과 업무 메모를 글·영상으로 만드는 AI 콘텐츠 제작 순서",
+          "published_at": null,
+          "collected_at": "2026-10-19T07:27:36.040788+00:00",
+          "verified_at": "2026-10-19T07:27:36.040788+00:00",
+          "source_url": "https://youtu.be/wYIzZqpHs3Q",
+          "source_channel": "Lara Acosta",
+          "evidence_sha256": "9cd94f09832ec9219abee7dad2b1c81988c597494e43842d12682cedae486755"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/wYIzZqpHs3Q-0-0ab7ee3d.jpg",
+          "alt": "고객 질문을 콘텐츠 소재로 쓰기 · 원본 시연 화면",
+          "credit": "Lara Acosta",
+          "source_url": "https://youtu.be/wYIzZqpHs3Q",
+          "sha256": "0ab7ee3d91380c15c5bcbde6e3548e41e8069d35549b8490d2aed054a77fa1fc"
+        },
+        {
+          "src": "/thread-img/wYIzZqpHs3Q-1-91026cae.jpg",
+          "alt": "고객 질문을 콘텐츠 소재로 쓰기 · 원본 시연 화면",
+          "credit": "Lara Acosta",
+          "source_url": "https://youtu.be/wYIzZqpHs3Q",
+          "sha256": "91026cae9e4ebfe9280ac12ef1187e44c2783ebc58015afa878fb28c70a7c620"
+        }
+      ],
+      "style_reference": "https://www.threads.com/@binx_lab"
+    },
+    {
+      "date": "2026-10-24",
+      "type": "evergreen",
+      "target": "자영업자",
+      "fmt": "비교형",
+      "title": "컨텐츠 223 · 말투 설명과 참고 자료 나눠두기",
+      "body": "AI한테 “내 말투로”만 백 번 써도 답답한 이유\n\n말투 설명과 참고 자료를 한데 넣고 있진 않음?\n\nInnovations for Education은 이렇게 나눴음.\n\n스킬에 넣은 것:\n독자, 글 길이, 말투 같은 작성 규칙\n\n프로젝트에 모은 것:\n글을 쓸 때 참고할 강의 개요\n\n어떻게 쓸지와 무엇을 보고 쓸지를 나눈 거임.\n\n매번 말투를 고치는 중이면 규칙부터,\n같은 파일을 다시 올리는 중이면 자료부터.\n내가 반복하는 설명이 어느 쪽인지 보셈.",
+      "previous_title": "컨텐츠 223 (*생일 전광판/현수막 사진 OR 만든 전광판 화면 캡처. 없으면 글만 올려도 됩니다)",
+      "link_comment": "사례와 작업 과정은 여기 정리돼 있음.\n\nhttps://lounge.aimax.ai.kr/worldclass/r9NRlSSauNU",
+      "format": "standalone",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/r9NRlSSauNU",
+          "title": "반복 설명과 파일 정리를 줄이는 Claude 업무 활용법",
+          "published_at": null,
+          "collected_at": "2026-10-19T07:27:36.040788+00:00",
+          "verified_at": "2026-10-19T07:27:36.040788+00:00",
+          "source_url": "https://youtu.be/r9NRlSSauNU",
+          "source_channel": "Innovations for Education",
+          "evidence_sha256": "a924dbfe635e89a551de62881165982f514f00c4575e65f5018be4d6e4fdd67e"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/r9NRlSSauNU-0-110c1c8a.jpg",
+          "alt": "말투 설명과 참고 자료 나눠두기 · 원본 시연 화면",
+          "credit": "Innovations for Education",
+          "source_url": "https://youtu.be/r9NRlSSauNU",
+          "sha256": "110c1c8ac80d765ce82da45ec5c3fb3d9cf5a28519ee42ff3fa14d920ce2ff88"
+        },
+        {
+          "src": "/thread-img/r9NRlSSauNU-3-99d831dd.jpg",
+          "alt": "말투 설명과 참고 자료 나눠두기 · 원본 시연 화면",
+          "credit": "Innovations for Education",
+          "source_url": "https://youtu.be/r9NRlSSauNU",
+          "sha256": "99d831dd451f6151a81fa3434146161ba49dc308506344c0dc3342ccbbcc618b"
+        }
+      ],
+      "style_reference": "https://www.threads.com/@binx_lab"
+    },
+    {
+      "date": "2026-10-24",
+      "type": "evergreen",
+      "target": "직장인",
+      "fmt": "실수점검",
+      "title": "컨텐츠 224 · 고객 지원 AI의 답변 범위 정하기",
+      "body": "AI 고객 답장, 말투만 친절하면 통과임?\n\nJake One Page는 고객 지원용으로\n환불 정책·자주 묻는 질문·운영 일정을 넣었음.\n“친절하게 답해줘”로 끝내지 않은 거임.\n\n테스트할 땐 문서에 답이 있는 질문부터.\n운영시간은 언제인지,\n환불 절차는 어떻게 되는지.\n\n답이 자연스러운지 읽은 다음\n실제 회사 문서와도 대조해보셈.\n고객이 물은 걸 놓치진 않았는지,\n정해진 조건대로 안내하는지.\n\n문장이 매끄러운 것과\n고객에게 보내도 되는 건 따로 확인해야 함.",
+      "previous_title": "컨텐츠 224 (*피그마 화면 OR 만든 명세서 표 화면 캡처. 없어도 됩니다)",
+      "link_comment": "사례와 작업 과정은 여기 정리돼 있음.\n\nhttps://lounge.aimax.ai.kr/worldclass/fCg0xKdy7CU",
+      "format": "standalone",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/fCg0xKdy7CU",
+          "title": "고객 문의부터 주간 보고까지, AI 에이전트로 반복 업무를 줄이는 방법",
+          "published_at": null,
+          "collected_at": "2026-10-19T07:27:36.040788+00:00",
+          "verified_at": "2026-10-19T07:27:36.040788+00:00",
+          "source_url": "https://youtu.be/fCg0xKdy7CU",
+          "source_channel": "Jake One Page",
+          "evidence_sha256": "d4523c2497d84be053f470ccf11acb126dba6f8f1b56c390266b94fc75a172af"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/fCg0xKdy7CU-1-424308c4.jpg",
+          "alt": "고객 지원 AI의 답변 범위 정하기 · 원본 시연 화면",
+          "credit": "Jake One Page",
+          "source_url": "https://youtu.be/fCg0xKdy7CU",
+          "sha256": "424308c484e4b53092b256a1bedd2b9dd11e718c7bf8ce6610997fb3f875373b"
+        },
+        {
+          "src": "/thread-img/fCg0xKdy7CU-3-54121b11.jpg",
+          "alt": "고객 지원 AI의 답변 범위 정하기 · 원본 시연 화면",
+          "credit": "Jake One Page",
+          "source_url": "https://youtu.be/fCg0xKdy7CU",
+          "sha256": "54121b1181c9c5be96b9070cb40f2e93a104a0161d610f085eba2e3a141996f1"
+        }
+      ],
+      "style_reference": "https://www.threads.com/@binx_lab"
+    },
+    {
+      "date": "2026-10-24",
+      "type": "ai",
+      "target": "전체",
+      "fmt": "단독사례",
+      "title": "컨텐츠 225 · 기획서부터 카드뉴스까지 기준 맞추기",
+      "body": "카드뉴스랑 홈페이지가 딴 회사 같으면 이거 보셈\n\nGrace Leung은 Claude에 기존 페이지와\n로고·색상을 넣고 디자인 기준부터 만들었음.\n그 기준을 기획서와 카드뉴스 제작에 이어 썼고.\n\n결과를 그대로 쓰진 않았음.\n배경과 겹친 문구는 고치고,\n카드뉴스 글이 많다는 점도 짚었음.\n\n기준을 넣는다고 검토가 없어지진 않는 거임.\n\n따라 한다면 잘 나온 홍보물과\n매번 수정하는 내용을 먼저 모아보셈.\n카드뉴스 한 건에 적용해서 확인한 뒤\n다른 제작물로 넓히는 순서임.",
+      "previous_title": "컨텐츠 225 (*사진·영상 없어도 됩니다)",
+      "link_comment": "사례와 작업 과정은 여기 정리돼 있음.\n\nhttps://lounge.aimax.ai.kr/worldclass/Ph-maUAiSU8",
+      "format": "standalone",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/Ph-maUAiSU8",
+          "title": "AI한테 매번 같은 설명, 스킬로 정리하는 법",
+          "published_at": null,
+          "collected_at": "2026-10-19T07:27:36.040788+00:00",
+          "verified_at": "2026-10-19T07:27:36.040788+00:00",
+          "source_url": "https://youtu.be/Ph-maUAiSU8",
+          "source_channel": "Grace Leung",
+          "evidence_sha256": "edd40e31aaf522747a655f5976479faac2184b433fcd544ab8471024615e11dd"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/Ph-maUAiSU8-1-1f0e77f2.jpg",
+          "alt": "기획서부터 카드뉴스까지 기준 맞추기 · 원본 시연 화면",
+          "credit": "Grace Leung",
+          "source_url": "https://youtu.be/Ph-maUAiSU8",
+          "sha256": "1f0e77f2a55c9e4f9bcee170ca2e519f02c0f1c370b2049d0dc771b5ca5aefdc"
+        },
+        {
+          "src": "/thread-img/Ph-maUAiSU8-4-ed2fcf99.jpg",
+          "alt": "기획서부터 카드뉴스까지 기준 맞추기 · 원본 시연 화면",
+          "credit": "Grace Leung",
+          "source_url": "https://youtu.be/Ph-maUAiSU8",
+          "sha256": "ed2fcf999ef44f15e878f5f2c941dd9d12b8cc702e492be3fa74ef0b4b87a2d0"
+        }
+      ],
+      "style_reference": "https://www.threads.com/@binx_lab"
+    },
+    {
+      "date": "2026-10-24",
+      "type": "marketing",
+      "target": "입문자",
+      "fmt": "사례타래",
+      "title": "컨텐츠 226 · 영상 하나를 채널별 원고로 바꾸기",
+      "body": "영상 하나 올리고 끝내면 아까움 ㄷㄷ\n\nMarketecs는 영상에서 전사문을 꺼내\n블로그·숏폼·뉴스레터 제작에 함께 썼음.\n\n영상 내용을 매번 다시 설명하는 대신\n전사문과 정리한 문서를 다음 도구에 넘김.\n\n로고와 말투도 먼저 준비해두고 채널마다\n어떤 결과물을 만드는지 보여줌.",
+      "previous_title": "컨텐츠 226 (*사진·영상 없어도 됩니다. 본인 경험으로 바꿔 쓰면 더 좋아요)",
+      "replies": [
+        "Marketecs는 Descript에서\n영상을 정리한 뒤 긴 영상,\n짧은 영상, 전사문을 꺼냈음.\n\n제목과 요약, 영상 설명, 블로그\n초안도 별도 문서에 모아서\n전사문과 함께 다음 GPT에 넣음.\n\n영상 링크만 던지고 “게시물\n만들어줘”라고 한 게 아니었음.",
+        "그 GPT에는 회사 정보와 제작\n지침이 미리 들어 있었음.\n\n자료를 넣자 YouTube 설명과\n구간별 안내, 소셜 게시물,\n블로그, 뉴스레터 초안이 나옴.\n\n이미지에 넣을 문구와\n제작 방향도 제안함.\n로고나 인물 사진을\n이미지 생성에 같이\n쓰는 방법도 설명했고.\n\n같은 영상에서 꺼내되 채널별로\n쓸 형태를 달리한 거임.",
+        "자동으로 나온 뒤\n손볼 부분도 있었음.\n\n영상 편집에서는 필요한 말까지\n지워질 수 있어서 전사문과\n영상을 다시 대조했음.\nGPT 결과에는 썸네일이\n빠져 추가 요청도 필요했음.\n\n처음 따라 한다면 영상\n하나로 블로그 초안과\n숏폼 후보부터 뽑아보셈.\n내용이 유지됐는지, 빠진\n결과물이 없는지 확인한 뒤\n뉴스레터 같은 다른\n채널로 늘리는 방식임."
+      ],
+      "link_comment": "사례 화면과 만드는 과정은\n여기서 볼 수 있음.\n\nhttps://lounge.aimax.ai.kr/worldclass/WJb2yLP_4SA",
+      "format": "case_thread",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/WJb2yLP_4SA",
+          "title": "영상 하나로 블로그·숏폼·뉴스레터까지",
+          "published_at": null,
+          "collected_at": "2026-10-19T07:27:36.040788+00:00",
+          "verified_at": "2026-10-19T07:27:36.040788+00:00",
+          "source_url": "https://youtu.be/WJb2yLP_4SA",
+          "source_channel": "Marketecs",
+          "evidence_sha256": "d8b769b18b654365959a536af024d56b953231cc5156c9789e02a58ae675bfcb"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/WJb2yLP_4SA-1-fa165a9b.jpg",
+          "alt": "영상 하나를 채널별 원고로 바꾸기 · 원본 시연 화면",
+          "credit": "Marketecs",
+          "source_url": "https://youtu.be/WJb2yLP_4SA",
+          "sha256": "fa165a9b190df47ad2c23f2f4c9827b311fe1ef40bec503d3d30ddaba6877fa1"
+        },
+        {
+          "src": "/thread-img/WJb2yLP_4SA-3-870b6bf3.jpg",
+          "alt": "영상 하나를 채널별 원고로 바꾸기 · 원본 시연 화면",
+          "credit": "Marketecs",
+          "source_url": "https://youtu.be/WJb2yLP_4SA",
+          "sha256": "870b6bf31750985bb019b5f3f6778668017e9d7429fade2351ae4c795cd4470c"
+        }
+      ],
+      "style_reference": "https://www.threads.com/@binx_lab"
+    },
+    {
+      "date": "2026-10-19",
+      "type": "ai",
+      "target": "전체",
+      "fmt": "남의사례",
+      "title": "AI 글쓰기 · 자료 수집부터 표현 검수까지",
+      "body": "AI한테 글만 쓰게 하고 끝내면 아까움.\n\n자료 찾고 예전에 쓴 글 확인하고\n과장된 표현 걸러내는 일까지\n연결한 해외 사례가 있음.\n\nGenAI Unplugged가 Claude Code로 구성한\n방식인데, 댓글에 순서대로 정리해봄.",
+      "replies": [
+        "1. 자료 찾기부터 연결함.\n\nTavily를 MCP로 붙여 웹\n검색을 하고, Notion에\n있는 콘텐츠 기록도 조회함.\n\n초안 쓰기 전에 외부 자료와\n지난 글을 확인하도록\n작업을 구성한 것.\n검색 결과가 맞는지는\n따로 확인해야 함.",
+        "2. 지난 글을 가져오는\n범위도 중요함.\n\n영상에서는 Notion 기록을\n조회할 때 토큰 사용량이\n커지는 장면도 나옴.\n\n기록을 연결했다고 끝이\n아니고, 필요한 자료만\n가져오는지 확인해야 함.\nSubstack 연결은 제작자가\n직접 만든 서버를 쓴 사례임.",
+        "3. 매번 같은 검수 지시를\n쓰는 대신, 파일을\n고칠 때 검사하게 함.\n\n이때 쓰는 게 훅.\n파일을 쓰거나 수정하는 시점에\n정해둔 검사를 실행하는 방식임.\n\n검토가 끝난 폴더는 수정을\n막고, 초안 폴더에서\n작업하도록 구성함.",
+        "4. 과장된 문구를\n걸러내는 기준도 넣음.\n\n영상에서는 브랜드 문체 규칙에\n맞지 않는 표현을 검사하고,\n기능을 구체적으로 설명하도록\n고치는 과정을 보여줌.\n\n이 검사가 글의 사실관계까지\n전부 보장하는 건 아님.\n자료와 최종 문장은\n사람이 확인해야 함.",
+        "5. 처음부터 전부\n연결할 필요는 없음.\n\n자료 찾기, 지난 글 확인, 표현\n검수 중에서 자주 반복하는\n일 하나부터 붙여보는 방식.\n\n영상 속 뉴스레터 사업 적용\n예시는 가상 시나리오임.\n실제 고객의 성과\n사례로 소개하면 안 됨."
+      ],
+      "link_comment": "입력 예시와 자세한 내용은\n여기서 볼 수 있음.\n\nhttps://lounge.aimax.ai.kr/worldclass/zuA9204Dbb8",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/zuA9204Dbb8",
+          "title": "AI 글쓰기 · 자료 수집부터 표현 검수까지",
+          "published_at": null,
+          "collected_at": "2026-10-19T06:00:00Z",
+          "verified_at": "2026-10-19T06:00:00Z"
+        }
+      ],
+      "supplemental": true
+    },
+    {
+      "date": "2026-10-19",
+      "type": "ai",
+      "target": "전체",
+      "fmt": "남의사례",
+      "title": "사진 한 장 · 봉제인형과 픽셀 그림 만들기",
+      "body": "사진 한 장, 봉제인형으로 바꾸면 이런 느낌임.\n\nChatGPT에서 같은 사진으로 픽셀\n그림이랑 종이 공예 느낌도 만들 수 있음.\n\nAI 사장학교 자료에 입력 예시와 결과가 같이\n있어서, 따라 하는 순서를 댓글에 정리해봄.",
+      "replies": [
+        "1. ChatGPT에서 새 대화를 열고\n바꾸고 싶은 사진을 올림.\n\n그다음 원하는 느낌을\n짧게 설명하면 됨.\n직접 쓸 수 있는 사진으로\n시작해보면 좋음.",
+        "2. 봉제인형 느낌으로 바꾸고\n싶으면 사진과 함께\n/plushie 같은 키워드를\n입력하는 예시가 있음.\n\n이건 공식 명령어를 실행하는\n게 아니라, 원하는 스타일을\n글로 전달하는 방식임.",
+        "3. 같은 원본 사진으로\n픽셀 그림이나 종이 공예\n느낌도 시도할 수 있음.\n\n자료에는 원본과 결과를\n나란히 볼 수 있는 예시가\n있고, 원하는 느낌을 골라\n쓸 수 있게 키워드도 모아둠.\n결과는 사진과 입력에\n따라 달라질 수 있음."
+      ],
+      "link_comment": "입력 예시와 자세한 내용은\n여기서 볼 수 있음.\n\nhttps://lounge.aimax.ai.kr/worldclass/image-keywords-100",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/image-keywords-100",
+          "title": "사진 한 장 · 봉제인형과 픽셀 그림 만들기",
+          "published_at": null,
+          "collected_at": "2026-10-19T06:00:00Z",
+          "verified_at": "2026-10-19T06:00:00Z"
+        }
+      ],
+      "supplemental": true,
+      "main_images": [
+        {
+          "src": "/thread-img/20261019-image-keywords-original.png",
+          "alt": "사진 한 장을 세 가지 질감으로 바꾼 AI 제작 예시",
+          "credit": "AIMAX 라운지 · AI 제작 예시",
+          "source_url": "https://lounge.aimax.ai.kr/worldclass/free/image-keywords-100/original.png",
+          "sha256": "63521942b1fea86c3cff771645a83361e8d5a38a69189042c344de64754943b2"
+        },
+        {
+          "src": "/thread-img/20261019-image-keywords-plushie.png",
+          "alt": "봉제인형 질감 예시",
+          "credit": "AIMAX 라운지 · AI 제작 예시",
+          "source_url": "https://lounge.aimax.ai.kr/worldclass/free/image-keywords-100/plushie.png",
+          "sha256": "0b4f22ae36474f7b43d4fdadfa5837e24a4be7a225341d3333e3cf64dd78855e"
+        },
+        {
+          "src": "/thread-img/20261019-image-keywords-pixelart.png",
+          "alt": "픽셀 그림 예시",
+          "credit": "AIMAX 라운지 · AI 제작 예시",
+          "source_url": "https://lounge.aimax.ai.kr/worldclass/free/image-keywords-100/pixelart.png",
+          "sha256": "2c46a73404849c07ccacdf559574b26d03d2e181cf8ca972eac38f1d8812fb83"
+        },
+        {
+          "src": "/thread-img/20261019-image-keywords-papercut.png",
+          "alt": "종이 공예 질감 예시",
+          "credit": "AIMAX 라운지 · AI 제작 예시",
+          "source_url": "https://lounge.aimax.ai.kr/worldclass/free/image-keywords-100/papercut.png",
+          "sha256": "346468c7fbe1236dbef0ff549c5280693241a06ee578d5c7a7215e3a7e841b87"
+        }
+      ]
+    },
+    {
+      "date": "2026-10-19",
+      "type": "marketing",
+      "target": "전체",
+      "fmt": "단독글",
+      "title": "사례 · 영화 속 방을 AI로 재현",
+      "body": "영화 속 방까지 AI로 만드는 사람이 있음 ㄷㄷ\n\n레딧 제작자가 Claude와 Blender로\n매트릭스 속 네오의 방을 재현함.\n\n한 번에 뽑은 게 아니라\n화면에 수정할 곳을 그려가며 고쳤다고.\n결과만큼 이 피드백 방식이 볼 만함.",
+      "format": "standalone",
+      "editorial_kind": "short_case",
+      "supplemental": true,
+      "sources": [
+        {
+          "url": "https://www.reddit.com/r/ClaudeAI/comments/1x6x6x7/3d_recreation_of_neo_apartment_from_the_matrix/",
+          "title": "Repulsive-Rush3505 · 네오의 방 제작 과정",
+          "published_at": null,
+          "collected_at": "2026-10-19T09:10:18.878961+00:00",
+          "verified_at": "2026-10-19T09:10:18.878961+00:00",
+          "platform": "reddit",
+          "verification_scope": "original_author_account_read; performance_not_independently_verified"
+        }
+      ],
+      "previous_title": "단독 사례 · 코딩 다음에 맡길 업무"
+    },
+    {
+      "date": "2026-10-19",
+      "type": "marketing",
+      "target": "전체",
+      "fmt": "단독글",
+      "title": "활용법 · 청구서 생성부터 메일까지",
+      "body": "청구서 만들고 저장하고 메일까지 따로 하고 있음?\n\n레딧에 올라온 n8n 시연은\n청구서 데이터 → PDF → 보관 → 메일까지 연결함.\n\n제작자가 작업 흐름 코드도 공개했음.\n실제 고객에게 쓰려면 중복 발송과\n실패 처리부터 보완해야 한다고.",
+      "format": "standalone",
+      "editorial_kind": "howto",
+      "supplemental": true,
+      "sources": [
+        {
+          "url": "https://www.reddit.com/r/n8n/comments/1w7qjr7/built_an_endtoend_invoice_workflow_with_n8n/",
+          "title": "cuebicai · 청구서 자동화 시연과 코드",
+          "published_at": null,
+          "collected_at": "2026-10-19T09:10:18.878961+00:00",
+          "verified_at": "2026-10-19T09:10:18.878961+00:00",
+          "platform": "reddit",
+          "verification_scope": "original_author_account_read; performance_not_independently_verified"
+        }
+      ],
+      "previous_title": "비교 · 이미지 분위기와 위치 바꾸기"
+    },
+    {
+      "date": "2026-10-19",
+      "type": "marketing",
+      "target": "전체",
+      "fmt": "단독글",
+      "title": "경험담 · 저장했는데 계속 도는 자동화",
+      "body": "자동화 줄였는데 예전 설정으로 계속 돌고 있었다고?\n\n레딧의 n8n 사용자가 겪었다는 일임.\n실행 주기를 바꾸고 저장만 해둔 채\n실제 실행 버전에는 반영하지 않았다고.\n\n설정 화면만 보면 놓치기 쉬움.\n실행 기록에서 진짜 바뀌었는지 봐야 함.",
+      "format": "standalone",
+      "editorial_kind": "failure_case",
+      "supplemental": true,
+      "sources": [
+        {
+          "url": "https://www.reddit.com/r/n8n/comments/1wu5xjg/one_workflow_was_75_of_my_llm_bill_how_i_measured/",
+          "title": "Competitive-Joke-408 · 저장과 실행 버전이 달랐던 경험",
+          "published_at": null,
+          "collected_at": "2026-10-19T09:10:18.878961+00:00",
+          "verified_at": "2026-10-19T09:10:18.878961+00:00",
+          "platform": "reddit",
+          "verification_scope": "original_author_account_read; performance_not_independently_verified"
+        }
+      ],
+      "previous_title": "활용법 · AI에게 질문받으며 공부하기"
+    },
+    {
+      "date": "2026-10-25",
+      "type": "evergreen",
+      "target": "자영업자",
+      "fmt": "사례타래",
+      "title": "컨텐츠 227 · 영수증 정리 메일함에서 시트까지",
+      "body": "영수증 메일 열어서 시트에 옮기는 사람 보셈\n\n메일함에 쌓인 영수증을\n직접 치지 않고 정리한 사례임.\n\nThe AI가 보여준 건\n거래처·날짜·금액을 읽어\nGoogle Sheets에 넣는 흐름이었음.",
+      "replies": [
+        "The AI가 보여준 영수증\n정리는 메일에서 시작함.\n\n받은 영수증에서 거래처,\n날짜, 금액을 읽어내는\n과정을 먼저 보여줬음.\n\n손으로 옮겨 적던 걸\n읽기부터 맡긴 거임.",
+        "읽은 값은 Google Sheets에\n줄로 쌓이게 했음.\n\n여기서 끝이 아니라\n같은 영수증을 두 번 낸 건 아닌지,\n첨부가 빠진 메일은 없는지\n함께 확인하는 과정도 담았음.\n\n숫자만 옮기고 끝내지\n않은 게 포인트임.",
+        "따라 한다면 영수증이\n들어오는 메일함부터 정해보셈.\n\n읽어낼 항목을 거래처·날짜·금액으로\n먼저 정하고, 시트에 한 줄씩\n쌓이는지 확인하는 순서임.\n\n영상은 시연 자료로 진행했음.\n옮긴 금액이 원본과 맞는지는\n직접 대조해야 함."
+      ],
+      "link_comment": "사례 화면과 만드는 과정은\n여기서 볼 수 있음.\n\nhttps://lounge.aimax.ai.kr/worldclass/Z_Pt4TVl3GU",
+      "format": "case_thread",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/Z_Pt4TVl3GU",
+          "title": "영수증 정리, 메일함에서 시트까지 자동으로",
+          "published_at": null,
+          "collected_at": "2026-10-21T12:17:38+00:00",
+          "verified_at": "2026-10-21T12:17:38+00:00",
+          "source_url": "https://youtu.be/Z_Pt4TVl3GU",
+          "source_channel": "The AI"
+        }
+      ],
+      "style_reference": "https://www.threads.com/@binx_lab"
+    },
+    {
+      "date": "2026-10-25",
+      "type": "ai",
+      "target": "직장인",
+      "fmt": "단독사례",
+      "title": "컨텐츠 228 · 경쟁사 조사부터 보고서까지",
+      "body": "경쟁사 조사 매번 검색창부터 여는 사람 보셈\n\nNate Herk는 이 조사를 Claude Code에 맡겼음.\n경쟁사를 찾아보고\n회사 로고와 디자인을 반영한\nPDF 보고서로 뽑는 과정을 시연했음.\n\n검색 결과를 그대로 믿긴 이르고,\n보고서에 담긴 내용이 맞는지는 확인해야 함.\n\n조사부터 보고서까지 한 번에 맡기기 전에\n무엇을 비교할지부터 정해보셈.",
+      "link_comment": "사례 화면과 만드는 과정은\n여기서 볼 수 있음.\n\nhttps://lounge.aimax.ai.kr/worldclass/tDGiWn0flK8",
+      "format": "standalone",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/tDGiWn0flK8",
+          "title": "경쟁사 조사부터 보고서 작성까지, AI에 맡길 업무를 설계하는 방법",
+          "published_at": null,
+          "collected_at": "2026-10-21T12:17:38+00:00",
+          "verified_at": "2026-10-21T12:17:38+00:00",
+          "source_url": "https://youtu.be/tDGiWn0flK8",
+          "source_channel": "Nate Herk | AI Automation"
+        }
+      ],
+      "style_reference": "https://www.threads.com/@binx_lab"
+    },
+    {
+      "date": "2026-10-25",
+      "type": "evergreen",
+      "target": "N잡러",
+      "fmt": "비교형",
+      "title": "컨텐츠 229 · 지출 요약 초안과 예산 비교 나누기",
+      "body": "지출 정리랑 예산 비교를 따로 하고 있음?\n\nExcel University의 Jeff는\nExcel용 Claude 추가 기능으로\n지출 요약과 예산 비교 보고서를\n만드는 과정을 보여줬음.\n\n초안은 Claude에 맡기더라도\n예산과 실제 지출이 맞는지는\n원본 숫자로 다시 확인하라고 했음.\n\n보고서 초안과 검토를 나눠서 보셈.",
+      "link_comment": "사례 화면과 만드는 과정은\n여기서 볼 수 있음.\n\nhttps://lounge.aimax.ai.kr/worldclass/7AIRNcN6H3s",
+      "format": "standalone",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/7AIRNcN6H3s",
+          "title": "엑셀 지출 보고서 초안은 Claude에 맡기고, 예산 비교는 이렇게 확인하세요",
+          "published_at": null,
+          "collected_at": "2026-10-21T12:17:38+00:00",
+          "verified_at": "2026-10-21T12:17:38+00:00",
+          "source_url": "https://youtu.be/7AIRNcN6H3s",
+          "source_channel": "Excel University"
+        }
+      ],
+      "style_reference": "https://www.threads.com/@binx_lab"
+    },
+    {
+      "date": "2026-10-25",
+      "type": "marketing",
+      "target": "입문자",
+      "fmt": "체크리스트",
+      "title": "컨텐츠 230 · 예약 정보 다시 옮겨적지 않기",
+      "body": "예약 받을 때마다 고객 정보 다시 옮겨적는 사람 보셈\n\nDuncan Rogoff가 보여준 건\n예약 정보를 손으로 안 옮기는 흐름이었음.\n\n1. Calendly로 들어온 예약을\n2. n8n으로 받아서\n3. Airtable에 저장하고\n4. 요청을 반영한 환영 이메일 초안까지\n\n연결하기 전에 지금 어디서\n같은 내용을 다시 적는지부터 짚어보셈.",
+      "link_comment": "사례 화면과 만드는 과정은\n여기서 볼 수 있음.\n\nhttps://lounge.aimax.ai.kr/worldclass/QtTeCNZU1IQ",
+      "format": "standalone",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/QtTeCNZU1IQ",
+          "title": "상담 예약부터 고객 정보 정리까지, n8n으로 반복 입력 줄이는 방법",
+          "published_at": null,
+          "collected_at": "2026-10-21T12:17:38+00:00",
+          "verified_at": "2026-10-21T12:17:38+00:00",
+          "source_url": "https://youtu.be/QtTeCNZU1IQ",
+          "source_channel": "Duncan Rogoff | Learn Automation"
+        }
+      ],
+      "style_reference": "https://www.threads.com/@binx_lab"
+    },
+    {
+      "date": "2026-10-26",
+      "type": "evergreen",
+      "target": "자영업자",
+      "fmt": "사례타래",
+      "title": "컨텐츠 231 · 청구서 분류부터 기록까지 한 흐름으로",
+      "body": "청구서 메일 분류부터 기록까지 손으로 하는 사람 보셈\n\n쌓이는 청구서 정리를\n한 번에 맡긴 사례임.\n\nAna Una는 n8n으로\n메일을 분류하고 문서를 읽어\n이어지게 묶었음.",
+      "replies": [
+        "Ana Una가 보여준 청구서\n정리는 메일 분류부터였음.\n\n들어온 메일에서 청구서를\n가려내고, 문서를 읽어\n필요한 내역을 꺼내는\n과정을 먼저 보여줬음.",
+        "꺼낸 내용은 그냥 두지 않고\nGoogle Drive에 저장하고\n내역으로 기록하게 했음.\n\n파일 보관과 장부 적기를\n한 흐름으로 묶은 거임.",
+        "따라 한다면 청구서가\n들어오는 메일함부터 정해보셈.\n\n분류 기준과 기록할 항목을\n먼저 정하고 한 건 돌려본 뒤\n빠진 파일이 없는지 확인하는 순서임.\n\n영상은 시연으로 진행했음.\n저장된 내역이 원본과 맞는지는\n직접 대조해야 함."
+      ],
+      "link_comment": "사례 화면과 만드는 과정은\n여기서 볼 수 있음.\n\nhttps://lounge.aimax.ai.kr/worldclass/BAZCGoX89HU",
+      "format": "case_thread",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/BAZCGoX89HU",
+          "title": "청구서 정리 자동화, 파일 저장부터 누락 확인까지 연결하는 방법",
+          "published_at": null,
+          "collected_at": "2026-10-21T12:17:38+00:00",
+          "verified_at": "2026-10-21T12:17:38+00:00",
+          "source_url": "https://youtu.be/BAZCGoX89HU",
+          "source_channel": "Ana Una"
+        }
+      ],
+      "style_reference": "https://www.threads.com/@binx_lab"
+    },
+    {
+      "date": "2026-10-26",
+      "type": "ai",
+      "target": "전체",
+      "fmt": "질문형",
+      "title": "컨텐츠 232 · 같은 답장 다시 쓰고 있다면",
+      "body": "고객 문의마다 똑같은 답장 다시 쓰고 있음?\n\nSmart AI Workspace가 보여준 건\n문의를 자동으로 나누는 흐름이었음.\n\nn8n으로 Gmail 문의를 분류해\n답변과 기록을 연결하고,\nAI가 답하기 어려운 문의는\n담당자에게 넘기게 했음.\n\n내가 받는 문의 중 어떤 걸\n사람이 꼭 봐야 하는지부터 나눠보셈.",
+      "link_comment": "사례 화면과 만드는 과정은\n여기서 볼 수 있음.\n\nhttps://lounge.aimax.ai.kr/worldclass/mS2NRbeRJsg",
+      "format": "standalone",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/mS2NRbeRJsg",
+          "title": "고객 문의 올 때마다 같은 답변을 쓰고 있다면",
+          "published_at": null,
+          "collected_at": "2026-10-21T12:17:38+00:00",
+          "verified_at": "2026-10-21T12:17:38+00:00",
+          "source_url": "https://youtu.be/mS2NRbeRJsg",
+          "source_channel": "Smart AI Workspace"
+        }
+      ],
+      "style_reference": "https://www.threads.com/@binx_lab"
+    },
+    {
+      "date": "2026-10-26",
+      "type": "evergreen",
+      "target": "직장인",
+      "fmt": "실수점검",
+      "title": "컨텐츠 233 · 메일을 상담 기록에 붙일 때",
+      "body": "고객 메일을 상담 기록에 또 옮겨적고 있음?\n\nGrist가 보여준 사례에선\nGmail로 받은 메일을 AI로 요약해\n고객별 상담 이력에 붙였음.\n\n여기서 중요한 건 하나 더 있었음.\n엉뚱한 고객 칸에 저장되지 않게\n맞는 고객인지 확인하는 과정이었음.\n\n요약만 믿지 말고 누구 기록에\n붙었는지부터 봐야 함.",
+      "link_comment": "사례 화면과 만드는 과정은\n여기서 볼 수 있음.\n\nhttps://lounge.aimax.ai.kr/worldclass/Nc1VF7yfwxk",
+      "format": "standalone",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/Nc1VF7yfwxk",
+          "title": "고객 메일을 상담 기록에 또 옮기고 있다면",
+          "published_at": null,
+          "collected_at": "2026-10-21T12:17:38+00:00",
+          "verified_at": "2026-10-21T12:17:38+00:00",
+          "source_url": "https://youtu.be/Nc1VF7yfwxk",
+          "source_channel": "Grist"
+        }
+      ],
+      "style_reference": "https://www.threads.com/@binx_lab"
+    },
+    {
+      "date": "2026-10-26",
+      "type": "marketing",
+      "target": "N잡러",
+      "fmt": "단독사례",
+      "title": "컨텐츠 234 · 영업할 시간이 없다면",
+      "body": "영업할 시간이 없다는 사람 이거 보셈\n\n컨설턴트 Ahmet은 잠재 고객 찾는 일을\nClaude Code와 Claude Cowork에 맡겼음.\n고객을 조사하고\nGmail에 메일 초안과 발송 일정까지\n준비하는 과정을 보여줬음.\n\n초안을 그대로 보내긴 이르고,\n상대가 맞는지와 내용은 확인해야 함.\n\n조사부터 메일까지 맡기기 전에\n누구에게 보낼지부터 정해보셈.",
+      "link_comment": "사례 화면과 만드는 과정은\n여기서 볼 수 있음.\n\nhttps://lounge.aimax.ai.kr/worldclass/pSFXvIUYCiM",
+      "format": "standalone",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/pSFXvIUYCiM",
+          "title": "영업할 시간이 부족하다면, Claude로 잠재 고객 조사와 제안 메일을 준비해보세요",
+          "published_at": null,
+          "collected_at": "2026-10-21T12:17:38+00:00",
+          "verified_at": "2026-10-21T12:17:38+00:00",
+          "source_url": "https://youtu.be/pSFXvIUYCiM",
+          "source_channel": "Ahmet Tat"
+        }
+      ],
+      "style_reference": "https://www.threads.com/@binx_lab"
+    }
+  ],
+  "_작성기준": "글감 작성 전 AGENTS.md와 config/brands/makefamily.md의 최신 사용자 기준을 읽는다. 과거 루틴 문구와 충돌하면 최신 사용자 기준을 적용한다."
+}

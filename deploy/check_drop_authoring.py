@@ -6,6 +6,7 @@ Reviews are required only for new/changed copy, not untouched reservations.
 """
 from __future__ import annotations
 import argparse
+import re
 import hashlib
 import json
 from pathlib import Path
@@ -54,7 +55,7 @@ def artifact(base, record):
     return p, raw.decode('utf-8')
 
 
-def review_one(row, review, base, now):
+def review_one(row, review, base, now, structure_only=False):
     """Deterministic evidence checks; human reading/meaning review stays explicit."""
     errors = []
     if review.get('copy_sha256') != digest(row):
@@ -71,6 +72,8 @@ def review_one(row, review, base, now):
                                 capture_output=True, text=True, timeout=30)
         if result.returncode != 0:
             errors.append('humanize_change_rate_requires_review_or_runtime_missing')
+        if structure_only:
+            return errors
         reviewed_sources = review['sources']
         for source in row.get('sources') or []:
             record = next((r for r in reviewed_sources if r.get('url') == source.get('url')), None)
@@ -99,10 +102,19 @@ def review_one(row, review, base, now):
     return errors
 
 
+def structure_preserved(before, after):
+    allowed = {'body', 'replies', 'format'}
+    metadata = lambda row: {k: v for k, v in row.items() if k not in allowed}
+    return (metadata(before) == metadata(after)
+            and re.sub(r'\s', '', copy_text(before)) == re.sub(r'\s', '', copy_text(after))
+            and after.get('format') == 'case_thread')
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--baseline', help='Git ref containing the queue before edits')
     p.add_argument('--reviews', type=Path)
+    p.add_argument('--structure-only', action='store_true', help='Prove unchanged ordered text and sources; still require humanize review')
     a = p.parse_args()
     env = environment()
     print(json.dumps(env, ensure_ascii=False, indent=2))
@@ -113,7 +125,9 @@ def main():
     if proc.returncode:
         print('Cannot read baseline; refusing to assume all rows reviewed')
         return 1
-    old = {digest(r) for r in json.loads(proc.stdout)['drops']}
+    originals = json.loads(proc.stdout)['drops']
+    old_rows = {(r['date'], r['title']): r for r in originals}
+    old = {digest(r) for r in originals}
     rows = json.loads((ROOT / 'config/drops_queue.json').read_text())['drops']
     changed = [r for r in rows if digest(r) not in old]
     if not changed:
@@ -126,11 +140,13 @@ def main():
     failed = []
     now = datetime.now(timezone.utc)
     for row in changed:
-        errors = review_one(row, reviews.get(digest(row), {}), a.reviews.parent, now)
+        errors = review_one(row, reviews.get(digest(row), {}), a.reviews.parent, now, a.structure_only)
+        if a.structure_only and not structure_preserved(old_rows.get((row['date'], row['title']), {}), row):
+            errors.append('structure_only_changed_content_or_source')
         if errors:
             failed.append({'title': row['title'], 'errors': errors})
     # Every changed day's full batch must contain a recent, reviewed community source.
-    for day in sorted({r['date'] for r in changed}):
+    for day in ([] if a.structure_only else sorted({r['date'] for r in changed})):
         group = [r for r in rows if r['date'] == day]
         community = [r for r in group if any((urlsplit(s.get('url', '')).hostname or '').removeprefix('www.')
                      in ('reddit.com', 'x.com', 'twitter.com') for s in r.get('sources', []))]

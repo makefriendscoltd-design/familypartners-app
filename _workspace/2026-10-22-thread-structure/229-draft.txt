@@ -1,0 +1,12 @@
+지출 정리랑 예산 비교를 따로 하고 있음?
+
+Excel University의 Jeff는 Excel용 Claude 추가 기능으로 지출 요약과 예산 비교 보고서를 만드는 과정을 보여줬음.
+
+초안은 Claude에 맡기더라도 예산과 실제 지출이 맞는지는 원본 숫자로 다시 확인하라고 했음.
+
+보고서 초안과 검토를 나눠서 보셈.
+
+사례 화면과 만드는 과정은
+여기서 볼 수 있음.
+
+https://lounge.aimax.ai.kr/worldclass/7AIRNcN6H3s

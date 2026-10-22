@@ -62,7 +62,7 @@ class ThreadCopyTest(unittest.TestCase):
         import hashlib
         from urllib.parse import urlsplit
         cases=[d for d in json.loads(dropqueue.QUEUE_PATH.read_text())['drops'] if d.get('format')=='case_thread' and d.get('main_images')]
-        self.assertEqual(len(cases),5)  # Five existing image-bearing threads; later text-only cases are separate.
+        self.assertEqual(len(cases),14)  # All Oct22–24 copy now uses reply threads; existing images preserved.
         for d in cases:
             self.assertEqual(len(d['main_images']),2)
             row=dict(d,drop_date=d['date'])
@@ -92,30 +92,27 @@ class ThreadCopyTest(unittest.TestCase):
             self.assertEqual(headers['Content-Type'],'image/png')
             self.assertEqual(hashlib.sha256(body).hexdigest(),image['sha256'])
 
-    def test_each_scheduled_day_has_one_thread_and_three_complete_posts(self):
+    def test_all_current_and_scheduled_posts_use_reply_threads(self):
         from collections import defaultdict
         from deploy.lint_drops import check_day
         days=defaultdict(list)
         for d in json.loads(dropqueue.QUEUE_PATH.read_text())['drops']:
-            if '2026-10-20' <= d['date'] <= '2026-10-24': days[d['date']].append(d)
+            if '2026-10-22' <= d['date'] <= '2026-10-26': days[d['date']].append(d)
         self.assertEqual(len(days),5)
         for date, entries in days.items():
             self.assertEqual(len(entries),4)
             self.assertEqual(len({d['fmt'] for d in entries}),4)
-            self.assertEqual(sum(d['format']=='case_thread' for d in entries),1)
             for d in entries:
+                self.assertEqual(d['format'],'case_thread')
+                self.assertNotIn('\n',d['body'])
+                self.assertGreaterEqual(len(d['replies']),2)
                 html=thread_copy.render(dict(d,drop_date=date))
-                self.assertEqual(len(d['main_images']),2)
-                if d['format']=='standalone':
-                    self.assertFalse(d.get('replies'))
-                    self.assertLessEqual(len(d['body']),500)
-                    self.assertEqual(html.count('<pre '),2)
-                    self.assertIn('본문 하나로 완결',html)
-                    self.assertIn(d['fmt'],html)
-                    self.assertNotIn('댓글 1 복사',html)
-                    self.assertIn(d['sources'][0]['url'],d['link_comment'])
+                self.assertEqual(html.count('<pre '),len(d['replies'])+2)
+                self.assertIn('댓글 1 복사',html)
+                self.assertNotIn('본문 하나로 완결',html)
+                self.assertIn(d['sources'][0]['url'],d['link_comment'])
             self.assertEqual(check_day(date,entries)[0],[])
             import copy
             bad=copy.deepcopy(entries)
-            for d in bad:d['format']='case_thread'
-            self.assertIn('일일 단독 글 3개 필요',check_day(date,bad)[0])
+            bad[0]['format']='standalone'
+            self.assertIn('모든 글감은 본문 + 대댓글 구조여야 함',check_day(date,bad)[0])

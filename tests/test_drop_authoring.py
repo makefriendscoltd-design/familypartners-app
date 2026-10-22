@@ -4,7 +4,7 @@ import tempfile
 import unittest
 from pathlib import Path
 from datetime import datetime, timezone
-from deploy.check_drop_authoring import digest, copy_text, environment, review_one
+from deploy.check_drop_authoring import digest, copy_text, environment, review_one, structure_preserved
 from deploy.collect_drop_sources import original_snapshot
 
 
@@ -44,3 +44,14 @@ class AuthoringEvidenceTests(unittest.TestCase):
             row['body'] = '사례 작성자는 입력과 결과를 나눠서 확인했다고 설명함.'
             (base / 'source.txt').write_text('Changed evidence')
             self.assertIn('missing_or_invalid_review_artifact', review_one(row, review, base, now))
+
+    def test_structure_only_cannot_bypass_content_or_source_review(self):
+        before = {'date': '2026-10-22', 'title': 'Test', 'body': 'Hook\n\nOriginal detail.',
+                  'sources': [{'url': 'https://example.org/original'}], 'format': 'standalone'}
+        after = dict(before, body='Hook', replies=['Original detail.'], format='case_thread')
+        self.assertTrue(structure_preserved(before, after))
+        after['replies'] = ['Invented result.']
+        self.assertFalse(structure_preserved(before, after))
+        after['replies'] = ['Original detail.']
+        after['sources'] = [{'url': 'https://example.org/different'}]
+        self.assertFalse(structure_preserved(before, after))

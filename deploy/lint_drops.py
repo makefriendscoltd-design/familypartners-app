@@ -132,7 +132,7 @@ def check_one(d: dict, cfg: dict) -> list[str]:
     # ③ 직관성 — 본문에 도구·기관 이름이 하나는 있어야 뭘 하는 건지 안다
     #    (참여형 marketing 은 주는 게 없으니 면제)
     if dtype == "ai":
-        if not any(p.casefold() in body.casefold() for p in cfg["proper"]):
+        if not any(p.casefold() in (body + '\n' + '\n'.join(d.get('replies') or [])).casefold() for p in cfg["proper"]):
             bad.append("도구·서비스 이름이 본문에 없음(직관성)")
 
     # ④ CTA 줄이 지시대명사로 뭉개지지 않았는가
@@ -180,7 +180,12 @@ def check_day(date: str, group: list[dict]) -> tuple[list[str], list[str]]:
         return bad, warn
     if len(group) != 4:
         bad.append(f"{len(group)}건 (하루 4건이어야 함)")
-    if all((d.get("date") or "") >= "2026-10-20" for d in group):
+    if date >= "2026-10-22":
+        if any(d.get('format') != 'case_thread' for d in group):
+            bad.append('모든 글감은 본문 + 대댓글 구조여야 함')
+        if any('\n' in (d.get('body') or '').strip() for d in group):
+            bad.append('후킹 본문은 한 줄로 작성')
+    elif all((d.get("date") or "") >= "2026-10-20" for d in group):
         if sum(d.get("format") == "case_thread" for d in group) != 1:
             bad.append("일일 타래 1개 필요")
         if sum(d.get("format") == "standalone" for d in group) != 3:
@@ -210,11 +215,14 @@ def main(argv: list[str]) -> int:
     parser.add_argument('--baseline', default='origin/main',
                         help='Published queue Git ref for new/changed editorial review')
     parser.add_argument('--reviews', type=Path, help='Original and humanize review manifest')
+    parser.add_argument('--structure-only', action='store_true', help='Existing text rearrangement only; no new claims or sources')
     args = parser.parse_args(argv[1:])
     if args.path.resolve() == QUEUE.resolve():
         import subprocess
         command = [sys.executable, str(ROOT / 'deploy/check_drop_authoring.py'),
                    '--baseline', args.baseline]
+        if args.structure_only:
+            command += ['--structure-only']
         if args.reviews:
             command += ['--reviews', str(args.reviews)]
         if subprocess.run(command, cwd=ROOT).returncode:
