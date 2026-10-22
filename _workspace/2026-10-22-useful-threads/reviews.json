@@ -1,0 +1,522 @@
+{
+  "617911859d4e27ce0e838e5266781bb4ad4757ca250cc30149986a78e0b77e7e": {
+    "copy_sha256": "617911859d4e27ce0e838e5266781bb4ad4757ca250cc30149986a78e0b77e7e",
+    "humanize": {
+      "before": {
+        "file": "215-draft.txt",
+        "sha256": "531d4eaacf71cc63439e112e438d2e384294577902539fe3bed727ec0861bf17"
+      },
+      "after": {
+        "file": "215-final.md",
+        "sha256": "eaea99bab0d249188f8485978f734223c6f046aff52747fa6758024adbb54cc7"
+      },
+      "six_checks_passed": true
+    },
+    "sources": [
+      {
+        "url": "https://lounge.aimax.ai.kr/worldclass/zKBPwDpBfhs",
+        "original_read": true,
+        "snapshot": {
+          "file": "zKBPwDpBfhs.txt",
+          "sha256": "f6ad3f8b1e0353a4dd60b4745369a690eb1c04808a3d39dfc251aa226a747095"
+        },
+        "quote": "제작자의 Morning Coffee 스킬은 캘린더 일정과 ClickUp의 할 일을 살펴보고 하루 계획을 제안합니다. 시연에서는 2월 26일의 일정 3개와 그 주의 업무를 참고한 계획이 나왔습니다. 제작자는 제안에 동의하면 시간을 배정하도록 할 수 있다고 설명하며, 무엇부터 할지 결정하는 부담이 줄었다고 평가합니다.",
+        "reviewed_at": "2026-10-22T02:08:23.567634+00:00"
+      }
+    ]
+  },
+  "c1d6d470959b0222acdd40225ad2c64d35d4e7a070b1eb2d8eec8a188b197f5d": {
+    "copy_sha256": "c1d6d470959b0222acdd40225ad2c64d35d4e7a070b1eb2d8eec8a188b197f5d",
+    "humanize": {
+      "before": {
+        "file": "216-draft.txt",
+        "sha256": "91b4bc51f918712e98b9ab821a0391539ffcbd795908c3abaa99cc946b402bd5"
+      },
+      "after": {
+        "file": "216-final.md",
+        "sha256": "c351cc4806ac05598e7960485cbc0f9948895ec72204e55b89bd24fe9b3d13c7"
+      },
+      "six_checks_passed": true
+    },
+    "sources": [
+      {
+        "url": "https://lounge.aimax.ai.kr/worldclass/zFkFj4qldE8",
+        "original_read": true,
+        "snapshot": {
+          "file": "zFkFj4qldE8.txt",
+          "sha256": "6e88fddf692ca5faf04bb4ef4bdfebddfc6db493a09ec2af0d48915d029da3ef"
+        },
+        "quote": "고객이 오전 방문을 원한다고 답하자 AI는 구체적인 날짜와 시간을 제안했습니다. 대화가 진행된 뒤에는 이름, 이메일, 전화번호, 방문 시간과 목적이 스프레드시트에 기록됐습니다. 직원은 근무를 시작한 뒤 이 기록을 보고 고객에게 연락할 수 있습니다.",
+        "reviewed_at": "2026-10-22T02:08:23.568216+00:00"
+      }
+    ]
+  },
+  "4a3de08c577fd4bff3b9a7b014f98c880c38e0940a8a1627f3b5fb412fe2bbcc": {
+    "copy_sha256": "4a3de08c577fd4bff3b9a7b014f98c880c38e0940a8a1627f3b5fb412fe2bbcc",
+    "humanize": {
+      "before": {
+        "file": "217-draft.txt",
+        "sha256": "9200763be6db94339a57e3ab4682985d32698ec861b73bde7f82b268e1d2cdbc"
+      },
+      "after": {
+        "file": "217-final.md",
+        "sha256": "274f9d9568fada525eed9e644b5bf5a8d42a034ab9c42ede9496fa704c31f0a1"
+      },
+      "six_checks_passed": true
+    },
+    "sources": [
+      {
+        "url": "https://lounge.aimax.ai.kr/worldclass/xl7Y49yLPDs",
+        "original_read": true,
+        "snapshot": {
+          "file": "xl7Y49yLPDs.txt",
+          "sha256": "41f98148a660300f1c9cd87f8cdb89fccb4df3073c3a9aa281057ae65c445a6d"
+        },
+        "quote": "홈페이지에서 신청을 받는다면 웹훅을 활용하는 방식이 나옵니다. 웹훅은 외부에서 데이터를 보내면 N8N의 작업을 시작시키는 전용 주소로 이해하면 됩니다. 영상에서는 제품 출시 페이지의 대기자 신청서를 이 주소에 연결합니다.",
+        "reviewed_at": "2026-10-22T02:08:23.568521+00:00"
+      }
+    ]
+  },
+  "389416c9d0f888ab0426b070db35ecf7b42551120bcc735102b267e7e6575a53": {
+    "copy_sha256": "389416c9d0f888ab0426b070db35ecf7b42551120bcc735102b267e7e6575a53",
+    "humanize": {
+      "before": {
+        "file": "218-draft.txt",
+        "sha256": "0c0c8dfe34d6b554441a7215f6986dc9d2debab4dec91d11629dc39cb93d191e"
+      },
+      "after": {
+        "file": "218-final.md",
+        "sha256": "b93ebb97fa4b71c46b1613660cd2b2d42afdae15cb7eddeea65f2591d6ac26c0"
+      },
+      "six_checks_passed": true
+    },
+    "sources": [
+      {
+        "url": "https://lounge.aimax.ai.kr/worldclass/oC0mPBSmzfQ",
+        "original_read": true,
+        "snapshot": {
+          "file": "oC0mPBSmzfQ.txt",
+          "sha256": "058e46481c1221fe3c33a2aadd2b5ce82673a37fbcfd8001f16cdc836408360d"
+        },
+        "quote": "방법을 골랐다면 무엇을 만들지 문서로 정리할 차례입니다. 영상의 출연자는 곧바로 구현을 맡기면 AI가 원하지 않은 내용을 가정할 수 있다며 요구사항 문서를 먼저 요청합니다. 계획을 읽으며 불필요하게 추가된 요구사항을 덜어내는 검토도 거칩니다.",
+        "reviewed_at": "2026-10-22T02:08:23.568743+00:00"
+      }
+    ]
+  },
+  "6ce926daf8f4c9649caeb10126e79968639f226d1bc045c6c5f68b055caad67e": {
+    "copy_sha256": "6ce926daf8f4c9649caeb10126e79968639f226d1bc045c6c5f68b055caad67e",
+    "humanize": {
+      "before": {
+        "file": "219-draft.txt",
+        "sha256": "0856c231e2ffb793184016f7fef4f0a7fa5563ea06d88df10f95eb52baf3238f"
+      },
+      "after": {
+        "file": "219-final.md",
+        "sha256": "62fe16547650e9cb406443dfca27edc62e7a68fb4ec5e83c7938fd766e0ad8a7"
+      },
+      "six_checks_passed": true
+    },
+    "sources": [
+      {
+        "url": "https://lounge.aimax.ai.kr/worldclass/d1vermK7oak",
+        "original_read": true,
+        "snapshot": {
+          "file": "d1vermK7oak.txt",
+          "sha256": "e09486e869522e310d16fa53a5a1670dfb60ca4e40d85bc5df77dd6838909414"
+        },
+        "quote": "영상의 Python 데모 앱에는 SAVE10 할인 코드가 등장합니다. 할인율을 저장한 값 10은 10%를 뜻하지만, 계산 코드가 이를 그대로 곱하면서 70달러 주문에 700달러 할인을 적용하는 오류가 있었습니다. Claude Code는 할인율을 100으로 나누고, 할인액이 상품 합계를 넘지 않도록 제한하는 수정을 제안합니다.",
+        "reviewed_at": "2026-10-22T02:08:23.568969+00:00"
+      }
+    ]
+  },
+  "924b4548d517b8a0c11a5069a390d9975eef1f9d9e8c9b2093cb909632697165": {
+    "copy_sha256": "924b4548d517b8a0c11a5069a390d9975eef1f9d9e8c9b2093cb909632697165",
+    "humanize": {
+      "before": {
+        "file": "220-draft.txt",
+        "sha256": "a7eddf9085cd8ca68213bdcb6ac814bb5f5d47ffeaa9285f4f0f9c2c5bc98bc9"
+      },
+      "after": {
+        "file": "220-final.md",
+        "sha256": "7b707f40f8a0d22f444425581336eff64eaf920e077da174da0270b6e079964f"
+      },
+      "six_checks_passed": true
+    },
+    "sources": [
+      {
+        "url": "https://lounge.aimax.ai.kr/worldclass/xjXe4Sggl-o",
+        "original_read": true,
+        "snapshot": {
+          "file": "xjXe4Sggl-o.txt",
+          "sha256": "323850b28a5d13e75083436505fe418cbc3f1cd7d679814a72e03c7441aa6d25"
+        },
+        "quote": "Breeze Assistant가 요청에 응답하는 도우미라면 에이전트는 정해 둔 규칙과 지침에 따라 업무를 수행하는 역할로 소개됩니다. 잠재고객 발굴을 담당하는 Prospecting Agent는 등록한 연락처마다 내용을 달리한 연속 이메일을 작성합니다. 동일한 이메일 문구를 모든 고객에게 적용하는 방식과 구분되는 부분입니다.",
+        "reviewed_at": "2026-10-22T02:08:23.569185+00:00"
+      }
+    ]
+  },
+  "da00f596ec8bf839f8b71258a1b0a193bb103166eed2ed0a0d3707124e2a12b7": {
+    "copy_sha256": "da00f596ec8bf839f8b71258a1b0a193bb103166eed2ed0a0d3707124e2a12b7",
+    "humanize": {
+      "before": {
+        "file": "221-draft.txt",
+        "sha256": "6c4de13451521d1657ea5ce97125b2d6ad8f34a0cf8cbb07d5e5a6413cee5c9e"
+      },
+      "after": {
+        "file": "221-final.md",
+        "sha256": "be72173cb8dc9969bc52339d4a18b0d9b7c9d199e36bd28844d71f7dd6e12574"
+      },
+      "six_checks_passed": true
+    },
+    "sources": [
+      {
+        "url": "https://lounge.aimax.ai.kr/worldclass/x_xglkA3WKQ",
+        "original_read": true,
+        "snapshot": {
+          "file": "x_xglkA3WKQ.txt",
+          "sha256": "dccc06ed41a6f675cb6933dc01c6db483a8f98ad689a647b517efa122e981ad2"
+        },
+        "quote": "제작자가 제안한 출발점은 현재 사업에 사용하는 프로그램을 확인하는 것입니다. 회계는 어디에서 관리하고, 고객과는 무엇으로 소통하며, 계약서와 업무 자료는 어디에 보관하는지 적어보는 방식입니다. 영상에는 Xero, QuickBooks, PayPal, HubSpot, DocuSign 등이 등장하지만, 이름이 언급됐다는 것만으로 모든 업무를 처리할 수 있다고 받아들이면 곤란합니다.",
+        "reviewed_at": "2026-10-22T02:08:23.569362+00:00"
+      }
+    ]
+  },
+  "172a6fa372d07db506cacfa4f4a3c41b7bdbccf9d0e5ed3bcaf8a590cb79a42f": {
+    "copy_sha256": "172a6fa372d07db506cacfa4f4a3c41b7bdbccf9d0e5ed3bcaf8a590cb79a42f",
+    "humanize": {
+      "before": {
+        "file": "222-draft.txt",
+        "sha256": "dbed2d780a2e9d4ec21d82f230ca6b1aef5bf7fdea69b16689e1644a71ebb79f"
+      },
+      "after": {
+        "file": "222-final.md",
+        "sha256": "eadb4f549c18bf37073b358595eb3589bdf2c9c2161e7f3edd74ab9c45448af4"
+      },
+      "six_checks_passed": true
+    },
+    "sources": [
+      {
+        "url": "https://lounge.aimax.ai.kr/worldclass/wYIzZqpHs3Q",
+        "original_read": true,
+        "snapshot": {
+          "file": "wYIzZqpHs3Q.txt",
+          "sha256": "4e03cf26396e17605a6be20e4428fd7951a8b565f514e2bf0239afdbe30e08d3"
+        },
+        "quote": "그가 소개한 순서는 통화 전사문 전체를 내려받아 Clio에 자료로 넣고, 그 대화에서 게시물 아이디어를 뽑는 방식입니다. 고객이 실제로 어떤 표현을 썼는지도 활용합니다. 사업자가 쓰고 싶은 말과 고객이 자신의 문제를 설명하는 말이 다를 때 참고할 만한 방법입니다.",
+        "reviewed_at": "2026-10-22T02:08:23.569587+00:00"
+      }
+    ]
+  },
+  "82e51e86436fb8760eaa4b3d28b7e546e19ca159254ca88b8eb201c2716d85a6": {
+    "copy_sha256": "82e51e86436fb8760eaa4b3d28b7e546e19ca159254ca88b8eb201c2716d85a6",
+    "humanize": {
+      "before": {
+        "file": "223-draft.txt",
+        "sha256": "5bb99fa79cd7936cc2b9c47a2eaf41700558cc98de5d12d3c6a0e3a3b5035d6f"
+      },
+      "after": {
+        "file": "223-final.md",
+        "sha256": "e4a558e1fce8641bae3666c3e6a98b732db1e4ad21de5f11451f284fb61df59d"
+      },
+      "six_checks_passed": true
+    },
+    "sources": [
+      {
+        "url": "https://lounge.aimax.ai.kr/worldclass/r9NRlSSauNU",
+        "original_read": true,
+        "snapshot": {
+          "file": "r9NRlSSauNU.txt",
+          "sha256": "2b9b3c72af5f47f1ae7849dcb4f971802ce789ee62104f6a02965001e6174ef0"
+        },
+        "quote": "제작자는 번호판이 달린 경주용 장비 사진들을 정리한 경험을 설명합니다. 이미지 폴더를 연결하고 각 사진의 번호판에 적힌 번호를 기준으로 파일명을 바꾸도록 요청했다고 합니다. 사진을 하나씩 열어 번호를 확인하고 이름을 수정해야 했던 일을 맡긴 사례입니다.",
+        "reviewed_at": "2026-10-22T02:08:23.569832+00:00"
+      }
+    ]
+  },
+  "fa20ecf04d4f621758c75a6ced3c186cb3b943eaf42c5bd8ca882e75ad8a37ce": {
+    "copy_sha256": "fa20ecf04d4f621758c75a6ced3c186cb3b943eaf42c5bd8ca882e75ad8a37ce",
+    "humanize": {
+      "before": {
+        "file": "224-draft.txt",
+        "sha256": "24da05e08eae94ed41312fca62b0ab7ac0b27044f929c4aa3244a02cc75ee963"
+      },
+      "after": {
+        "file": "224-final.md",
+        "sha256": "4acadf6043a04968882656ad684e9c5789225876cd0b5db3bd9e9d3de59c3953"
+      },
+      "six_checks_passed": true
+    },
+    "sources": [
+      {
+        "url": "https://lounge.aimax.ai.kr/worldclass/fCg0xKdy7CU",
+        "original_read": true,
+        "snapshot": {
+          "file": "fCg0xKdy7CU.txt",
+          "sha256": "5f5bd343625c0cb7431062ce71388eb5f4a08c884e90053802c9433bd4dce12a"
+        },
+        "quote": "첫 번째 사례는 Gmail로 들어오는 잠재 고객의 문의를 처리하는 에이전트입니다. 영상에서는 새 메일에서 이름과 요청 서비스를 추출한 뒤, 회사 정보를 반영한 답변을 10분 이내에 보내도록 지시합니다. 이후 대화 내용을 살피고 3일 동안 답장이 없으면 다른 표현으로 안부를 묻는 후속 메일을 보내도록 설정합니다.",
+        "reviewed_at": "2026-10-22T02:08:23.569994+00:00"
+      }
+    ]
+  },
+  "97de106d9974985d942f551618b8434289f0ec78b796c613f6d38f9a58593d8e": {
+    "copy_sha256": "97de106d9974985d942f551618b8434289f0ec78b796c613f6d38f9a58593d8e",
+    "humanize": {
+      "before": {
+        "file": "225-draft.txt",
+        "sha256": "6b9ea3dbb4a3e025bc1b371bb2987721733183c85a692924726672660a203d7f"
+      },
+      "after": {
+        "file": "225-final.md",
+        "sha256": "3f7bcf1bcc1a07fb3cd52d214b7a2854f6d52c4b0134b9943d0973a4c5cfbd19"
+      },
+      "six_checks_passed": true
+    },
+    "sources": [
+      {
+        "url": "https://lounge.aimax.ai.kr/worldclass/Ph-maUAiSU8",
+        "original_read": true,
+        "snapshot": {
+          "file": "Ph-maUAiSU8.txt",
+          "sha256": "b38684163d8db17add68cf76dbae334c0b310e28d27f935a8bf9bd616dc18805"
+        },
+        "quote": "개인 프로젝트에서 잘 작동하는 스킬도 다른 사람이 찾거나 내려받기 어렵다면 팀 업무에 활용하기 어렵습니다. 영상에서는 Notion에 스킬 이름, 설명, 분류, 버전, 실제 파일을 모은 라이브러리를 만듭니다. 팀원이나 고객이 필요한 스킬을 찾아 내려받을 수 있도록 파일을 압축해 등록하는 과정도 보여줍니다.",
+        "reviewed_at": "2026-10-22T02:08:23.570194+00:00"
+      }
+    ]
+  },
+  "7c77842bf7df3478178a8ada982686ad837716ad81641ca084e1e11072cc46a0": {
+    "copy_sha256": "7c77842bf7df3478178a8ada982686ad837716ad81641ca084e1e11072cc46a0",
+    "humanize": {
+      "before": {
+        "file": "226-draft.txt",
+        "sha256": "2f160232cf6cbdb055fc63733bc4e6fe6e386bd64287af35ccad16616e089333"
+      },
+      "after": {
+        "file": "226-final.md",
+        "sha256": "daed816822f00a81e81d571f0fd602efc97087f1ea8ee6aca34531cfbd5658f7"
+      },
+      "six_checks_passed": true
+    },
+    "sources": [
+      {
+        "url": "https://lounge.aimax.ai.kr/worldclass/WJb2yLP_4SA",
+        "original_read": true,
+        "snapshot": {
+          "file": "WJb2yLP_4SA.txt",
+          "sha256": "06eabb70f16d9f5c86e18ed192ed0fc75e80ee63b8a47f1d4b818dd865a388e5"
+        },
+        "quote": "제작자는 Descript에 원본 영상을 올린 뒤 불필요한 부분을 정리합니다. 영상에서는 군더더기 표현 제거, 재촬영 구간 제거, 말 사이의 간격 단축, 불필요하다고 판단한 구간 편집 기능을 소개합니다. 자막과 화면 구성에도 고객의 브랜드 색상과 형식을 적용합니다.",
+        "reviewed_at": "2026-10-22T02:08:23.570426+00:00"
+      }
+    ]
+  },
+  "f8f57d3cdb544053569101413be2de862ba5c3fbec2c99e3c02e6af8bb060968": {
+    "copy_sha256": "f8f57d3cdb544053569101413be2de862ba5c3fbec2c99e3c02e6af8bb060968",
+    "humanize": {
+      "before": {
+        "file": "227-draft.txt",
+        "sha256": "a291bd8e16794707e67f3dd155f9fc00afa71964e5810283533eb5fd7c114321"
+      },
+      "after": {
+        "file": "227-final.md",
+        "sha256": "62ee350a9d1ee702b44980cc0c28cd8550e4d321db104c5a0f5e4327953a8b6a"
+      },
+      "six_checks_passed": true
+    },
+    "sources": [
+      {
+        "url": "https://lounge.aimax.ai.kr/worldclass/Z_Pt4TVl3GU",
+        "original_read": true,
+        "snapshot": {
+          "file": "Z_Pt4TVl3GU.txt",
+          "sha256": "1c94f210e5c77a58ad702dc129ca3d4560d2c04a8a20f55498360231dc0b1a98"
+        },
+        "quote": "기존에 처리한 자료인지 확인하는 단계도 있습니다. Google Sheets에서 기존 ID를 불러온 뒤 새 영수증인지를 판단하고, 이미 처리한 항목은 제외하도록 구성했습니다. 같은 자료를 다시 보냈을 때 장부에 중복으로 들어가는 일을 막으려는 목적입니다.",
+        "reviewed_at": "2026-10-22T02:08:23.570717+00:00"
+      }
+    ]
+  },
+  "6d12d3120a6074ae0524d505ca450a1f81a1145d0016cd7dc3f71472091ea211": {
+    "copy_sha256": "6d12d3120a6074ae0524d505ca450a1f81a1145d0016cd7dc3f71472091ea211",
+    "humanize": {
+      "before": {
+        "file": "228-draft.txt",
+        "sha256": "f6f4b749d8c83b04576b1fe5564bdb837f8188d553d1b5089d58e2e44d9eb6cd"
+      },
+      "after": {
+        "file": "228-final.md",
+        "sha256": "a2f9b00020267aeebce97de43b2283cf1a06d9142cd12aa8f3f9c28d05e57a3b"
+      },
+      "six_checks_passed": true
+    },
+    "sources": [
+      {
+        "url": "https://lounge.aimax.ai.kr/worldclass/tDGiWn0flK8",
+        "original_read": true,
+        "snapshot": {
+          "file": "tDGiWn0flK8.txt",
+          "sha256": "9c250b07aac34cbfee6eb6642268804527428bfa3ea2cc97a500b101e41f00db"
+        },
+        "quote": "처음부터 사업 정보가 충분했던 것은 아닙니다. AI는 실행 도중 고객층과 가격 등을 다시 물었고, 답변을 사업 프로필 JSON 파일에 저장했습니다. 제작자는 같은 정보를 매번 설명하지 않도록 프로젝트 안에 보관해 달라고 요청했습니다.",
+        "reviewed_at": "2026-10-22T02:08:23.570980+00:00"
+      }
+    ]
+  },
+  "17be37cb1fd55a77c20c71d0cda2f0be306780529d98086b2f8d4b622ebec690": {
+    "copy_sha256": "17be37cb1fd55a77c20c71d0cda2f0be306780529d98086b2f8d4b622ebec690",
+    "humanize": {
+      "before": {
+        "file": "229-draft.txt",
+        "sha256": "ba7e6dd9b140e15eda3154b997f741f15f3ca81f55009a5bfdd75de59e99db5b"
+      },
+      "after": {
+        "file": "229-final.md",
+        "sha256": "e3b99ec1279078b70a8487979b26e395bf85c072ecb249197f5a80d94b1266ce"
+      },
+      "six_checks_passed": true
+    },
+    "sources": [
+      {
+        "url": "https://lounge.aimax.ai.kr/worldclass/7AIRNcN6H3s",
+        "original_read": true,
+        "snapshot": {
+          "file": "7AIRNcN6H3s.txt",
+          "sha256": "a6d1fe3f5a65c312b23f151429c5a0d7dc007c44d3c827de82acc2f163db61bb"
+        },
+        "quote": "시연 자료는 실제 지출이 담긴 Data 탭과 예산이 담긴 Budget 탭으로 나뉩니다. Data에는 거래 날짜, 부서, 비용 항목, 거래처, 결제 방식, 금액 등이 있고, Budget에는 부서와 비용 항목별로 2030년과 2031년의 연간 예산이 있습니다. 두 자료를 비교하려면 부서와 비용 항목을 맞추는 것에 더해 어느 연도를 볼지도 정해야 합니다.",
+        "reviewed_at": "2026-10-22T02:08:23.571218+00:00"
+      }
+    ]
+  },
+  "dc823077fb0f2dd0991c2cff3ac2e174059298abc21f1b99aea8635fbf33ef16": {
+    "copy_sha256": "dc823077fb0f2dd0991c2cff3ac2e174059298abc21f1b99aea8635fbf33ef16",
+    "humanize": {
+      "before": {
+        "file": "230-draft.txt",
+        "sha256": "e251ad09c69d29af888138fb8a42ebab80c0f8eb14bc99993b5900759cd61f29"
+      },
+      "after": {
+        "file": "230-final.md",
+        "sha256": "bf73205d973d9eaf5b6059d0451060fe157811c8cdef54c270cc4a9885ab4548"
+      },
+      "six_checks_passed": true
+    },
+    "sources": [
+      {
+        "url": "https://lounge.aimax.ai.kr/worldclass/QtTeCNZU1IQ",
+        "original_read": true,
+        "snapshot": {
+          "file": "QtTeCNZU1IQ.txt",
+          "sha256": "95407ec87948bae9c8a08315c7efb358a9f8f8c992978c602159750830aa3765"
+        },
+        "quote": "영상에서는 Calendly의 예약 정보를 n8n으로 받아 Airtable에 저장하고, 고객의 요청을 반영한 환영 이메일 초안까지 만듭니다. 사업자가 살펴볼 부분은 각 도구의 기능과 함께, 예약자가 입력한 정보가 상담 준비에 쓰이기까지 어떤 과정을 거치는지입니다.",
+        "reviewed_at": "2026-10-22T02:08:23.571473+00:00"
+      }
+    ]
+  },
+  "4a9d32114a6d2f173bb37ac5c14f5364a43f1b97a1cc58b896fcfba43923113d": {
+    "copy_sha256": "4a9d32114a6d2f173bb37ac5c14f5364a43f1b97a1cc58b896fcfba43923113d",
+    "humanize": {
+      "before": {
+        "file": "231-draft.txt",
+        "sha256": "1fafb3941f2ba4c3451294e4ab30bbe65b033602e74ff5b6883cf7ba2fec246b"
+      },
+      "after": {
+        "file": "231-final.md",
+        "sha256": "e322956b84846b3b24a63e2b8125b5a8a49172f950b8489d5aea6fe94381b126"
+      },
+      "six_checks_passed": true
+    },
+    "sources": [
+      {
+        "url": "https://lounge.aimax.ai.kr/worldclass/BAZCGoX89HU",
+        "original_read": true,
+        "snapshot": {
+          "file": "BAZCGoX89HU.txt",
+          "sha256": "55021fc6ae6e108cf39119c1a85591d32d82bf5ee52b7701164fa72ad374a320"
+        },
+        "quote": "영상에 등장하는 청구 문서는 도착 방식이 제각각입니다. Google 청구서는 파일명만으로 내용을 알아보기 어렵고, DigitalOcean은 청구서와 결제 영수증이 별도로 도착합니다. Anthropic은 두 문서가 같은 메일에 들어 있으며, Cloudflare는 영수증을 내려받는 링크와 일부 청구 정보를 메일로 제공합니다.",
+        "reviewed_at": "2026-10-22T02:08:23.571658+00:00"
+      }
+    ]
+  },
+  "c685e460458afa40dd181123059ca79f377061bef8905b8904a439577f48833b": {
+    "copy_sha256": "c685e460458afa40dd181123059ca79f377061bef8905b8904a439577f48833b",
+    "humanize": {
+      "before": {
+        "file": "232-draft.txt",
+        "sha256": "e7b78768038821e6828c19f18f6148623fcde51e77b6318eed6c62c76d978152"
+      },
+      "after": {
+        "file": "232-final.md",
+        "sha256": "817407191ec9e2610e7e303b652f08b361b79a322b1e1037325b3e31fd8c0369"
+      },
+      "six_checks_passed": true
+    },
+    "sources": [
+      {
+        "url": "https://lounge.aimax.ai.kr/worldclass/mS2NRbeRJsg",
+        "original_read": true,
+        "snapshot": {
+          "file": "mS2NRbeRJsg.txt",
+          "sha256": "3916b436850476551e795831c61c04a1f5d922ebb1ab9128bc957c0b6385ec6d"
+        },
+        "quote": "메일을 받은 다음에는 코드 노드에서 발신자 주소, 제목, 본문, 대화 묶음을 식별하는 스레드 ID, 개별 메일의 메시지 ID를 추출합니다. 이 정보를 정리한 뒤 AI에 무엇을 분석하고 어떤 형식으로 답할지 지시하는 프롬프트를 만듭니다. 고객의 질문과 나중에 답장을 보낼 대상을 함께 유지하는 단계입니다.",
+        "reviewed_at": "2026-10-22T02:08:23.571890+00:00"
+      }
+    ]
+  },
+  "1220445dcc63fd60c126befc2be0a304ec1467e227a7f03878e533f643b75f70": {
+    "copy_sha256": "1220445dcc63fd60c126befc2be0a304ec1467e227a7f03878e533f643b75f70",
+    "humanize": {
+      "before": {
+        "file": "233-draft.txt",
+        "sha256": "093187c8567285a9bc6cf12bb9380739f96658465f18f4c71f712fafc1427777"
+      },
+      "after": {
+        "file": "233-final.md",
+        "sha256": "a39c782e8cfdf72537afca4c48f389d2e48e9f376d3d4f7ccb15a63032fc7e4b"
+      },
+      "six_checks_passed": true
+    },
+    "sources": [
+      {
+        "url": "https://lounge.aimax.ai.kr/worldclass/Nc1VF7yfwxk",
+        "original_read": true,
+        "snapshot": {
+          "file": "Nc1VF7yfwxk.txt",
+          "sha256": "350dd9ea88656bb7e3851fa852a20337ee3a7f4eacb8600c8c57b9c8e5aa1523"
+        },
+        "quote": "발신자 정보도 손봅니다. 메일의 발신자에는 이메일 주소만 들어갈 수도 있고 사람 이름이 함께 붙을 수도 있기 때문입니다. 영상에서는 정규표현식으로 순수한 이메일 주소를 추출한 뒤 연락처 조회에 사용합니다. CRM에 저장된 이메일과 비교할 값을 먼저 맞추는 과정입니다.",
+        "reviewed_at": "2026-10-22T02:08:23.572122+00:00"
+      }
+    ]
+  },
+  "96bf15e4975c8f603b9d67916923beb817596bc2e682c1665a9b4c98c9e27e2e": {
+    "copy_sha256": "96bf15e4975c8f603b9d67916923beb817596bc2e682c1665a9b4c98c9e27e2e",
+    "humanize": {
+      "before": {
+        "file": "234-draft.txt",
+        "sha256": "4bf96dc5e23b3b77f04e49c7265e9f9d4b935c5c2b9dac5a95272da90de74b84"
+      },
+      "after": {
+        "file": "234-final.md",
+        "sha256": "ed1f07dbe9876c08328363cc440b81cbc41a8a64c18c6a2337f3e56deb2a6814"
+      },
+      "six_checks_passed": true
+    },
+    "sources": [
+      {
+        "url": "https://lounge.aimax.ai.kr/worldclass/pSFXvIUYCiM",
+        "original_read": true,
+        "snapshot": {
+          "file": "pSFXvIUYCiM.txt",
+          "sha256": "c2253ad3b933281c7dfd87af0689ccf874b4a31adcfa96e1a34577d72fbdcf7f"
+        },
+        "quote": "Ahmet은 매달 받는 시장 동향 자료를 출발점으로 삼았습니다. 자료에는 재무 책임자 선임, 신규 프로젝트, 인수합병, 투자 유치 같은 소식이 들어 있습니다. 그는 이런 변화가 있는 회사라면 자신의 서비스를 필요로 할 가능성이 있다고 판단했습니다.",
+        "reviewed_at": "2026-10-22T02:08:23.572366+00:00"
+      }
+    ]
+  }
+}

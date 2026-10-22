@@ -110,11 +110,18 @@ def structure_preserved(before, after):
             and after.get('format') == 'case_thread')
 
 
+def same_source_revision(before, after):
+    # Rewriting an existing case still needs its saved original evidence; it is not new discovery.
+    allowed = {'body', 'replies', 'link_comment'}
+    return bool(before) and {k:v for k,v in before.items() if k not in allowed} == {k:v for k,v in after.items() if k not in allowed}
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--baseline', help='Git ref containing the queue before edits')
     p.add_argument('--reviews', type=Path)
     p.add_argument('--structure-only', action='store_true', help='Prove unchanged ordered text and sources; still require humanize review')
+    p.add_argument('--existing-sources', action='store_true', help='Rewrite existing cases with unchanged source records; original and humanize evidence still required')
     a = p.parse_args()
     env = environment()
     print(json.dumps(env, ensure_ascii=False, indent=2))
@@ -141,12 +148,14 @@ def main():
     now = datetime.now(timezone.utc)
     for row in changed:
         errors = review_one(row, reviews.get(digest(row), {}), a.reviews.parent, now, a.structure_only)
+        if a.existing_sources and not same_source_revision(old_rows.get((row['date'], row['title']), {}), row):
+            errors.append('existing_source_revision_changed_identity_or_sources')
         if a.structure_only and not structure_preserved(old_rows.get((row['date'], row['title']), {}), row):
             errors.append('structure_only_changed_content_or_source')
         if errors:
             failed.append({'title': row['title'], 'errors': errors})
     # Every changed day's full batch must contain a recent, reviewed community source.
-    for day in ([] if a.structure_only else sorted({r['date'] for r in changed})):
+    for day in ([] if a.structure_only or a.existing_sources else sorted({r['date'] for r in changed})):
         group = [r for r in rows if r['date'] == day]
         community = [r for r in group if any((urlsplit(s.get('url', '')).hostname or '').removeprefix('www.')
                      in ('reddit.com', 'x.com', 'twitter.com') for s in r.get('sources', []))]

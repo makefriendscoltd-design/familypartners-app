@@ -4,7 +4,7 @@ import tempfile
 import unittest
 from pathlib import Path
 from datetime import datetime, timezone
-from deploy.check_drop_authoring import digest, copy_text, environment, review_one, structure_preserved
+from deploy.check_drop_authoring import digest, copy_text, environment, review_one, structure_preserved, same_source_revision
 from deploy.collect_drop_sources import original_snapshot
 
 
@@ -55,3 +55,11 @@ class AuthoringEvidenceTests(unittest.TestCase):
         after['replies'] = ['Original detail.']
         after['sources'] = [{'url': 'https://example.org/different'}]
         self.assertFalse(structure_preserved(before, after))
+
+    def test_existing_source_revision_does_not_allow_new_topics_or_sources(self):
+        before = {'date': '2026-10-22', 'title': 'Existing case', 'sources': [{'url': 'https://example.org/a'}], 'body': 'Old copy'}
+        after = dict(before, body='Rewritten copy with details', replies=['Details'])
+        self.assertTrue(same_source_revision(before, after))
+        after['sources'] = [{'url': 'https://example.org/b'}]
+        self.assertFalse(same_source_revision(before, after))
+        self.assertFalse(same_source_revision({}, after))

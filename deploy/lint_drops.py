@@ -218,11 +218,14 @@ def main(argv: list[str]) -> int:
                         help='Published queue Git ref for new/changed editorial review')
     parser.add_argument('--reviews', type=Path, help='Original and humanize review manifest')
     parser.add_argument('--structure-only', action='store_true', help='Existing text rearrangement only; no new claims or sources')
+    parser.add_argument('--existing-sources', action='store_true', help='Rewrite unchanged source topics with source review evidence')
     args = parser.parse_args(argv[1:])
     if args.path.resolve() == QUEUE.resolve():
         import subprocess
         command = [sys.executable, str(ROOT / 'deploy/check_drop_authoring.py'),
                    '--baseline', args.baseline]
+        if args.existing_sources:
+            command += ['--existing-sources']
         if args.structure_only:
             command += ['--structure-only']
         if args.reviews:
