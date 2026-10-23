@@ -1,0 +1,39 @@
+AI 직원 만들어놓고 며칠째 안 쓰고 있음?
+
+하루 중 언제 어떤 일을 맡길지
+지금 하는 업무에 붙여보셈.
+
+출근해서 자료 확인할 때,
+회의가 끝났을 때, 보고서 초안 쓸 때처럼.
+
+쓸 때마다 준비할 것을 적어두셈.
+
+넣을 자료는 어디에 있는지,
+받은 결과는 어디에 저장할지,
+누가 무엇을 확인할지.
+
+회의 정리 담당이라면
+회의 메모를 넣고, 할 일 표를 받고,
+담당자와 기한을 확인하는 순서를 정해보는 거임.
+
+처음부터 매일 자동 실행으로 걸기 전에
+실제 자료로 직접 몇 번 써보셈.
+
+자료가 비어 있으면 어떻게 할지,
+같은 결과를 또 만들면 어떻게 구분할지,
+실패했을 때 어디서 확인할지도 적어두고.
+
+일정과 연결하는 건
+이 과정을 확인한 다음에 붙여보셈.
+
+관련 업무를 더 살펴볼 자료는 여기 있음.
+
+https://lounge.aimax.ai.kr/worldclass/zKBPwDpBfhs
+
+<!-- HUMANIZE-SUMMARY
+Genre: practical Korean social thread, register preserved.
+Before/after characters: 445/445. Change rate: 0% (no further style edits).
+A translationese, B excess English, D stock phrases, H transitions: 0 -> 0 each. Meaningful task lists retained.
+Six checks: 6/6. Grade B: concrete proposals and example instructions preserved.
+Preserved hooks, input/output examples, checks, proposal wording and links. No invented experience or performance claims.
+-->

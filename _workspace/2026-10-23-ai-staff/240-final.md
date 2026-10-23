@@ -1,0 +1,39 @@
+AI 직원한테 다시 하라고만 말하고 있음?
+
+틀린 답 옆에
+어디가 틀렸고 어떻게 바뀌어야 하는지 적어보셈.
+
+말투가 문제인지, 자료가 빠졌는지,
+결과 형식이 다른지부터 나누는 거임.
+
+가격을 잘못 답했다면
+참고해야 할 가격표와 해당 항목을 짚어주셈.
+
+문장이 너무 길다면
+원하는 길이의 답변 예시를 붙여주셈.
+
+질문에 없는 이야기까지 썼다면
+이번에 답할 범위를 다시 적어보셈.
+
+전부 같은 수정 요청으로 묶지 않는 거임.
+
+고친 뒤에는 처음 틀렸던 질문을 다시 넣어보셈.
+비슷하지만 답이 다른 질문도 함께 확인하고.
+
+날짜만 바뀌었는데 예전 답을 그대로 쓰는지,
+자료에 없는 항목에도 답을 만드는지 보는 거임.
+
+통과한 질문과 아직 틀리는 질문을 남겨두면
+다음에 확인할 목록으로 쓸 수 있음.
+
+관련 업무를 더 살펴볼 자료는 여기 있음.
+
+https://lounge.aimax.ai.kr/worldclass/c5Ur73GosR4
+
+<!-- HUMANIZE-SUMMARY
+Genre: practical Korean social thread, register preserved.
+Before/after characters: 463/463. Change rate: 0% (no further style edits).
+A translationese, B excess English, D stock phrases, H transitions: 0 -> 0 each. Meaningful task lists retained.
+Six checks: 6/6. Grade B: concrete proposals and example instructions preserved.
+Preserved hooks, input/output examples, checks, proposal wording and links. No invented experience or performance claims.
+-->

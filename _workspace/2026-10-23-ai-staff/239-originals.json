@@ -1,0 +1,22 @@
+[
+  {
+    "id": 4,
+    "drop_date": "2026-06-11",
+    "dtype": "marketing",
+    "title": "컨텐츠 4",
+    "body": "기록 많은 사람은 무조건 하세요\r\n\r\n1. 내가 쓴 글 다 모으세요  \r\n2. 고객 질문 모으세요  \r\n3. 강의 자료 모으세요  \r\n4. 아이디어 메모 모으세요  \r\n5. 이걸 AI가 읽게 만드세요\r\n\r\n일반 AI는 일반적인 답만 말하고\r\n제2의 뇌는 내 상황에 맞게 말함\r\n이거 만드는 법 궁금한 사람!?",
+    "assets": "https://drive.google.com/drive/folders/1G_q7PPqCFr7SRE_OCwtIykMHLll5DLyJ?usp=sharing",
+    "target": null,
+    "fmt": null
+  },
+  {
+    "id": 45,
+    "drop_date": "2026-06-29",
+    "dtype": "ai",
+    "title": "컨텐츠 22",
+    "body": "AI 직원한테 제일 많이 맡기는 것\r\n\r\n요즘은 콘텐츠 초안입니다\r\n주제 던지면 구조 잡아주고\r\n구조 잡히면 문장 채워주고\r\n\r\n내가 하는 건 검토랑 수정뿐\r\n하도 야단쳐서 이제 잘만듦...",
+    "assets": null,
+    "target": null,
+    "fmt": null
+  }
+]

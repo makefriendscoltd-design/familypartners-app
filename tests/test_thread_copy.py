@@ -11,7 +11,7 @@ class ThreadCopyTest(unittest.TestCase):
 
     def test_feed_and_workspace_show_separate_blocks(self):
         entries=[d for d in json.loads(dropqueue.QUEUE_PATH.read_text())['drops']
-                 if d.get('supplemental') and d.get('replies')]
+                 if d.get('supplemental') and d.get('replies') and d.get('editorial_kind') != 'original_guidance']
         c=db.connect()
         for d in entries:
             core.add_drop(c,d['title'],d['body'],drop_date=d['date'])
@@ -100,8 +100,8 @@ class ThreadCopyTest(unittest.TestCase):
             if '2026-10-22' <= d['date'] <= '2026-10-26': days[d['date']].append(d)
         self.assertEqual(len(days),5)
         for date, entries in days.items():
-            self.assertEqual(len(entries),4)
-            self.assertEqual(len({d['fmt'] for d in entries}),4)
+            self.assertEqual(len(entries),4 if date == '2026-10-22' else 6)
+            self.assertEqual(len({d['fmt'] for d in entries if not d.get('supplemental')}),4)
             for d in entries:
                 self.assertEqual(d['format'],'case_thread')
                 self.assertGreaterEqual(len(d['body'].split('\n\n')),2)
@@ -111,7 +111,8 @@ class ThreadCopyTest(unittest.TestCase):
                 self.assertEqual(html.count('<pre '),len(d['replies'])+2)
                 self.assertIn('댓글 1 복사',html)
                 self.assertNotIn('본문 하나로 완결',html)
-                self.assertIn(d['sources'][0]['url'],d['link_comment'])
+                if d.get('editorial_kind') != 'original_guidance':
+                    self.assertIn(d['sources'][0]['url'],d['link_comment'])
             self.assertEqual(check_day(date,entries)[0],[])
             import copy
             bad=copy.deepcopy(entries)

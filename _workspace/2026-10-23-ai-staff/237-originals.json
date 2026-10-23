@@ -1,0 +1,22 @@
+[
+  {
+    "id": 4,
+    "drop_date": "2026-06-11",
+    "dtype": "marketing",
+    "title": "컨텐츠 4",
+    "body": "기록 많은 사람은 무조건 하세요\r\n\r\n1. 내가 쓴 글 다 모으세요  \r\n2. 고객 질문 모으세요  \r\n3. 강의 자료 모으세요  \r\n4. 아이디어 메모 모으세요  \r\n5. 이걸 AI가 읽게 만드세요\r\n\r\n일반 AI는 일반적인 답만 말하고\r\n제2의 뇌는 내 상황에 맞게 말함\r\n이거 만드는 법 궁금한 사람!?",
+    "assets": "https://drive.google.com/drive/folders/1G_q7PPqCFr7SRE_OCwtIykMHLll5DLyJ?usp=sharing",
+    "target": null,
+    "fmt": null
+  },
+  {
+    "id": 11,
+    "drop_date": "2026-06-17",
+    "dtype": "ai",
+    "title": "컨텐츠 10",
+    "body": "AI 직원이 말귀 못 알아들으면\r\n이렇게 시키세요\r\n\r\n1. 역할부터 정하세요  \r\n2. 해야 할 일 알려주세요  \r\n3. 하지 말아야 할 일도 적으세요  \r\n4. 예시를 보여주세요  \r\n5. 결과물 형식을 정하세요\r\n\r\n대충 시키면 대충 해옵니다\r\n사람 직원도 업무지시서가 필요해요.",
+    "assets": null,
+    "target": null,
+    "fmt": null
+  }
+]

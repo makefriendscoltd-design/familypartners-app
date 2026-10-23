@@ -4,7 +4,7 @@ import tempfile
 import unittest
 from pathlib import Path
 from datetime import datetime, timezone
-from deploy.check_drop_authoring import digest, copy_text, environment, review_one, structure_preserved, same_source_revision
+from deploy.check_drop_authoring import digest, copy_text, environment, review_one, structure_preserved, same_source_revision, original_guidance
 from deploy.collect_drop_sources import original_snapshot
 
 
@@ -17,6 +17,30 @@ class AuthoringEvidenceTests(unittest.TestCase):
 
     def test_installation_is_never_reported_as_review(self):
         self.assertFalse(environment()['humanize']['review_completed'])
+
+    def test_guidance_cannot_be_enabled_without_supplemental_or_changed_after_review(self):
+        row = {'body': 'Practical proposal', 'editorial_kind': 'original_guidance'}
+        self.assertFalse(original_guidance(row))
+        prior = digest(row)
+        row['supplemental'] = True
+        self.assertTrue(original_guidance(row))
+        self.assertNotEqual(prior, digest(row))
+
+    def test_real_guidance_requires_editorial_attestation_and_first_party_evidence(self):
+        root = Path(__file__).resolve().parents[1]
+        queue = json.loads((root / 'config/drops_queue.json').read_text())['drops']
+        row = next(r for r in queue if original_guidance(r))
+        base = root / '_workspace/2026-10-23-ai-staff'
+        reviews = json.loads((base / 'reviews.json').read_text())
+        review = reviews[digest(row)]
+        now = datetime.now(timezone.utc)
+        self.assertEqual(review_one(row, review, base, now), [])
+        review['editorial_review'].pop('no_external_case_claims')
+        self.assertIn('original_guidance_editorial_review_missing', review_one(row, review, base, now))
+        review['editorial_review']['no_external_case_claims'] = True
+        row['sources'][0]['url'] = 'https://example.com/third-party'
+        review['copy_sha256'] = digest(row)
+        self.assertIn('original_guidance_requires_first_party_reference', review_one(row, review, base, now))
 
     def test_real_humanize_gate_and_review_tampering(self):
         now = datetime.now(timezone.utc)

@@ -1,0 +1,39 @@
+AI 직원한테 알아서 잘하라고만 시키고 있음?
+
+일을 맡기기 전에
+읽을 자료와 받아볼 결과를 같이 적어보셈.
+
+문의 답장 하나도
+어디까지 답하고 언제 물어봐야 하는지
+정해주는 거임.
+
+업무지시서는 이렇게 시작해보셈.
+
+담당: 가게 문의 답장 초안
+읽을 자료: 영업시간, 위치, 예약 안내
+할 일: 질문에 맞는 안내 찾아 답장 쓰기
+하지 않을 일: 자료에 없는 가격이나 일정 지어내기
+결과: 답장 초안과 추가로 확인할 질문
+
+자기 업무에 맞게 항목을 바꾸면 됨.
+
+여기에 평소 쓰는 답장 예시도 붙여보셈.
+
+길이는 어느 정도인지,
+어떤 표현은 쓰지 않는지 표시해두는 거임.
+
+처음 나온 답이 어색하면
+마음에 안 드는 문장과 원하는 문장을
+나란히 놓고 고쳐보셈.
+
+관련 업무를 더 살펴볼 자료는 여기 있음.
+
+https://lounge.aimax.ai.kr/worldclass/bsJkQGUKc1A
+
+<!-- HUMANIZE-SUMMARY
+Genre: practical Korean social thread, register preserved.
+Before/after characters: 444/444. Change rate: 0% (no further style edits).
+A translationese, B excess English, D stock phrases, H transitions: 0 -> 0 each. Meaningful task lists retained.
+Six checks: 6/6. Grade B: concrete proposals and example instructions preserved.
+Preserved hooks, input/output examples, checks, proposal wording and links. No invented experience or performance claims.
+-->

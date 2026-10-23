@@ -18,7 +18,12 @@ from urllib.parse import urlsplit
 
 ROOT = Path(__file__).resolve().parent.parent
 HUMANIZE = Path.home() / '.local/share/im-not-ai'
-COPY_FIELDS = ('date', 'title', 'body', 'replies', 'link_comment', 'format', 'sources', 'main_images')
+COPY_FIELDS = ('date', 'title', 'body', 'replies', 'link_comment', 'format', 'sources', 'main_images', 'editorial_kind', 'supplemental')
+
+
+def original_guidance(row):
+    """Additional first-party practical advice is not a new community case."""
+    return row.get('editorial_kind') == 'original_guidance' and row.get('supplemental') is True
 
 
 def digest(row):
@@ -75,6 +80,15 @@ def review_one(row, review, base, now, structure_only=False):
         if structure_only:
             return errors
         reviewed_sources = review['sources']
+        if row.get('editorial_kind') == 'original_guidance':
+            editorial = review.get('editorial_review', {})
+            if not original_guidance(row) or any(editorial.get(k) is not True for k in
+                    ('first_party_originals_read', 'proposal_only', 'no_external_case_claims', 'no_performance_claims')):
+                errors.append('original_guidance_editorial_review_missing')
+            if not row.get('sources') or any(
+                    urlsplit(s.get('url', '')).hostname != 'familypartners.aimax.ai.kr'
+                    for s in row.get('sources', [])):
+                errors.append('original_guidance_requires_first_party_reference')
         for source in row.get('sources') or []:
             record = next((r for r in reviewed_sources if r.get('url') == source.get('url')), None)
             if not record or record.get('original_read') is not True:
@@ -154,8 +168,9 @@ def main():
             errors.append('structure_only_changed_content_or_source')
         if errors:
             failed.append({'title': row['title'], 'errors': errors})
-    # Every changed day's full batch must contain a recent, reviewed community source.
-    for day in ([] if a.structure_only or a.existing_sources else sorted({r['date'] for r in changed})):
+    # Community cases retain the recent-source requirement. User-authorized
+    # supplemental first-party advice has its own explicit editorial review above.
+    for day in ([] if a.structure_only or a.existing_sources else sorted({r['date'] for r in changed if not original_guidance(r)})):
         group = [r for r in rows if r['date'] == day]
         community = [r for r in group if any((urlsplit(s.get('url', '')).hostname or '').removeprefix('www.')
                      in ('reddit.com', 'x.com', 'twitter.com') for s in r.get('sources', []))]

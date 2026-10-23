@@ -1,0 +1,37 @@
+AI 직원 만들고 싶은데 맡길 일이 안 떠오름?
+
+오늘 한 일부터 적어보셈.
+문의 답장, 자료 찾기, 글 초안, 회의 정리.
+
+그중 내일도 또 할 일 하나를 골라
+첫 AI 직원의 담당 업무로 정해보는 거임.
+
+고를 때는 이걸 물어보셈.
+
+무슨 자료를 줘야 시작할 수 있나?
+끝나면 어떤 파일이나 답변을 받아야 하나?
+잘했는지는 내가 확인할 수 있나?
+
+입력과 결과가 떠오르는 일부터 적어보면 됨.
+첫날부터 회사 전체를 맡길 필요는 없음.
+
+예를 들어 문의 답장을 맡긴다면
+자주 오는 질문과 실제 안내문을 준비해보셈.
+
+처음 맡길 범위는 답장 초안까지.
+자료에 없는 질문은 따로 모으게 하고,
+직접 읽어본 뒤 보낼 문장을 고르는 거임.
+
+지금 하는 일 중 뭐부터 넘기고 싶음?
+
+관련 업무를 더 살펴볼 자료는 여기 있음.
+
+https://lounge.aimax.ai.kr/worldclass/fCg0xKdy7CU
+
+<!-- HUMANIZE-SUMMARY
+Genre: practical Korean social thread, register preserved.
+Before/after characters: 453/453. Change rate: 0% (no further style edits).
+A translationese, B excess English, D stock phrases, H transitions: 0 -> 0 each. Meaningful task lists retained.
+Six checks: 6/6. Grade B: concrete proposals and example instructions preserved.
+Preserved hooks, input/output examples, checks, proposal wording and links. No invented experience or performance claims.
+-->
