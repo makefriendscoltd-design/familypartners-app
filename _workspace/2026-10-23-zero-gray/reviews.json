@@ -1,0 +1,291 @@
+{
+  "8c54281216f5e54fd897c36a20fcc1ba797b6ec6ffdbd67e3a540e013e4a87da": {
+    "copy_sha256": "8c54281216f5e54fd897c36a20fcc1ba797b6ec6ffdbd67e3a540e013e4a87da",
+    "humanize": {
+      "before": {
+        "file": "235-draft.txt",
+        "sha256": "bfb2849fabe411e726e1190aaab8c24843442940a8a2a5431d0084d7deefb451"
+      },
+      "after": {
+        "file": "235-final.md",
+        "sha256": "45300253200fb71321c530bc4dc230a4413c0ac83a812afab011922d8ecf1f4e"
+      },
+      "six_checks_passed": true
+    },
+    "sources": [
+      {
+        "url": "https://familypartners.aimax.ai.kr/feed?n=500",
+        "original_read": true,
+        "snapshot": {
+          "file": "235-originals.json",
+          "sha256": "4f721815d2f03f10aeae170475f498492796d000368172f713bb873c3a082d15"
+        },
+        "quote": "돈없고 빽없으면 AI 직원부터 만드세요",
+        "published_at": null
+      }
+    ],
+    "editorial_review": {
+      "first_party_originals_read": true,
+      "proposal_only": true,
+      "no_external_case_claims": true,
+      "no_performance_claims": true,
+      "reference_ids": [
+        5,
+        19
+      ]
+    }
+  },
+  "3abbf04d3b92bbb41b40423fb45a1602a9905f6e84b47c7fb1ceb817bc9e9198": {
+    "copy_sha256": "3abbf04d3b92bbb41b40423fb45a1602a9905f6e84b47c7fb1ceb817bc9e9198",
+    "humanize": {
+      "before": {
+        "file": "236-draft.txt",
+        "sha256": "8eabd74e5c821f1ad6f4a8aea7981a6cd6be0a2112310bf7a904045b10f504b8"
+      },
+      "after": {
+        "file": "236-final.md",
+        "sha256": "ccb68c45e17cc52ebe9f5a1ef73603fddb8dcac95f6e24f9712748bbe4abb2e9"
+      },
+      "six_checks_passed": true
+    },
+    "sources": [
+      {
+        "url": "https://familypartners.aimax.ai.kr/feed?n=500",
+        "original_read": true,
+        "snapshot": {
+          "file": "236-originals.json",
+          "sha256": "12e49184ee9295effec77bf84dc6826662c0c6de7c4b4da75be2f962550cf994"
+        },
+        "quote": "AI 직원이 말귀 못 알아들으면",
+        "published_at": null
+      }
+    ],
+    "editorial_review": {
+      "first_party_originals_read": true,
+      "proposal_only": true,
+      "no_external_case_claims": true,
+      "no_performance_claims": true,
+      "reference_ids": [
+        10,
+        17
+      ]
+    }
+  },
+  "1eb1211aacf9fbbb30449d64959066de436b74aab118b7943bd0a870c3494b86": {
+    "copy_sha256": "1eb1211aacf9fbbb30449d64959066de436b74aab118b7943bd0a870c3494b86",
+    "humanize": {
+      "before": {
+        "file": "237-draft.txt",
+        "sha256": "feae32f3855a601763469b665c78ffa9b619f7967068c345cc08fe28d70340d5"
+      },
+      "after": {
+        "file": "237-final.md",
+        "sha256": "cf9ecdd4e919f5e643944af1fb1ff1ca9c3545d65a7b4a99d4fe5b84cfcbcb07"
+      },
+      "six_checks_passed": true
+    },
+    "sources": [
+      {
+        "url": "https://familypartners.aimax.ai.kr/feed?n=500",
+        "original_read": true,
+        "snapshot": {
+          "file": "237-originals.json",
+          "sha256": "5836a04032b0a4700fb76a888adb05b631449a7da29f0210e690e1d759b51360"
+        },
+        "quote": "기록 많은 사람은 무조건 하세요",
+        "published_at": null
+      }
+    ],
+    "editorial_review": {
+      "first_party_originals_read": true,
+      "proposal_only": true,
+      "no_external_case_claims": true,
+      "no_performance_claims": true,
+      "reference_ids": [
+        4,
+        10
+      ]
+    }
+  },
+  "7c32c7061dbe88b276bcbede0e9d6dc21f89354779de3f8da334970508433fae": {
+    "copy_sha256": "7c32c7061dbe88b276bcbede0e9d6dc21f89354779de3f8da334970508433fae",
+    "humanize": {
+      "before": {
+        "file": "238-draft.txt",
+        "sha256": "17250cfacf05c84be99b1577c5812f8d230df59e8b2211680cfaf10ce537398e"
+      },
+      "after": {
+        "file": "238-final.md",
+        "sha256": "70c8f3506a95df3caf1d2d35488c2aa54254503062dfe44eb554700160009717"
+      },
+      "six_checks_passed": true
+    },
+    "sources": [
+      {
+        "url": "https://familypartners.aimax.ai.kr/feed?n=500",
+        "original_read": true,
+        "snapshot": {
+          "file": "238-originals.json",
+          "sha256": "df894dc334199991462fe29968ab14999cba71ab65d9e4a3eceb3f528f695054"
+        },
+        "quote": "AI 직원한테 맡길 수 있는 업무들",
+        "published_at": null
+      }
+    ],
+    "editorial_review": {
+      "first_party_originals_read": true,
+      "proposal_only": true,
+      "no_external_case_claims": true,
+      "no_performance_claims": true,
+      "reference_ids": [
+        19,
+        21
+      ]
+    }
+  },
+  "af38fce4a8ec93e067c64e1b06ea730edbd31e4c97143ca9487cd8ccd5ac5747": {
+    "copy_sha256": "af38fce4a8ec93e067c64e1b06ea730edbd31e4c97143ca9487cd8ccd5ac5747",
+    "humanize": {
+      "before": {
+        "file": "239-draft.txt",
+        "sha256": "ecde28ed2995e19ea33075debe2d858aa4c0d627db268e4e9ff649116f5e3c95"
+      },
+      "after": {
+        "file": "239-final.md",
+        "sha256": "949351f31667b7d24e06376e0d801620d5efa52ff07ed891ffea1503bd3a90f4"
+      },
+      "six_checks_passed": true
+    },
+    "sources": [
+      {
+        "url": "https://familypartners.aimax.ai.kr/feed?n=500",
+        "original_read": true,
+        "snapshot": {
+          "file": "239-originals.json",
+          "sha256": "39dec57a56e2d5d7ba745fc5c8de078200290471e08189914546708bd72183d2"
+        },
+        "quote": "기록 많은 사람은 무조건 하세요",
+        "published_at": null
+      }
+    ],
+    "editorial_review": {
+      "first_party_originals_read": true,
+      "proposal_only": true,
+      "no_external_case_claims": true,
+      "no_performance_claims": true,
+      "reference_ids": [
+        4,
+        22
+      ]
+    }
+  },
+  "9edef9de007a96090e17d63afeb0081dc52c31fd7ab4868b6ab9c53774a738b3": {
+    "copy_sha256": "9edef9de007a96090e17d63afeb0081dc52c31fd7ab4868b6ab9c53774a738b3",
+    "humanize": {
+      "before": {
+        "file": "240-draft.txt",
+        "sha256": "1ce9b7b2a817e157b34943414237607f82b9ea6f5fa3853067fa7c6ae6802e5d"
+      },
+      "after": {
+        "file": "240-final.md",
+        "sha256": "39df22f5159911a4bfeca4ada806f2e395de1809e55bcf37237a4a7375199535"
+      },
+      "six_checks_passed": true
+    },
+    "sources": [
+      {
+        "url": "https://familypartners.aimax.ai.kr/feed?n=500",
+        "original_read": true,
+        "snapshot": {
+          "file": "240-originals.json",
+          "sha256": "1ae44d66f75a6bc41fdf37b0f7502d9643003c66400eef7368aa4d59220e332c"
+        },
+        "quote": "AI 직원이 일을 못 할 때 이유",
+        "published_at": null
+      }
+    ],
+    "editorial_review": {
+      "first_party_originals_read": true,
+      "proposal_only": true,
+      "no_external_case_claims": true,
+      "no_performance_claims": true,
+      "reference_ids": [
+        23,
+        30
+      ]
+    }
+  },
+  "00504b93479b64bc8ff974947bcfda3d32c9adff9839fc884677aa8b14e41ad0": {
+    "copy_sha256": "00504b93479b64bc8ff974947bcfda3d32c9adff9839fc884677aa8b14e41ad0",
+    "humanize": {
+      "before": {
+        "file": "241-draft.txt",
+        "sha256": "030d0eb1b5d96d2c9d9beb19f0d9e92bba4572ffcb7fa16424653a6326f44e0e"
+      },
+      "after": {
+        "file": "241-final.md",
+        "sha256": "0abea4197ff63a712263e714cd32ad6c2a9e8abc4ec5a8830841fb879fa1e35b"
+      },
+      "six_checks_passed": true
+    },
+    "sources": [
+      {
+        "url": "https://familypartners.aimax.ai.kr/feed?n=500",
+        "original_read": true,
+        "snapshot": {
+          "file": "241-originals.json",
+          "sha256": "e6ca0354de315bf703dbc6082e675143a78fa5c61a546ba61170e81e4e977cbc"
+        },
+        "quote": "AI 직원 잘 쓰는 사람의 특징",
+        "published_at": null
+      }
+    ],
+    "editorial_review": {
+      "first_party_originals_read": true,
+      "proposal_only": true,
+      "no_external_case_claims": true,
+      "no_performance_claims": true,
+      "reference_ids": [
+        21,
+        30
+      ]
+    }
+  },
+  "5ab597765bb767ff873cdfaa46f7e9308e611e188075ca02e895d5c755643110": {
+    "copy_sha256": "5ab597765bb767ff873cdfaa46f7e9308e611e188075ca02e895d5c755643110",
+    "humanize": {
+      "before": {
+        "file": "242-draft.txt",
+        "sha256": "987b7f46ea819c7f04423858cd7298e068c33aa8d23c8735fc74aba61d7009df"
+      },
+      "after": {
+        "file": "242-final.md",
+        "sha256": "bb63ca8d01255488f6957bb4cd9fef3e1567299a89727509760b99bcd032e3e7"
+      },
+      "six_checks_passed": true
+    },
+    "sources": [
+      {
+        "url": "https://familypartners.aimax.ai.kr/feed?n=500",
+        "original_read": true,
+        "snapshot": {
+          "file": "242-originals.json",
+          "sha256": "3dea2bed7a7985c8e51a1613bdb00d4508bb873b7ccfefad5aef4f8dfe11d7b1"
+        },
+        "quote": "귀찮은 자료조사 시키는 법",
+        "published_at": null
+      }
+    ],
+    "editorial_review": {
+      "first_party_originals_read": true,
+      "proposal_only": true,
+      "no_external_case_claims": true,
+      "no_performance_claims": true,
+      "reference_ids": [
+        11,
+        25,
+        28
+      ]
+    }
+  }
+}

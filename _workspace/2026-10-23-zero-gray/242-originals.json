@@ -1,0 +1,32 @@
+[
+  {
+    "id": 12,
+    "drop_date": "2026-06-18",
+    "dtype": "ai",
+    "title": "컨텐츠 11",
+    "body": "귀찮은 자료조사 시키는 법\r\n\r\n컨텐츠는 레퍼런스/자료조사가 중요한데\r\n다른 일을 하다 보면 놓치게 되잖아요\r\n그럴땐 자료조사 직원을 만들어보세요.\r\n매일 특정 시간에 노션/텔레그램 등등\r\n원하는 공간에 차곡차곡 쌓입니다.",
+    "assets": "https://drive.google.com/drive/folders/1bLf96dOtXag0Vq6Su-bfG-eIz0FcUX3K?usp=sharing",
+    "target": null,
+    "fmt": null
+  },
+  {
+    "id": 71,
+    "drop_date": "2026-07-02",
+    "dtype": "evergreen",
+    "title": "컨텐츠 25",
+    "body": "세컨드브레인 거창하게 생각마세요\r\n\r\n1. 카톡으로 나한테 보내는 것도 됩니다\r\n2. 음성으로 말하고 텍스트 변환해도 돼요\r\n3. 캡처해두는 것도 기록입니다\r\n4. 중요한 건 나중에 꺼내 쓰는 겁니다\r\n5. AI한테 연결하면 그게 가능해집니다\r\n\r\n도구보다 습관이 먼저입니다\r\n기록하세요 써먹을 일이 많습니다.",
+    "assets": null,
+    "target": null,
+    "fmt": null
+  },
+  {
+    "id": 88,
+    "drop_date": "2026-07-05",
+    "dtype": "evergreen",
+    "title": "컨텐츠 28",
+    "body": "AI 직원 업그레이드 순서\r\n\r\n1. 현재 직원 성능 평가합니다\r\n2. 새 모델 나오면 테스트합니다\r\n3. 더 잘 하면 교체합니다\r\n4. CLAUDE.md는 그대로 씁니다\r\n5. 직원이 바뀌어도 기준은 유지됩니다\r\n\r\n모델은 바뀌어도 세팅은 남습니다\r\n다들 ai 직원 쓰세요",
+    "assets": null,
+    "target": null,
+    "fmt": null
+  }
+]

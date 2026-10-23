@@ -1,0 +1,22 @@
+[
+  {
+    "id": 47,
+    "drop_date": "2026-06-30",
+    "dtype": "ai",
+    "title": "컨텐츠 23",
+    "body": "AI 직원이 일을 못 할 때 이유\r\n\r\n1. 역할을 명확히 안 줬습니다\r\n2. 기준이 없습니다\r\n3. 예시를 안 줬습니다\r\n4. 너무 많은 걸 한 번에 시켰습니다\r\n5. 피드백 없이 방치했습니다\r\n\r\n직원 탓 하기 전에 사장 탓부터 하세요\r\n잘 가르치면 잘 합니다",
+    "assets": "https://drive.google.com/drive/folders/1bLf96dOtXag0Vq6Su-bfG-eIz0FcUX3K?usp=sharing",
+    "target": null,
+    "fmt": null
+  },
+  {
+    "id": 97,
+    "drop_date": "2026-07-07",
+    "dtype": "evergreen",
+    "title": "컨텐츠 30",
+    "body": "AI 직원이 일 못하는 이유 5가지\r\n\r\n1. 지시가 두루뭉술함 = \"알아서 잘\" 금지\r\n2. 예시를 안 줌 = 잘한 결과물 3개면 됨\r\n3. 한 놈한테 다 시킴 = 업무별로 쪼개기\r\n4. 피드백을 안 함 = 틀린 이유 말하기\r\n5. 한 번 만들고 방치함 = 계속 수정해야함\r\n\r\nAI 탓하기 전에 사장 탓부터 하세요",
+    "assets": null,
+    "target": null,
+    "fmt": null
+  }
+]

@@ -1,0 +1,53 @@
+내 말투로 써달랬는데 내가 안 쓰는 말만 나옴?
+
+글 쓰는 AI 직원에게
+내가 쓴 글과 직접 고친 문장을 같이 줘보셈.
+
+첫 문장을 어떻게 시작하고
+어디서 끊고 무슨 말로 끝내는지.
+친근하게 써달라는 말에 이 예시를 붙이는 거임.
+
+1. 지금 쓸 글이랑 비슷한 예시를 고르셈
+
+짧은 게시물을 맡길 거면
+평소 올리는 게시물부터 가져오면 됨.
+긴 보고서만 주지는 말고.
+
+첫 문장과 끝맺음에 표시하고
+자주 쓰는 표현, 쓰지 않는 표현을
+실제 문장에서 찾아 적어두셈.
+
+2. 어색한 문장 하나를 직접 고쳐보셈
+
+초안 전체를 다시 쓰기 전에
+원래 문장과 고친 문장을 나란히 남기는 거임.
+
+길이를 줄였는지, 안 쓰는 단어를 뺐는지,
+문장을 끊는 위치를 바꿨는지도 적어보셈.
+
+다음 초안을 받으면
+그 부분이 달라졌는지 비교하면 됨.
+
+3. 예시 속 경험까지 가져오면 안 됨
+
+말투 참고 글에 매출이나 고객 이야기가 있어도
+그게 이번 글에 써도 되는 사실은 아님.
+
+말투 예시와 이번 글의 사실 자료를 나눠주셈.
+
+지금 초안에서 내가 안 쓰는 표현 하나를 골라
+평소 쓰는 말로 직접 바꿔봐.
+그 문장을 다음 참고 예시로 남기는 거임.
+
+글 쓰는 AI 직원에게 기준을 줄 때 참고할 노트.
+
+https://lounge.aimax.ai.kr/worldclass/dBBQA76fmhE
+
+<!-- HUMANIZE-SUMMARY
+Before/after: 653/653 characters; style pass 0% (rewrite is the input to this pass).
+Quick-rules A translationese, B jargon, D stock phrases, H transitions: 0 -> 0.
+E-2: no 4 consecutive identical endings; numbered comments retained for thread navigation.
+Six checks: 6/6. Grade B (no forced changes to satisfy target percentage).
+Preserved task examples, input/output, proposal register, review conditions and resource URLs.
+No unverified experience, revenue, performance promises or copied reference prose.
+-->
