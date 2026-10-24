@@ -1,0 +1,54 @@
+AI 직원 첫 업무는 오늘도 귀찮았던 일로 골라보셈.
+
+문의 답장, 자료 찾기, 글 초안, 회의 정리.
+오늘 했는데 내일 또 해야 하는 일들임.
+
+이 중 하나를 고르고
+줄 자료와 받아볼 결과까지 적어보는 거임.
+문의 답장을 예로 들면 이렇게 시작하면 됨.
+
+1. 맡기기 전에 끝난 모습을 적어보셈
+
+무슨 자료를 줘야 시작할 수 있나?
+끝나면 어떤 파일이나 답변을 받아야 하나?
+잘했는지는 내가 확인할 수 있나?
+
+문의 답장이라면
+자주 오는 질문과 실제 안내문을 주고,
+보내기 전에 읽어볼 답장 초안을 받는 식임.
+
+첫 업무를 이 정도로 좁혀보셈.
+
+2. 안내문에 없는 질문도 넣어봐야 함
+
+예를 들어 예약 안내에 없는 요청이 들어왔다면
+답을 지어내지 말고 확인할 질문으로 빼달라고 하셈.
+
+받을 결과도 나눠두면 됨.
+보낼 수 있는 답장 초안 / 직접 확인할 질문.
+
+둘 다 읽어보고 실제로 보낼 문장을 고르는 거임.
+
+3. 오늘은 한 문장만 적어보셈
+
+문의 담당 AI 직원에게
+질문과 안내문을 주고 답장 초안을 받겠다.
+
+자기 업무로 바꿔 적으면 됨.
+자료 찾기면 참고 자료 목록,
+글쓰기면 검토할 초안처럼.
+
+첫날부터 회사 전체를 맡길 필요는 없음.
+
+첫 업무를 고를 때 참고할 AI 활용노트.
+
+https://lounge.aimax.ai.kr/worldclass/fCg0xKdy7CU
+
+<!-- HUMANIZE-SUMMARY
+Before/after: 664/664 characters; style pass 0% (rewrite is the input to this pass).
+Quick-rules A translationese, B jargon, D stock phrases, H transitions: 0 -> 0.
+E-2: no 4 consecutive identical endings; numbered comments retained for thread navigation.
+Six checks: 6/6. Grade B (no forced changes to satisfy target percentage).
+Preserved task examples, input/output, proposal register, review conditions and resource URLs.
+No unverified experience, revenue, performance promises or copied reference prose.
+-->

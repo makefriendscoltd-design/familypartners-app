@@ -1,0 +1,74 @@
+{
+  "id": "c5Ur73GosR4",
+  "title": "8 Claude Code skills I use for building better AI evals",
+  "channel": "Hamel Husain",
+  "webpage_url": "https://www.youtube.com/watch?v=c5Ur73GosR4",
+  "chapters": [
+    {
+      "start_time": 0,
+      "title": "Why you should look at failures before writing evals",
+      "end_time": 32
+    },
+    {
+      "start_time": 32,
+      "title": "Where to find the eval skills",
+      "end_time": 49
+    },
+    {
+      "start_time": 49,
+      "title": "All 8 skills at a glance",
+      "end_time": 117
+    },
+    {
+      "start_time": 117,
+      "title": "Error discovery: getting your agent to understand your data",
+      "end_time": 151
+    },
+    {
+      "start_time": 151,
+      "title": "Designing the annotation interface",
+      "end_time": 194
+    },
+    {
+      "start_time": 194,
+      "title": "A real annotation interface: the real estate assistant",
+      "end_time": 288
+    },
+    {
+      "start_time": 288,
+      "title": "Sampling for diversity, not frequency",
+      "end_time": 341
+    },
+    {
+      "start_time": 341,
+      "title": "The review loop: breadth and depth",
+      "end_time": 426
+    },
+    {
+      "start_time": 426,
+      "title": "The eval audit skill",
+      "end_time": 486
+    },
+    {
+      "start_time": 486,
+      "title": "Binary pass/fail over Likert scales and letter grades",
+      "end_time": 521
+    },
+    {
+      "start_time": 521,
+      "title": "Checking your LLM judge against human labels",
+      "end_time": 588
+    },
+    {
+      "start_time": 588,
+      "title": "The two skills to spend your time on",
+      "end_time": 606
+    },
+    {
+      "start_time": 606,
+      "title": "Synthetic data, judge prompts, RAG and the rest",
+      "end_time": 700
+    }
+  ],
+  "upload_date": "20260930"
+}

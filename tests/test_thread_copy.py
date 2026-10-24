@@ -61,7 +61,7 @@ class ThreadCopyTest(unittest.TestCase):
     def test_case_images_are_downloadable_and_paths_cannot_escape(self):
         import hashlib
         from urllib.parse import urlsplit
-        cases=[d for d in json.loads(dropqueue.QUEUE_PATH.read_text())['drops'] if d.get('format')=='case_thread' and d.get('main_images')]
+        cases=[d for d in json.loads(dropqueue.QUEUE_PATH.read_text())['drops'] if d.get('format')=='case_thread' and d.get('main_images') and d.get('editorial_kind')!='original_guidance']
         self.assertEqual(len(cases),14)  # All Oct22–24 copy now uses reply threads; existing images preserved.
         for d in cases:
             self.assertEqual(len(d['main_images']),2)
@@ -77,6 +77,23 @@ class ThreadCopyTest(unittest.TestCase):
                 self.assertEqual(hashlib.sha256(body).hexdigest(),image['sha256'])
         for path in ['/thread-img/../../config/assets.json','/thread-img/%2e%2e%2f.env','/thread-img/missing.jpg']:
             self.assertEqual(self.request('GET',path)[0],404)
+
+    def test_supplemental_guidance_images_render_and_download(self):
+        import hashlib
+        entries=[d for d in json.loads(dropqueue.QUEUE_PATH.read_text())['drops'] if d.get('editorial_kind')=='original_guidance']
+        self.assertEqual(len(entries),8)
+        for d in entries:
+            self.assertGreaterEqual(len(d.get('main_images',[])),1)
+            row=dict(d,drop_date=d['date'])
+            html=thread_copy.render(row)
+            self.assertIn('이미지 1 저장',html)
+            self.assertIn('관련 원문 참고 화면',html)
+            self.assertEqual(thread_copy.thumbnail(row),d['main_images'][0]['src'])
+            for image in d['main_images']:
+                status,headers,body=self.request('GET',image['src'])
+                self.assertEqual(status,200)
+                self.assertEqual(headers['Content-Type'],'image/jpeg')
+                self.assertEqual(hashlib.sha256(body).hexdigest(),image['sha256'])
 
     def test_today_example_pngs_render_and_download_unchanged(self):
         import hashlib
