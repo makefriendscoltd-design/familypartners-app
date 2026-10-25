@@ -1816,6 +1816,594 @@
           "sha256": "3c4435dc9acb10871c302d4fed3791b48a146248b493d7aba15ebf5498789529"
         }
       ]
+    },
+    {
+      "date": "2026-10-27",
+      "target": "직장인",
+      "fmt": "회의기록",
+      "body": "회의 끝나고 칠판 사진만 쌓이는 사람?\n\n레딧의 easybits_ai가 손글씨 사진을\n회의 문서로 옮기는 n8n 흐름을 공개했음.\n\n사진을 메일로 보내면 문서로 정리하는데,\n못 읽는 글씨를 어떻게 처리하는지가 핵심임.",
+      "replies": [
+        "1. 사진이 들어오면 어디로 가는지부터 보셈\n\n작성자 설명은 이 순서임.\n전용 메일함으로 사진 수신 → 이미지에서 항목 추출\n→ Google Docs 생성 → 문서 링크를 메일로 회신.\n\n회의 제목, 날짜, 참석자, 요약, 할 일을 뽑고\n문서 아래에는 전체 전사문도 남긴다고 함.",
+        "2. 못 읽는 이름을 그럴듯하게 채우면 안 됨\n\n작성자는 글씨가 불분명하면 추측하지 말고\nnull을 반환하도록 필드 설명에 적었다고 함.\n댓글에서도 이 규칙을 짚고 있음.\n\n내 회의록에 적용한다면 흐린 사진으로 시험해봐.\n빈칸은 확인할 대상으로 남기고,\n담당자와 날짜는 사진 원문과 대조하는 거임."
+      ],
+      "type": "ai",
+      "title": "컨텐츠 243 · 회의 끝나고 칠판 사진만 쌓이는 사람?",
+      "format": "case_thread",
+      "link_comment": "관련 업무의 기준을 정리한 활용노트.\n커뮤니티 사례의 배포 파일과는 다른 참고 자료임.\n\nhttps://lounge.aimax.ai.kr/worldclass/8FWDxPHvxPQ",
+      "sources": [
+        {
+          "url": "https://www.reddit.com/r/n8n/comments/1xe70af/turning_napkin_and_whiteboard_notes_into_proper/",
+          "title": "Turning napkin and whiteboard notes into proper meeting docs automatically [Workflow Included]",
+          "published_at": "2026-10-24T12:09:23.625Z",
+          "collected_at": "2026-10-25T08:33:11.211299+00:00",
+          "verified_at": "2026-10-25T08:33:11.211299+00:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/refill-reddit-0.png",
+          "alt": "easybits_ai의 Reddit 원문 화면",
+          "credit": "Reddit u/easybits_ai · 작성자가 공개한 원문 화면",
+          "source_url": "https://www.reddit.com/r/n8n/comments/1xe70af/turning_napkin_and_whiteboard_notes_into_proper/",
+          "sha256": "e1e309141e7558e999ba938175e8e8f7b4256edbccea60f9d159d0a4f7d69377"
+        }
+      ]
+    },
+    {
+      "date": "2026-10-27",
+      "target": "상담업체",
+      "fmt": "연결순서",
+      "body": "문의는 왔는데 시트에는 안 들어가 있음?\n\nMohammad Rameez Imdad의 n8n 영상에\n딱 이 연결을 확인하는 과정이 나옴.\n\n문의 폼 → Google Sheets → Gmail.\n접수 정보를 저장하고 담당자에게 알리는 구성임.",
+      "replies": [
+        "1. 문의 항목과 시트 열을 하나씩 맞춤\n\n영상에서는 웹훅으로 받은 이름, 이메일, 회사,\n예산, 희망 날짜를 시트의 각 열에 연결함.\n한 번 제출할 때 새 행을 추가하는 방식임.\n\n새 행이 생겼다고 끝내지 말고\n희망 날짜가 날짜 열에 들어갔는지까지 봐야 함.",
+        "2. 마지막에 막힌 곳은 시험용 주소였음\n\n시연에서 작업 흐름을 게시한 뒤에도\n양식이 시험용 연결을 쓰면서 전송이 실패함.\n제작자는 양식 주소의 ?test를 빼고 다시 제출함.\n이 표기는 해당 양식의 방식임.\n\n또 Gmail 알림은 담당자에게 보내는 것임.\n고객 접수 완료 메일까지 만든 사례는 아님."
+      ],
+      "type": "evergreen",
+      "title": "컨텐츠 244 · 문의는 왔는데 시트에는 안 들어가 있음?",
+      "format": "case_thread",
+      "link_comment": "업무에 적용할 순서와 확인할 내용을 담은 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/YqorbcCGAqE",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/YqorbcCGAqE",
+          "title": "고객 문의를 Google Sheets에 기록하고 메일로 알림받는 자동화 만들기",
+          "published_at": null,
+          "collected_at": "2026-10-25T08:33:11.211299+00:00",
+          "verified_at": "2026-10-25T08:33:11.211299+00:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/refill-YqorbcCGAqE-69794829a4a3-frame-1.jpg",
+          "alt": "Mohammad Rameez Imdad의 원본 영상 장면 · 소개한 원본 영상 참고 화면",
+          "credit": "Mohammad Rameez Imdad · 원본 영상 참고 화면",
+          "source_url": "https://youtu.be/YqorbcCGAqE",
+          "sha256": "69794829a4a3993db550281cd8fdb2db241a41d5af1025037a9fe19384ad2708"
+        }
+      ]
+    },
+    {
+      "date": "2026-10-27",
+      "target": "콘텐츠제작자",
+      "fmt": "수정사례",
+      "body": "영상은 움직이는데 무슨 설명인지 모르겠음.\n\nScience Based AI의 Claude 애니메이션 시연도\n첫 그래프에서 이 문제가 나왔음.\n\n움직임은 괜찮은데 무엇을 비교하는지 안 보임.\n그래서 수정한 건 효과가 아니라 제목이었음.",
+      "replies": [
+        "1. 만들기 전에 말과 화면을 같이 적음\n\n제작자는 참고 영상이나 이미지를 주고\n주제, 길이, 화면 비율, 장면 구성을 요청함.\n어떤 말에 어떤 화면이 나오는지 먼저 정해두는 방식임.\n\n내 제품 영상이라면 고객이 할 행동을 적어봐.\n날짜 선택 → 시간 선택 → 예약 확인처럼.",
+        "2. 그래프가 펼쳐질 때 제목도 나타나게 함\n\n시연에서는 한 국가의 선을 보여준 뒤\n화면을 넓혀 다른 국가와 비교함.\n처음 보는 사람이 수치의 뜻을 알 수 있도록\n제목이 나오는 시점을 고쳐 다시 확인했음.\n\n우리 영상도 소리를 끄고 첫 화면을 봐.\n무엇을 비교하는지부터 읽히는지 확인하는 거임."
+      ],
+      "type": "evergreen",
+      "title": "컨텐츠 245 · 영상은 움직이는데 무슨 설명인지 모르겠음.",
+      "format": "case_thread",
+      "link_comment": "업무에 적용할 순서와 확인할 내용을 담은 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/H6lBZ7AfDDE",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/H6lBZ7AfDDE",
+          "title": "제품 설명이 길어질 때, Claude로 짧은 애니메이션을 만드는 순서",
+          "published_at": null,
+          "collected_at": "2026-10-25T08:33:11.211299+00:00",
+          "verified_at": "2026-10-25T08:33:11.211299+00:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/refill-H6lBZ7AfDDE-31605c9f24d2-frame-1.jpg",
+          "alt": "Science Based AI의 원본 영상 장면 · 소개한 원본 영상 참고 화면",
+          "credit": "Science Based AI · 원본 영상 참고 화면",
+          "source_url": "https://youtu.be/H6lBZ7AfDDE",
+          "sha256": "31605c9f24d25cc895e2bfa2809ae16a20a7ccfe7392285bbdf17ec664fad7b1"
+        }
+      ]
+    },
+    {
+      "date": "2026-10-27",
+      "target": "팀장",
+      "fmt": "기준공유",
+      "body": "내가 고친 AI 실수, 옆 직원도 또 고치고 있음?\n\nArseny Shatokhin은 팀의 작성 기준을\nNotion에 모으는 사례를 소개함.\n\n한 사람의 채팅에서 끝난 수정 의견을\n다음 사람이 읽을 업무 기준으로 옮기는 방식임.",
+      "replies": [
+        "1. 잘 쓴 대본만 주고 끝내지 않음\n\n영상에서는 담당자에게 필요한 고객 자료,\n대상 독자, 핵심 메시지, 저장 위치를 물음.\n인터뷰와 실제 작성 자료로 첫 스킬을 만들고\n담당자가 내용을 직접 고치게 함.\n\nAI가 정리한 문서와 실제 일하는 방식이\n같은지 확인하는 과정이 들어가는 거임.",
+        "2. 다른 프로젝트로 써봐야 빠진 기준이 보임\n\n기존 완성 대본을 먼저 읽히지 않고 초안을 만든 뒤\n실제 대본과 비교하는 장면이 나옴.\n팀이 이미 바꾼 도입 방향을 AI는 다시 선택했음.\n\n이런 차이를 다음 작업의 기준에 남기는 방식임.\nNotion을 수정한 뒤에는 배포된 스킬에도\n같은 내용이 도착했는지 확인함."
+      ],
+      "type": "marketing",
+      "title": "컨텐츠 246 · 내가 고친 AI 실수, 옆 직원도 또 고치고 있음?",
+      "format": "case_thread",
+      "link_comment": "업무에 적용할 순서와 확인할 내용을 담은 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/XdZSX-Q6DIs",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/XdZSX-Q6DIs",
+          "title": "직원마다 다른 AI 작업 방식, Notion에 모아 팀의 업무 기준으로 만드는 법",
+          "published_at": null,
+          "collected_at": "2026-10-25T08:33:11.211299+00:00",
+          "verified_at": "2026-10-25T08:33:11.211299+00:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/refill-XdZSX-Q6DIs-7926a2d0f64f-frame-1.jpg",
+          "alt": "Arseny Shatokhin의 원본 영상 장면 · 소개한 원본 영상 참고 화면",
+          "credit": "Arseny Shatokhin · 원본 영상 참고 화면",
+          "source_url": "https://youtu.be/XdZSX-Q6DIs",
+          "sha256": "7926a2d0f64f46afb4b15aea70af5f125865ba3e35dfa6e3d82db745ea91a863"
+        }
+      ]
+    },
+    {
+      "date": "2026-10-27",
+      "target": "대표",
+      "fmt": "입력설계",
+      "body": "AI한테 메일 정리하라고만 시키고 있음?\n\n아침에 필요한 건 메일 전체 요약인지,\n오늘 답장할 목록인지부터 정해봐.\n\nAI 직원에게 줄 업무지시를\n지금 메일함을 보면서 적어봐.",
+      "replies": [
+        "1. 읽을 범위부터 좁혀보셈\n\n예를 들면 어제 퇴근 이후 받은 메일 중\n내 답변을 기다리는 것만 골라달라고 적는 거임.\n\n받은 날짜, 보낸 사람, 요청 내용, 기한,\n원문 위치를 함께 남기도록 해봐.\n기한이 안 적혔으면 미정으로 두고.",
+        "2. 요약과 발송은 따로 맡겨봐\n\n첫 작업은 답장할 목록과 초안까지.\n누구에게 보낼지와 약속할 내용은 직접 확인해.\n\n목록에서 메일 하나를 골라 원문과 비교해보셈.\n답변이 필요한 이유를 잘못 짚었다면\n그 판단 기준부터 고쳐서 다시 써보는 거임."
+      ],
+      "type": "evergreen",
+      "title": "컨텐츠 247 · AI한테 메일 정리하라고만 시키고 있음?",
+      "format": "case_thread",
+      "link_comment": "업무에 적용할 순서와 확인할 내용을 담은 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/xEoVCx9CmxQ",
+      "sources": [
+        {
+          "url": "https://familypartners.aimax.ai.kr/feed?n=500",
+          "title": "초기 자사 컨텐츠 1~30 중 운영에 남아 있는 29개 원문",
+          "published_at": null,
+          "collected_at": "2026-10-25T08:33:11.211299+00:00",
+          "verified_at": "2026-10-25T08:33:11.211299+00:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/refill-xEoVCx9CmxQ-04b79ea7feb1-frame-1.jpg",
+          "alt": "AI Foundations의 원본 영상 장면 · 관련 업무 참고 화면, 이 글의 직접 실행 결과 아님",
+          "credit": "AI Foundations · 원본 영상 참고 화면",
+          "source_url": "https://youtu.be/xEoVCx9CmxQ",
+          "sha256": "04b79ea7feb10e13050f16951d8ef356a2f878d86d9f3d4ef9fe1f872c386b8d"
+        }
+      ],
+      "supplemental": true,
+      "editorial_kind": "original_guidance"
+    },
+    {
+      "date": "2026-10-27",
+      "target": "마케터",
+      "fmt": "피드백",
+      "body": "AI가 쓴 글 또 처음부터 고치고 있다면.\n\n이번엔 최종본만 저장하지 말고\n어디를 왜 고쳤는지도 같이 남겨봐.\n\n다음 초안을 맡길 때 보여줄\n업무 기준으로 만드는 거임.",
+      "replies": [
+        "1. 마음에 안 든다는 말에서 한 단계만 더\n\n대상이 안 보였는지, 없는 성과를 넣었는지,\n첫 문장과 본문 내용이 달랐는지 적어봐.\n\n수정 전 문장 옆에 수정 이유와 최종 문장을 둬.\n말투 문제인지 내용 문제인지도 나눠보고.",
+        "2. 같은 글 말고 다른 주제로 시험해봐\n\n수정한 기준을 주고 새 초안을 받아보는 거임.\n전에 고친 문제가 반복되는지 확인해.\n\n특정 고객에게만 적용한 표현이라면\n그 조건도 기준 문서에 남겨둬.\n한 번 바꾼 문장을 모든 글에 붙이지 않도록."
+      ],
+      "type": "evergreen",
+      "title": "컨텐츠 248 · AI가 쓴 글 또 처음부터 고치고 있다면.",
+      "format": "case_thread",
+      "link_comment": "업무에 적용할 순서와 확인할 내용을 담은 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/XdZSX-Q6DIs",
+      "sources": [
+        {
+          "url": "https://familypartners.aimax.ai.kr/feed?n=500",
+          "title": "초기 자사 컨텐츠 1~30 중 운영에 남아 있는 29개 원문",
+          "published_at": null,
+          "collected_at": "2026-10-25T08:33:11.211299+00:00",
+          "verified_at": "2026-10-25T08:33:11.211299+00:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/refill-XdZSX-Q6DIs-7926a2d0f64f-frame-1.jpg",
+          "alt": "Arseny Shatokhin의 원본 영상 장면 · 관련 업무 참고 화면, 이 글의 직접 실행 결과 아님",
+          "credit": "Arseny Shatokhin · 원본 영상 참고 화면",
+          "source_url": "https://youtu.be/XdZSX-Q6DIs",
+          "sha256": "7926a2d0f64f46afb4b15aea70af5f125865ba3e35dfa6e3d82db745ea91a863"
+        }
+      ],
+      "supplemental": true,
+      "editorial_kind": "original_guidance"
+    },
+    {
+      "date": "2026-10-28",
+      "target": "자동화입문자",
+      "fmt": "조건설계",
+      "body": "가격 확인보다 귀찮은 건 같은 알림 또 받는 거임.\n\n레딧의 TaskToAgent가 Steam 게임 가격을\n확인해 알리는 흐름을 공개했음.\n\n읽어볼 부분은 할인 정보보다\n알림 조건과 중복 처리 순서임.",
+      "replies": [
+        "1. 가격을 읽은 다음 조건을 따로 판단함\n\n공개한 n8n 구성은 일정 실행 → 게임 목록\n→ 가격 조회 → 조건 판정 → 중복 제거\n→ Discord 웹훅 순서임.\n\n목표 가격 이하인지, 할인율 조건에 맞는지,\n이전 확인보다 저렴한지를 조건으로 설명함.",
+        "2. 알림이 안 나간 두 번째 실행도 시험함\n\n작성자는 같은 가격으로 다시 실행했을 때\n추가 알림이 없었다고 설명함.\n다만 발송 시험은 실제 채널이 아닌\n모의 웹훅으로 했다는 한계도 밝혔음.\n\n내 알림 자동화도 같은 입력을 다시 넣어봐.\n무엇을 같은 사건으로 볼지 정하고\n필요한 변화가 있을 때만 새 알림으로 다뤄보셈."
+      ],
+      "type": "evergreen",
+      "title": "컨텐츠 249 · 가격 확인보다 귀찮은 건 같은 알림 또 받는 거임.",
+      "format": "case_thread",
+      "link_comment": "관련 업무의 기준을 정리한 활용노트.\n커뮤니티 사례의 배포 파일과는 다른 참고 자료임.\n\nhttps://lounge.aimax.ai.kr/worldclass/nRxDPfsSjk0",
+      "sources": [
+        {
+          "url": "https://www.reddit.com/r/n8n/comments/1xe97kb/i_got_tired_of_missing_steam_sales_on_my_wishlist/",
+          "title": "I got tired of missing Steam sales on my wishlist, so I built a price-drop alert to Discord with no API key [Workflow Included]",
+          "published_at": "2026-10-24T13:51:30.223Z",
+          "collected_at": "2026-10-25T08:33:11.211299+00:00",
+          "verified_at": "2026-10-25T08:33:11.211299+00:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/refill-reddit-1.png",
+          "alt": "TaskToAgent의 Reddit 원문 화면",
+          "credit": "Reddit u/TaskToAgent · 작성자가 공개한 원문 화면",
+          "source_url": "https://www.reddit.com/r/n8n/comments/1xe97kb/i_got_tired_of_missing_steam_sales_on_my_wishlist/",
+          "sha256": "2bb072aae44d440b748e2181aa136c398bc1b4312ece2d144006ca3251d5b4fd"
+        }
+      ]
+    },
+    {
+      "date": "2026-10-28",
+      "target": "영업담당자",
+      "fmt": "응답범위",
+      "body": "AI 답장은 받았는데 첨부파일은 또 직접 넣음?\n\nYour AI Workflow의 영상에서는\n협찬 문의 답변과 첨부자료를 같이 묶음.\n\nGoogle Workspace Studio로 연결하되\n어떤 메일에 답할지도 먼저 정해둔 사례임.",
+      "replies": [
+        "1. 답변 문장 앞에 거래 기준이 들어감\n\n스킬에는 말투, 가격과 조건, 협업 절차,\n과거 협찬 영상 링크를 넣음.\nDrive의 분석 이미지도 함께 보낼 자료로 준비함.\n\n메일이 오면 첫 협찬 문의인지 판단하고\n사기성·저예산·무료 제안을 제외하도록 설정함.",
+        "2. 본문이 만들어진 다음 연결도 확인함\n\n수신 메일 ID와 생성된 본문을 답장 단계에 넣고\n답장 뒤 라벨과 읽음 처리까지 추가한 시연임.\n시험 메일을 쓰고 발송 승인도 거쳤음.\n\n우리 업무에 쓴다면 받는 사람, 조건, 첨부파일을\n실제 수신 메일에서 대조해봐.\n도입 전 계정의 연동 기능도 따로 확인해야 함."
+      ],
+      "type": "marketing",
+      "title": "컨텐츠 250 · AI 답장은 받았는데 첨부파일은 또 직접 넣음?",
+      "format": "case_thread",
+      "link_comment": "업무에 적용할 순서와 확인할 내용을 담은 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/PgqDpS_lHeQ",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/PgqDpS_lHeQ",
+          "title": "반복 메일과 회의 후속 업무, Workspace Studio로 연결하는 방법",
+          "published_at": null,
+          "collected_at": "2026-10-25T08:33:11.211299+00:00",
+          "verified_at": "2026-10-25T08:33:11.211299+00:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/refill-PgqDpS_lHeQ-505d2c9687d2-frame-1.jpg",
+          "alt": "Your AI Workflow의 원본 영상 장면 · 소개한 원본 영상 참고 화면",
+          "credit": "Your AI Workflow · 원본 영상 참고 화면",
+          "source_url": "https://youtu.be/PgqDpS_lHeQ",
+          "sha256": "505d2c9687d2043c873fe6477ee4e14c399e60362f2c289484fc2b5df63010b0"
+        }
+      ]
+    },
+    {
+      "date": "2026-10-28",
+      "target": "소규모대표",
+      "fmt": "결과확인",
+      "body": "영수증 읽기는 했는데 회사 앱에는 누가 넣음?\n\nLeon van Zyl은 자신이 만든 비용 앱을\nClaude 커넥터에 연결하는 과정을 보여줌.\n\n사진에서 읽은 내용을 실제 기록으로 만드는 단계,\n여기까지 이어서 보는 사례임.",
+      "replies": [
+        "1. 읽는 기능과 등록하는 기능을 연결함\n\n시연에서는 영수증 이미지를 올리고\n비용 항목을 만들어달라고 요청함.\n앱의 비용 목록을 새로고침한 뒤\n생성된 기록과 첨부 영수증을 확인함.\n\n분류에 추가 판단이 필요하면 질문할 수 있다고\n설명하므로 무조건 무인 처리되는 사례는 아님.",
+        "2. 업무 카드도 같은 방식으로 대조함\n\n다른 앱 시연에서는 작업 카드를 만들고\n담당자를 지정한 뒤 진행 중으로 옮김.\n제작자는 앱에서 담당자와 보드 위치를 확인함.\n\n내 앱에 연결한다면 허용할 기능부터 골라봐.\n완료됐다는 답변 옆에 실제 저장 위치를 두고\n기록이 맞게 들어왔는지 확인하는 거임."
+      ],
+      "type": "evergreen",
+      "title": "컨텐츠 251 · 영수증 읽기는 했는데 회사 앱에는 누가 넣음?",
+      "format": "case_thread",
+      "link_comment": "업무에 적용할 순서와 확인할 내용을 담은 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/N2Ogvx_U8uM",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/N2Ogvx_U8uM",
+          "title": "영수증 등록부터 업무 배정까지, Claude를 우리 회사 앱에 연결하는 방법",
+          "published_at": null,
+          "collected_at": "2026-10-25T08:33:11.211299+00:00",
+          "verified_at": "2026-10-25T08:33:11.211299+00:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/refill-N2Ogvx_U8uM-f3d71df36985-frame-1.jpg",
+          "alt": "Leon van Zyl의 원본 영상 장면 · 소개한 원본 영상 참고 화면",
+          "credit": "Leon van Zyl · 원본 영상 참고 화면",
+          "source_url": "https://youtu.be/N2Ogvx_U8uM",
+          "sha256": "f3d71df369855448a35f7a0b3bc46d8008b3607121e05ad4bb620e32296a5a66"
+        }
+      ]
+    },
+    {
+      "date": "2026-10-28",
+      "target": "비개발자",
+      "fmt": "실패비교",
+      "body": "관리 화면은 나왔는데 수정 버튼이 안 됨.\n\nShah Wali의 Claude Code 시연에서\n개선한 화면의 일부 편집 기능이 막혔음.\n\n예쁘게 열린 화면과 실제 업무가 되는지는\n따로 봐야 한다는 사례임.",
+      "replies": [
+        "1. 처음에는 작은 기능부터 직접 눌러봄\n\n할 일 추가, 이름 수정, 삭제, 완료 처리를\n기본 버전에서 확인한 뒤 기능을 더함.\n우선순위, 마감일, 태그 같은 항목이 이어짐.\n\n내 도구도 입력 → 수정 → 완료 순서로\n대표 작업 하나를 끝내보는 게 출발점임.",
+        "2. 화면 개선 뒤에도 다시 써봐야 함\n\n시연에서는 오류가 생기고 편집 일부가 안 됐음.\n제작자가 사용 한도나 서버 문제를 언급했지만\n원인은 확정하지 못했으니 단정하면 안 됨.\n\n우리 도구라면 바뀐 화면에서 같은 작업을 해봐.\n입력한 값이 저장되고 수정한 값이 남는지까지\n요청서의 완료 조건으로 적어두는 거임."
+      ],
+      "type": "ai",
+      "title": "컨텐츠 252 · 관리 화면은 나왔는데 수정 버튼이 안 됨.",
+      "format": "case_thread",
+      "link_comment": "업무에 적용할 순서와 확인할 내용을 담은 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/sX-FmJL7Wd0",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/sX-FmJL7Wd0",
+          "title": "Claude Code로 우리 업무에 맞는 관리 도구를 만들고 검증하는 방법",
+          "published_at": null,
+          "collected_at": "2026-10-25T08:33:11.211299+00:00",
+          "verified_at": "2026-10-25T08:33:11.211299+00:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/refill-sX-FmJL7Wd0-85a0faff1cb7-frame-1.jpg",
+          "alt": "Shah Wali의 원본 영상 장면 · 소개한 원본 영상 참고 화면",
+          "credit": "Shah Wali · 원본 영상 참고 화면",
+          "source_url": "https://youtu.be/sX-FmJL7Wd0",
+          "sha256": "85a0faff1cb7fcc4734416a71decfcc2fa3988ba6f97ba1eeeae531ec5f6bbf2"
+        }
+      ]
+    },
+    {
+      "date": "2026-10-28",
+      "target": "운영담당자",
+      "fmt": "중복검사",
+      "body": "같은 문의 두 번 넣으면 두 번 처리해도 됨?\n\nAI 직원에게 접수 업무를 맡기기 전에\n같은 입력이 다시 올 때부터 정해봐.\n\n한 번 잘 되는 것과 반복해서 써도 되는 것은\n확인할 내용이 다름.",
+      "replies": [
+        "1. 같은 문의를 알아볼 기준을 적어봐\n\n접수번호가 있다면 그 번호를 먼저 쓰고,\n없다면 무엇으로 구분할지 정하는 거임.\n같은 이름이라고 같은 문의인 건 아니잖아.\n\n고객이 내용을 바꿔 다시 보낸 경우에는\n기존 건 수정인지 새 문의인지도 구분해봐.",
+        "2. 시험 입력을 그대로 한 번 더 넣어보셈\n\n시트에 행이 또 생겼는지, 알림이 또 나가는지\n각 결과를 따로 확인해.\n\n중복 처리를 막기로 했다면 건너뛴 이유도 남겨봐.\n실패해서 안 된 건지, 이미 처리해서 안 한 건지\n다음 담당자가 구분할 수 있도록."
+      ],
+      "type": "evergreen",
+      "title": "컨텐츠 253 · 같은 문의 두 번 넣으면 두 번 처리해도 됨?",
+      "format": "case_thread",
+      "link_comment": "업무에 적용할 순서와 확인할 내용을 담은 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/YqorbcCGAqE",
+      "sources": [
+        {
+          "url": "https://familypartners.aimax.ai.kr/feed?n=500",
+          "title": "초기 자사 컨텐츠 1~30 중 운영에 남아 있는 29개 원문",
+          "published_at": null,
+          "collected_at": "2026-10-25T08:33:11.211299+00:00",
+          "verified_at": "2026-10-25T08:33:11.211299+00:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/refill-YqorbcCGAqE-69794829a4a3-frame-1.jpg",
+          "alt": "Mohammad Rameez Imdad의 원본 영상 장면 · 관련 업무 참고 화면, 이 글의 직접 실행 결과 아님",
+          "credit": "Mohammad Rameez Imdad · 원본 영상 참고 화면",
+          "source_url": "https://youtu.be/YqorbcCGAqE",
+          "sha256": "69794829a4a3993db550281cd8fdb2db241a41d5af1025037a9fe19384ad2708"
+        }
+      ],
+      "supplemental": true,
+      "editorial_kind": "original_guidance"
+    },
+    {
+      "date": "2026-10-28",
+      "target": "팀리더",
+      "fmt": "원문대조",
+      "body": "회의록은 깔끔한데 누가 말한 건지 못 찾겠음?\n\nAI 직원에게 요약만 받지 말고\n중요한 결정의 원문 위치도 붙여달라고 해봐.\n\n다음 회의에서 다시 확인할 내용을\n찾아갈 수 있게 만드는 거임.",
+      "replies": [
+        "1. 결정과 제안을 다른 칸에 둬봐\n\n확정된 일, 검토 중인 제안, 남은 질문을 나누고\n각 항목 옆에 메모 문장이나 녹음 위치를 남겨.\n\n담당자와 기한이 안 나왔으면 비워두게 해.\n초안을 예쁘게 채우려고 약속을 만들면 안 됨.",
+        "2. 요약 한 줄을 원문으로 거슬러 가보셈\n\n그 문장이 실제 결정인지, 누군가의 제안인지\n해당 부분을 다시 읽고 확인해봐.\n\n회의가 끝난 뒤 따로 바뀐 내용이라면\n수정된 날짜와 확인한 사람도 남겨두는 거임.\n원래 회의에서 한 말과 섞이지 않게."
+      ],
+      "type": "evergreen",
+      "title": "컨텐츠 254 · 회의록은 깔끔한데 누가 말한 건지 못 찾겠음?",
+      "format": "case_thread",
+      "link_comment": "업무에 적용할 순서와 확인할 내용을 담은 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/8FWDxPHvxPQ",
+      "sources": [
+        {
+          "url": "https://familypartners.aimax.ai.kr/feed?n=500",
+          "title": "초기 자사 컨텐츠 1~30 중 운영에 남아 있는 29개 원문",
+          "published_at": null,
+          "collected_at": "2026-10-25T08:33:11.211299+00:00",
+          "verified_at": "2026-10-25T08:33:11.211299+00:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/refill-8FWDxPHvxPQ-frame-1.jpg",
+          "alt": "AI Walkthru의 원본 영상 장면 · 관련 업무 참고 화면, 이 글의 직접 실행 결과 아님",
+          "credit": "AI Walkthru · 원본 영상 참고 화면",
+          "source_url": "https://www.youtube.com/watch?v=8FWDxPHvxPQ",
+          "sha256": "95c7817c443ea4b3c815c4d5639fa9a263298258a716b7e2f327d0c9223c7a37"
+        }
+      ],
+      "supplemental": true,
+      "editorial_kind": "original_guidance"
+    },
+    {
+      "date": "2026-10-29",
+      "target": "상품운영자",
+      "fmt": "입력검사",
+      "body": "상품 여러 개 올리다가 중간에 틀린 줄 발견함?\n\n레딧의 atmja_560은 CSV를 받아\n상품과 가격을 등록하는 n8n 흐름을 소개함.\n\n눈여겨볼 부분은 등록 전에\n모든 행을 먼저 검사한다는 순서임.",
+      "replies": [
+        "1. 틀린 행이 있으면 생성 전에 돌려보냄\n\n작성자 설명상 CSV와 결제 도구 이름을 받고\n각 행을 검사한 뒤 상품과 가격을 생성함.\n오류가 있으면 생성하지 않고 행별 오류를 반환함.\n\n결과 보고서에는 상품·가격 ID와 실패 항목을 남김.\n준비 조건은 Paddle 샌드박스나 Stripe 시험 키임.\n실제 판매 계정에 바로 넣는 따라하기가 아님.",
+        "2. 같은 파일을 다시 올리는 문제는 따로 봐야 함\n\n댓글에서는 외부 ID를 열로 두고\n기존 상품을 찾은 뒤 건너뛰거나 수정하자는\n제안이 나옴. 원래 흐름에 구현됐다는 뜻은 아님.\n\n시험한다면 잘못된 행을 섞은 파일과\n이미 처리한 파일을 따로 넣어봐.\n입력 검사와 중복 검사는 다른 확인 항목임."
+      ],
+      "type": "ai",
+      "title": "컨텐츠 255 · 상품 여러 개 올리다가 중간에 틀린 줄 발견함?",
+      "format": "case_thread",
+      "link_comment": "관련 업무의 기준을 정리한 활용노트.\n커뮤니티 사례의 배포 파일과는 다른 참고 자료임.\n\nhttps://lounge.aimax.ai.kr/worldclass/ZiNbXf-RSWA",
+      "sources": [
+        {
+          "url": "https://www.reddit.com/r/n8n/comments/1xe8kih/bulkimport_products_and_prices_from_a_csv_into/",
+          "title": "Bulk-import products and prices from a CSV into Paddle or Stripe",
+          "published_at": "2026-10-24T13:23:24.798Z",
+          "collected_at": "2026-10-25T08:33:11.211299+00:00",
+          "verified_at": "2026-10-25T08:33:11.211299+00:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/refill-reddit-2.png",
+          "alt": "atmja_560의 Reddit 원문 화면",
+          "credit": "Reddit u/atmja_560 · 작성자가 공개한 원문 화면",
+          "source_url": "https://www.reddit.com/r/n8n/comments/1xe8kih/bulkimport_products_and_prices_from_a_csv_into/",
+          "sha256": "741269e2eaf2548b7808c705cad5f95da15c4394cbd02f27319ce0747727b5a2"
+        }
+      ]
+    },
+    {
+      "date": "2026-10-29",
+      "target": "예약업체",
+      "fmt": "요청구분",
+      "body": "예약 AI라면 시간 바꾸는 전화도 받아야 하잖아.\n\nShri AI의 미용실 시연은 신규 예약 뒤에\n변경과 취소 요청까지 이어짐.\n\n음성 대화, n8n, Cal.com을 연결하고\n요청마다 다른 기능을 부르는 구조임.",
+      "replies": [
+        "1. 서비스 종류와 개별 예약을 구분함\n\n영상에서는 커트와 면도 같은 서비스 유형 ID와\n생성된 예약을 가리키는 예약 ID를 나눔.\n새로 예약할 때와 이미 잡힌 시간을 바꿀 때\n필요한 정보가 다른 거임.\n\n조회, 생성, 변경, 취소 기능을\n각각 n8n 웹훅에 연결하는 방식으로 설명함.",
+        "2. 내일이라는 말에도 기준 시각이 필요함\n\n제작자는 자기 시간대의 현재 시각을 넣어\n오늘·내일을 해석하도록 설정함.\n우리 사업장에서는 쓰는 시간대로 시험해야 함.\n\n시험 예약을 만들고 변경한 뒤 취소해봐.\n음성 안내만 듣지 말고 Cal.com의 날짜, 시간,\n예약 ID와 실제 상태를 차례로 대조하는 거임."
+      ],
+      "type": "evergreen",
+      "title": "컨텐츠 256 · 예약 AI라면 시간 바꾸는 전화도 받아야 하잖아.",
+      "format": "case_thread",
+      "link_comment": "업무에 적용할 순서와 확인할 내용을 담은 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/Mgnl-itgiWU",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/Mgnl-itgiWU",
+          "title": "전화 예약부터 변경·취소까지, AI 접수원을 업무에 연결하는 방법",
+          "published_at": null,
+          "collected_at": "2026-10-25T08:33:11.211299+00:00",
+          "verified_at": "2026-10-25T08:33:11.211299+00:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/refill-Mgnl-itgiWU-d2410223a7fc-frame-1.jpg",
+          "alt": "Shri AI | AI Automation의 원본 영상 장면 · 소개한 원본 영상 참고 화면",
+          "credit": "Shri AI | AI Automation · 원본 영상 참고 화면",
+          "source_url": "https://youtu.be/Mgnl-itgiWU",
+          "sha256": "d2410223a7fc74c79273b32ad5aa0fbfe4b5d8f81669e609221e4189e3a88dad"
+        }
+      ]
+    },
+    {
+      "date": "2026-10-29",
+      "target": "1인사업자",
+      "fmt": "업무범위",
+      "body": "아침마다 메일이랑 일정부터 뒤지고 있음?\n\nAI Foundations는 Claude Cowork에\n아침 브리핑 순서를 저장하는 과정을 보여줌.\n\n일정 조회와 답변할 메일 정리를 묶되\n읽을 범위와 결과 형식까지 정한 사례임.",
+      "replies": [
+        "1. 브리핑에 필요한 순서를 정해둠\n\n시연의 스킬은 현재 시각과 시간대 확인\n→ 당일 일정 조회 → 답변이 필요한 메일 확인\n→ 대화창 요약 순서임.\n\n메일은 전날 저녁 이후로 범위를 정함.\n막연히 모든 메일을 요약하라는 요청과 다름.",
+        "2. 자료 폴더와 연결한 앱의 역할이 다름\n\n영상에서는 전사문·분석 자료를 폴더에 모으고\n폴더 설명과 답변 기준을 지침 파일에 남김.\n계속 바뀌는 일정과 메일은 커넥터로 읽음.\n\n우리 업무에서는 브리핑 한 건을 열어봐.\n빠진 일정이 없는지, 답변할 메일이 맞는지\n실제 캘린더와 메일함을 대조하는 거임."
+      ],
+      "type": "evergreen",
+      "title": "컨텐츠 257 · 아침마다 메일이랑 일정부터 뒤지고 있음?",
+      "format": "case_thread",
+      "link_comment": "업무에 적용할 순서와 확인할 내용을 담은 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/xEoVCx9CmxQ",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/xEoVCx9CmxQ",
+          "title": "메일과 일정 확인에 쓰는 시간을 줄이는 Claude Cowork 업무 설계법",
+          "published_at": null,
+          "collected_at": "2026-10-25T08:33:11.211299+00:00",
+          "verified_at": "2026-10-25T08:33:11.211299+00:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/refill-xEoVCx9CmxQ-04b79ea7feb1-frame-1.jpg",
+          "alt": "AI Foundations의 원본 영상 장면 · 소개한 원본 영상 참고 화면",
+          "credit": "AI Foundations · 원본 영상 참고 화면",
+          "source_url": "https://youtu.be/xEoVCx9CmxQ",
+          "sha256": "04b79ea7feb10e13050f16951d8ef356a2f878d86d9f3d4ef9fe1f872c386b8d"
+        }
+      ]
+    },
+    {
+      "date": "2026-10-29",
+      "target": "예비창업자",
+      "fmt": "서비스범위",
+      "body": "AI 서비스 팔고 싶은데 기능부터 잔뜩 넣고 있음?\n\nMikey Vibe Coding은 고객 문의와 예약을\n업무 기록에 연결하는 구성을 소개함.\n\n사장님에게 보여줄 건 답변 화면뿐 아니라\n접수 뒤에 남는 기록까지인 거임.",
+      "replies": [
+        "1. 문의를 받으면 남아야 할 항목을 정함\n\n영상에서는 Claude와 Base44를 활용해\n서비스·가격 안내, 연락처 수집, 대화 저장을\n묶는 접근을 설명함.\n\n시험 메시지의 답변을 본 뒤 관리 화면에서\n고객 정보가 남는 흐름도 확인하도록 함.",
+        "2. 문의 응대와 예약 중 먼저 필요한 걸 고름\n\n예약 쪽은 가능한 시간 안내, 일정 등록,\n확인 메시지와 방문 상태 기록을 요청함.\n다만 장기 운영 성과를 입증한 자료는 아님.\n\n고객에게 제안한다면 최근 문의 하나를 따라가봐.\n무엇을 물었고 직원이 어디에 기록했는지 확인하고\n그중 반복되는 구간부터 제안 범위로 잡는 거임."
+      ],
+      "type": "marketing",
+      "title": "컨텐츠 258 · AI 서비스 팔고 싶은데 기능부터 잔뜩 넣고 있음?",
+      "format": "case_thread",
+      "link_comment": "업무에 적용할 순서와 확인할 내용을 담은 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/zrqLDNzn1RM",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/zrqLDNzn1RM",
+          "title": "고객 문의부터 예약까지, 반복 업무를 줄이는 AI 서비스를 만드는 방법",
+          "published_at": null,
+          "collected_at": "2026-10-25T08:33:11.211299+00:00",
+          "verified_at": "2026-10-25T08:33:11.211299+00:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/refill-zrqLDNzn1RM-196f36fb7718-frame-1.jpg",
+          "alt": "Mikey Vibe Coding의 원본 영상 장면 · 소개한 원본 영상 참고 화면",
+          "credit": "Mikey Vibe Coding · 원본 영상 참고 화면",
+          "source_url": "https://youtu.be/zrqLDNzn1RM",
+          "sha256": "196f36fb77185c55688c7e89bcee366ce15e4f77bdbb8ac583444124101bbaea"
+        }
+      ]
+    },
+    {
+      "date": "2026-10-29",
+      "target": "고객응대담당자",
+      "fmt": "인계기준",
+      "body": "AI 직원한테 모르는 질문도 끝까지 답하게 함?\n\n고객 응대를 맡긴다면 답할 내용과 함께\n사람에게 넘길 조건도 적어봐.\n\n가격표에 없는 견적이나 예외 요청까지\n그럴듯하게 약속하게 두면 곤란하잖아.",
+      "replies": [
+        "1. 답할 자료 옆에 인계 조건을 둬봐\n\n안내문에 없는 가격, 계약 조건 변경,\n직접 확인이 필요한 일정은 담당자에게 넘기도록\n업무 범위를 정해보는 거임.\n\n인계할 때는 고객 질문, 지금까지 확인한 내용,\n담당자가 결정할 항목을 함께 남기게 해.",
+        "2. 일부러 자료에 없는 질문을 넣어보셈\n\n답을 만들어내는지, 모른다고 끝내는지,\n필요한 내용을 담당자에게 넘기는지 확인해.\n\n담당자가 답을 줬다면 그 답을 어디까지\n다음 문의에 써도 되는지도 정해둬.\n한 고객의 예외를 전체 규칙으로 쓰지 않도록."
+      ],
+      "type": "evergreen",
+      "title": "컨텐츠 259 · AI 직원한테 모르는 질문도 끝까지 답하게 함?",
+      "format": "case_thread",
+      "link_comment": "업무에 적용할 순서와 확인할 내용을 담은 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/zrqLDNzn1RM",
+      "sources": [
+        {
+          "url": "https://familypartners.aimax.ai.kr/feed?n=500",
+          "title": "초기 자사 컨텐츠 1~30 중 운영에 남아 있는 29개 원문",
+          "published_at": null,
+          "collected_at": "2026-10-25T08:33:11.211299+00:00",
+          "verified_at": "2026-10-25T08:33:11.211299+00:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/refill-zrqLDNzn1RM-196f36fb7718-frame-1.jpg",
+          "alt": "Mikey Vibe Coding의 원본 영상 장면 · 관련 업무 참고 화면, 이 글의 직접 실행 결과 아님",
+          "credit": "Mikey Vibe Coding · 원본 영상 참고 화면",
+          "source_url": "https://youtu.be/zrqLDNzn1RM",
+          "sha256": "196f36fb77185c55688c7e89bcee366ce15e4f77bdbb8ac583444124101bbaea"
+        }
+      ],
+      "supplemental": true,
+      "editorial_kind": "original_guidance"
+    },
+    {
+      "date": "2026-10-29",
+      "target": "업무자동화담당자",
+      "fmt": "완료조건",
+      "body": "AI가 완료라고 했는데 내가 할 일이 또 남음?\n\n다음 업무는 부탁할 때부터\n완료로 볼 장면을 같이 적어봐.\n\n파일 생성, 앱 저장, 담당자 확인 중\n어디까지 맡기는지 분명히 하는 거임.",
+      "replies": [
+        "1. 기능 이름 옆에 확인할 결과를 적어봐\n\n보고서라면 기간과 항목이 맞는 파일,\n접수라면 지정된 시트에 저장된 행,\n업무 배정이라면 담당자 계정에 보이는 카드처럼.\n\n무엇을 입력하고 어디에서 결과를 볼지도 적어.\n생성됐다는 답변만으로 끝내지 않도록.",
+        "2. 평소 쓰는 입력으로 끝까지 해보셈\n\n자료가 빠진 경우와 수정 요청도 넣어봐.\n완료하지 못했다면 어느 단계에서 멈췄는지,\n무엇이 더 필요한지 보고하게 하는 거임.\n\n오늘 반복한 업무 하나를 골라\n입력 자료와 완료 화면을 짝지어 적어봐.\n그 문장으로 다음 요청을 시작하면 됨."
+      ],
+      "type": "evergreen",
+      "title": "컨텐츠 260 · AI가 완료라고 했는데 내가 할 일이 또 남음?",
+      "format": "case_thread",
+      "link_comment": "업무에 적용할 순서와 확인할 내용을 담은 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/sX-FmJL7Wd0",
+      "sources": [
+        {
+          "url": "https://familypartners.aimax.ai.kr/feed?n=500",
+          "title": "초기 자사 컨텐츠 1~30 중 운영에 남아 있는 29개 원문",
+          "published_at": null,
+          "collected_at": "2026-10-25T08:33:11.211299+00:00",
+          "verified_at": "2026-10-25T08:33:11.211299+00:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/refill-sX-FmJL7Wd0-85a0faff1cb7-frame-1.jpg",
+          "alt": "Shah Wali의 원본 영상 장면 · 관련 업무 참고 화면, 이 글의 직접 실행 결과 아님",
+          "credit": "Shah Wali · 원본 영상 참고 화면",
+          "source_url": "https://youtu.be/sX-FmJL7Wd0",
+          "sha256": "85a0faff1cb7fcc4734416a71decfcc2fa3988ba6f97ba1eeeae531ec5f6bbf2"
+        }
+      ],
+      "supplemental": true,
+      "editorial_kind": "original_guidance"
     }
   ],
   "_작성기준": "글감 작성 전 AGENTS.md와 config/brands/makefamily.md의 최신 사용자 기준을 읽는다. 과거 루틴 문구와 충돌하면 최신 사용자 기준을 적용한다."
