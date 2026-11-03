@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "timezone": "Asia/Seoul",
+  "future_days": 5,
+  "regular_per_day": 4,
+  "guidance_per_day": 2,
+  "hours": [9, 21],
+  "minutes": 0,
+  "state_directory": "/Users/apple/.local/share/familypartners-drop-maintenance",
+  "agent_runner": "/Users/apple/orca/projects/loopguard/bin/agent-run",
+  "model": "gpt-5.6-sol",
+  "model_timeout_seconds": 1800,
+  "source_feed": "/Users/apple/.local/share/ai-overseas-note/feed.json",
+  "source_assets": "/Users/apple/.local/share/ai-overseas-note/assets",
+  "remote_host": "oracle-direct",
+  "remote_directory": "/home/ubuntu/familypartners",
+  "public_base": "https://familypartners.aimax.ai.kr"
+}
