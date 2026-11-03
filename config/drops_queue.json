@@ -4000,6 +4000,208 @@
       ],
       "supplemental": true,
       "editorial_kind": "original_guidance"
+    },
+    {
+      "date": "2026-11-08",
+      "title": "컨텐츠 309 · 영상 자동화는 만들기보다 중복 방지에서 갈린다.",
+      "type": "ai",
+      "target": "영상 자동화를 설계하는 콘텐츠 제작자",
+      "fmt": "중복 방지 작업 흐름형",
+      "format": "case_thread",
+      "body": "영상 자동화는 만들기보다 중복 방지에서 갈린다.\n\nSyedAnasAhmadShah가 n8n으로 Reddit 글을 영상으로 바꾸는\n작업 흐름을 공개했음.\n수집부터 음성·자막·업로드까지 잇고\n이미 쓴 글은 따로 걸러내는 구조다.",
+      "replies": [
+        "1. 작성자는 커뮤니티 목록 → 게시물 수집 → 사용한 게시물 ID 대조 → 남은 원고를 Markdown으로 저장하는 순서로 묶었음.\n\n입력은 커뮤니티 목록과 기존 ID 표, 출력은 미사용 원고 파일이다.",
+        "2. 원고는 webhook으로 들어오고 문장별 음성 → 합친 오디오 → WhisperX 타임스탬프 → 배경 영상 → ASS 자막·음악 → 업로드로 이어짐.\n\n다만 원고 생성은 이 흐름 안에 없다고 작성자가 직접 밝혔다.",
+        "3. 댓글 작성자 Tariq9977는 word_timestamps를 보관해도 최종 자막은 구절 단위라고 짚었음.\n\nSaved_Not_Soft의 제안은 빈 타이밍·순서 오류를 자막 입히기 전에 검사하고 업로드 성공 뒤에만 게시물 ID를 사용 완료로 표시하자는 것.\n\n연결되는 라운지 글은 이 Reddit 작업 파일이 아니라, 콘텐츠 입력과 결과 기준을 잡는 관련 읽을거리다."
+      ],
+      "link_comment": "관련 업무를 더 살펴볼 활용노트.\n레딧 사례의 배포 파일과는 다른 참고 자료임.\n\nhttps://lounge.aimax.ai.kr/worldclass/Sh3LAwUh5VE",
+      "sources": [
+        {
+          "url": "https://www.reddit.com/r/n8n/comments/1xkx6hk/i_built_an_endtoend_reddittoyoutube_automation_in/",
+          "title": "I built an end-to-end Reddit-to-YouTube automation in n8n (7 stages)",
+          "published_at": "2026-11-01T07:43:38.721Z",
+          "collected_at": "2026-11-03T11:50:09.116268+09:00",
+          "verified_at": "2026-11-03T11:59:12.431805+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/auto-drop-maintenance-20261103-114937-2026-11-08-0.png",
+          "alt": "I built an end-to-end Reddit-to-YouTube automation in n8n (7 stages)",
+          "credit": "SyedAnasAhmadShah · Reddit 원문 화면",
+          "source_url": "https://www.reddit.com/r/n8n/comments/1xkx6hk/i_built_an_endtoend_reddittoyoutube_automation_in/",
+          "sha256": "7b1eed0d2f23227bca541a3f8ec8467665d2a6103747616af80c1f9f1a2f8cce"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-08",
+      "title": "컨텐츠 310 · 광고 성과 질문보다 연결 기준이 먼저였음.",
+      "type": "marketing",
+      "target": "여러 광고 채널을 함께 보는 광고 운영자",
+      "fmt": "연결 기준 점검형",
+      "format": "case_thread",
+      "body": "광고 성과 질문보다 연결 기준이 먼저였음.\n\nLoves Data의 WaterGraph 후원 영상 정리본은\n광고 채널 비용과 웹사이트 성과를 모은 뒤,\nClaude 답을 보고서와 대조하는 흐름을 보여줌.",
+      "replies": [
+        "1. 입력은 Google Ads·Meta Ads의 비용·클릭·전환과 Google Analytics의 방문·문의 데이터다.\n\n소스를 모은 뒤 날짜나 UTM 캠페인처럼 양쪽에 있는 항목으로 연결하고 캠페인별 표를 만든다.",
+        "2. 출력 표에는 캠페인 이름, 세션, 비용, 문의 전환, ROAS를 둔다.\n\n제작자는 날짜만 잇고 캠페인을 연결하지 않으면 전환이 중복될 수 있다고 설명했지만 시연에서는 데모 데이터 사정으로 캠페인 연결을 생략했다.",
+        "3. 보고서를 먼저 만든 다음 같은 기간·계산식으로 Claude에 묻고, 두 결과를 대조하는 순서다.\n\n문의 가치는 제작자가 시연용으로 정한 가정값이다. 실제 매출이나 모든 사업의 기준으로 읽으면 안 됨."
+      ],
+      "link_comment": "업무에 적용할 순서와 확인할 내용을 정리한 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/QplBqgvLkUo",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/QplBqgvLkUo",
+          "title": "광고비를 어디부터 손볼지, Claude에 묻기 전에 정리할 데이터 기준",
+          "published_at": null,
+          "collected_at": "2026-11-03T11:50:09.116268+09:00",
+          "verified_at": "2026-11-03T11:59:12.504017+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/auto-drop-maintenance-20261103-114937-2026-11-08-1.jpg",
+          "alt": "Loves Data의 원본 영상 장면 · 관련 업무 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "Loves Data · 원본 영상 참고 화면",
+          "source_url": "https://youtu.be/QplBqgvLkUo",
+          "sha256": "7166f58cdffdcdddbf5631568543908c58ec89b021c419c31692c3d29fcf1414"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-08",
+      "title": "컨텐츠 311 · 예약 자동화는 말 잘하는 봇보다 저장 칸이 먼저였음.",
+      "type": "evergreen",
+      "target": "전화 예약을 반복해서 받는 상담 사업자",
+      "fmt": "조회·저장 분리형",
+      "format": "case_thread",
+      "body": "예약 자동화는 말 잘하는 봇보다 저장 칸이 먼저였음.\n\nTaskNator 영상 정리본은\n클리닉 상담 전화를 예로,\n희망 날짜의 빈 시간을 찾고\n통화 뒤 예약표에 새 행을 남기는 흐름을 소개함.",
+      "replies": [
+        "1. 입력은 이름·연락처·희망 날짜와 상담에 필요한 항목이다.\n\nWAPI AI가 대화를 맡고 → Make.com이 날짜를 Google Sheets에서 조회하고 → 남은 시간을 다시 대화로 돌려주는 순서다.",
+        "2. 조회와 저장은 서로 다른 Make.com 시나리오로 나뉜다.\n\n통화가 끝나면 구조화된 출력에서 이름·연락처·선택 날짜·시간을 꺼내 예약표의 같은 열에 연결하고 새 행이 생겼는지 본다.",
+        "3. 정리본은 구조화된 출력의 세부 설정 일부가 불분명하다고 밝힘.\n\n이름이 다르게 불린 대목과 연락처가 어긋난 대목도 실제 음성 문제인지 전사 오류인지 판단할 수 없다. 제안: 대화 내용·예약표·안내문을 항목별로 대조해보자."
+      ],
+      "link_comment": "업무에 적용할 순서와 확인할 내용을 정리한 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/fogPJtzuzjU",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/fogPJtzuzjU",
+          "title": "전화 예약부터 안내 발송까지, AI로 예약 업무를 연결하는 방법",
+          "published_at": null,
+          "collected_at": "2026-11-03T11:50:09.116268+09:00",
+          "verified_at": "2026-11-03T11:59:12.558851+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/auto-drop-maintenance-20261103-114937-2026-11-08-2.jpg",
+          "alt": "TaskNator의 원본 영상 장면 · 관련 업무 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "TaskNator · 원본 영상 참고 화면",
+          "source_url": "https://youtu.be/fogPJtzuzjU",
+          "sha256": "6c4afa2a7f7a29c825ce2383ec69323fe9291f4b41720511cf7a288df70eec5c"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-08",
+      "title": "컨텐츠 312 · 자동화 시작할 때 도구보다 맞는 결과부터 적어야 함.",
+      "type": "evergreen",
+      "target": "상담 전 회사 조사를 반복하는 대표",
+      "fmt": "대표 자료 검증형",
+      "format": "case_thread",
+      "body": "자동화 시작할 때 도구보다 맞는 결과부터 적어야 함.\n\nThe AI Architects 영상 정리본은\n회사 주소를 넣어 조사 보고서를 만들고\n결과를 Airtable에 저장하는 실습을 다룸.\n업무 규칙과 실행 순서도 파일로 나눠둔다.",
+      "replies": [
+        "1. 입력은 회사 주소와 조사 기준이다.\n\n프로젝트 규칙 → 회사 조사 절차 → Airtable 연결 순서로 준비하고 출력은 회사 소개·최근 소식·주요 인물·영업 제안 방향으로 나눈다.",
+        "2. 정리본에 따르면 조사 스킬을 설치하기 전 보고서는 실시간 조사 결과가 아니라 기존 지식으로 작성됐음.\n\n확인된 회사 정보와 AI가 제안한 영업 접근법을 다른 칸에 두고 최근 소식은 실제 조사 여부까지 확인해야 한다.",
+        "3. 반복 실행 전 대표 자료를 처음부터 끝까지 처리해본다.\n\n청구서 시연에서는 중복 안내가 떴는데도 저장을 진행했다. 제안: 중복이면 건너뛸지, 갱신할지, 검토함으로 보낼지를 업무 규칙과 결과 필드에 먼저 적어두자."
+      ],
+      "link_comment": "업무에 적용할 순서와 확인할 내용을 정리한 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/Sh3LAwUh5VE",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/Sh3LAwUh5VE",
+          "title": "반복되는 고객 조사와 콘텐츠 작업, Claude Code로 업무 흐름을 만드는 방법",
+          "published_at": null,
+          "collected_at": "2026-11-03T11:50:09.116268+09:00",
+          "verified_at": "2026-11-03T11:59:12.609689+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/auto-drop-maintenance-20261103-114937-2026-11-08-3.jpg",
+          "alt": "The AI Architects | Tom Crawshaw의 원본 영상 장면 · 관련 업무 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "The AI Architects | Tom Crawshaw · 원본 영상 참고 화면",
+          "source_url": "https://youtu.be/Sh3LAwUh5VE",
+          "sha256": "111f82a386573f861d4a1f25a21fd2f57adfa68d36eedeac65e3d53e94c56ba4"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-08",
+      "title": "컨텐츠 313 · AI 직원 만들기 전에 업무지시서부터 짧게 써보세요.",
+      "type": "evergreen",
+      "target": "AI 직원의 결과가 자꾸 어긋나는 대표",
+      "fmt": "업무지시서 작성형",
+      "format": "case_thread",
+      "body": "AI 직원 만들기 전에 업무지시서부터 짧게 써보세요.\n\n이건 사례가 아니라 개인 가이드임.\n맡길 업무를 먼저 고르고\n해야 할 일과 하지 말아야 할 일을 적고\n받을 결과 형식까지 정해두자는 제안이다.",
+      "replies": [
+        "1. 제안: 실제로 반복하는 업무, 잘된 예시, 금지할 내용을 입력으로 모은다.\n\n역할 → 해야 할 일 → 하지 말아야 할 일 → 예시 → 결과 형식 순서로 업무지시서를 적어보자.",
+        "2. 결과 형식에는 제목, 필요한 항목, 항목 순서, 비워두면 안 되는 칸, 검토 기준을 넣는다.\n\n대표 입력을 넣어 결과를 받은 뒤, 맞은 부분과 틀린 부분을 같은 기준표로 비교하자는 제안이다.",
+        "3. 피드백은 ‘다시 해’로 끝내지 말고 원래 입력 → 어긋난 결과 → 고칠 기준 → 수정본 순서로 남긴다.\n\n개인 가이드 제안: 다음 작업에서도 반복되는 오류만 업무지시서 규칙으로 올리고, 일회성 수정은 분리해두자."
+      ],
+      "link_comment": "업무에 적용할 순서와 확인할 내용을 정리한 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/Sh3LAwUh5VE",
+      "sources": [
+        {
+          "url": "https://familypartners.aimax.ai.kr/feed?n=500",
+          "title": "초기 자사 컨텐츠 원문",
+          "published_at": null,
+          "collected_at": "2026-11-03T11:50:09.116268+09:00",
+          "verified_at": "2026-11-03T11:59:12.660137+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/auto-drop-maintenance-20261103-114937-2026-11-08-4.jpg",
+          "alt": "The AI Architects | Tom Crawshaw의 원본 영상 장면 · 관련 업무 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "The AI Architects | Tom Crawshaw · 원본 영상 참고 화면",
+          "source_url": "https://youtu.be/Sh3LAwUh5VE",
+          "sha256": "111f82a386573f861d4a1f25a21fd2f57adfa68d36eedeac65e3d53e94c56ba4"
+        }
+      ],
+      "supplemental": true,
+      "editorial_kind": "original_guidance"
+    },
+    {
+      "date": "2026-11-08",
+      "title": "컨텐츠 314 · 기록이 흩어져 있으면 AI보다 입력표가 먼저임.",
+      "type": "evergreen",
+      "target": "기록은 많지만 다시 꺼내 쓰기 어려운 사람",
+      "fmt": "기록 입력표 제안형",
+      "format": "case_thread",
+      "body": "기록이 흩어져 있으면 AI보다 입력표가 먼저임.\n\n이것도 사례가 아니라 개인 가이드임.\n쓴 글·고객 질문·강의 자료·메모를 모은 뒤\nAI가 읽을 범위를 정하자는 제안이다.\n도구보다 꺼내 쓸 질문부터 잡자.",
+      "replies": [
+        "1. 제안: 내가 쓴 글, 고객 질문, 강의 자료, 아이디어 메모를 입력 묶음으로 만든다.\n\n자료명 → 작성일 → 주제 → 공개 범위 → 원문 위치 순서로 적고 그 표에서 AI가 읽을 자료만 연결하자.",
+        "2. 출력은 답만 받지 말고 답변, 참고한 원문 위치, 빠진 자료, 다시 확인할 질문으로 나눈다.\n\n제안: 출처가 비어 있으면 확정 문장으로 쓰지 않고 어떤 자료가 더 필요한지 되묻게 하자.",
+        "3. 처음엔 직접 쓴 공개 글과 업무 자료처럼 범위를 판단하기 쉬운 것부터 넣는다.\n\n개인 가이드 제안: 대표 질문을 하나 정해 답변과 원문 위치가 맞는지 확인한 뒤, 필요한 자료 묶음만 넓혀가자."
+      ],
+      "link_comment": "업무에 적용할 순서와 확인할 내용을 정리한 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/Sh3LAwUh5VE",
+      "sources": [
+        {
+          "url": "https://familypartners.aimax.ai.kr/feed?n=500",
+          "title": "초기 자사 컨텐츠 원문",
+          "published_at": null,
+          "collected_at": "2026-11-03T11:50:09.116268+09:00",
+          "verified_at": "2026-11-03T11:59:12.715076+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/auto-drop-maintenance-20261103-114937-2026-11-08-5.jpg",
+          "alt": "The AI Architects | Tom Crawshaw의 원본 영상 장면 · 관련 업무 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "The AI Architects | Tom Crawshaw · 원본 영상 참고 화면",
+          "source_url": "https://youtu.be/Sh3LAwUh5VE",
+          "sha256": "111f82a386573f861d4a1f25a21fd2f57adfa68d36eedeac65e3d53e94c56ba4"
+        }
+      ],
+      "supplemental": true,
+      "editorial_kind": "original_guidance"
     }
   ],
   "_작성기준": "글감 작성 전 AGENTS.md와 config/brands/makefamily.md의 최신 사용자 기준을 읽는다. 과거 루틴 문구와 충돌하면 최신 사용자 기준을 적용한다."
