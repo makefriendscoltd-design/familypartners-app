@@ -3798,6 +3798,208 @@
       ],
       "supplemental": true,
       "editorial_kind": "original_guidance"
+    },
+    {
+      "date": "2026-11-07",
+      "title": "컨텐츠 303 · AI 사용료 집계, 같은 실행을 두 번 세면 예산 경보도 틀어짐.",
+      "type": "ai",
+      "target": "AI 자동화 운영자",
+      "fmt": "중복 집계 방지형",
+      "format": "case_thread",
+      "body": "AI 사용료 집계, 같은 실행을 두 번 세면 예산 경보도 틀어짐.\n\nFresh-Daikon-9408가 소개한 건\nRetailbox Automation의 n8n 템플릿임.\n실행 기록이 겹쳐 들어와도\n호출마다 고유 키를 대조해 새 행만 남긴다고 설명함.",
+      "replies": [
+        "1. 게시글 작성자가 설명한 입력은 활성 워크플로 실행 기록, 모델별 입력·출력 토큰, 가격표, 워크플로별 예산임.\n\n실행 기록 → 모델 호출 탐색 → 토큰 사용량과 가격 연결 → 호출별 비용 행 순서로 처리함.\n\n결과에는 워크플로 이름, 오늘 사용액, 예산, 호출 수가 남음.",
+        "2. 호출 고유 키가 Data Table에 없을 때만 새 행을 넣고, 그날 끝난 행을 다시 읽어 워크플로별 사용액을 합산함.\n\n다만 제공자가 토큰 사용량을 돌려주지 않으면 n8n의 추정치를 쓴다고 적혀 있음. 실제 청구액과 같은 값으로 단정하면 안 됨.",
+        "3. 게시글은 화면 시연이 실제 실행이 아니라 템플릿 미리보기 재생이라고 밝힘.\n\n제안: 자동 게시 해제는 바로 켜기보다 Slack 알림의 워크플로 이름·오늘 사용액·예산·호출 수부터 확인해보는 편이 나음.\n\n연결된 라운지 글은 이 템플릿 파일이 아니라 조사와 수정을 나누는 관련 읽을거리임."
+      ],
+      "link_comment": "관련 업무를 더 살펴볼 활용노트.\n레딧 사례의 배포 파일과는 다른 참고 자료임.\n\nhttps://lounge.aimax.ai.kr/worldclass/sNI18nzwgn8",
+      "sources": [
+        {
+          "url": "https://www.reddit.com/r/n8n/comments/1xlqz0n/overlapping_polls_nothing_counted_twice_retailbox/",
+          "title": "Overlapping polls, nothing counted twice: Retailbox Automation's n8n template that tracks LLM token spend per workflow, explained node by node",
+          "published_at": "2026-11-02T07:35:12.065Z",
+          "collected_at": "2026-11-03T11:41:33.910377+09:00",
+          "verified_at": "2026-11-03T11:47:01.921569+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/auto-drop-maintenance-20261103-114101-2026-11-07-0.png",
+          "alt": "Overlapping polls, nothing counted twice: Retailbox Automation's n8n template that tracks LLM token spend per workflow, explained node by node",
+          "credit": "Fresh-Daikon-9408 · Reddit 원문 화면",
+          "source_url": "https://www.reddit.com/r/n8n/comments/1xlqz0n/overlapping_polls_nothing_counted_twice_retailbox/",
+          "sha256": "96d29d907a599eea157bb5b4b0846fdfbc6b218feedc60192562ebae9f341f77"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-07",
+      "title": "컨텐츠 304 · 긴 영상 하나 만들고 채널마다 다시 처음부터 쓰고 있음?",
+      "type": "marketing",
+      "target": "콘텐츠를 여러 채널에 쓰는 1인 사업자",
+      "fmt": "원본 재활용 순서형",
+      "format": "case_thread",
+      "body": "긴 영상 하나 만들고 채널마다 다시 처음부터 쓰고 있음?\n\nModern Millie 영상 정리본은\n브랜드 지침을 프로젝트에 넣고\n영상 전사문을 넣은 뒤\n여러 채널 초안으로 나누는 흐름을 소개함.",
+      "replies": [
+        "1. 라운지 정리본이 제시한 입력은 브랜드 이름, 대상 고객, 채널 목표, 자주 다룰 주제임.\n\n채널별 프로젝트에 공통 지침을 저장한 뒤 최근 콘텐츠 화면이나 분석 자료를 넣는 순서임.\n\n결과는 프로필 소개, 영상 시작 문구, 강점, 개선 기회로 나왔다고 소개함.",
+        "2. 긴 콘텐츠는 브랜드 지침 → YouTube 전사문 → 채널별 초안 순서로 이어짐.\n\n결과 칸은 짧은 영상 대본, 시작 문구, 게시물 문구, 이메일 뉴스레터, 카드형 구성안임.\n\n원문 뜻이 유지되는지는 직접 읽고 채널에 맞게 고쳐야 한다고 적혀 있음.",
+        "3. 댓글을 분석할 때는 반복 질문을 묶어 다음 주제 후보로 쓰는 흐름임.\n\n댓글이 적다면 비슷한 분야 제작자의 댓글을 참고하라고 제안하지만, 그 반응을 내 고객 전체의 요구로 단정하지 말라는 한계도 같이 둠."
+      ],
+      "link_comment": "업무에 적용할 순서와 확인할 내용을 정리한 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/xEyQub_fDjg",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/xEyQub_fDjg",
+          "title": "Claude로 콘텐츠 기획부터 이메일 정리까지 업무 흐름 만들기",
+          "published_at": null,
+          "collected_at": "2026-11-03T11:41:33.910377+09:00",
+          "verified_at": "2026-11-03T11:47:01.979057+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/auto-drop-maintenance-20261103-114101-2026-11-07-1.jpg",
+          "alt": "Modern Millie의 원본 영상 장면 · 관련 업무 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "Modern Millie · 원본 영상 참고 화면",
+          "source_url": "https://youtu.be/xEyQub_fDjg",
+          "sha256": "9db7be4f20de07766fa5e4630c45612c86b20e4a98ae786d2b79a26eaf5cf2a8"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-07",
+      "title": "컨텐츠 305 · 코드 고치기 전에 조사부터 섞이면 어디까지 확인했는지도 흐려짐.",
+      "type": "evergreen",
+      "target": "AI로 웹서비스를 점검하는 대표",
+      "fmt": "조사·수정 분리형",
+      "format": "case_thread",
+      "body": "코드 고치기 전에 조사부터 섞이면 어디까지 확인했는지도 흐려짐.\n\nWeb Dev Cody 영상 정리본은\nClaude Code에서 파일 탐색과\n보안 검토, 구현을 따로 맡기고\n주 대화에서 결과를 고르는 방식을 소개함.",
+      "replies": [
+        "1. 라운지 정리본은 조사할 기능과 프로젝트를 입력으로 주고, 먼저 관련 파일 목록만 받는 흐름을 제안함.\n\n파일 탐색 → 코드 변경 없는 문제 검토 → 수정 대상 선택 → 구현 요청 순서임.\n\n수정 전에 어느 파일을 왜 볼지부터 정하게 됨.",
+        "2. 제안: 탐색 결과에는 파일 경로와 담당 기능, 검토 결과에는 수정 후보와 이유를 따로 받으면 됨.\n\n구현 담당자에는 선택한 문제, 관련 파일, 원하는 변경만 넘겨 범위를 줄이는 방식임.\n\n주 대화에서는 다음에 검토할 항목과 구현에 넘길 항목을 고르면 됨.",
+        "3. 제작자는 읽기 전용 도구만 골랐을 때 일부 검색 명령까지 가능한지는 확신하지 못했다고 밝힘.\n\n또 제공된 전사문은 구현을 요청한 장면까지만 담고 있음. 수정 결과를 검증했거나 모든 문제가 해결됐다는 사례로 읽으면 안 됨."
+      ],
+      "link_comment": "업무에 적용할 순서와 확인할 내용을 정리한 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/sNI18nzwgn8",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/sNI18nzwgn8",
+          "title": "AI로 서비스 코드를 점검할 때, 조사와 수정을 나누는 방법",
+          "published_at": null,
+          "collected_at": "2026-11-03T11:41:33.910377+09:00",
+          "verified_at": "2026-11-03T11:47:02.033156+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/auto-drop-maintenance-20261103-114101-2026-11-07-2.jpg",
+          "alt": "Web Dev Cody의 원본 영상 장면 · 관련 업무 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "Web Dev Cody · 원본 영상 참고 화면",
+          "source_url": "https://youtu.be/sNI18nzwgn8",
+          "sha256": "9e81f4b0db9946da4107aeb86f805bb84195c0f3230982783ff4402c94855c89"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-07",
+      "title": "컨텐츠 306 · 영업 명단, 찾기와 검증을 한 덩어리로 맡기면 순서부터 흐려짐.",
+      "type": "evergreen",
+      "target": "B2B 영업 명단을 만드는 대표",
+      "fmt": "검색·검증·전달형",
+      "format": "case_thread",
+      "body": "영업 명단, 찾기와 검증을 한 덩어리로 맡기면 순서부터 흐려짐.\n\nTaylor Haren 영상 정리본은\n고객 조건을 먼저 묻고\n검색·연락처 확인·중복 정리를 거쳐\n최종 시스템에 넘기는 흐름을 소개함.",
+      "replies": [
+        "1. 입력은 이상적인 고객을 정의한 문서, 상품 포지셔닝 자료, 이전 캠페인 기록임.\n\nAI가 대상 조건과 조정 가능한 조건, 사용할 데이터 공급원, 최종 전달 위치를 묻고 계획을 내는 순서로 소개됨.\n\n계획 결과에서 고객 조건과 공급원 순서를 먼저 확인함.",
+        "2. 대상 검색 → 연락처 찾기 → 유효성 검증 → 형식 정리와 중복 제거 → CRM이나 이메일 도구 전달 순서임.\n\n제안: 결과에는 회사, 담당자, 이메일 유효 여부, 최종 전달 위치를 나눠 받으면 됨.\n\n유효하지 않은 주소는 다른 공급원에서 다시 찾는 흐름이라고 설명함.",
+        "3. 라운지 정리본은 AI 구독만으로 모든 연락처가 생기는 구조가 아니라고 밝힘.\n\n데이터 공급원과 검증 수단, 서비스별 API 키가 따로 필요함. 제작자가 말한 처리 비용이나 반송 결과도 해당 팀의 사례라 다른 사업의 성과로 일반화하면 안 됨."
+      ],
+      "link_comment": "업무에 적용할 순서와 확인할 내용을 정리한 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/jlOjM7pQSEY",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/jlOjM7pQSEY",
+          "title": "영업 명단 정리에 시간을 쓰고 있다면, AI로 검색부터 연락처 검증까지 연결하는 방법",
+          "published_at": null,
+          "collected_at": "2026-11-03T11:41:33.910377+09:00",
+          "verified_at": "2026-11-03T11:47:02.087814+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/auto-drop-maintenance-20261103-114101-2026-11-07-3.jpg",
+          "alt": "Taylor Haren의 원본 영상 장면 · 관련 업무 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "Taylor Haren · 원본 영상 참고 화면",
+          "source_url": "https://youtu.be/jlOjM7pQSEY",
+          "sha256": "0fd35efb225a1505c231ed7d8cbea582a5fa3d00be171609be12a80a7955df28"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-07",
+      "title": "컨텐츠 307 · AI 직원한테 한 번에 다 시키면 반려할 지점도 못 찾음.",
+      "type": "evergreen",
+      "target": "AI 직원에게 반복 업무를 넘기는 대표",
+      "fmt": "업무 인수인계 설계형",
+      "format": "case_thread",
+      "body": "AI 직원한테 한 번에 다 시키면 반려할 지점도 못 찾음.\n\n이건 외부 성공 사례가 아니라\n내가 직접 제안하는 업무 쪼개기임.\n입력 정리, 작업, 검토를 나누고\n단계마다 받을 결과를 먼저 적어보자.",
+      "replies": [
+        "1. 제안: 맡길 업무, 읽을 자료, 하지 말아야 할 일, 좋은 예시와 반려 예시를 한 문서에 적어보자.\n\n결과 칸은 업무명, 입력 자료, 금지 항목, 완료 조건으로 나누면 됨.\n\n막연한 역할명보다 무엇을 받고 어디까지 해야 하는지가 먼저임.",
+        "2. 입력 정리 담당 → 작업 담당 → 검토 담당 순서로 넘겨보자.\n\n앞 단계 결과를 다음 단계 입력으로만 쓰고, 각 단계에서 파일명, 상태, 확인할 항목을 받는 방식임.\n\n제안: 반려할 때는 틀린 결과만 지우지 말고 반려 이유도 다음 업무지시서에 남겨보자.",
+        "3. 이건 성과가 확인된 자동화 사례가 아니라 현재 업무를 나눠보자는 개인 제안임.\n\n연결한 라운지 글은 파일 탐색·검토·구현을 나누는 외부 사례라 역할 분리와 관련 있음. 같은 결과를 보장하거나 완성된 업무지시서를 내려받는 링크는 아님."
+      ],
+      "link_comment": "업무에 적용할 순서와 확인할 내용을 정리한 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/sNI18nzwgn8",
+      "sources": [
+        {
+          "url": "https://familypartners.aimax.ai.kr/feed?n=500",
+          "title": "초기 자사 컨텐츠 원문",
+          "published_at": null,
+          "collected_at": "2026-11-03T11:41:33.910377+09:00",
+          "verified_at": "2026-11-03T11:47:02.139634+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/auto-drop-maintenance-20261103-114101-2026-11-07-4.jpg",
+          "alt": "Web Dev Cody의 원본 영상 장면 · 관련 업무 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "Web Dev Cody · 원본 영상 참고 화면",
+          "source_url": "https://youtu.be/sNI18nzwgn8",
+          "sha256": "9e81f4b0db9946da4107aeb86f805bb84195c0f3230982783ff4402c94855c89"
+        }
+      ],
+      "supplemental": true,
+      "editorial_kind": "original_guidance"
+    },
+    {
+      "date": "2026-11-07",
+      "title": "컨텐츠 308 · AI한테 메모를 넘기기 전에 다음 글에 쓸 칸부터 정해보셈.",
+      "type": "evergreen",
+      "target": "기록을 콘텐츠로 꺼내 쓰려는 대표",
+      "fmt": "기록을 콘텐츠 입력표로 바꾸기",
+      "format": "case_thread",
+      "body": "AI한테 메모를 넘기기 전에 다음 글에 쓸 칸부터 정해보셈.\n\n이것도 외부 사례 소개가 아니라\n내가 직접 제안하는 기록 정리법임.\n원문, 고객 질문, 쓸 채널을 묶고\n다음 작업에 넘길 칸까지 정해보자.",
+      "replies": [
+        "1. 제안: 기록을 모을 때 내가 쓴 글, 고객 질문, 강의 자료, 아이디어 메모를 구분하고 출처, 쓸 채널, 상태 칸을 붙여보자.\n\n결과는 원문 위치, 핵심 질문, 활용 채널, 확인 상태로 받으면 됨.\n\n자료를 모으는 일과 바로 게시할 문장을 만드는 일은 나눠두자.",
+        "2. 원문 확인 → 중복 묶기 → 주제 후보 만들기 → 사람이 채택·보류 선택 순서로 이어보자.\n\n제안: 결과에는 제목 후보, 근거 문장, 쓸 채널, 확인이 필요한 점을 남기면 됨.\n\n근거가 없는 문장은 후보에서 분리해 다시 확인하는 방식임.",
+        "3. 이건 기록법에 대한 개인 제안이지, 자동으로 좋은 콘텐츠가 나온다는 성과 주장이 아님.\n\n연결한 라운지 글은 전사문을 여러 채널 초안으로 바꾸는 관련 읽을거리일 뿐임. 이 제안의 성공 증거나 준비된 자료 다운로드로 소개하면 안 됨."
+      ],
+      "link_comment": "업무에 적용할 순서와 확인할 내용을 정리한 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/xEyQub_fDjg",
+      "sources": [
+        {
+          "url": "https://familypartners.aimax.ai.kr/feed?n=500",
+          "title": "초기 자사 컨텐츠 원문",
+          "published_at": null,
+          "collected_at": "2026-11-03T11:41:33.910377+09:00",
+          "verified_at": "2026-11-03T11:47:02.191648+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/auto-drop-maintenance-20261103-114101-2026-11-07-5.jpg",
+          "alt": "Modern Millie의 원본 영상 장면 · 관련 업무 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "Modern Millie · 원본 영상 참고 화면",
+          "source_url": "https://youtu.be/xEyQub_fDjg",
+          "sha256": "9db7be4f20de07766fa5e4630c45612c86b20e4a98ae786d2b79a26eaf5cf2a8"
+        }
+      ],
+      "supplemental": true,
+      "editorial_kind": "original_guidance"
     }
   ],
   "_작성기준": "글감 작성 전 AGENTS.md와 config/brands/makefamily.md의 최신 사용자 기준을 읽는다. 과거 루틴 문구와 충돌하면 최신 사용자 기준을 적용한다."
