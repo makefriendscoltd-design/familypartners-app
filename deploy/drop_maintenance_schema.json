@@ -2,11 +2,11 @@
   "type": "object", "additionalProperties": false,
   "required": ["posts"], "properties": {"posts": {"type": "array", "items": {
     "type": "object", "additionalProperties": false,
-    "required": ["source_key","link_slug","target","fmt","type","body","replies","before_body","before_replies","evidence_quote","original_read","six_checks_passed","humanize_summary","editorial_note"],
+    "required": ["source_key","link_slug","target","fmt","type","body","replies","before_body","before_replies","evidence_anchor","evidence_quote","original_read","six_checks_passed","humanize_summary","editorial_note"],
     "properties": {
       "source_key":{"type":"string"},"link_slug":{"type":"string"},"target":{"type":"string"},"fmt":{"type":"string"},"type":{"type":"string","enum":["ai","marketing","evergreen"]},
       "body":{"type":"string"},"replies":{"type":"array","items":{"type":"string"}},"before_body":{"type":"string"},"before_replies":{"type":"array","items":{"type":"string"}},
-      "evidence_quote":{"type":"string"},"original_read":{"type":"boolean"},"six_checks_passed":{"type":"boolean"},"humanize_summary":{"type":"string"},"editorial_note":{"type":"string"}
+      "evidence_anchor":{"type":"string"},"evidence_quote":{"type":"string"},"original_read":{"type":"boolean"},"six_checks_passed":{"type":"boolean"},"humanize_summary":{"type":"string"},"editorial_note":{"type":"string"}
     }
   }}}
 }

@@ -59,7 +59,14 @@ def text_snapshots(w,pack):
         if key=='originals':text='\n\n'.join(x['title']+'\n'+(x.get('body') or '') for x in value)
         elif key.startswith('reddit'):text=(s['published_at'] or '')+'\n'+value['text']
         else:text='\n\n'.join([value['title'],*value.get('intro',[]),*[part['heading']+'\n'+'\n'.join(part.get('paragraphs',[])) for part in value['sections']]])
-        s['file']=key+'.txt';(w/s['file']).write_text(text)
+        # Canonical UTF-8/LF text snapshot; retain the untouched JSON original.
+        # Readers and model output normalize CRLF, so do this once at ingestion.
+        text=text.replace('\r\n','\n').replace('\r','\n')
+        s['file']=key+'.txt';(w/s['file']).write_bytes(text.encode('utf-8'))
+        # The writer selects a stable source anchor instead of retyping quotes
+        # (and silently dropping list prefixes or changing punctuation).
+        lines=[line.strip() for line in text.splitlines() if len(line.strip())>=15 and line.strip()!=s['title'] and not line.strip().startswith(('https://','http://'))]
+        s['evidence_anchors']={f'a{i:03d}':line for i,line in enumerate(lines,1)}
     save(w/'source-pack.json',pack)
     return pack
 def literal_quote(quote,snapshot):
@@ -67,6 +74,8 @@ def literal_quote(quote,snapshot):
     # JSON output may contain a second escaped layer for control characters.
     # Decode only those known representations, then require exact source text.
     q=quote.replace('\\r\\n','\r\n').replace('\\n','\n').replace('\\xa0','\xa0').replace('\\u00a0','\xa0')
+    if q in snapshot:return q
+    q=q.replace('\r\n','\n').replace('\r','\n')
     if q in snapshot:return q
     raise RuntimeError('literal_evidence_missing')
 def source_pack(w,day,queue,before,discovery=None):
@@ -79,7 +88,11 @@ def source_pack(w,day,queue,before,discovery=None):
     used={s.get('url','') for r in queue['drops'] for s in r.get('sources',[])}
     request={'run_id':w.name,'output':str(w),'used_urls':sorted(used)}
     save(ROOT/'_workspace/drop-maintenance-request.json',request)
-    p=run(['ego-browser','nodejs','-e',f'await import("file://{ROOT}/deploy/drop_maintenance_collect.mjs")'],timeout=150)
+    try:
+        p=run(['ego-browser','nodejs','-e',f'await import("file://{ROOT}/deploy/drop_maintenance_collect.mjs")'],timeout=150)
+    except subprocess.CalledProcessError as e:
+        (w/'browser.log').write_text((e.stdout or '')+'\n'+(e.stderr or ''))
+        raise
     (w/'browser.log').write_text(p.stdout+'\n'+p.stderr)
     social=json.loads((w/'reddit-verified.json').read_text())
     all_notes={a['slug']:a for a in json.loads(Path(CFG['source_feed']).read_text())['articles']}
@@ -115,6 +128,8 @@ def source_pack(w,day,queue,before,discovery=None):
     return pack
 def author(w,pack):
     prompt=(ROOT/'deploy/drop_maintenance_prompt.md').read_text()+f'\nRun request: {w}/source-pack.json\nRead it and all referenced evidence. This is the only day to author: {pack["day"]}.\n'
+    proper=json.loads((ROOT/'config/assets.json').read_text())['_고유명사']
+    prompt+='\nThe ai case must name its actual source-documented tool in body or replies, matching at least one configured name: '+json.dumps(proper,ensure_ascii=False)+'. Choose the ai category accordingly; never invent a tool or add an unrelated name to pass lint.\n'
     (w/'prompt.txt').write_text(prompt)
     env=dict(os.environ,LOOPGUARD_CODEX_MODEL=CFG['model'])
     cmd=[CFG['agent_runner'],'--only','codex','--request-scoped-timeout','--timeout',str(CFG['model_timeout_seconds']),'--cwd',str(ROOT),'--output-schema',str(ROOT/'deploy/drop_maintenance_schema.json'),'-o',str(w/'model-output.json'),'--json','-']
@@ -133,8 +148,12 @@ def build(w,pack,posts,queue):
     rows=[];reviews={};paths=[]
     for i,p in enumerate(posts):
         s=pack['sources'][p['source_key']];snapshot=(w/s['file']).read_bytes().decode('utf-8')
-        if p['original_read'] is not True or not p['evidence_quote']:raise RuntimeError('original_review_missing')
-        quote=literal_quote(p['evidence_quote'],snapshot)
+        if p['original_read'] is not True:raise RuntimeError('original_review_missing')
+        if p.get('evidence_anchor'):
+            quote=s['evidence_anchors'][p['evidence_anchor']]
+            if quote not in snapshot:raise RuntimeError('source_anchor_changed')
+        elif p.get('evidence_quote'):quote=literal_quote(p['evidence_quote'],snapshot)
+        else:raise RuntimeError('literal_evidence_missing')
         if p['six_checks_passed'] is not True:raise RuntimeError('humanize_review_failed')
         guide=i>=4;note=pack['articles'][p['link_slug']]
         if not guide and not p['source_key'].startswith('reddit') and p['source_key']!=p['link_slug']:raise RuntimeError('case_note_mismatch')
@@ -155,7 +174,9 @@ def build(w,pack,posts,queue):
         reviews[digest(row)]=rev;rows.append(row)
     candidate=json.loads(json.dumps(queue));candidate['drops'].extend(rows)
     save(w/'candidate.json',candidate);save(w/'reviews.json',reviews);save(w/'new-posts.json',rows)
-    lint=run([sys.executable,'deploy/lint_drops.py',str(w/'candidate.json'),'--include-published']);(w/'lint.log').write_text(lint.stdout)
+    lint=subprocess.run([sys.executable,'deploy/lint_drops.py',str(w/'candidate.json'),'--include-published','--baseline','origin/main','--reviews',str(w/'reviews.json')],cwd=ROOT,text=True,capture_output=True)
+    (w/'lint.log').write_text(lint.stdout+'\n'+lint.stderr)
+    if lint.returncode:raise RuntimeError('lint_failed; see '+str(w/'lint.log'))
     save(w/'editorial-review.json',[{'title':r['title'],'review':p['editorial_note'],'humanize':p['humanize_summary']} for r,p in zip(rows,posts)])
     return candidate,rows,paths
 def runtime_check(w,before,candidate,rows,paths):
@@ -262,18 +283,20 @@ def main():
                 else:
                     w.mkdir(parents=True,exist_ok=False);save(w/'production-before.json',before);save(w/'queue-before.json',queue)
                 report.update(phase='collecting',day=gap['day'],run_directory=str(w));save(STATE/'status.json',report);print(json.dumps(report,ensure_ascii=False),flush=True)
-                pack=text_snapshots(w,json.loads((w/'source-pack.json').read_text())) if a.resume_run and n==0 else source_pack(w,gap['day'],queue,before,a.discovery if n==0 else None)
+                pack=text_snapshots(w,json.loads((w/'source-pack.json').read_text())) if a.resume_run and n==0 and (w/'source-pack.json').exists() else source_pack(w,gap['day'],queue,before,a.discovery if n==0 else None)
                 report['phase']='authoring';save(STATE/'status.json',report);print('authoring '+gap['day'],flush=True)
-                if a.resume_run and n==0:
+                if a.resume_run and n==0 and ((w/'reviewed-output.json').exists() or (w/'model-output.json').exists()):
                     output=w/'reviewed-output.json'
                     if not output.exists():output=w/'model-output.json'
                     posts=json.loads(output.read_text())['posts']
                 else:posts=author(w,pack)
+                report['phase']='validating';save(STATE/'status.json',report)
                 candidate,rows,paths=build(w,pack,posts,queue)
                 runtime_check(w,queue,candidate,rows,paths)
+                report['phase']='deploying';save(STATE/'status.json',report)
                 result=deploy(w,base,before,candidate,rows,paths)
                 report['completed_days'].append(result);save(STATE/'status.json',report);print(json.dumps(result,ensure_ascii=False),flush=True)
-            report.update(status='succeeded',finished_at=stamp(),remaining_gaps=gaps(json.loads((ROOT/'config/drops_queue.json').read_text())))
+            report.update(status='succeeded',phase='complete',finished_at=stamp(),remaining_gaps=gaps(json.loads((ROOT/'config/drops_queue.json').read_text())))
             save(STATE/'status.json',report);print(json.dumps(report,ensure_ascii=False),flush=True);return 0
         except Exception as e:
             report.update(status='failed',finished_at=stamp(),error=str(e));save(STATE/'status.json',report);print(json.dumps(report,ensure_ascii=False),file=sys.stderr,flush=True);return 1

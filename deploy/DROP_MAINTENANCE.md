@@ -19,6 +19,9 @@ Claude 세션이나 직접 `codex exec`를 새로 호출하지 않는다.
 검증한 날짜 한 묶음만 임시 Git index로 commit/push한다.
 운영 HEAD, 기존 행 해시, 신규 본문, 댓글 복사, 이미지 해시까지 확인해야 성공이다.
 실패는 nonzero 종료 및 `~/.local/share/familypartners-drop-maintenance/status.json`에 남는다.
+단계는 collecting/authoring/validating/deploying/complete로 구분하고 검사 출력도 남긴다.
+원본JSON은 그대로 보존하고 텍스트 스냅샷만 UTF-8/LF로 정규화한다.
+모델은 원문 앵커ID를 선택하고, 제어기가 실제 인용문을 추출해 원문과 대조한다.
 부분적으로 이미 채운 날짜는 자동 재작성하지 않고 검토 필요 상태로 멈춘다.
 
 LaunchAgent는 `com.local.familypartners-drop-maintenance`이며 RunAtLoad=false.

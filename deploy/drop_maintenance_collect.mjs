@@ -8,8 +8,19 @@ try{
  await p.goto('https://www.reddit.com/r/n8n/new/');
  await p.waitForFunction(()=>document.querySelectorAll('shreddit-post').length>0);
  let candidates=await p.evaluate(()=>[...document.querySelectorAll('shreddit-post')].map(e=>({title:e.getAttribute('post-title'),url:e.getAttribute('permalink'),date:e.getAttribute('created-timestamp'),text:e.innerText})).filter(x=>x.url&&x.date));
+ // Read the observed, logged-in first-party listing API. Keep only public post
+ // fields; discard the response's account/session metadata without logging it.
+ let apiStatus=null;
+ try{
+  const response=await p.fetch('/r/n8n/new.json?limit=100',{timeout:15000});apiStatus=response.status;
+  if(response.ok){
+   const value=JSON.parse(response.body);
+   const publicPosts=(value.data?.children||[]).map(x=>x.data).filter(x=>x.permalink&&x.created_utc).map(x=>({title:x.title,url:x.permalink,date:new Date(x.created_utc*1000).toISOString(),text:x.selftext||''}));
+   candidates=[...new Map([...candidates,...publicPosts].map(x=>[x.url,x])).values()];
+  }
+ }catch(error){apiStatus='listing_api_unavailable';}
  const used=new Set(request.used_urls.map(s=>s.replace('https://www.reddit.com','https://reddit.com').replace(/\/$/,'')));
- const eligible=x=>{const age=Date.now()-new Date(x.date).getTime();return age>=0&&age<7*86400000&&!used.has(('https://reddit.com'+x.url).replace(/\/$/,''))&&/workflow|built|automat|template/i.test(x.title)&&x.text.length>600;};
+ const eligible=x=>{const age=Date.now()-new Date(x.date).getTime();return age>=0&&age<7*86400000&&!used.has(('https://reddit.com'+x.url).replace(/\/$/,''))&&/workflow|built|automat|template/i.test(x.title);};
  if(candidates.filter(eligible).length<2){
   await p.goto('https://www.reddit.com/r/n8n/top/?t=week');
   await p.waitForFunction(()=>document.querySelectorAll('shreddit-post').length>0);
@@ -17,7 +28,7 @@ try{
   candidates=[...new Map([...candidates,...other].map(x=>[x.url,x])).values()];
  }
  const recent=candidates.filter(eligible);
- await fs.writeFile(request.output+'/reddit-discovery.json',JSON.stringify({candidates,recent},null,2));
+ await fs.writeFile(request.output+'/reddit-discovery.json',JSON.stringify({apiStatus,candidates,recent},null,2));
  const verified=[];
  for(const candidate of recent.slice(0,5)){
   await p.goto('https://www.reddit.com'+candidate.url);
