@@ -3394,6 +3394,208 @@
       ],
       "supplemental": true,
       "editorial_kind": "original_guidance"
+    },
+    {
+      "date": "2026-11-05",
+      "title": "컨텐츠 291 · 발행 실패 떴다고 바로 재시도하면 같은 글이 또 올라갈 수 있음.",
+      "type": "ai",
+      "target": "SNS 자동발행을 운영하는 대표",
+      "fmt": "실패 재시도 상태 점검",
+      "format": "case_thread",
+      "body": "발행 실패 떴다고 바로 재시도하면 같은 글이 또 올라갈 수 있음.\n\n레딧의 Organic_Explorer1186이\nn8n 기반 SNS 발행 앱 구조를 공개함.\n플랫폼별 결과를 저장해 실패한 곳만 다시 보내는데\n응답이 끊긴 경우가 빈틈으로 남았음.",
+      "replies": [
+        "1. 입력은 게시 초안과 플랫폼별 발행 결과임.\n\n작성자의 앱은 패널이 API 키를 보관하고, n8n은 패널에서 글과 이미지를 받아 발행함. 발행 노드는 오류가 나도 계속 진행하고 마지막 Code 노드가 플랫폼별 성공과 실패를 모아 보고함.",
+        "2. 초안별 JSON 파일에는 플랫폼마다 성공 여부와 post id·URL 또는 오류를 기록함.\n\n재시도는 이 파일을 다시 읽고 post id가 있는 곳은 건너뜀. 작성자는 발행 노드의 자동 재시도도 꺼뒀다고 설명함.",
+        "3. Solokit_Studio는 플랫폼이 글을 받았지만 응답만 끊기면 중복 게시될 수 있다고 지적함. 작성자 Organic_Explorer1186도 이 빈틈을 인정하고 해당 상태를 unknown으로 바꿔 확인 뒤 재시도하게 했다고 답함.\n\n뒤에 붙는 라운지 글은 여러 도구의 연결 순서를 더 읽을 자료일 뿐, 이 레딧 앱을 내려받는 파일은 아님."
+      ],
+      "link_comment": "관련 업무를 더 살펴볼 활용노트.\n레딧 사례의 배포 파일과는 다른 참고 자료임.\n\nhttps://lounge.aimax.ai.kr/worldclass/lkYnFN52HNs",
+      "sources": [
+        {
+          "url": "https://www.reddit.com/r/n8n/comments/1xm1l8o/i_built_a_full_social_media_pipeline_on_n8n_news/",
+          "title": "I built a full social media pipeline on n8n: news → LLM drafts → Telegram approval → X/Facebook (self-hosted, open source)",
+          "published_at": "2026-11-02T16:18:46.261Z",
+          "collected_at": "2026-11-03T11:31:29.214878+09:00",
+          "verified_at": "2026-11-03T11:34:24.251510+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/auto-drop-maintenance-20261103-112032-2026-11-05-0.png",
+          "alt": "I built a full social media pipeline on n8n: news → LLM drafts → Telegram approval → X/Facebook (self-hosted, open source)",
+          "credit": "Organic_Explorer1186 · Reddit 원문 화면",
+          "source_url": "https://www.reddit.com/r/n8n/comments/1xm1l8o/i_built_a_full_social_media_pipeline_on_n8n_news/",
+          "sha256": "7b912cd19691ca706c940df431029c1462b2c6d8d3683f94e9102f3bf5387d4a"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-05",
+      "title": "컨텐츠 292 · 이름만 바꾼 LinkedIn 문구는 개인화가 아님.",
+      "type": "marketing",
+      "target": "LinkedIn 캠페인 초안을 맡기는 B2B 대표",
+      "fmt": "개인화 입력 체크리스트",
+      "format": "case_thread",
+      "body": "이름만 바꾼 LinkedIn 문구는 개인화가 아님.\n\nHeyReach 라운지 정리본에서는\nClaude Code가 명단과 작성 지침을 읽고\n상대별 메시지를 캠페인에 넣음.\n무슨 정보를 읽혔는지가 핵심임.",
+      "replies": [
+        "1. 입력은 LinkedIn 프로필 URL, 이름과 성, 지역, 회사명임.\n\n라운지 정리본은 이 명단을 불러온 뒤 별도 제공자로 프로필 정보를 보강했다고 적음. HeyReach에 CSV만 넣으면 같은 문구가 나온다고 보면 안 됨.",
+        "2. 제작자는 LinkedIn 메시지 작성 절차를 마크다운 파일로 준비해 Claude Code에 읽힘.\n\n라운지의 적용 제안대로 자사 소개, 연락 목적, 말투, 상대에게 물을 내용을 기준에 넣을 수 있음. 받을 결과는 상대별 첫 문구, 후속 문구, 간격, 캠페인 상태로 나눠 확인함.",
+        "3. 캠페인에 명단과 문구를 넣은 뒤에는 실제 시작 전에 제작자에게 다시 물었음.\n\n제작자가 문구를 좋게 평가한 것과 영업 성과는 다름. 라운지 정리본에는 실제 답장률이나 상담 예약 실적이 없다고 명시돼 있음."
+      ],
+      "link_comment": "업무에 적용할 순서와 확인할 내용을 정리한 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/svA4AVJB5Vc",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/svA4AVJB5Vc",
+          "title": "LinkedIn 영업 메시지 준비, Claude Code와 HeyReach로 반복 업무 줄이기",
+          "published_at": null,
+          "collected_at": "2026-11-03T11:31:29.214878+09:00",
+          "verified_at": "2026-11-03T11:34:24.327283+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/auto-drop-maintenance-20261103-112032-2026-11-05-1.jpg",
+          "alt": "HeyReach의 원본 영상 장면 · 관련 업무 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "HeyReach · 원본 영상 참고 화면",
+          "source_url": "https://youtu.be/svA4AVJB5Vc",
+          "sha256": "e05f1929f26c683314620dc3541e2fb6211e1ae11aa63ec0db7b45becaf4b19a"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-05",
+      "title": "컨텐츠 293 · 제안서 메일은 파일만 찾는다고 끝나지 않음.",
+      "type": "evergreen",
+      "target": "제안서 후속 연락을 정리하는 소규모 대표",
+      "fmt": "도구 연결 순서",
+      "format": "case_thread",
+      "body": "제안서 메일은 파일만 찾는다고 끝나지 않음.\n\nOluwatope Liasu의 라운지 정리본은\nDrive에서 제안서를 찾고\nGmail 초안과 Calendar 일정을 잇는 흐름을 소개함.\n발송 전에 묻는 조건이 꽤 구체적임.",
+      "replies": [
+        "1. 라운지의 적용 제안에서 입력은 제안서 파일, 수신자, 미팅 목적, 원하는 회의 길이임.\n\n파일명만 주지 말고 누구에게 왜 보내는지 붙여야 메일 내용과 일정 조건을 함께 검토할 수 있음.",
+        "2. 연결 순서는 Drive에서 문서 찾기 → 내용을 반영한 메일 초안 만들기 → Calendar에 참석자와 일정을 넣기 → 회의 링크 확인하기임.\n\n받을 결과는 첨부 문서, 메일 본문, 일정, 참석자, 회의 링크, 발송 상태로 나눠 봄.",
+        "3. 사례에서는 메일 초안을 먼저 만들고 제작자가 따로 지시한 뒤 발송했음.\n\n전사문에는 상대방 캘린더를 어떤 권한과 범위로 확인했는지 자세히 나오지 않음. 제안한 시간이 실제로 가능한지는 별도 확인 항목으로 남겨야 함."
+      ],
+      "link_comment": "업무에 적용할 순서와 확인할 내용을 정리한 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/lkYnFN52HNs",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/lkYnFN52HNs",
+          "title": "제안서 발송과 일정 조율, Claude로 반복 업무를 연결하는 방법",
+          "published_at": null,
+          "collected_at": "2026-11-03T11:31:29.214878+09:00",
+          "verified_at": "2026-11-03T11:34:24.381200+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/auto-drop-maintenance-20261103-112032-2026-11-05-2.jpg",
+          "alt": "Oluwatope Liasu의 원본 영상 장면 · 관련 업무 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "Oluwatope Liasu · 원본 영상 참고 화면",
+          "source_url": "https://youtu.be/lkYnFN52HNs",
+          "sha256": "3096e46db685ad3567d400fda524cc4324c3ccfab87664334f99a866a4e05c28"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-05",
+      "title": "컨텐츠 294 · 잠재고객 목록이 맞아야 첫 메시지도 고칠 수 있음.",
+      "type": "evergreen",
+      "target": "잠재고객 목록부터 만드는 서비스 사업자",
+      "fmt": "수집과 연락 단계 비교",
+      "format": "case_thread",
+      "body": "잠재고객 목록이 맞아야 첫 메시지도 고칠 수 있음.\n\nKeon Daniel의 라운지 정리본은\n목록 수집과 프로필 방문을 나눠 보여줌.\n대상을 찾은 뒤 연결 요청 예시를 먼저 확인하고\n그다음 상담 절차를 설계하는 흐름임.",
+      "replies": [
+        "1. 입력은 판매할 서비스, 연락할 업종과 대상, 그 대상에게 제안할 고객 유형임.\n\n라운지 정리본은 대상을 한 문장으로 좁혀야 수집된 목록이 맞는지 판단하기 쉽다고 설명함. 받을 목록에는 이름보다 제안 대상에 맞는 이유가 필요함.",
+        "2. 수집 도구에서 후보를 찾고 브라우저 확장 기능으로 LinkedIn 프로필을 연 뒤 연결 요청 메뉴로 이어감.\n\n단계별 결과는 프로필, 적합 이유, 연결 요청 문구, 짧은 메모로 나눠 확인하는 방식을 라운지에서 제안함.",
+        "3. 제작자는 첫 문구를 보고 더 짧고 편한 표현으로 조건을 고친 뒤 다음 대상에게 보내기 전에 예시를 요청함.\n\n짧은 문구가 늘 더 좋은 성과를 낸다는 검증은 아님. 시연에는 수집 승인과 문구 수정처럼 사람이 개입하는 단계도 남아 있음."
+      ],
+      "link_comment": "업무에 적용할 순서와 확인할 내용을 정리한 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/jreVKY_yM20",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/jreVKY_yM20",
+          "title": "잠재 고객 찾기부터 상담 약속까지, LinkedIn 영업의 반복 업무를 줄이는 방법",
+          "published_at": null,
+          "collected_at": "2026-11-03T11:31:29.214878+09:00",
+          "verified_at": "2026-11-03T11:34:24.436136+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/auto-drop-maintenance-20261103-112032-2026-11-05-3.jpg",
+          "alt": "Keon Daniel의 원본 영상 장면 · 관련 업무 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "Keon Daniel · 원본 영상 참고 화면",
+          "source_url": "https://youtu.be/jreVKY_yM20",
+          "sha256": "a9a1d143bddc50901cc98650a2adef33901293a04b9408c76c190154f054d3f9"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-05",
+      "title": "컨텐츠 295 · AI 직원한테 ‘표로 정리해줘’만 쓰고 있음?",
+      "type": "evergreen",
+      "target": "AI 직원에게 보고서 초안을 맡기는 대표",
+      "fmt": "출력 칸 설계",
+      "format": "case_thread",
+      "body": "AI 직원한테 ‘표로 정리해줘’만 쓰고 있음?\n\n이건 외부 사례가 아니라\n내가 직접 제안하는 업무지시 방식임.\n작업을 시키기 전에 받을 결과의 칸과\n빈값 표시부터 적어두자는 얘기임.",
+      "replies": [
+        "1. 제안: 기존에 쓰는 보고서 한 장을 열고 꼭 필요한 열 이름을 적어봐.\n\n입력 파일명, 처리 대상, 결과, 근거, 확인 상태처럼 다음 사람이 읽을 칸을 먼저 정함. 빈값은 추정하지 말고 ‘확인 필요’로 남기라고 적어둠.",
+        "2. 제안하는 연결 순서는 원본 파일 읽기 → 정한 열에 값 넣기 → 비어 있는 값 분리하기 → 초안 내보내기임.\n\n결과에는 처리한 파일, 채운 칸, 비어 있는 칸, 사람이 확인할 항목을 함께 받음.",
+        "3. 제안: 예시 표도 같이 주되 값은 복사하지 말고 열의 뜻과 형식만 따르게 해봐.\n\n받은 뒤에는 원본의 값이 맞는 칸으로 갔는지 대조함. 이건 성공 사례가 아니라 지금 쓰는 보고서에 적용해볼 개인 실천 기준임."
+      ],
+      "link_comment": "업무에 적용할 순서와 확인할 내용을 정리한 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/lkYnFN52HNs",
+      "sources": [
+        {
+          "url": "https://familypartners.aimax.ai.kr/feed?n=500",
+          "title": "초기 자사 컨텐츠 원문",
+          "published_at": null,
+          "collected_at": "2026-11-03T11:31:29.214878+09:00",
+          "verified_at": "2026-11-03T11:34:24.491818+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/auto-drop-maintenance-20261103-112032-2026-11-05-4.jpg",
+          "alt": "Oluwatope Liasu의 원본 영상 장면 · 관련 업무 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "Oluwatope Liasu · 원본 영상 참고 화면",
+          "source_url": "https://youtu.be/lkYnFN52HNs",
+          "sha256": "3096e46db685ad3567d400fda524cc4324c3ccfab87664334f99a866a4e05c28"
+        }
+      ],
+      "supplemental": true,
+      "editorial_kind": "original_guidance"
+    },
+    {
+      "date": "2026-11-05",
+      "title": "컨텐츠 296 · 자료조사 결과가 링크 더미면 다음 글도 못 씀.",
+      "type": "evergreen",
+      "target": "콘텐츠 자료조사를 맡기는 운영자",
+      "fmt": "후보 분류 보드",
+      "format": "case_thread",
+      "body": "자료조사 결과가 링크 더미면 다음 글도 못 씀.\n\n이건 외부 사례가 아니라\n내가 직접 제안하는 조사 업무 방식임.\n후보를 모은 뒤 채택·보류·제외로 나누고\n원문 확인 상태까지 받자는 얘기임.",
+      "replies": [
+        "1. 제안: 조사 주제, 읽을 사람, 확인할 기간, 빼야 할 출처를 입력에 적어봐.\n\n‘요즘 뜨는 것’처럼 넓게 쓰지 말고 이번 글에서 확인할 질문도 붙임. 그래야 후보를 왜 모았는지 다시 판단할 수 있음.",
+        "2. 제안하는 순서는 후보 수집 → 원문 열기 → 작성자·발행일·본문 확인 → 채택·보류·제외 분류임.\n\n결과 칸은 제목, 작성자, 발행일, 원문 확인 여부, 분류, 분류 이유로 나눠 받음.",
+        "3. 제안: 원문이 열리지 않거나 날짜가 안 보이면 보류로 남겨.\n\n검색 화면의 짧은 문구만 보고 확인 완료로 바꾸지 않고, 원문에 없는 기능이나 성과도 덧붙이지 않음. 이것도 내가 직접 써보라고 권하는 개인 실천 기준임."
+      ],
+      "link_comment": "업무에 적용할 순서와 확인할 내용을 정리한 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/jreVKY_yM20",
+      "sources": [
+        {
+          "url": "https://familypartners.aimax.ai.kr/feed?n=500",
+          "title": "초기 자사 컨텐츠 원문",
+          "published_at": null,
+          "collected_at": "2026-11-03T11:31:29.214878+09:00",
+          "verified_at": "2026-11-03T11:34:24.542484+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/auto-drop-maintenance-20261103-112032-2026-11-05-5.jpg",
+          "alt": "Keon Daniel의 원본 영상 장면 · 관련 업무 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "Keon Daniel · 원본 영상 참고 화면",
+          "source_url": "https://youtu.be/jreVKY_yM20",
+          "sha256": "a9a1d143bddc50901cc98650a2adef33901293a04b9408c76c190154f054d3f9"
+        }
+      ],
+      "supplemental": true,
+      "editorial_kind": "original_guidance"
     }
   ],
   "_작성기준": "글감 작성 전 AGENTS.md와 config/brands/makefamily.md의 최신 사용자 기준을 읽는다. 과거 루틴 문구와 충돌하면 최신 사용자 기준을 적용한다."
