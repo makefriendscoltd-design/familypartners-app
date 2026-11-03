@@ -3192,6 +3192,208 @@
       ],
       "supplemental": true,
       "editorial_kind": "original_guidance"
+    },
+    {
+      "date": "2026-11-04",
+      "title": "컨텐츠 285 · 초록불 떴다고 자동화가 일한 건 아님.",
+      "type": "evergreen",
+      "target": "자동화 운영자",
+      "fmt": "silent-success-audit",
+      "format": "case_thread",
+      "body": "초록불 떴다고 자동화가 일한 건 아님.\n\n레딧의 tariqosmani는 실행이\n계속 성공으로 끝났는데도\n실제 기록은 남지 않은 사례를 공유함.\n필드명이 바뀌자 필터가 전부 버렸다고 함.",
+      "replies": [
+        "1. 작성자 tariqosmani는 중요한 단계마다 출력 건수를 세고, 저장 뒤 시트나 표를 다시 조회했다고 함.\n\n제안: 입력 건수 → 필터 뒤 건수 → 저장 건수를 잇고, 실행 시각·입력·출력·저장 칸을 남기면 어디서 비었는지 확인하기 좋음.",
+        "2. 댓글 작성자 kushagra_zryth는 고정 ID와 출처 태그가 든 시험 레코드를 흘려보내고, 실데이터 직전 테스트 시트로 돌렸다고 함.\n\n다른 댓글 작성자 MeasurementGreat5273는 시험값이 실데이터를 오염시킬 수 있어 구분 표식이 필요하다고 지적함.",
+        "3. 이 글의 한계는 정상 실행 표시만으로 원인을 확정할 수 없다는 점임.\n\n마지막에 붙는 라운지 글은 이 흐름의 파일이 아니라, 시작 화면과 성공 조건을 정하는 관련 읽을거리임."
+      ],
+      "link_comment": "관련 업무를 더 살펴볼 활용노트.\n레딧 사례의 배포 파일과는 다른 참고 자료임.\n\nhttps://lounge.aimax.ai.kr/worldclass/w2RN_SqjTc8",
+      "sources": [
+        {
+          "url": "https://www.reddit.com/r/n8n/comments/1xlq9m9/my_workflow_showed_green_for_a_week_and_did/",
+          "title": "My workflow showed green for a week and did nothing. How do you catch silent successes?",
+          "published_at": "2026-11-02T06:50:31.099Z",
+          "collected_at": "2026-11-03T11:13:57.218275+09:00",
+          "verified_at": "2026-11-03T11:19:38.343264+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/auto-drop-maintenance-20261103-111321-2026-11-04-0.png",
+          "alt": "My workflow showed green for a week and did nothing. How do you catch silent successes?",
+          "credit": "tariqosmani · Reddit 원문 화면",
+          "source_url": "https://www.reddit.com/r/n8n/comments/1xlq9m9/my_workflow_showed_green_for_a_week_and_did/",
+          "sha256": "c10bb1b5fd73cfd5607ecdaaad0f3ffb82c4a92a5e783c432a41cf6c7de614a3"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-04",
+      "title": "컨텐츠 286 · 설명형 영상, 대본보다 역할 분담에서 먼저 꼬임.",
+      "type": "ai",
+      "target": "설명형 콘텐츠 제작자",
+      "fmt": "role-split-production",
+      "format": "case_thread",
+      "body": "설명형 영상, 대본보다 역할 분담에서 먼저 꼬임.\n\n라운지 정리본 속 제작자는\n복싱 영상의 설명 구조를 가져와\n가라테 숏폼을 만드는 과정을 보여줌.\nClaude와 niche.ai의 일을 따로 정했음.",
+      "replies": [
+        "1. 입력은 참고 영상, 전사문, 빼야 할 홍보, 실제 안내 내용임.\n\n제작자는 niche.ai로 전사문을 꺼내고 Claude에 대본과 화면 구성을 맡겼음. 결과는 대본, 장면 구성, 내레이션 원고로 나눠 확인할 수 있음.",
+        "2. 대본을 고른 뒤 자막 단위, 카메라 시점, 글자 움직임, 색상을 조건으로 붙였음.\n\n제안: 장면별 설명·필요한 움직임·금지할 효과를 입력하고, 자막 단위·시점·색상 일치를 검토 칸으로 남겨보셈.",
+        "3. Claude가 niche.ai로 영상까지 만들려 하자 제작자가 중단하고 편집 역할을 다시 지정했음.\n\n이 시연은 해당 제작자의 작업 과정임. 같은 도구를 연결하면 같은 결과가 나온다는 근거는 아님."
+      ],
+      "link_comment": "업무에 적용할 순서와 확인할 내용을 정리한 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/yptFP52LEJU",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/yptFP52LEJU",
+          "title": "설명형 숏폼 제작, Claude로 편집을 맡기려면 무엇을 준비해야 할까요",
+          "published_at": null,
+          "collected_at": "2026-11-03T11:13:57.218275+09:00",
+          "verified_at": "2026-11-03T11:19:38.404474+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/auto-drop-maintenance-20261103-111321-2026-11-04-1.jpg",
+          "alt": "Taro Creates의 원본 영상 장면 · 관련 업무 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "Taro Creates · 원본 영상 참고 화면",
+          "source_url": "https://youtu.be/yptFP52LEJU",
+          "sha256": "657cf9b74e896606f0f103177f36460c2ae91eb2535e1392a14d9c7cdce7579d"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-04",
+      "title": "컨텐츠 287 · 상품 소개 영상, 화면보다 재료부터 모아야 함.",
+      "type": "marketing",
+      "target": "상품·강의 판매자",
+      "fmt": "asset-led-promo-video",
+      "format": "case_thread",
+      "body": "상품 소개 영상, 화면보다 재료부터 모아야 함.\n\n라운지 정리본 속 제작자는\n로고와 기존 영상, 사이트 자료를 넣고\nHyperFrames로 소개 영상을 구성함.\n첫 시안에는 음성과 음악 문제가 남았음.",
+      "replies": [
+        "1. 입력은 소개할 상품, 로고, 기존 영상 일부, 전달할 설명임.\n\n제작자는 Claude Code에 구성을 맡기고 HyperFrames로 수정 가능한 프로젝트와 영상을 만들었음. 제안: 결과 칸은 사용 자료·장면 문구·화면 순서로 나눠 적어보셈.",
+        "2. 사이트 자료는 Playwright CLI로 살폈고, 로그인 뒤 자료에는 AI 에이전트용 별도 계정을 썼다고 함.\n\n나온 화면은 사이트 이미지·캡처·디자인을 반영했음. 다만 사이트를 연결하면 누구나 같은 품질이 나온다는 뜻은 아님.",
+        "3. 시험 음성에는 요청하지 않은 문장이 붙었고, 첫 시안은 음악이 커서 내레이션이 묻혔다고 함.\n\n제안: 승인 원고 → 시험 음성 → 선택한 음악 → 합친 시안 순서로 듣고, 발화 일치·음악 크기·수정 내용을 남겨보셈."
+      ],
+      "link_comment": "업무에 적용할 순서와 확인할 내용을 정리한 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/xbCKxfWlIO0",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/xbCKxfWlIO0",
+          "title": "상품 소개 영상 제작, HyperFrames로 반복 작업을 줄이는 방법",
+          "published_at": null,
+          "collected_at": "2026-11-03T11:13:57.218275+09:00",
+          "verified_at": "2026-11-03T11:19:38.465425+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/auto-drop-maintenance-20261103-111321-2026-11-04-2.jpg",
+          "alt": "Brandon Melville의 원본 영상 장면 · 관련 업무 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "Brandon Melville · 원본 영상 참고 화면",
+          "source_url": "https://youtu.be/xbCKxfWlIO0",
+          "sha256": "fbcf039b1c0a164c254ecaed01966cdba59c37eb06bc54d9d5605f0db8173882"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-04",
+      "title": "컨텐츠 288 · 로그인 버튼 눌렸다고 고객 로그인 점검 끝난 건 아님.",
+      "type": "evergreen",
+      "target": "웹서비스 운영자",
+      "fmt": "acceptance-criteria-walkthrough",
+      "format": "case_thread",
+      "body": "로그인 버튼 눌렸다고 고객 로그인 점검 끝난 건 아님.\n\n라운지 정리본 속 QA 엔지니어 Igor는\n기존 계정의 로그인 흐름을 골라\n계획, 테스트 코드, 실행과 수정을\nPlaywright 에이전트로 이어갔음.",
+      "replies": [
+        "1. 입력은 시작 페이지, 기존 계정 정보, 로그인 뒤 도착할 화면임.\n\nPlanner가 계획을 만들고 Generator가 코드로 옮긴 뒤 Healer가 실행과 오류 수정을 맡았음. 결과물은 계획·테스트 코드·실행 결과로 갈림.",
+        "2. 제작자는 페이지 주소, 환영 문구, 로그아웃 버튼으로 성공 여부를 봤음.\n\n이 항목은 영상 속 서비스의 조건임. 제안: 자기 서비스의 주소·필수 문구·버튼을 따로 적고, 계획에 빠진 조건이 없는지 코드 전에 확인하셈.",
+        "3. 전사문에는 일부러 넣은 오류와 삭제된 코드가 정확히 나오지 않음.\n\n그래서 복잡한 오류까지 고친다고 볼 수는 없음. 제안: 자동 수정 뒤 원래 성공 조건이 남았는지 수정된 코드와 재실행 결과를 같이 보셈."
+      ],
+      "link_comment": "업무에 적용할 순서와 확인할 내용을 정리한 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/w2RN_SqjTc8",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/w2RN_SqjTc8",
+          "title": "고객 로그인 점검, Playwright 에이전트로 계획부터 테스트 수정까지 연결하는 방법",
+          "published_at": null,
+          "collected_at": "2026-11-03T11:13:57.218275+09:00",
+          "verified_at": "2026-11-03T11:19:38.523053+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/auto-drop-maintenance-20261103-111321-2026-11-04-3.jpg",
+          "alt": "QA Routine의 원본 영상 장면 · 관련 업무 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "QA Routine · 원본 영상 참고 화면",
+          "source_url": "https://youtu.be/w2RN_SqjTc8",
+          "sha256": "23d2fdc7abb86d8269012ddbf709673d89c3cc843aeb511b48dcf65df36ed8d0"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-04",
+      "title": "컨텐츠 289 · AI 직원한테 영상 편집 통째로 맡기지 마셈.",
+      "type": "evergreen",
+      "target": "영상 업무를 AI 직원에게 넘기는 1인 사업자",
+      "fmt": "task-splitting-template",
+      "format": "case_thread",
+      "body": "AI 직원한테 영상 편집 통째로 맡기지 마셈.\n\n이건 외부 성공 사례가 아니라\n내가 직접 제안하는 업무 쪼개기임.\n대본, 화면, 음성, 검토를 나누고\n단계마다 받을 결과를 먼저 적어보자.",
+      "replies": [
+        "1. 입력부터 나눠보셈.\n\n대본에는 실제 안내 내용, 화면에는 로고·색상·필수 장면, 음성에는 승인 원고, 검토에는 바꾸면 안 될 항목을 붙이는 방식임. 결과 칸은 대본·장면 목록·음성 파일·검토 메모로 두는 개인 제안임.",
+        "2. 제안하는 연결 순서는 대본 → 장면 목록 → 무음 시안 → 승인 음성 → 자막과 효과임.\n\n단계마다 다음 작업으로 넘길지 확인하고, 틀리면 그 단계만 다시 요청해보셈.",
+        "3. 마지막에는 완료 한마디보다 사용한 입력, 나온 파일, 못 한 일, 다음 수정 항목을 받는 걸 권함.\n\n관련 라운지 글은 실제 제작자의 역할 분담을 읽는 참고 자료지, 이 제안의 성과 증명은 아님."
+      ],
+      "link_comment": "업무에 적용할 순서와 확인할 내용을 정리한 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/yptFP52LEJU",
+      "sources": [
+        {
+          "url": "https://familypartners.aimax.ai.kr/feed?n=500",
+          "title": "초기 자사 컨텐츠 원문",
+          "published_at": null,
+          "collected_at": "2026-11-03T11:13:57.218275+09:00",
+          "verified_at": "2026-11-03T11:19:38.582419+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/auto-drop-maintenance-20261103-111321-2026-11-04-4.jpg",
+          "alt": "Taro Creates의 원본 영상 장면 · 관련 업무 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "Taro Creates · 원본 영상 참고 화면",
+          "source_url": "https://youtu.be/yptFP52LEJU",
+          "sha256": "657cf9b74e896606f0f103177f36460c2ae91eb2535e1392a14d9c7cdce7579d"
+        }
+      ],
+      "supplemental": true,
+      "editorial_kind": "original_guidance"
+    },
+    {
+      "date": "2026-11-04",
+      "title": "컨텐츠 290 · AI 직원 수정 맡겼으면 바뀐 파일만 받지 마셈.",
+      "type": "evergreen",
+      "target": "AI 직원 수정 품질을 관리하는 대표",
+      "fmt": "feedback-diff-log",
+      "format": "case_thread",
+      "body": "AI 직원 수정 맡겼으면 바뀐 파일만 받지 마셈.\n\n이것도 외부 사례가 아니라\n내가 직접 제안하는 피드백 기록법임.\n원본, 수정 요청, 바뀐 결과를 묶어서\n다음 업무지시서에 남겨보자.",
+      "replies": [
+        "1. 입력은 원본, 잘한 예시, 틀린 구간, 틀린 이유, 바꾸면 안 될 부분임.\n\n결과에는 바꾼 구간·바꾼 이유·그대로 둔 항목·확인할 항목을 적게 해보셈. 개인 실천 제안임.",
+        "2. 제안하는 순서는 원본 비교 → 수정 요청 → 같은 입력으로 다시 실행 → 차이 기록임.\n\n좋다, 별로다로 끝내지 말고 어떤 기준을 통과했고 어디가 남았는지 받아보는 거임.",
+        "3. 같은 입력에서 맞았다고 다른 업무도 맞는 건 아님.\n\n다음 작업으로 넓히기 전, 저장한 기준이 새 결과에도 적용됐는지 다시 비교하셈. 관련 라운지 글은 수정 사항을 다음 작업에 남긴 제작자의 사례를 보는 참고 자료임."
+      ],
+      "link_comment": "업무에 적용할 순서와 확인할 내용을 정리한 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/xbCKxfWlIO0",
+      "sources": [
+        {
+          "url": "https://familypartners.aimax.ai.kr/feed?n=500",
+          "title": "초기 자사 컨텐츠 원문",
+          "published_at": null,
+          "collected_at": "2026-11-03T11:13:57.218275+09:00",
+          "verified_at": "2026-11-03T11:19:38.636321+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/auto-drop-maintenance-20261103-111321-2026-11-04-5.jpg",
+          "alt": "Brandon Melville의 원본 영상 장면 · 관련 업무 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "Brandon Melville · 원본 영상 참고 화면",
+          "source_url": "https://youtu.be/xbCKxfWlIO0",
+          "sha256": "fbcf039b1c0a164c254ecaed01966cdba59c37eb06bc54d9d5605f0db8173882"
+        }
+      ],
+      "supplemental": true,
+      "editorial_kind": "original_guidance"
     }
   ],
   "_작성기준": "글감 작성 전 AGENTS.md와 config/brands/makefamily.md의 최신 사용자 기준을 읽는다. 과거 루틴 문구와 충돌하면 최신 사용자 기준을 적용한다."
