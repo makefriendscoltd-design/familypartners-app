@@ -4,6 +4,7 @@
   "future_days": 5,
   "regular_per_day": 4,
   "guidance_per_day": 2,
+  "reply_count": {"min": 4, "max": 5},
   "hours": [9, 21],
   "minutes": 0,
   "state_directory": "/Users/apple/.local/share/familypartners-drop-maintenance",

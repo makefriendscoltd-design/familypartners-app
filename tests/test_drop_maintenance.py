@@ -5,6 +5,10 @@ ROOT=Path(__file__).resolve().parents[1]
 spec=importlib.util.spec_from_file_location('drop_maintenance',ROOT/'deploy/drop_maintenance.py')
 m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
 class BufferContracts(unittest.TestCase):
+ def test_old_short_threads_cannot_pass_automatic_authoring(self):
+  for count in (2,3,6):
+   with self.assertRaises(RuntimeError):m.validate_reply_depth([{'replies':['내용']*count}])
+  for count in (4,5):m.validate_reply_depth([{'replies':['내용']*count}])
  def test_source_anchor_preserves_list_prefix_and_uses_lf(self):
   body='4. 나중에 꺼내 쓸 기록을 남겨두세요.\r\n5. 결과와 원문을 함께 확인하세요.'
   pack={'sources':{'originals':{'key':'originals','title':'초기 원문','content':[{'title':'컨텐츠 25','body':body}]}}}

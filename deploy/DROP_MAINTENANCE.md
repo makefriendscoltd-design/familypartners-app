@@ -3,6 +3,8 @@
 설정 정본: `config/drop_maintenance.json`. 매일09:00·21:00 KST.
 오늘 누락부터 먼저 채우고 내일부터5일까지 정규4+실천2씩 유지한다.
 원고 정본은 기존 `config/drops_queue.json`, 자료 정책은 `config/assets.json`.
+설명 대댓글 수는 설정 정본의 `reply_count`를 따른다. 자료 링크는 별도다.
+모델 출력 스키마와 배포 전 검증이 같은 설정을 읽는다. 문단 분할·반복으로 채우지 않는다.
 
 2026-11-03 확인: 옛 Claude Cloud trigger
 `trig_01K2ZuKSFmbTtPgnJ1AFjJdJ`는 실제로 계속 실행됐다.

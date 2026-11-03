@@ -128,18 +128,31 @@ def source_pack(w,day,queue,before,discovery=None):
     return pack
 def author(w,pack):
     prompt=(ROOT/'deploy/drop_maintenance_prompt.md').read_text()+f'\nRun request: {w}/source-pack.json\nRead it and all referenced evidence. This is the only day to author: {pack["day"]}.\n'
+    limits=CFG['reply_count']
+    prompt+=f'\nEach post needs {limits["min"]} to {limits["max"]} substantive explanation replies, plus the separate link comment.\n'
     proper=json.loads((ROOT/'config/assets.json').read_text())['_고유명사']
     prompt+='\nThe ai case must name its actual source-documented tool in body or replies, matching at least one configured name: '+json.dumps(proper,ensure_ascii=False)+'. Choose the ai category accordingly; never invent a tool or add an unrelated name to pass lint.\n'
     (w/'prompt.txt').write_text(prompt)
     env=dict(os.environ,LOOPGUARD_CODEX_MODEL=CFG['model'])
-    cmd=[CFG['agent_runner'],'--only','codex','--request-scoped-timeout','--timeout',str(CFG['model_timeout_seconds']),'--cwd',str(ROOT),'--output-schema',str(ROOT/'deploy/drop_maintenance_schema.json'),'-o',str(w/'model-output.json'),'--json','-']
+    schema=json.loads((ROOT/'deploy/drop_maintenance_schema.json').read_text())
+    fields=schema['properties']['posts']['items']['properties']
+    for key in ('replies','before_replies'):
+        fields[key].update(minItems=limits['min'],maxItems=limits['max'])
+    save(w/'output-schema.json',schema)
+    cmd=[CFG['agent_runner'],'--only','codex','--request-scoped-timeout','--timeout',str(CFG['model_timeout_seconds']),'--cwd',str(ROOT),'--output-schema',str(w/'output-schema.json'),'-o',str(w/'model-output.json'),'--json','-']
     p=subprocess.run(cmd,input=prompt,cwd=ROOT,text=True,capture_output=True,env=env,timeout=CFG['model_timeout_seconds']+90)
     (w/'agent.log').write_text(p.stdout+'\n'+p.stderr)
     if p.returncode:raise RuntimeError('author_engine_failed; see '+str(w/'agent.log'))
     value=json.loads((w/'model-output.json').read_text())
     return value['posts']
+def validate_reply_depth(posts):
+    limits=CFG['reply_count']
+    if any(not limits['min']<=len(p.get('replies',[]))<=limits['max'] for p in posts):
+        raise RuntimeError('explanation_reply_count_outside_configured_range')
+
 def build(w,pack,posts,queue):
     if len(posts)!=6:raise RuntimeError('model_must_return_six_posts')
+    validate_reply_depth(posts)
     if not posts[0]['source_key'].startswith('reddit'):raise RuntimeError('first_post_must_be_recent_community')
     if len({p['source_key'] for p in posts[1:4]})!=3 or any(p['source_key']=='originals' for p in posts[:4]):raise RuntimeError('case_source_mix_invalid')
     if any(p['source_key']!='originals' for p in posts[4:]):raise RuntimeError('guidance_must_be_first_party')
