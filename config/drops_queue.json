@@ -2992,6 +2992,206 @@
       ],
       "supplemental": true,
       "editorial_kind": "original_guidance"
+    },
+    {
+      "date": "2026-11-03",
+      "title": "컨텐츠 279 · 영상 자동 발행, 올리는 순간보다 승인 순서가 더 중요함.",
+      "type": "ai",
+      "target": "여러 채널에 영상을 올리되 최종 승인은 직접 하려는 대표",
+      "fmt": "승인 게이트와 오류 알림",
+      "format": "case_thread",
+      "body": "영상 자동 발행, 올리는 순간보다 승인 순서가 더 중요함.\n\n레딧의 EryumT는 집에서 돌리는 n8n에\n세로 영상을 폼으로 넣고,\n로컬 LLM이 채널별 문구를 바꾼 뒤\nTelegram 승인 후 게시하는 흐름을 공개함.",
+      "replies": [
+        "1. 원작성자의 입력은 세로 영상임.\n\nn8n Form → 로컬 LLM의 채널별 문구 → Telegram 승인 요청 → 승인 뒤 채널별 업로드 순서였음.\n\n직접 붙여볼 출력 항목은 채널명, 바뀐 문구, 승인 상태, 업로드 상태임. 이 항목 구성은 실전 제안이고 원문이 보장한 양식은 아님.",
+        "2. 원작성자는 공개되는 작업마다 Telegram 승인 버튼을 누르게 했고, 각 노드의 오류 출력은 같은 알림으로 모았다고 함.\n\n오류 알림에는 실패 단계, 입력 파일, 재시도 여부를 붙여봐. 이 항목들은 내가 붙인 제안임.",
+        "3. 원문은 업로드에 공개 영상 주소나 터널을 쓰지 않았다고 설명함.\n\n내 영상으로 시험한다면 테스트 채널부터 지정해봐. 승인 전에 공개되지는 않는지, 승인 뒤 파일과 문구가 맞게 올라가는지 확인하는 거임. 이 확인 순서는 직접 제안하는 방법임."
+      ],
+      "link_comment": "관련 업무를 더 살펴볼 활용노트.\n레딧 사례의 배포 파일과는 다른 참고 자료임.\n\nhttps://lounge.aimax.ai.kr/worldclass/v9XWAq74fzg",
+      "sources": [
+        {
+          "url": "https://www.reddit.com/r/n8n/comments/1xme0ua/my_selfhosted_n8n_runs_25_workflows_for_my/",
+          "title": "My self-hosted n8n runs 25 workflows for my business, and most of the AI in them is local",
+          "published_at": "2026-11-03T00:08:56.414Z",
+          "collected_at": "2026-11-03T10:54:20.924783+09:00",
+          "verified_at": "2026-11-03T11:02:14.154237+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/auto-drop-maintenance-20261103-105413-2026-11-03-0.png",
+          "alt": "My self-hosted n8n runs 25 workflows for my business, and most of the AI in them is local",
+          "credit": "EryumT · Reddit 원문 화면",
+          "source_url": "https://www.reddit.com/r/n8n/comments/1xme0ua/my_selfhosted_n8n_runs_25_workflows_for_my/",
+          "sha256": "eb0020ca7a94a5e301cee0bf7da54f99c2a1c612593ffc3e064ccc248b44178b"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-03",
+      "title": "컨텐츠 280 · 잠재고객 명단 뽑고도 메일이 밋밋하면 조사 순서가 빠진 거임.",
+      "type": "marketing",
+      "target": "잠재고객 명단을 맞춤 제안 메일로 이어가려는 대표",
+      "fmt": "고객 조사 누락 보완",
+      "format": "case_thread",
+      "body": "잠재고객 명단 뽑고도 메일이 밋밋하면 조사 순서가 빠진 거임.\n\nCharlie Automates 영상 정리본은\nClaude Code로 고객 조건을 묻고\n수집 도구를 골라 명단을 만든 뒤\n고객 조사와 Gmail 초안까지 잇는 과정을 소개함.",
+      "replies": [
+        "1. 입력은 서비스 설명, 우선 조사할 업종, 원하는 명단 범위로 나눔.\n\n제작자 흐름에서는 고객 조건을 정한 뒤 목적에 맞는 수집 도구를 골랐음. 명단 결과에는 이름, 회사, 이메일, LinkedIn 정보와 고객별 메일이 들어갔다고 함.",
+        "2. 처음 초안은 상대의 LinkedIn이나 웹사이트를 조사하지 않아 기대에 못 미쳤다고 함.\n\n제작자는 고객 조사를 매번 하도록 스킬을 고쳤고, 제목과 상대가 하는 일, 상담 예약 링크를 메일에 반영했음. 내가 붙인 제안은 발송 전에 확인한 근거와 초안 문장을 나란히 보는 것임.",
+        "3. 연결 순서는 사업 정보 확인 → 고객 조건 확정 → 수집 도구 검토 → 명단 저장 → 고객 조사 → Gmail 초안이었음.\n\n이번 시연에서는 CRM 등록을 건너뛰었고, 발송도 사용자가 초안을 보고 누르는 단계였음. 상담이나 매출 성과로 읽으면 안 됨."
+      ],
+      "link_comment": "업무에 적용할 순서와 확인할 내용을 정리한 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/yawSNWPJ5sw",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/yawSNWPJ5sw",
+          "title": "잠재고객 검색부터 제안 메일 초안까지, Claude Code로 영업 준비를 연결하는 방법",
+          "published_at": null,
+          "collected_at": "2026-11-03T10:54:20.924783+09:00",
+          "verified_at": "2026-11-03T11:02:14.211391+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/auto-drop-maintenance-20261103-105413-2026-11-03-1.jpg",
+          "alt": "Charlie Automates의 원본 영상 장면 · 관련 업무 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "Charlie Automates · 원본 영상 참고 화면",
+          "source_url": "https://youtu.be/yawSNWPJ5sw",
+          "sha256": "7d456b41c846d86fb47c6123812ced482638bf258c40c062e69b45240ddee6f7"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-03",
+      "title": "컨텐츠 281 · 아침 요약이 안 오면 요약문보다 받을 곳부터 확인해야 함.",
+      "type": "evergreen",
+      "target": "메일과 일정을 매일 확인해 요약받고 싶은 대표",
+      "fmt": "예약 실행과 수신 경로",
+      "format": "case_thread",
+      "body": "아침 요약이 안 오면 요약문보다 받을 곳부터 확인해야 함.\n\nZinho Automates 영상 정리본은\nHermes가 메일·일정·시장 정보를 읽고\n요약문을 만든 뒤 WhatsApp으로 보내는\n아침 업무 흐름을 소개함.",
+      "replies": [
+        "1. 입력은 확인할 메일 범위, 당일 일정, 시장 정보임.\n\n정리본의 가상 적용 예시는 처리할 메일과 오늘의 약속을 나눈 요약문임. 시장 정보는 별도 칸에 두자는 건 내가 붙인 제안이고, 원자료와 대조할 수 있게 출처 이름도 남겨보면 됨.",
+        "2. 연결은 실행 환경 → 모델 → 업무 기준 → 반복 절차 → 전달 경로 순서로 살펴볼 수 있음.\n\n영상에서는 예약 내용과 다음 실행 시각을 안내했음. 출력에는 예약 문장, 다음 실행 시각, 수신 대화방을 함께 남기자는 건 실전 제안임.",
+        "3. 제작자는 노트북을 닫으면 로컬 에이전트와 예약 작업도 멈춘다고 설명함. 계속 켜둘 환경을 권했지만, 영상 속 추천 사양이 모두에게 필요한 최소 사양이라는 근거는 없음.\n\n제작자는 수신할 WhatsApp 대화방을 지정해야 한다고 설명함. 예약 응답만 보지 말고 직접 실행 결과와 도착 여부를 같이 확인해야 함."
+      ],
+      "link_comment": "업무에 적용할 순서와 확인할 내용을 정리한 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/v9XWAq74fzg",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/v9XWAq74fzg",
+          "title": "매일 확인하는 메일과 일정, Hermes로 아침 업무 요약을 받는 방법",
+          "published_at": null,
+          "collected_at": "2026-11-03T10:54:20.924783+09:00",
+          "verified_at": "2026-11-03T11:02:14.265698+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/auto-drop-maintenance-20261103-105413-2026-11-03-2.jpg",
+          "alt": "Zinho Automates의 원본 영상 장면 · 관련 업무 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "Zinho Automates · 원본 영상 참고 화면",
+          "source_url": "https://youtu.be/v9XWAq74fzg",
+          "sha256": "5a0b71eb41b81d5ecce30c2e1d3d25cd3a88b7f0d53f8159ce0bf24a89ccaa04"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-03",
+      "title": "컨텐츠 282 · 미팅에는 여러 명 왔는데 CRM엔 초대한 사람만 남아 있음?",
+      "type": "evergreen",
+      "target": "영업 미팅 참석자와 구매 역할을 CRM에 남기는 팀",
+      "fmt": "전사문과 CRM 대조",
+      "format": "case_thread",
+      "body": "미팅에는 여러 명 왔는데 CRM엔 초대한 사람만 남아 있음?\n\nMatt Stefan의 영상 정리본은\n회의 초대 명단과 전사문을 대조해\n실제 참석자와 언급된 사람을 나누고\n구매 역할과 연락처를 HubSpot에 정리함.",
+      "replies": [
+        "1. 입력은 초대 명단과 같은 회의의 전사문임.\n\n정리 결과는 초대받은 사람, 실제 발언한 사람, 이름만 언급된 사람, 제외 대상을 나눴음. 이름이 비슷해도 바로 합치지 않고 대화 맥락을 함께 확인하도록 설계함.",
+        "2. 사람 정보와 전사문을 연결해 의사결정자, 내부 추진자, 제동을 거는 역할을 분류했음.\n\n직함만 보지 않고 승인·일정 발언과 동료 참여를 이끈 맥락도 참고함. 모든 사람에게 역할을 억지로 붙이지 않았고, 같은 사람이 여러 역할을 가질 수 있게 했음.",
+        "3. 기존 연락처를 먼저 찾고 이름, 직함, 이메일, LinkedIn URL, 휴대전화의 빈칸을 보완한 뒤 HubSpot에 반영함.\n\n연결된 거래를 못 찾은 뒤에는 HubSpot의 연락처와 거래 관계를 직접 조회하도록 수정한 사례임. 이메일 도메인으로 회사를 추정한 기준은 제작자 환경의 전제라서 다른 미팅에 그대로 쓰면 안 됨."
+      ],
+      "link_comment": "업무에 적용할 순서와 확인할 내용을 정리한 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/uh6sZ8xR8Xo",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/uh6sZ8xR8Xo",
+          "title": "영업 미팅에서 빠진 의사결정자, 전사문으로 찾아 HubSpot에 정리하는 방법",
+          "published_at": null,
+          "collected_at": "2026-11-03T10:54:20.924783+09:00",
+          "verified_at": "2026-11-03T11:02:14.319113+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/auto-drop-maintenance-20261103-105413-2026-11-03-3.jpg",
+          "alt": "Matt Stefan | Hubjoy 의 원본 영상 장면 · 관련 업무 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "Matt Stefan | Hubjoy  · 원본 영상 참고 화면",
+          "source_url": "https://youtu.be/uh6sZ8xR8Xo",
+          "sha256": "0f220c28b08bdf43ce4cb77a9db81648f9efcaa7d676059db79fab43ec20fff4"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-03",
+      "title": "컨텐츠 283 · AI 직원이 엉뚱하게 답하면 업무지시서부터 다시 보셈.",
+      "type": "evergreen",
+      "target": "AI 직원 업무지시가 자꾸 빗나가는 대표",
+      "fmt": "입력·금지·출력 업무지시서",
+      "format": "case_thread",
+      "body": "AI 직원이 엉뚱하게 답하면 업무지시서부터 다시 보셈.\n\n맡길 업무, 읽을 자료, 결과 형식을\n요청할 때 같이 적어봐.\n\n이건 성공 사례 소개가 아니라\n지금 쓰는 AI에 붙여볼 실천 제안임.",
+      "replies": [
+        "1. 결과물을 열었을 때 볼 항목부터 정해봐\n\n문의 정리라면 고객 질문, 확인한 자료, 답변 초안,\n담당자가 결정할 내용을 나눠 받는 식임.\n자료에 없는 내용은 추측해서 채우지 않게 해.\n\n예시 한 건을 같이 주고 그 형식으로 요청해봐.\n어느 부분을 AI가 하고 어디서 사람이 볼지\n같은 업무지시서 안에 남기는 거임.",
+        "2. 결과가 안 맞으면 기준 한 줄을 고쳐보셈\n\n빠진 질문이 있다면 그 위치를 짚고,\n왜 필요한지와 다음 결과의 확인 조건을 적어봐.\n그냥 다시 해달라는 말로 끝내지 말고.\n\n오늘 받은 답변 하나에서 빠진 항목을 찾아\n업무지시서에 추가해봐. 수정본을 받으면\n그 항목이 실제로 들어갔는지 대조하면 됨."
+      ],
+      "link_comment": "업무에 적용할 순서와 확인할 내용을 정리한 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/v9XWAq74fzg",
+      "sources": [
+        {
+          "url": "https://familypartners.aimax.ai.kr/feed?n=500",
+          "title": "초기 자사 컨텐츠 원문",
+          "published_at": null,
+          "collected_at": "2026-11-03T10:54:20.924783+09:00",
+          "verified_at": "2026-11-03T11:02:14.373871+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/auto-drop-maintenance-20261103-105413-2026-11-03-4.jpg",
+          "alt": "Zinho Automates의 원본 영상 장면 · 관련 업무 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "Zinho Automates · 원본 영상 참고 화면",
+          "source_url": "https://youtu.be/v9XWAq74fzg",
+          "sha256": "5a0b71eb41b81d5ecce30c2e1d3d25cd3a88b7f0d53f8159ce0bf24a89ccaa04"
+        }
+      ],
+      "supplemental": true,
+      "editorial_kind": "original_guidance"
+    },
+    {
+      "date": "2026-11-03",
+      "title": "컨텐츠 284 · AI 직원한테 업무를 통째로 넘기면 어디서 틀렸는지 찾기 힘들잖아.",
+      "type": "evergreen",
+      "target": "자동화를 한 덩어리로 맡기는 대표",
+      "fmt": "단계 분리와 변경 전 검토",
+      "format": "case_thread",
+      "body": "AI 직원한테 업무를 통째로 넘기면 어디서 틀렸는지 찾기 힘들잖아.\n\n자료 읽기, 판단, 기록을 나눠서\n단계마다 받아볼 결과를 정해봐.\n\n이것도 외부 사례가 아니라\n내 업무를 쪼개보자는 실천 제안임.",
+      "replies": [
+        "1. 같은 자료로 다른 판단을 하고 있지는 않은지 봐\n\n입력에는 원자료, 적용할 기준, 저장할 곳을 적어봐.\n자료를 읽은 단계에서는 찾은 내용과 빠진 내용을,\n판단 단계에서는 적용한 기준을 따로 받는 식임.\n\n예를 들어 문의 분류라면 고객의 원문과\n분류한 이유를 한 쌍으로 남겨달라고 요청해봐.\n어디서 해석이 달라졌는지 찾아보는 거임.",
+        "2. 기록하기 전에는 바뀔 항목부터 받아봐\n\n새로 만들 것, 고칠 것, 그대로 둘 것을 나누고\n각 항목 옆에 판단 이유를 적게 해봐.\n기존 자료를 바꿀 업무일수록 확인할 자리를 둬.\n\n시험 자료로 한 번 처리한 뒤에는\n완료, 미처리, 검토 필요를 구분해 받아보셈.\n막혔다면 다시 시작할 단계까지 남겨두는 거임."
+      ],
+      "link_comment": "업무에 적용할 순서와 확인할 내용을 정리한 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/uh6sZ8xR8Xo",
+      "sources": [
+        {
+          "url": "https://familypartners.aimax.ai.kr/feed?n=500",
+          "title": "초기 자사 컨텐츠 원문",
+          "published_at": null,
+          "collected_at": "2026-11-03T10:54:20.924783+09:00",
+          "verified_at": "2026-11-03T11:02:14.431308+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/auto-drop-maintenance-20261103-105413-2026-11-03-5.jpg",
+          "alt": "Matt Stefan | Hubjoy 의 원본 영상 장면 · 관련 업무 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "Matt Stefan | Hubjoy  · 원본 영상 참고 화면",
+          "source_url": "https://youtu.be/uh6sZ8xR8Xo",
+          "sha256": "0f220c28b08bdf43ce4cb77a9db81648f9efcaa7d676059db79fab43ec20fff4"
+        }
+      ],
+      "supplemental": true,
+      "editorial_kind": "original_guidance"
     }
   ],
   "_작성기준": "글감 작성 전 AGENTS.md와 config/brands/makefamily.md의 최신 사용자 기준을 읽는다. 과거 루틴 문구와 충돌하면 최신 사용자 기준을 적용한다."
