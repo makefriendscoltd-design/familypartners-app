@@ -4246,6 +4246,219 @@
       ],
       "supplemental": true,
       "editorial_kind": "original_guidance"
+    },
+    {
+      "date": "2026-11-09",
+      "title": "컨텐츠 315 · 전화상담 봇은 통화보다 통화 뒤 저장에서 더 자주 꼬였음.",
+      "type": "ai",
+      "target": "AI 전화접수를 운영하는 소상공인",
+      "fmt": "실패 조건 역산형",
+      "format": "case_thread",
+      "body": "전화상담 봇은 통화보다 통화 뒤 저장에서 더 자주 꼬였음.\n\n레딧의 Aristeidisp는\n가상 동물병원용 AI 전화접수를 시험함.\nN8N으로 콜백 목록을 만들었는데\n번호 누락·반복 전화·긴급 알림이 문제였다고 함.",
+      "replies": [
+        "1. 원작성자는 웹훅이 전화번호를 못 받으면 저장하지 않고 상담 봇이 다시 물어보게 했음.\n\n반환값도 저장됨·저장 안 됨·전화번호 요청으로 나눠, 저장 실패를 완료라고 말하지 않게 구성했음.",
+        "2. 새 요청은 Google Sheet 콜백 목록에 새 행으로 남김.\n\n같은 번호가 짧은 간격으로 다시 오고 Status가 New면 새 행 대신 Calls와 시각 메모를 갱신했다고 설명함.",
+        "3. 긴급 전화만 팀 이메일로 보내고, 일반 요청은 목록에 남기는 흐름임.\n\n실무 제안: 저장 결과와 알림 결과를 따로 보면 ‘시트에는 있는데 알림은 안 간’ 상태도 확인할 수 있음.",
+        "4. 댓글 작성자 Saved_Not_Soft는 같은 번호도 국가번호·공백 표기가 다르면 중복 검사가 빗나갈 수 있다고 짚었음.\n\n이건 원작성자 결과가 아니라 댓글 작성자의 점검 제안임.",
+        "5. 원작성자 Aristeidisp는 공백과 대시는 이미 지우지만 국가번호 차이는 아직 남았다고 답함.\n\nStatus가 New인 요청만 합치고, Done 등 다른 상태면 새 요청으로 만든다는 조건도 밝힘."
+      ],
+      "link_comment": "관련 업무를 더 살펴볼 활용노트.\n레딧 사례의 배포 파일과는 다른 참고 자료임.\n\nhttps://lounge.aimax.ai.kr/worldclass/uNr2_w5dGHk",
+      "sources": [
+        {
+          "url": "https://www.reddit.com/r/n8n/comments/1xmyzh4/free_n8n_template_callback_list_for_ai_voice/",
+          "title": "Free n8n template: call-back list for AI voice receptionists (ElevenLabs / Vapi / Retell) that merges repeat calls",
+          "published_at": "2026-11-03T17:19:53.871Z",
+          "collected_at": "2026-11-04T09:01:00.339335+09:00",
+          "verified_at": "2026-11-04T09:06:32.317282+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/auto-drop-maintenance-20261104-090013-2026-11-09-0.png",
+          "alt": "Free n8n template: call-back list for AI voice receptionists (ElevenLabs / Vapi / Retell) that merges repeat calls",
+          "credit": "Aristeidisp · Reddit 원문 화면",
+          "source_url": "https://www.reddit.com/r/n8n/comments/1xmyzh4/free_n8n_template_callback_list_for_ai_voice/",
+          "sha256": "3e5b6493129f911afc9bc7757e1dc51363a82bd8f775bf1f16affeb7916cf431"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-09",
+      "title": "컨텐츠 316 · 영업 명단은 많이 찾을 때보다 빼는 기준에서 갈림.",
+      "type": "marketing",
+      "target": "영업 명단을 만드는 1인 사업자",
+      "fmt": "포함·제외 조건 비교형",
+      "format": "case_thread",
+      "body": "영업 명단은 많이 찾을 때보다 빼는 기준에서 갈림.\n\n라운지 정리본 속 Ryan Kim은\nClaude Code에 검색·분류 지침을 따로 주고\n회사 홈페이지까지 읽힌 뒤\n메일 캠페인에 넣는 흐름을 소개함.",
+      "replies": [
+        "1. 제작자는 검색 지침과 메일 지침을 따로 준비했음.\n\n검색 입력에는 회사 위치·담당 직책·사업 유형·제외 유형을 두고, 메일 입력에는 도입부·제안 내용·후속 문안 기준을 넣음.",
+        "2. Claude Code는 자연어 요청을 Apollo 검색 조건으로 바꿨음.\n\n다만 요청한 회사 규모와 Apollo가 실제 적용한 구간이 정확히 같지 않아, 제작자는 검색 화면과 표본 회사를 다시 확인함.",
+        "3. 검색 결과는 CSV로 내려받아 회사 홈페이지와 다시 대조함.\n\n결과는 회사명·분류·연락 대상 여부·접속 불가로 나누고, 코칭·교육·소프트웨어처럼 섞인 대상을 제외했음.",
+        "4. 메일 전에는 목표 고객의 고민과 업계 표현을 조사하고, 자신의 판매 제안과 함께 지침에 넣었음.\n\n제작자가 넣은 제안은 시연에서 확인된 성과가 아니라 메일에 쓸 판매 조건이었음.",
+        "5. 마지막 검토값도 단계마다 달랐음.\n\n검색에서는 조건과 표본 업체, 분류에서는 적합·제외·접속 불가, 메일에서는 제안과 표현을 확인한 뒤 캠페인에 등록함."
+      ],
+      "link_comment": "업무에 적용할 순서와 확인할 내용을 정리한 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/uVfb0lq48vw",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/uVfb0lq48vw",
+          "title": "영업 명단 수집부터 제안 메일까지, Claude Code로 반복 업무를 연결하는 방법",
+          "published_at": null,
+          "collected_at": "2026-11-04T09:01:00.339335+09:00",
+          "verified_at": "2026-11-04T09:06:32.784641+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/auto-drop-maintenance-20261104-090013-2026-11-09-1.jpg",
+          "alt": "Ryan Kim | AI Agents & Automation Systems의 원본 영상 장면 · 관련 업무 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "Ryan Kim | AI Agents & Automation Systems · 원본 영상 참고 화면",
+          "source_url": "https://youtu.be/uVfb0lq48vw",
+          "sha256": "42aa7499e24a28606a1bcf9ef52b0c1c718b99eca1ec5009ce705bf2feb3d170"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-09",
+      "title": "컨텐츠 317 · CRM에 이름 들어갔다고 후속 연락까지 끝난 건 아님.",
+      "type": "evergreen",
+      "target": "고객 후속 연락을 관리하는 소규모 팀",
+      "fmt": "등록 후 대조 체크형",
+      "format": "case_thread",
+      "body": "CRM에 이름 들어갔다고 후속 연락까지 끝난 건 아님.\n\n라운지 정리본 속 제작자는\nClaude와 Zoho CRM을 연결해\n가상 고객 등록·메모·일정을 나눠 시연함.\n거래 전환도 실제 계약 성과는 아니었음.",
+      "replies": [
+        "1. 제작자는 Claude 설정에 Zoho MCP 연결 정보를 넣고 계정 접근을 허용했음.\n\n처음엔 조직 연결이 맞지 않아 다른 프로필로 다시 인증했고, 어느 계정에 붙었는지 확인함.",
+        "2. 입력은 ChatGPT로 만든 가상 고객의 이름·이메일·전화번호·유입 경로·업종·도시·국가·상태였음.\n\nCSV를 다루기 어려워지자 일반 텍스트로 복사해 전달함.",
+        "3. Claude에는 없는 내용을 만들지 말고 잠재 고객으로 등록하라고 요청함.\n\n등록 뒤에는 목록만 보지 않고 이름·이메일·전화번호가 원본과 맞는지 대조하는 절차를 라운지 정리본이 제안함.",
+        "4. 메모 문구와 후속 일정은 한 요청에 넣었지만 확인은 따로 해야 했음.\n\n메모는 새로고침 뒤 보였고, 전사문만으로는 모든 일정이 요청대로 등록됐는지 확인하기 어려웠음.",
+        "5. 잠재 고객의 거래 전환도 CRM 기록 변경까지만 확인됐음.\n\n실제 계약이나 매출 증거는 아니므로 대상 고객·거래값·변경된 기록을 각각 살펴봐야 함."
+      ],
+      "link_comment": "업무에 적용할 순서와 확인할 내용을 정리한 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/uNr2_w5dGHk",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/uNr2_w5dGHk",
+          "title": "고객 명단 입력과 후속 연락 관리, Claude와 Zoho CRM으로 연결하는 방법",
+          "published_at": null,
+          "collected_at": "2026-11-04T09:01:00.339335+09:00",
+          "verified_at": "2026-11-04T09:06:33.022698+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/auto-drop-maintenance-20261104-090013-2026-11-09-2.jpg",
+          "alt": "The Learning Effort Tech Hub의 원본 영상 장면 · 관련 업무 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "The Learning Effort Tech Hub · 원본 영상 참고 화면",
+          "source_url": "https://youtu.be/uNr2_w5dGHk",
+          "sha256": "9ed78a7b3b47c82508197b25aab8e5977fefa20b784e1adb456e7219abe32ed7"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-09",
+      "title": "컨텐츠 318 · CRM 빈칸 채우기 전에 누구를 찾는지부터 정했음.",
+      "type": "evergreen",
+      "target": "영업 우선순위를 정하는 대표",
+      "fmt": "우선순위 기준 설계형",
+      "format": "case_thread",
+      "body": "CRM 빈칸 채우기 전에 누구를 찾는지부터 정했음.\n\n라운지 정리본 속 Jan은\n가상 회사의 고객 조건을 먼저 세우고\nHubSpot 정보를 보완한 뒤\n연락 우선순위와 담당 업무까지 연결함.",
+      "replies": [
+        "1. Jan은 상품 가치·고객 업종과 규모·구매 담당자·필요한 연동 조건을 먼저 적었음.\n\n그걸 입력으로 삼아 CRM의 누락 항목과 채워진 비율을 확인함.",
+        "2. 계약 성공·실패 고객과 최근 영업 고객을 규모·업종·지역·사용 기술로 비교했음.\n\n결과는 가상 회사의 시연 데이터라 특정 업종이 유리하다는 일반 근거로 쓸 수 없음.",
+        "3. Claude Code는 HubSpot API 스크립트를 만들고 실행했고, Apollo는 직원 수와 사용 기술을 보완하는 데 쓰였음.\n\n업종은 회사 웹사이트 본문을 정해진 분류 안에서 고르게 함.",
+        "4. 중복 기업을 합칠 때는 영업 활동 이력이 있는 기록을 남기고, 둘 다 없으면 정보가 더 채워진 쪽을 기준으로 삼았음.\n\nJan은 백업 뒤 작은 묶음과 검토용 항목부터 확인하라고 설명함.",
+        "5. 보완이 끝나면 등급 이유·기업 요약·담당자 업무까지 연결했음.\n\nJan의 연락 방식 배분은 시연 예시일 뿐임. 실제 적용 전에는 담당자가 등급 이유를 이해하고 동의하는지 봐야 함."
+      ],
+      "link_comment": "업무에 적용할 순서와 확인할 내용을 정리한 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/u5ciary3Jac",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/u5ciary3Jac",
+          "title": "영업팀이 먼저 연락할 고객을 고르는 법, HubSpot과 AI로 CRM 정리하기",
+          "published_at": null,
+          "collected_at": "2026-11-04T09:01:00.339335+09:00",
+          "verified_at": "2026-11-04T09:06:33.342869+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/auto-drop-maintenance-20261104-090013-2026-11-09-3.jpg",
+          "alt": "Jan Brochwicz의 원본 영상 장면 · 관련 업무 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "Jan Brochwicz · 원본 영상 참고 화면",
+          "source_url": "https://youtu.be/u5ciary3Jac",
+          "sha256": "598236feb6f7b3e64b37c48027fc1302324ab7893cb256fcdd3b124cd41b1c7f"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-09",
+      "title": "컨텐츠 319 · AI 직원한테 고객 기록 맡기면 ‘하지 말 것’부터 적으세요.",
+      "type": "evergreen",
+      "target": "AI에게 고객 기록 수정을 맡기려는 운영자",
+      "fmt": "수정 금지선 지시서형",
+      "format": "case_thread",
+      "body": "AI 직원한테 고객 기록 맡기면 ‘하지 말 것’부터 적으세요.\n\n이건 외부 성공 사례가 아니라\n내가 직접 제안하는 개인 가이드임.\n고쳐도 되는 칸과 건드리면 안 되는 칸,\n실행 전 확인받을 내용을 먼저 나누자.",
+      "replies": [
+        "1. 입력 제안: 고객 식별값·수정 허용 칸·수정 금지 칸·변경 이유를 적어두자.\n\n‘고객 정보 정리’처럼 범위를 뭉개지 말고 어디까지 손대는지 먼저 고정하는 거임.",
+        "2. 순서 제안: 원본 읽기 → 변경안 미리보기 → 사람 확인 → 실제 수정으로 나누자.\n\n확인 전에는 쓰지 말라는 조건을 업무지시서에 넣으면 멈출 지점이 분명해짐.",
+        "3. 결과표 제안: 고객 식별값·수정 전 값·수정 예정 값·변경 이유·확인 상태·실행 상태로 받자.\n\n파일만 받는 것보다 무엇이 바뀌었는지 바로 대조하기 쉬움.",
+        "4. 중단 조건 제안: 식별값이 없거나 수정 금지 칸이 포함되면 실행 대신 보류 사유를 쓰게 하자.\n\n상충하는 값이 보이면 어느 쪽도 택하지 말고 사람이 고를 후보로 남기는 방식임."
+      ],
+      "link_comment": "업무에 적용할 순서와 확인할 내용을 정리한 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/uNr2_w5dGHk",
+      "sources": [
+        {
+          "url": "https://familypartners.aimax.ai.kr/feed?n=500",
+          "title": "초기 자사 컨텐츠 원문",
+          "published_at": null,
+          "collected_at": "2026-11-04T09:01:00.339335+09:00",
+          "verified_at": "2026-11-04T09:06:33.591889+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/auto-drop-maintenance-20261104-090013-2026-11-09-4.jpg",
+          "alt": "The Learning Effort Tech Hub의 원본 영상 장면 · 관련 업무 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "The Learning Effort Tech Hub · 원본 영상 참고 화면",
+          "source_url": "https://youtu.be/uNr2_w5dGHk",
+          "sha256": "9ed78a7b3b47c82508197b25aab8e5977fefa20b784e1adb456e7219abe32ed7"
+        }
+      ],
+      "supplemental": true,
+      "editorial_kind": "original_guidance"
+    },
+    {
+      "date": "2026-11-09",
+      "title": "컨텐츠 320 · 영업 명단 정리할 때 확인값과 추정값을 같은 칸에 넣지 마세요.",
+      "type": "evergreen",
+      "target": "잠재고객 명단을 분류하는 마케터",
+      "fmt": "확인값·추정값 분리형",
+      "format": "case_thread",
+      "body": "영업 명단 정리할 때 확인값과 추정값을 같은 칸에 넣지 마세요.\n\n이것도 외부 사례가 아니라\n내가 직접 제안하는 개인 가이드임.\n출처에서 확인한 값, AI가 분류한 값,\n사람이 고칠 값을 따로 받자는 얘기임.",
+      "replies": [
+        "1. 입력 제안: 회사명·홈페이지 본문·원하는 고객 기준·제외 기준을 넣자.\n\n원본 값은 그대로 두고 AI가 읽은 근거와 분류값을 별도 칸에 쓰게 하는 거임.",
+        "2. 순서 제안: 원본 보존 → 근거 문장 추출 → AI 분류 → 사람 검토로 나누자.\n\n분류가 틀려도 원본 회사명과 본문까지 덮어쓰지 않게 하는 방식임.",
+        "3. 결과표 제안: 원본 값·근거 문장·AI 분류·제외 이유·검토 상태를 받자.\n\n확인값과 추정값이 섞이지 않아 어느 칸을 사람이 고칠지 보임.",
+        "4. 예외 처리 제안: 홈페이지가 안 열리거나 근거가 부족하면 빈칸 대신 ‘미확인’으로 남기자.\n\n접속 실패와 실제 제외 대상을 같은 상태로 묶지 않는 거임.",
+        "5. 적용 제안: 지금 가진 명단 일부로 먼저 비교해보자.\n\nAI 분류와 내 판단이 갈린 행만 모아 제외 기준을 고치고, 다음 업무지시서에 반영하면 됨."
+      ],
+      "link_comment": "업무에 적용할 순서와 확인할 내용을 정리한 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/uVfb0lq48vw",
+      "sources": [
+        {
+          "url": "https://familypartners.aimax.ai.kr/feed?n=500",
+          "title": "초기 자사 컨텐츠 원문",
+          "published_at": null,
+          "collected_at": "2026-11-04T09:01:00.339335+09:00",
+          "verified_at": "2026-11-04T09:06:33.832985+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/auto-drop-maintenance-20261104-090013-2026-11-09-5.jpg",
+          "alt": "Ryan Kim | AI Agents & Automation Systems의 원본 영상 장면 · 관련 업무 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "Ryan Kim | AI Agents & Automation Systems · 원본 영상 참고 화면",
+          "source_url": "https://youtu.be/uVfb0lq48vw",
+          "sha256": "42aa7499e24a28606a1bcf9ef52b0c1c718b99eca1ec5009ce705bf2feb3d170"
+        }
+      ],
+      "supplemental": true,
+      "editorial_kind": "original_guidance"
     }
   ],
   "_작성기준": "글감 작성 전 AGENTS.md와 config/brands/makefamily.md의 최신 사용자 기준을 읽는다. 과거 루틴 문구와 충돌하면 최신 사용자 기준을 적용한다."
