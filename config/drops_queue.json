@@ -4671,6 +4671,220 @@
       ],
       "supplemental": true,
       "editorial_kind": "original_guidance"
+    },
+    {
+      "date": "2026-11-11",
+      "title": "컨텐츠 327 · N8N 노드 이름 바꿨다가 조용히 빈값이 흘렀다고 함.",
+      "type": "ai",
+      "target": "N8N 워크플로 유지보수",
+      "fmt": "고장 추적형",
+      "format": "case_thread",
+      "body": "N8N 노드 이름 바꿨다가 조용히 빈값이 흘렀다고 함.\n\n레딧의 u/omert-dev는\n이름 참조가 깨진 지점을 찾으려고\n읽기 전용 CLI flownav를 만들었음.\n실행 오류가 안 나는 고장을 겨냥한 사례다.",
+      "replies": [
+        "1. 이름 변경 뒤 어디가 깨졌나\n\n원작성자는 노드 이름을 바꾼 뒤 아래쪽 expression이 깨졌는데, 실행은 멈추지 않고 빈값으로 흘렀다고 적었음.\n\n편집기의 이름 변경 갱신이 Code node JavaScript까지는 다루지 못하는 듯했고, API나 AI agent가 JSON을 고친 경우엔 그 단계 자체가 없다고 설명함.",
+        "2. 바꾸기 전에 참조부터 뽑음\n\n`flownav affected \"Node\" --rename`에 바꿀 노드 이름을 넣고 확인하면, expression과 Code node에서 그 이름을 참조하는 노드와 parameter를 목록으로 보여준다고 함.\n\n이름 변경 전후에 같은 목록을 대조하는 방식이다.",
+        "3. 점검 결과도 따로 나옴\n\n원작성자 설명상 `flownav check`는 끊어진 참조, 닿지 않는 노드, 빠진 오류 처리를 찾음.\n\n하위 workflow·tool workflow·error workflow 사이의 호출도 지도처럼 연결하고, AI agent에는 전체 JSON 대신 필요한 맥락만 건네는 MCP server도 포함했다고 함.",
+        "4. 배포 검사는 아직 계획 단계임\n\n댓글 작성자 u/Saved_Not_Soft가 배포 전에 빠르게 돌려봤는지 물었음.\n\n원작성자 u/omert-dev는 수동 변경 전에는 `affected --rename`, 배포 단계에는 끊어진 참조가 있으면 `check`가 실패하도록 할 계획이지만 실제 배포 단계에서는 아직 돌리지 않았다고 답함.",
+        "5. 자기 환경 밖에서는 더 확인해야 함\n\n원작성자는 아직 자기 인스턴스에서만 시험했다고 밝혔음.\n\n잘못 읽힌 항목이 나오면 민감한 값을 뺀 export를 GitHub issue에 보내달라고 했으니, 다른 workflow에서도 같은 결과가 난다고 일반화하면 안 됨."
+      ],
+      "link_comment": "관련 업무를 더 살펴볼 활용노트.\n레딧 사례의 배포 파일과는 다른 참고 자료임.\n\nhttps://lounge.aimax.ai.kr/worldclass/U3hkpQzgpoM",
+      "sources": [
+        {
+          "url": "https://www.reddit.com/r/n8n/comments/1xoqg5q/i_renamed_an_n8n_node_and_something_downstream/",
+          "title": "I renamed an n8n node and something downstream broke silently, so I built a free tool that lists what references a node by name",
+          "published_at": "2026-11-05T18:35:18.534Z",
+          "collected_at": "2026-11-06T09:00:53.279123+09:00",
+          "verified_at": "2026-11-06T09:09:58.444637+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/auto-drop-maintenance-20261106-090009-2026-11-11-0.png",
+          "alt": "I renamed an n8n node and something downstream broke silently, so I built a free tool that lists what references a node by name",
+          "credit": "omert-dev · Reddit 원문 화면",
+          "source_url": "https://www.reddit.com/r/n8n/comments/1xoqg5q/i_renamed_an_n8n_node_and_something_downstream/",
+          "sha256": "dff1cd72e486a3c6b4b48385dee2f7ff0abc454f5e30c2bfa09e46a7b3df6ca8"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-11",
+      "title": "컨텐츠 328 · 제안서 초안 맡겼는데 계속 옆에서 설명 중이면 위임이 아님.",
+      "type": "marketing",
+      "target": "제안서 초안 위임",
+      "fmt": "입출력 위임형",
+      "format": "case_thread",
+      "body": "제안서 초안 맡겼는데 계속 옆에서 설명 중이면 위임이 아님.\n\n라운지 정리본 속 Owen은\nLinear 업무를 Claude에 배정하고\n공통 저장소의 사업 정보와 절차를 읽혀\n반복 업무를 하위 작업으로 나눴음.",
+      "replies": [
+        "1. 연결은 이름 배정으로 끝나지 않음\n\nOwen의 구성은 Linear 업무를 Claude에 배정하면 webhook이 클라우드의 Claude Code 작업을 실행함.\n\n호출용 HTTP header를 넘기려고 Cloudflare Worker도 중간에 둠. Linear에 AI 이름만 추가하면 같은 흐름이 생기는 구조는 아님.",
+        "2. 고객 등록은 입력과 결과를 같이 적음\n\n입력은 고객명, 프로젝트 정보, 시작 시점, 담당자 email임.\n\nClaude가 Google Drive folder와 Linear project를 만들고 CRM에 고객을 추가한 뒤 환영 email 초안을 남겼다고 정리돼 있음. 완료한 하위 작업과 결과 link도 업무에 기록함.",
+        "3. 제안서는 검토할 초안으로 받음\n\n회의 기록과 제안서 양식을 넣고 고객의 문제, 목표, 작업 범위, 일정, 가격이 맞는지 확인하는 흐름임.\n\n초안에는 현황과 과제, 목표, 범위, 납품 계획, 가격과 결제 정보가 들어갔고, Owen은 사람이 검토하고 고치는 걸 전제로 설명함.",
+        "4. 반복 순서는 문서로 남김\n\nOwen은 맡길 업무 목록을 `index.md`에 모으고, 자세한 절차는 별도 문서와 skill로 관리함.\n\n제안서는 양식 복사 → 고객 정보 입력 → 불필요한 내용 삭제 → 정확성을 확인하고 사람에게 검토를 요청하는 순서로 적어둠.",
+        "5. 실패 이유도 다음 지침에 넣음\n\nLinkedIn 게시물과 infographic 작업에서는 upload 권한이 부족했고 문서 서식도 좋지 않았음.\n\nOwen은 서식 규칙과 상태 갱신 지침을 고쳤음. 다만 평소 게시글은 직접 쓴다고 밝혀, 시연 기능과 실제 선호 방식은 구분해야 함."
+      ],
+      "link_comment": "업무에 적용할 순서와 확인할 내용을 정리한 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/pZkMTrKb8_4",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/pZkMTrKb8_4",
+          "title": "고객 등록부터 제안서 초안까지, AI에게 반복 업무를 맡기는 방법",
+          "published_at": null,
+          "collected_at": "2026-11-06T09:00:53.279123+09:00",
+          "verified_at": "2026-11-06T09:09:58.821190+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/auto-drop-maintenance-20261106-090009-2026-11-11-1.jpg",
+          "alt": "Owain Lewis의 원본 영상 장면 · 관련 업무 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "Owain Lewis · 원본 영상 참고 화면",
+          "source_url": "https://youtu.be/pZkMTrKb8_4",
+          "sha256": "92e217aa1c15a773a61f659f86e59538ea3ec254c7bed8fde694e48eb4ee5582"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-11",
+      "title": "컨텐츠 329 · 환불 문의까지 AI에 주려면 조회와 기록부터 갈라야 함.",
+      "type": "evergreen",
+      "target": "고객 응대 권한 설계",
+      "fmt": "승인 경계형",
+      "format": "case_thread",
+      "body": "환불 문의까지 AI에 주려면 조회와 기록부터 갈라야 함.\n\n라운지 정리본의 제작자는\nN8N에 Gemini·Gmail·주문 시트를 연결하고\n조회는 AI가, 환불 기록은\n담당자 승인 뒤에 움직이게 만들었음.",
+      "replies": [
+        "1. 시트부터 읽기와 쓰기로 나눔\n\n주문 시트 입력칸은 주문번호, 고객, 상품, 상태, 배송일, 배송지, 결제금액임.\n\n환불 시트 출력칸은 날짜, 주문번호, 금액, 사유, 상태로 구성함. 주문 원본을 고치는 기능은 주지 않고 환불 시트에 행을 더하는 도구만 승인 뒤에 붙였음.",
+        "2. 조회가 맞은 뒤 기억을 연결함\n\n채팅 입력 → AI agent → Gemini → 주문 조회 도구 순서로 붙이고, 주문번호가 정확한 행을 찾는지 먼저 봄.\n\n그다음 같은 채팅의 대화 기억을 연결함. 새 채팅에서는 주문번호를 다시 물었으니, 기억 범위가 모든 고객 대화로 이어진다고 보면 안 됨.",
+        "3. 승인 메일엔 판단값이 보여야 함\n\n환불 요청이 오면 주문을 조회한 뒤 Gmail 승인 단계에서 멈춤.\n\n메일에는 주문번호, 금액, 사유가 보여야 하고, 승인 뒤에만 환불 시트에 기록함. 이 시연이 확인한 건 환불 기록이며 실제 결제 수단으로 돈을 돌려주는 과정은 나오지 않음.",
+        "4. 거절 뒤 종료 규칙도 필요했음\n\n초기에는 담당자가 거절한 뒤 승인 메일이 다시 왔음. 제작자는 재요청하지 말고 고객에게 승인하지 못했다고 안내하도록 규칙을 추가함.\n\n승인 뒤에도 AI가 대기 중이라고 답한 문제가 남아, 도구가 돌려준 상태와 고객 안내를 맞추도록 고쳤음.",
+        "5. 정상 조회만 보고 끝내지 않음\n\n제작자는 배송 상태, 구매 상품, 없는 주문번호, 단순 인사, 규칙을 무시하라는 요구를 새 채팅에서 각각 시험함.\n\n승인과 거절도 나눠 실행하고 mail·실행 기록·시트 변화를 확인한 뒤 고객 안내까지 대조했음. 글로 적은 규칙만으로 완전히 잠긴다고 설명하진 않았음."
+      ],
+      "link_comment": "업무에 적용할 순서와 확인할 내용을 정리한 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/U3hkpQzgpoM",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/U3hkpQzgpoM",
+          "title": "주문 문의는 AI가 답하고 환불은 사람이 승인하는 고객 응대 자동화",
+          "published_at": null,
+          "collected_at": "2026-11-06T09:00:53.279123+09:00",
+          "verified_at": "2026-11-06T09:09:59.123126+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/auto-drop-maintenance-20261106-090009-2026-11-11-2.jpg",
+          "alt": "AI Automation Simplified for Business Growth의 원본 영상 장면 · 관련 업무 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "AI Automation Simplified for Business Growth · 원본 영상 참고 화면",
+          "source_url": "https://youtu.be/U3hkpQzgpoM",
+          "sha256": "504151690291e2ea4d88fb367d5e674ea575d9f0d8020a4b9a2dc0c972382d3c"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-11",
+      "title": "컨텐츠 330 · 거래처 메일을 요약만 하면 담당자랑 마감일은 또 찾아야 함.",
+      "type": "evergreen",
+      "target": "프로젝트 이메일 정리",
+      "fmt": "추출 대조형",
+      "format": "case_thread",
+      "body": "거래처 메일을 요약만 하면 담당자랑 마감일은 또 찾아야 함.\n\n라운지 정리본의 TechMagicWow 영상은\nGmail 본문을 OpenAI로 분석하고\n프로젝트 관리 항목으로 나눠\nGoogle Sheets 새 행에 넣는 흐름을 다룸.",
+      "replies": [
+        "1. 입력에서 본문을 먼저 확인함\n\nGmail 수신을 시작점으로 두고 제목, 발신자, 전체 본문을 OpenAI 단계에 넘김.\n\n제작자는 간소화 옵션을 꺼 긴 본문도 전달했음. 사람이 찾은 요청 문장과 날짜가 입력에도 들어왔는지 먼저 대조해야 뒤 단계의 누락 위치를 찾을 수 있음.",
+        "2. 요약 말고 뽑을 칸을 정함\n\n출력 항목은 프로젝트 관련 여부, 프로젝트명, 분류, 요약, 담당자, 마감일, 지연 일수, 영향, 제안 우선순위임.\n\n프롬프트에는 빠진 정보를 만들지 말라는 조건도 넣음. 원문에 있는 담당자·날짜와 AI가 제안한 영향·우선순위는 같은 사실처럼 섞지 않음.",
+        "3. AI 답을 시트 칸으로 바꿈\n\nOpenAI 응답은 JSON 형식의 text라 그대로는 개별 칸에 쓰기 어려웠음.\n\ncode 단계에서 JSON으로 바꾸고 프로젝트명, 담당자, 마감일 같은 값을 분리해 다음 단계로 넘김. 날짜가 없는 email도 시험해 빈값 처리와 계산 결과를 따로 봐야 함.",
+        "4. 관련 메일만 새 행으로 보냄\n\n조건 분기에서 프로젝트 관련 여부를 확인하고 참이면 Google Sheets에 새 행을 더함. 거짓이면 기록하지 않고 끝냄.\n\nGmail 본문 → AI 분류·추출 → code 출력 → sheet 값을 순서대로 대조하면 정보가 달라진 단계를 찾기 쉬움.",
+        "5. 새 행이 곧 진행 관리는 아님\n\n라운지 정리본이 확인한 범위는 새 프로젝트 email마다 행을 추가하는 방식임.\n\n기존 업무 상태를 찾아 고치거나, 한 email의 여러 담당자와 실행 항목을 각각 추적하는 기능은 전사문에서 확인되지 않았음. 모든 email에서 같은 정확도가 난다고 일반화하면 안 됨."
+      ],
+      "link_comment": "업무에 적용할 순서와 확인할 내용을 정리한 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/4Y9ffdRRdYM",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/4Y9ffdRRdYM",
+          "title": "이메일 속 담당자와 마감일, AI로 프로젝트 관리대장에 모으는 방법",
+          "published_at": null,
+          "collected_at": "2026-11-06T09:00:53.279123+09:00",
+          "verified_at": "2026-11-06T09:09:59.418775+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/auto-drop-maintenance-20261106-090009-2026-11-11-3.jpg",
+          "alt": "TechMagicWow의 원본 영상 장면 · 관련 업무 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "TechMagicWow · 원본 영상 참고 화면",
+          "source_url": "https://youtu.be/4Y9ffdRRdYM",
+          "sha256": "2f34e7371b7775763231892568d621b40ea1071bfb3e67bc7768efc328bb33d0"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-11",
+      "title": "컨텐츠 331 · AI 직원한테 업무 맡기기 전에 반려 기준부터 적으세요.",
+      "type": "evergreen",
+      "target": "업무지시서 반려 기준",
+      "fmt": "금지 출력계약형",
+      "format": "case_thread",
+      "body": "AI 직원한테 업무 맡기기 전에 반려 기준부터 적으세요.\n\n이건 외부 성공 사례가 아니라\n내가 직접 제안하는 개인 가이드임.\n잘된 결과만 보여주지 말고\n돌려보낼 조건까지 업무지시서에 넣자는 얘기임.",
+      "replies": [
+        "1. 맡길 일을 한 문장으로 줄여봄\n\n내 제안은 역할과 업무를 먼저 붙이는 거임.\n\n예를 들면 역할은 자료조사, 업무는 지난 고객 질문에서 반복 주제 찾기라고 적음. 입력 자료 이름과 읽을 범위를 적고 못 찾은 값은 비워두라고 표시해보셈.",
+        "2. 하지 말아야 할 일도 입력임\n\n내가 권하는 금지 조건은 출처 없는 숫자 만들기, 고객 의도 추측하기, 검토 전 발송하기처럼 바로 확인되는 문장임.\n\n자료를 못 읽었을 때 멈출지, 질문할지, 빈칸으로 둘지도 함께 정해두면 반려 이유가 선명해짐.",
+        "3. 결과물 칸을 먼저 고정함\n\n개인 가이드로 제안하는 출력칸은 원문 질문, 묶은 주제, 답변 초안, 확인할 근거, 사람 검토 상태임.\n\n'잘 정리해줘' 대신 어떤 칸이 비면 미완료인지 적어두면 받은 결과에서 어디를 볼지 바로 알 수 있음.",
+        "4. 통과 예시와 반려 예시를 같이 줌\n\n통과 예시는 원문을 유지하고 근거 위치가 붙은 결과, 반려 예시는 근거 없이 의미를 보탠 결과로 잡아봄.\n\n예시마다 맞는 이유와 틀린 이유를 짧게 달아, 문장 모양뿐 아니라 판단 기준도 입력으로 줘보셈.",
+        "5. 작은 업무로 먼저 돌려봄\n\n지금 가진 고객 질문 묶음 하나를 넣고 출력칸이 모두 채워졌는지 확인해보셈.\n\n빠진 값, 금지 조건 위반, 검토할 문장을 기록한 뒤 업무지시서만 고쳐 다시 맡기는 순서가 좋음. 이건 결과를 보장하는 방식이 아니라 내가 권하는 시험 절차임."
+      ],
+      "link_comment": "업무에 적용할 순서와 확인할 내용을 정리한 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/pZkMTrKb8_4",
+      "sources": [
+        {
+          "url": "https://familypartners.aimax.ai.kr/feed?n=500",
+          "title": "초기 자사 컨텐츠 원문",
+          "published_at": null,
+          "collected_at": "2026-11-06T09:00:53.279123+09:00",
+          "verified_at": "2026-11-06T09:09:59.679683+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/auto-drop-maintenance-20261106-090009-2026-11-11-4.jpg",
+          "alt": "Owain Lewis의 원본 영상 장면 · 관련 업무 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "Owain Lewis · 원본 영상 참고 화면",
+          "source_url": "https://youtu.be/pZkMTrKb8_4",
+          "sha256": "92e217aa1c15a773a61f659f86e59538ea3ec254c7bed8fde694e48eb4ee5582"
+        }
+      ],
+      "supplemental": true,
+      "editorial_kind": "original_guidance"
+    },
+    {
+      "date": "2026-11-11",
+      "title": "컨텐츠 332 · AI 초안이 틀렸을 때 문장만 고치면 다음에도 또 틀림.",
+      "type": "evergreen",
+      "target": "콘텐츠 초안 피드백",
+      "fmt": "반려 기록형",
+      "format": "case_thread",
+      "body": "AI 초안이 틀렸을 때 문장만 고치면 다음에도 또 틀림.\n\n이것도 외부 사례가 아니라\n내가 직접 제안하는 개인 가이드임.\n수정본만 남기지 말고\n틀린 이유와 다음 확인값을 같이 기록해보자.",
+      "replies": [
+        "1. 비교할 자료를 같이 놓음\n\n내 제안은 원문, AI 초안, 사람이 고친 최종본을 같은 묶음에 두는 거임.\n\n콘텐츠라면 원문 주장, 대상 독자, 금지 표현도 입력에 붙임. 그래야 문장 취향 문제와 사실이 달라진 문제를 따로 볼 수 있음.",
+        "2. 피드백 칸을 고정함\n\n개인 가이드로 제안하는 기록칸은 틀린 위치, 근거 원문, 틀린 이유, 고칠 문장, 다음 확인값임.\n\n'별로임'으로 끝내지 말고 출처가 빠짐, 대상이 바뀜, 말투가 딱딱함처럼 다시 확인할 기준을 남겨보셈.",
+        "3. 원문부터 역순으로 대조함\n\n먼저 최종본의 주장마다 원문 위치를 찾고, 다음으로 AI 초안과 달라진 부분을 표시함. 마지막에 말투만 손본 부분을 나눔.\n\n출력은 사실 수정, 구조 수정, 말투 수정으로 갈라 받자는 제안임. 서로 다른 문제를 한 문장 피드백에 섞지 않는 게 핵심.",
+        "4. 상태도 말로 끝내지 않음\n\n내가 권하는 상태는 검토 통과, 다시 작성, 자료 부족임.\n\n다시 작성이면 반려 사유를 남기고 다음 실행에서 확인할 값을 붙임. 자료 부족이면 AI가 채우지 말고 사람에게 필요한 원문을 요청하게 해보셈.",
+        "5. 최근 초안 하나로 시작함\n\n최근 고친 콘텐츠 하나를 골라 원문과 최종본 사이에서 바뀐 이유를 적어보자.\n\n그 기록을 다음 업무 입력에 붙이고 같은 오류가 다시 나오는지 확인함. 좋아질 거라고 약속하는 방법이 아니라, 무엇이 반복됐는지 남기는 내 시험 방식임."
+      ],
+      "link_comment": "업무에 적용할 순서와 확인할 내용을 정리한 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/4Y9ffdRRdYM",
+      "sources": [
+        {
+          "url": "https://familypartners.aimax.ai.kr/feed?n=500",
+          "title": "초기 자사 컨텐츠 원문",
+          "published_at": null,
+          "collected_at": "2026-11-06T09:00:53.279123+09:00",
+          "verified_at": "2026-11-06T09:09:59.948860+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/auto-drop-maintenance-20261106-090009-2026-11-11-5.jpg",
+          "alt": "TechMagicWow의 원본 영상 장면 · 관련 업무 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "TechMagicWow · 원본 영상 참고 화면",
+          "source_url": "https://youtu.be/4Y9ffdRRdYM",
+          "sha256": "2f34e7371b7775763231892568d621b40ea1071bfb3e67bc7768efc328bb33d0"
+        }
+      ],
+      "supplemental": true,
+      "editorial_kind": "original_guidance"
     }
   ],
   "_작성기준": "글감 작성 전 AGENTS.md와 config/brands/makefamily.md의 최신 사용자 기준을 읽는다. 과거 루틴 문구와 충돌하면 최신 사용자 기준을 적용한다."
