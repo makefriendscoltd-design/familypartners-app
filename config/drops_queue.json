@@ -5097,6 +5097,220 @@
       ],
       "supplemental": true,
       "editorial_kind": "original_guidance"
+    },
+    {
+      "date": "2026-11-13",
+      "title": "컨텐츠 339 · 일정 자동화가 이메일 주소를 지어내면 초대부터 틀어짐.",
+      "type": "ai",
+      "target": "텔레그램으로 일정 요청을 받는 소규모 사업자",
+      "fmt": "연결 순서형",
+      "format": "case_thread",
+      "body": "일정 자동화가 이메일 주소를 지어내면 초대부터 틀어짐.\n\n레딧의 Impossible_Drink4771은\nN8N에 텔레그램·제미나이·연락처 시트를 잇고\n시트에서 이메일을 찾은 뒤\nGoogle Calendar 초대를 만드는 흐름을 공개했음.",
+      "replies": [
+        "1. 입력은 텔레그램으로 받은 일정 요청임.\n제미나이 에이전트가 이름을 넘기면 연락처 시트에서 이메일을 찾음.\n\n출력은 확인된 이름과 이메일이고, 없는 주소를 모델이 만들게 두지 않았음.",
+        "2. 확인된 연락처는 Google Calendar로 넘어감.\n일정에는 해당 이메일을 참석자로 넣고 초대 메일을 요청함.\n\n처리 결과는 텔레그램으로 답하며, 대화 기억은 채팅 ID별로 나눴다고 함.",
+        "3. 실행 전에는 자격 증명과 시트·캘린더 ID를 바꿔야 함.\n시간대와 허용할 텔레그램 사용자도 직접 지정해야 함.\n\n샘플 주소는 가상이어서 테스트할 때는 자신이 확인할 수 있는 받은편지함을 쓰라고 적었음.",
+        "4. 이 흐름은 빈 시간을 찾아주는 예약 봇이 아님.\n충돌 확인, 실행 전 승인, 중복 일정 방지 장치가 없다고 원작성자가 밝혔음.\n\n누락된 이메일을 묻는 규칙도 프롬프트일 뿐, 강제 검증은 아니었음.",
+        "5. 영상은 데모 경로의 캘린더 확인까지만 보여줌.\n텔레그램에서 시작한 새 요청을 끝까지 다시 실행한 장면은 빠졌다고 함.\n\n아래 라운지 글은 이 워크플로 파일이 아니라, 메일과 캘린더 연결을 더 읽는 관련 자료임."
+      ],
+      "link_comment": "관련 업무를 더 살펴볼 활용노트.\n레딧 사례의 배포 파일과는 다른 참고 자료임.\n\nhttps://lounge.aimax.ai.kr/worldclass/ifW-Aj9LOXQ",
+      "sources": [
+        {
+          "url": "https://www.reddit.com/r/n8n/comments/1xqja26/telegram_gemini_google_calendar_in_n8n_contacts/",
+          "title": "Telegram + Gemini + Google Calendar in n8n: contacts lookup and attendee invites (workflow included)",
+          "published_at": "2026-11-07T22:54:10.770Z",
+          "collected_at": "2026-11-08T09:00:49.738356+09:00",
+          "verified_at": "2026-11-08T09:05:14.444453+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/auto-drop-maintenance-20261108-090008-2026-11-13-0.png",
+          "alt": "Telegram + Gemini + Google Calendar in n8n: contacts lookup and attendee invites (workflow included)",
+          "credit": "Impossible_Drink4771 · Reddit 원문 화면",
+          "source_url": "https://www.reddit.com/r/n8n/comments/1xqja26/telegram_gemini_google_calendar_in_n8n_contacts/",
+          "sha256": "cb148ea80cb383bd6f1147b4d50a9e03396218203ebb5e964f7629ca8634af37"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-13",
+      "title": "컨텐츠 340 · 행사 캠페인은 배너보다 기획안 빈칸에서 먼저 멈춤.",
+      "type": "marketing",
+      "target": "행사 캠페인을 여러 채널에 준비하는 대표",
+      "fmt": "병목 추적형",
+      "format": "case_thread",
+      "body": "행사 캠페인은 배너보다 기획안 빈칸에서 먼저 멈춤.\n\nHustle to AI 라운지 정리본은\n가상 양초 브랜드 자료를 Cowork에 넣고\n노션 기획안→캔바 배너→HubSpot 준비로\n이어가는 캠페인 시연을 소개함.",
+      "replies": [
+        "1. 처음 넣은 자료는 브랜드 설명, 상품 이미지, 배너 작업 지침이었음.\n고객층·상품·전할 메시지를 나눠두고 Cowork가 참고할 프로젝트를 만들었음.\n\n결과를 볼 때도 실제 상품과 메시지가 맞는지 이 자료와 대조함.",
+        "2. Cowork는 행사 시점과 판매 방향을 추가로 물었다고 함.\n그 답을 받아 노션에 행사 방향, 고객층, 제안 내용, 이메일 초안, 채널별 일정을 만들었음.\n\n가상 브랜드 조건은 실제 캠페인에 그대로 가져오면 안 됨.",
+        "3. 기획안에서 일반 텍스트로 잡힌 이메일에는 배너를 만들지 않았음.\n배너가 필요한 이메일만 캔바로 넘겨 시안을 받고, 선택한 안은 직접 수정함.\n\n출력 확인 항목은 문구, 상품 이미지, 행사 내용, 이미지 배치였음.",
+        "4. HubSpot 연결에는 분명한 빈칸이 있었음.\n시연 당시 마케팅 이메일을 직접 만드는 선택지가 없어 문구와 배너를 사람이 옮겨야 했다고 함.\n\nBlotato 게시 연결도 기능 소개였지, 실제 게시 완료 장면은 아니었음.",
+        "5. 라운지 정리본의 시작 제안은 행사 하나만 고르는 것임.\n상품 설명과 기존 이미지를 넣고 캠페인 일정표부터 받은 뒤 조건과 메시지를 확인함.\n\n확인이 끝난 항목만 배너와 게시물 제작으로 넘기는 순서임."
+      ],
+      "link_comment": "업무에 적용할 순서와 확인할 내용을 정리한 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/tlHpQ7EBVHk",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/tlHpQ7EBVHk",
+          "title": "마케팅 캠페인 기획부터 콘텐츠 제작까지 Cowork로 연결하는 방법",
+          "published_at": null,
+          "collected_at": "2026-11-08T09:00:49.738356+09:00",
+          "verified_at": "2026-11-08T09:05:14.813998+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/auto-drop-maintenance-20261108-090008-2026-11-13-1.jpg",
+          "alt": "Hustle to AI의 원본 영상 장면 · 관련 업무 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "Hustle to AI · 원본 영상 참고 화면",
+          "source_url": "https://youtu.be/tlHpQ7EBVHk",
+          "sha256": "0b0032948d1f14fdfc6b0a6fb8372b9a3e88ef401b7eed794a0fd91e0956c03a"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-13",
+      "title": "컨텐츠 341 · 고객 양식만 받으면 온보딩이 끝난 줄 알기 쉬움.",
+      "type": "evergreen",
+      "target": "신규 고객 온보딩을 반복하는 서비스 사업자",
+      "fmt": "데이터 구조형",
+      "format": "case_thread",
+      "body": "고객 양식만 받으면 온보딩이 끝난 줄 알기 쉬움.\n\nAouab Chakir 라운지 정리본은\n노션에서 고객 정보와 업무를 나누고\n상태를 바꿀 때 담당 업무를 만들며\n고객별 진행판에 다시 연결하는 시연을 다룸.",
+      "replies": [
+        "1. 고객 정보와 업무는 별도 데이터베이스에 담았음.\n고객 쪽에는 이름·회사·이메일·요청 서비스·시작일·상태를 둠.\n\n업무 쪽 출력 칸은 업무명·담당자·연결 고객·마감일·우선순위·진행 상태였음.",
+        "2. 양식은 업무 시작에 필요한 정보만 필수로 받았음.\n전화번호처럼 당장 쓰지 않는 값은 선택으로 두고, 시작일은 제출을 계기로 입력되게 구성함.\n\n양식 제출 뒤 고객 정보와 신규 상태가 들어오는지도 확인했음.",
+        "3. 접수만으로 업무를 바로 만들지는 않았음.\n담당자가 고객 상태를 온보딩으로 바꾸면 준비 업무가 생성되는 순서였음.\n\n각 업무에는 담당자·마감일·우선순위·진행 상태가 붙어야 했음.",
+        "4. 시연 중 실제로 빠진 값도 있었음.\n생성된 업무와 고객의 관계 연결을 놓쳐 자동화 설정을 고친 뒤 다시 시험했다고 함.\n\n고객 페이지에서 해당 고객의 업무만 보려면 이 연결값이 꼭 들어가야 함.",
+        "5. 안내 메일은 양식의 이메일과 고객 이름을 받아 제목과 본문에 넣었음.\n시연은 노션과 Gmail을 연결했고, 다른 메일 서비스에는 외부 자동화 도구가 필요하다고 설명함.\n\n사용 전에는 시험용 주소로 수신 결과까지 확인하라고 제안함."
+      ],
+      "link_comment": "업무에 적용할 순서와 확인할 내용을 정리한 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/gzq7tAevyag",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/gzq7tAevyag",
+          "title": "신규 고객을 맞을 때마다 반복하는 업무, Notion으로 한 번에 관리하기",
+          "published_at": null,
+          "collected_at": "2026-11-08T09:00:49.738356+09:00",
+          "verified_at": "2026-11-08T09:05:15.120545+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/auto-drop-maintenance-20261108-090008-2026-11-13-2.jpg",
+          "alt": "Aouab Chakir의 원본 영상 장면 · 관련 업무 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "Aouab Chakir · 원본 영상 참고 화면",
+          "source_url": "https://youtu.be/gzq7tAevyag",
+          "sha256": "d1d41f6466de7a5e8f9728ca742b7b0d6d5d700c155f398324d98545041dd8d2"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-13",
+      "title": "컨텐츠 342 · AI 봇을 많이 만드는 것보다 업무가 넘어가는 순서가 먼저였음.",
+      "type": "evergreen",
+      "target": "메일과 콘텐츠 업무를 나눠 맡기려는 운영자",
+      "fmt": "역할 분담형",
+      "format": "case_thread",
+      "body": "AI 봇을 많이 만드는 것보다 업무가 넘어가는 순서가 먼저였음.\n\nFounders School 라운지 정리본에서 Nat은\nGrokBot을 업무별로 나눠\n메일·캘린더·할 일·콘텐츠 조사를 연결하고\n각 봇이 다음 작업에 자료를 넘기게 했음.",
+      "replies": [
+        "1. 메일과 캘린더 봇에는 찾을 위치부터 연결했음.\n청구 메일이나 예정된 일정을 입력으로 삼아 필요한 내용을 찾음.\n\n결과에는 어떤 메일을 근거로 답했는지 확인할 정보가 함께 있어야 함.",
+        "2. 반복 메일은 받은편지함 확인→답장 필요 여부 판단→Gmail 초안 저장 순서였음.\n회의 준비는 캘린더→관련 메일 탐색→회의별 준비 문서로 이어짐.\n\n초안은 바로 보내지 않고 문의와 답변이 맞는지 검토하는 단계가 필요함.",
+        "3. 말투도 매번 설명하지 않게 따로 정리했음.\nNat은 자신이 보낸 이메일을 참고 자료로 넣고 글쓰기 패턴을 뽑게 했다고 함.\n\n출력은 수정 가능한 글쓰기 지침이며, 답장의 사실과 전달 내용은 별도로 확인해야 함.",
+        "4. 콘텐츠 업무는 조사와 초안 작성을 나눴음.\n성장 담당 봇이 여러 영상 플랫폼에서 참고 영상을 찾고 구성 방식을 정리함.\n\n그 결과를 초기 구성과 대본을 만드는 봇에 넘기되, 자기 주제와 맞는지는 사람이 판단함.",
+        "5. Nat은 결과 완성도를 자신의 경험으로 평가했음.\n모든 사업에서 같은 수준이 나온다는 뜻은 아니라고 라운지 정리본도 선을 그음.\n\n연결한 자료와 요청 내용에 따라 확인할 결과물이 달라진다는 한계가 있음."
+      ],
+      "link_comment": "업무에 적용할 순서와 확인할 내용을 정리한 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/ifW-Aj9LOXQ",
+      "sources": [
+        {
+          "url": "https://lounge.aimax.ai.kr/worldclass/ifW-Aj9LOXQ",
+          "title": "이메일부터 콘텐츠 조사까지, GrokBot으로 반복 업무를 줄이는 방법",
+          "published_at": null,
+          "collected_at": "2026-11-08T09:00:49.738356+09:00",
+          "verified_at": "2026-11-08T09:05:15.413500+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/auto-drop-maintenance-20261108-090008-2026-11-13-3.jpg",
+          "alt": "Founders School의 원본 영상 장면 · 관련 업무 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "Founders School · 원본 영상 참고 화면",
+          "source_url": "https://youtu.be/ifW-Aj9LOXQ",
+          "sha256": "b8ba821d7cbb60d00d35ec1dc5d5edd98995fa7ed378996115ee0e0b0fecf189"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-13",
+      "title": "컨텐츠 343 · AI 직원한테 일을 주기 전에 결과 표부터 그리세요.",
+      "type": "evergreen",
+      "target": "AI 직원에게 첫 업무를 맡기는 대표",
+      "fmt": "완료 기준 제안형",
+      "format": "case_thread",
+      "body": "AI 직원한테 일을 주기 전에 결과 표부터 그리세요.\n\n이건 외부 사례가 아니라\n내가 직접 제안하는 개인 가이드임.\n업무 이름보다 받을 결과의 칸을 먼저 적고\n빠지면 반려할 기준까지 붙여보자는 얘기임.",
+      "replies": [
+        "1. 제안: 귀찮은 업무 하나만 고르세요.\n입력이 어디서 오는지와 언제 시작할지만 적으면 됨.\n\n예를 들면 고객 문의가 들어오면 문의 내용과 답변 기준을 읽는 식임.",
+        "2. 제안: 처리 순서를 짧게 고정하세요.\n문의 내용 확인→답변 기준 찾기→초안 작성으로 연결하면 됨.\n\n출력 칸은 질문 요약·참고 기준·답변 초안·확인 못 한 내용으로 나눠보세요.",
+        "3. 제안: 하지 말아야 할 일도 같은 표에 넣으세요.\n근거 없는 답을 만들지 않기, 빈칸을 추측하지 않기, 승인 없이 보내지 않기처럼 적는 거임.\n\n금지선에 걸리면 실행 대신 확인 질문을 출력하게 하세요.",
+        "4. 제안: 반려 기준을 먼저 정하세요.\n참고 기준이 없거나 필수 칸이 비었거나 입력에 없는 주장이 생기면 돌려보내는 거임.\n\n반려 출력에는 문제 난 칸·이유·추가로 필요한 입력을 남기게 하세요.",
+        "5. 제안: 실제 업무를 넓히기 전에 예시 하나로 시험하세요.\n입력 원문과 결과 표를 나란히 보고 빠진 칸을 찾으면 됨.\n\n고칠 때는 수정 문장만 주지 말고 반려 이유와 다음 확인값도 함께 남겨보세요."
+      ],
+      "link_comment": "업무에 적용할 순서와 확인할 내용을 정리한 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/gzq7tAevyag",
+      "sources": [
+        {
+          "url": "https://familypartners.aimax.ai.kr/feed?n=500",
+          "title": "초기 자사 컨텐츠 원문",
+          "published_at": null,
+          "collected_at": "2026-11-08T09:00:49.738356+09:00",
+          "verified_at": "2026-11-08T09:05:15.707281+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/auto-drop-maintenance-20261108-090008-2026-11-13-4.jpg",
+          "alt": "Aouab Chakir의 원본 영상 장면 · 관련 업무 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "Aouab Chakir · 원본 영상 참고 화면",
+          "source_url": "https://youtu.be/gzq7tAevyag",
+          "sha256": "d1d41f6466de7a5e8f9728ca742b7b0d6d5d700c155f398324d98545041dd8d2"
+        }
+      ],
+      "supplemental": true,
+      "editorial_kind": "original_guidance"
+    },
+    {
+      "date": "2026-11-13",
+      "title": "컨텐츠 344 · AI 도구 바꿀 때 업무 기준까지 갈아엎지 마세요.",
+      "type": "evergreen",
+      "target": "AI 도구 교체를 검토하는 운영자",
+      "fmt": "교체 시험형",
+      "format": "case_thread",
+      "body": "AI 도구 바꿀 때 업무 기준까지 갈아엎지 마세요.\n\n이건 외부 사례가 아니라\n내가 직접 제안하는 개인 가이드임.\n입력·금지선·결과 칸을 기준표로 남기고\n새 도구엔 같은 예제로 시험해보자는 얘기임.",
+      "replies": [
+        "1. 제안: 비교할 업무 하나와 고정 입력을 정하세요.\n예를 들면 같은 고객 문의, 같은 답변 기준, 같은 말투 자료를 두 도구에 넣는 거임.\n\n입력이 달라지면 도구 차이와 자료 차이를 구분하기 어려움.",
+        "2. 제안: 결과 칸도 똑같이 받으세요.\n질문 요약·참고한 자료·답변 초안·확인 못 한 내용·사람이 볼 항목으로 나누면 됨.\n\n한쪽에만 다른 형식을 주면 비교 기준이 흔들림.",
+        "3. 제안: 금지선은 도구가 바뀌어도 유지하세요.\n입력에 없는 사실을 만들지 않기, 승인 없이 보내지 않기, 모르면 확인 질문 남기기를 함께 넣는 거임.\n\n위반한 항목은 좋은 문장과 별개로 반려하세요.",
+        "4. 제안: 결과는 느낌보다 수정 내역으로 비교하세요.\n빠진 칸·잘못 읽은 입력·금지선 위반·사람이 고친 부분을 같은 표에 적으면 됨.\n\n외부 성능 순위가 아니라 내 업무 기준에 맞는지만 보는 방식임.",
+        "5. 제안: 교체 기록에는 도구명·입력 자료 버전·반려 이유·승인 범위를 남기세요.\n다음 시험도 같은 자료와 기준에서 시작할 수 있음.\n\n도구를 바꿔도 업무 기준표는 정본으로 계속 들고 가자는 제안임."
+      ],
+      "link_comment": "업무에 적용할 순서와 확인할 내용을 정리한 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/ifW-Aj9LOXQ",
+      "sources": [
+        {
+          "url": "https://familypartners.aimax.ai.kr/feed?n=500",
+          "title": "초기 자사 컨텐츠 원문",
+          "published_at": null,
+          "collected_at": "2026-11-08T09:00:49.738356+09:00",
+          "verified_at": "2026-11-08T09:05:15.988700+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/auto-drop-maintenance-20261108-090008-2026-11-13-5.jpg",
+          "alt": "Founders School의 원본 영상 장면 · 관련 업무 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "Founders School · 원본 영상 참고 화면",
+          "source_url": "https://youtu.be/ifW-Aj9LOXQ",
+          "sha256": "b8ba821d7cbb60d00d35ec1dc5d5edd98995fa7ed378996115ee0e0b0fecf189"
+        }
+      ],
+      "supplemental": true,
+      "editorial_kind": "original_guidance"
     }
   ],
   "_작성기준": "글감 작성 전 AGENTS.md와 config/brands/makefamily.md의 최신 사용자 기준을 읽는다. 과거 루틴 문구와 충돌하면 최신 사용자 기준을 적용한다."
