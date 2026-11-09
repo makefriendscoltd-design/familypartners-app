@@ -46,6 +46,17 @@ CTA_WORDS = ("댓글", "답글")
 VAGUE = ("이렇게", "이 순서", "이거 보고", "그걸", "이런 식으로", "이 방법")
 BANMAL = ("음", "임", "함", "거임", "더라", "잖아", "해봐", "줄게", "거든", "네요?")
 
+# 첫 줄 후킹 기준 (2026-11-09, `_workspace/2026-11-09-content-quality/perf-compare.md`)
+# 실측 96개: 반응 나온 글은 결과·장면·번호 리스트로 시작했고, 0점 글은 질문형 첫 줄 +
+# 본문 앞 방어 문장 + 모르는 사람 이름 소개였다. 이 날짜부터 불합격, 그 전 예약분은 경고.
+HOOK_RULES_FROM = "2026-11-14"
+# 사용자 결정(2026-11-09): 외부 사례/직접 제안 구분은 유지하되 본문이 아니라 대댓글에서 밝힌다.
+BODY_DISCLAIMERS = ("외부 사례가 아니라", "외부 사례 아님", "직접 제안하는", "직접 제안임",
+                    "제안임", "실행 결과 아님", "실행 결과가 아님", "한계가 있")
+# 첫 줄이 출처 소개로 끝나면 독자가 모르는 사람 얘기로 읽힌다
+SOURCE_INTRO_END = re.compile(r"(소개함|소개했음|소개했다|공개함|공개했음|공개했다|올렸음|올렸다)[.。]*$")
+SOURCE_INTRO_START = re.compile(r"^(레딧|reddit|X|트위터|유튜브|youtube)(의|에서|에| )", re.I)
+
 
 def load(path: Path):
     return json.loads(path.read_text(encoding="utf-8"))
@@ -166,7 +177,33 @@ def check_one(d: dict, cfg: dict) -> list[str]:
             bad.append("링크는 마지막 댓글에만 배치")
         if re.search(r"\([^)]*(?:v[0-9]+|내부용|테스트용)[^)]*\)", body, re.I):
             bad.append("본문에 내부 작업 표기 노출")
+    if (d.get("date") or "") >= HOOK_RULES_FROM:
+        bad += check_hook(d)
     return bad
+
+
+def check_hook(d: dict) -> list[str]:
+    """사례 대댓글형 글감의 첫 줄·본문 후킹 기준. 메시지 목록을 돌려준다."""
+    if d.get("format") != "case_thread":
+        return []
+    out = []
+    lines = lines_of(d.get("body") or "")
+    first = lines[0] if lines else ""
+    body = "\n".join(lines)
+    hit = [w for w in BODY_DISCLAIMERS if w in body]
+    if hit:
+        out.append(f"본문에 방어 문장 '{hit[0]}' — 사례/제안 구분은 대댓글에서")
+    if SOURCE_INTRO_START.search(first) or SOURCE_INTRO_END.search(first):
+        out.append("첫 줄이 출처 소개 — 결과·장면·숫자부터")
+    return out
+
+
+def check_day_hooks(group: list[dict]) -> list[str]:
+    """하루 4건 첫 줄이 같은 질문 틀로 반복되는지 본다."""
+    firsts = [(lines_of(d.get("body") or "") or [""])[0] for d in group
+              if d.get("format") == "case_thread"]
+    questions = sum(1 for f in firsts if f.rstrip().endswith("?"))
+    return [f"질문형 첫 줄 {questions}건 (하루 최대 1건)"] if questions > 1 else []
 
 
 def check_day(date: str, group: list[dict]) -> tuple[list[str], list[str]]:
@@ -202,6 +239,8 @@ def check_day(date: str, group: list[dict]) -> tuple[list[str], list[str]]:
         bad.append("리스트형 2건 이상")
     if not any(any(b in (d.get("body") or "") for b in BANMAL) for d in group):
         bad.append("반말 위주 글감이 없음")
+    if date >= "2026-10-22":
+        (bad if date >= HOOK_RULES_FROM else warn).extend(check_day_hooks(group))
     types = sorted(d.get("type") for d in group)
     if types != ["ai", "evergreen", "evergreen", "marketing"]:
         warn.append(f"구성 {types} — 권장은 evergreen2/ai1/marketing1")
@@ -277,6 +316,10 @@ def main(argv: list[str]) -> int:
             lines = lines_of(d.get("body") or "")
             chars = len((d.get("body") or "").replace("\n", ""))
             bad = check_one(d, cfg)
+            if (d.get("date") or "") < HOOK_RULES_FROM:
+                for m in check_hook(d):
+                    print(f"       ! {num} {m} (후킹 기준 {HOOK_RULES_FROM} 이전 — 참고)")
+                    warns += 1
             mark = "✓" if not bad else ("!" if live else "✗")
             asset = cfg["by_code"].get(d.get("asset"), {}).get("name", "-")
             print(f"   {mark} {num:<6} {d.get('type'):<9} {len(lines)}줄 {chars:>3}자 "

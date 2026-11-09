@@ -11,6 +11,12 @@ Produce EXACTLY six posts for request.day, in order:
 1 recent Reddit original, 3 distinct lounge articles, 2 original_guidance posts.
 The first four types must be one ai, one marketing, two evergreen; targets and
 fmt angles all distinct. Last two are first-party practical proposals, not cases.
+Hook line (enforced by deploy/lint_drops.py check_hook): open with the result,
+a concrete scene, or a numbered-list promise ("~하는 이유", "~할 때 볼 것 3가지").
+Never open with the source person's name or end the hook with 소개함/공개했음.
+At most one question-form hook per day. No disclaimers in the body ("외부 사례가
+아니라", "직접 제안", "한계가 있음"): put case/proposal labels and limits in replies.
+The case introduction may be a short numbered list of what the reader gets.
 Every post: one logical hook line, blank line, actual case introduction of 3-6
 short lines, and the configured number of substantive numbered replies (the
 separate final resource-link comment does not count). Each reply must add concrete
@@ -33,7 +39,7 @@ or condition supporting this post, not a heading/navigation label. Set
 evidence_quote to an empty string: the parent extracts the exact literal quote
 from the chosen source anchor. Do not retype or paraphrase evidence text.
 For guidance select a relevant owner's original passage and explicitly
-mark personal guidance. Reddit links point to RELATED lounge reading, clearly
+mark personal guidance in a reply, never in the body. Reddit links point to RELATED lounge reading, clearly
 not a download of that Reddit workflow. Do not promise unavailable files.
 
 Draft the complete copy, then review using latest humanize quick-rules. Return
