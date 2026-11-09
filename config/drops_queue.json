@@ -4506,180 +4506,204 @@
     },
     {
       "date": "2026-11-10",
-      "title": "컨텐츠 322 · 청구서 등록 뒤에도 PDF 짝 맞추기는 남았음.",
+      "title": "컨텐츠 322 · AI한테 대충 던지면 원하는 답 나올 때까지 네 번은 다시 치게 됨",
+      "previous_title": "컨텐츠 322 · 청구서 등록 뒤에도 PDF 짝 맞추기는 남았음.",
       "type": "evergreen",
-      "target": "청구서 후속 수작업을 줄이는 소규모 대표",
-      "fmt": "파일 연결 순서",
+      "target": "AI한테 같은 일을 여러 번 다시 시키는 사장님",
+      "fmt": "클로드 스킬 설치 가이드",
       "format": "case_thread",
-      "body": "청구서 등록 뒤에도 PDF 짝 맞추기는 남았음.\n\nEamonn Cottrell의 라운지 정리본은\nClaude Code로 기존 등록 흐름을 유지하며\n원본 PDF 첨부와 품목 분류를 붙인\n후속 작업을 보여줌.",
+      "editorial_kind": "easy_news",
+      "body": "AI한테 대충 던지면 원하는 답 나올 때까지 네 번은 다시 치게 됨\n\n깃허브 별 1.5만 개 받은 클로드 스킬 prompt-master\nGPT나 제미나이, 미드저니에 넣을 프롬프트를\n클로드가 대신 짜줌\n\n글을 길게 늘리는 게 아니라\n쓸데없는 말 빼고 짧게 깎아주는 쪽임\n\n설치법이랑 사장님용 부탁 문장은 댓글에 적어둠",
       "replies": [
-        "1. 입력은 같은 폴더에 둔 CSV와 원본 PDF임.\n\n제작자는 청구서 번호를 연결 기준으로 삼아 맞는 PDF를 찾고, 기존 청구서 생성 로직은 그대로 두도록 Claude Code에 요청함.",
-        "2. 연결 순서는 PDF 정보 추출 → CSV 정리 → QuickBooks Online에 청구서 등록 → 같은 번호의 PDF 첨부임.\n\n제작자는 실행 메시지로 끝내지 않고 실제 청구서를 열어 첨부파일이 원본과 맞는지 확인함.",
-        "3. 미등록 품목은 AI가 임의로 분류하지 않았음.\n\n제작자가 분류를 고르면 프로그램이 A열에 정리한 품목명, B열에 지정한 분류를 기록함. 입력할 분류 목록도 제작자가 따로 전달함.",
-        "4. 결과 항목은 등록된 청구서, 연결된 PDF, 미등록 품목, 사람이 고른 분류, 처리 파일 상태로 나눠 볼 수 있음.\n\n제작자는 재실행 때 이미 있는 청구서는 건너뛰는 결과도 따로 확인함.",
-        "5. 라운지 정리본의 한계도 남아 있음.\n\n회사마다 받는 파일과 필요한 열이 달랐고, 첨부 실패 때도 파일을 지우는지는 전사문으로 확인되지 않음. 적용 제안: 원본 연결을 확인한 뒤에만 처리 파일을 정리하도록 완료 조건을 분리해봐."
+        "1. 뭘 해주는 스킬인지\n\n먼저 어느 AI에 넣을 프롬프트인지 알아서 파악함\n그다음 할 일, 넣을 자료, 원하는 결과물 같은\n9가지 기준으로 내가 원하는 걸 뽑아냄\n빠진 정보가 있으면 질문은 3개까지만 함\n결과는 복사해서 바로 붙이는 프롬프트 한 덩어리로 나옴",
+        "2. 설치는 브라우저가 제일 쉬움\n\n깃허브에서 저장소를 ZIP으로 받고\nclaude.ai 사이드바에서 Customize 누른 다음\nSkills 들어가서 Upload a Skill로 ZIP 올리면 끝\n\n클로드 코드에 바로 받는 방법도 있는데\n만든 사람이 추천 안 한다고 적어둠",
+        "3. 사장님이면 이렇게 부탁하셈\n\n미드저니로 우리 가게 신메뉴 홍보 이미지 만들 프롬프트 써 줘.\n\nGPT한테 상세페이지 초안 맡길 프롬프트 써 줘. 필요한 건 먼저 물어봐 줘.\n\n내가 쓴 프롬프트인데 결과가 별로야. 고쳐 줘.",
+        "4. 대놓고 부르는 법\n\n채팅창에 /prompt-master 치고\n하고 싶은 일을 이어서 쓰면 됨\n\n/prompt-master\n제미나이한테 이번 달 할인 안내 문자 맡길 프롬프트 써 줘.",
+        "5. 왜 만들었는지\n\nX에서 도파민이라는 분이 소개한 스킬인데\n대충 던지고 네 번째에 겨우 원하는 답 받으면\n앞의 세 번은 버린 거라고 함\n하루 50번 물어보면 그게 다 시간이고 돈이라는 거\n\n자주 안 쓰는 AI 도구일수록 맡겨볼 만함"
       ],
-      "link_comment": "업무에 적용할 순서와 확인할 내용을 정리한 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/pftvnNLzGA4",
+      "link_comment": "깃허브 주소\n\nhttps://github.com/nidhinjs/prompt-master",
       "sources": [
         {
-          "url": "https://lounge.aimax.ai.kr/worldclass/pftvnNLzGA4",
-          "title": "청구서 등록 뒤 남는 수작업, Claude Code로 PDF 첨부와 품목 분류까지 연결하기",
+          "url": "https://github.com/nidhinjs/prompt-master",
+          "title": "nidhinjs/prompt-master (GitHub)",
           "published_at": null,
-          "collected_at": "2026-11-05T09:00:31.830910+09:00",
-          "verified_at": "2026-11-05T09:07:25.612589+09:00"
+          "collected_at": "2026-11-09T18:52:36+09:00",
+          "verified_at": "2026-11-09T18:52:36+09:00"
+        },
+        {
+          "url": "https://x.com/dopamine_crypto/status/2119199466565824535",
+          "title": "X @dopamine_crypto prompt-master 소개",
+          "published_at": "2026-11-07T22:45:00+00:00",
+          "collected_at": "2026-11-09T18:52:36+09:00",
+          "verified_at": "2026-11-09T18:52:36+09:00"
         }
       ],
       "main_images": [
         {
-          "src": "/thread-img/auto-drop-maintenance-20261105-090011-2026-11-10-1.jpg",
-          "alt": "Eamonn Cottrell의 원본 영상 장면 · 관련 업무 참고 화면, 파트너의 직접 실행 결과 아님",
-          "credit": "Eamonn Cottrell · 원본 영상 참고 화면",
-          "source_url": "https://youtu.be/pftvnNLzGA4",
-          "sha256": "263a34e186afe353de92007349dc61d6e7d398cf056dd8e056f260e6dcf64102"
+          "src": "/thread-img/fp-easy-20261110-E1.png",
+          "alt": "nidhinjs/prompt-master 깃허브 README 화면 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "nidhinjs/prompt-master 깃허브 README 화면",
+          "source_url": "https://github.com/nidhinjs/prompt-master",
+          "sha256": "19df71f77ee9d8b61b5dc5aa0116849b12eba04fcd6cf03454b40e5575187fba"
         }
       ]
     },
     {
       "date": "2026-11-10",
-      "title": "컨텐츠 323 · Claude Design 초안은 발송 준비의 끝이 아니었음.",
+      "title": "컨텐츠 323 · 제미나이한테 숏폼 대본 써줘 한마디만 하면 매번 뻔한 대본만 나옴",
+      "previous_title": "컨텐츠 323 · Claude Design 초안은 발송 준비의 끝이 아니었음.",
       "type": "marketing",
-      "target": "상품 안내 메일을 만드는 브랜드 운영자",
-      "fmt": "발송 준비 체크",
+      "target": "상품 홍보 숏폼을 직접 찍는 사장님",
+      "fmt": "단계별 프롬프트 모음",
       "format": "case_thread",
-      "body": "Claude Design 초안은 발송 준비의 끝이 아니었음.\n\nMax Sturtevant의 라운지 정리본은\nHappy Being의 브랜드 자료로 메일을 만들고\nFigma와 OmniSend로 옮겨\n링크까지 맞추는 과정을 보여줌.",
+      "editorial_kind": "easy_news",
+      "body": "제미나이한테 숏폼 대본 써줘 한마디만 하면 매번 뻔한 대본만 나옴\n\n스레드에서 quitting_time_lab이라는 분이\n제미나이 숏폼 프롬프트 5가지를 정리했는데\n사장님 상품 홍보용으로 바꿔둠\n\n1. 역할이랑 타겟 먼저 주기\n2. 첫 문장 10개 받아서 고르기\n3. 단계 나눠서 시키기\n4. 하지 말 것 적기\n5. 내 대본 말투 따라 쓰게 하기\n\n바로 복붙할 프롬프트 5개 아래에 있음",
       "replies": [
-        "1. 첫 입력은 회사 소개, 웹사이트 주소, 브랜드 가이드, Figma 파일이었음.\n\n제작자는 Claude가 부족하다고 한 글꼴 파일과 제품 사용 사진도 보완함. 결과 화면에서는 색, 글꼴, 버튼, 로고, 제품 이미지를 확인함.",
-        "2. 제작 규칙과 이번 메일 목적은 따로 넣었음.\n\n제작자는 간격·구성·본문 기준을 적은 MD 파일을 붙이고, 대상 독자·제목 방향·구매 유도 문구·할인 여부에 답함. Happy Being 메일은 할인 없는 교육형으로 정함.",
-        "3. 초안 검토 항목은 문구 중복, 정보량, 사진의 양이었음.\n\n제작자는 겹치는 제목을 바꾸고 사진을 더했다가 메일이 길어지자 일부 구간과 이미지를 뺌. 삭제 요청이 바로 반영되지 않아 설명을 보완한 뒤 새 버전도 확인함.",
-        "4. 연결 순서는 Claude Design에서 HTML 내보내기 → HTML.to.design으로 Figma에 불러오기 → 글꼴·줄바꿈·정렬 수정 → 발송용 이미지 나누기였음.\n\n가져오는 동안 글꼴이 Arial로 바뀌어 제작자가 Gruffy로 다시 고침.",
-        "5. OmniSend에서는 이동할 페이지가 다른 구간을 별도 이미지로 넣고 각 링크를 연결함.\n\n확인할 결과는 이미지 순서, 구간 여백, 링크 목적지, 대체 텍스트임. 이미지 중심 메일의 효과는 제작자의 운영 경험일 뿐, 일반적인 성과로 확인된 건 아님."
+        "1. 역할이랑 타겟 먼저 주기\n\n너는 10년차 쇼핑 숏폼 작가야.\n30대 직장인 손님한테 [상품명]을 파는 15초 숏폼 대본 써 줘.\n후킹, 불편한 점, 써보는 장면, 구매 안내 순서로 정리해 줘.\n\n역할이랑 타겟이랑 순서만 줘도\n대본이 확 달라진다고 함",
+        "2. 첫 문장 10개 받아서 고르기",
+        "3. 단계 나눠서 시키기",
+        "4. 하지 말 것 적기",
+        "5. 내 대본 말투 따라 쓰게 하기\n\n아래는 내가 전에 쓴 대본 3개야.\n말투, 속도, 문장 길이를 먼저 분석해 줘.\n그다음 같은 스타일로 [상품명] 새 대본을 써 줘.\n\n대본 3개만 넣어도\n내 채널 톤으로 쓰는 AI가 된다는 거임"
       ],
-      "link_comment": "업무에 적용할 순서와 확인할 내용을 정리한 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/lTNRRcSztu8",
+      "link_comment": "프롬프트 5가지 원글\n\nhttps://www.threads.com/@quitting_time_lab/post/DdPslZaGRVy",
       "sources": [
         {
-          "url": "https://lounge.aimax.ai.kr/worldclass/lTNRRcSztu8",
-          "title": "상품 안내 메일 제작 시간을 줄이는 Claude Design 활용 순서",
-          "published_at": null,
-          "collected_at": "2026-11-05T09:00:31.830910+09:00",
-          "verified_at": "2026-11-05T09:07:25.949823+09:00"
+          "url": "https://www.threads.com/@quitting_time_lab/post/DdPslZaGRVy",
+          "title": "Threads @quitting_time_lab 제미나이 숏폼 프롬프트 5가지",
+          "published_at": "2026-09-13T23:03:24+00:00",
+          "collected_at": "2026-11-09T18:52:36+09:00",
+          "verified_at": "2026-11-09T18:52:36+09:00"
         }
       ],
       "main_images": [
         {
-          "src": "/thread-img/auto-drop-maintenance-20261105-090011-2026-11-10-2.jpg",
-          "alt": "Max Sturtevant의 원본 영상 장면 · 관련 업무 참고 화면, 파트너의 직접 실행 결과 아님",
-          "credit": "Max Sturtevant · 원본 영상 참고 화면",
-          "source_url": "https://youtu.be/lTNRRcSztu8",
-          "sha256": "ff33cf6507ee2473bc6fa8493ebbceb7f0ba4ddcfb514be06df9377fbb033fd2"
+          "src": "/thread-img/fp-easy-20261110-E2.png",
+          "alt": "자체 제작 프롬프트 표 (quitting_time_lab 원글 각색) · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "자체 제작 프롬프트 표 (quitting_time_lab 원글 각색)",
+          "source_url": "https://www.threads.com/@quitting_time_lab/post/DdPslZaGRVy",
+          "sha256": "88b1f9625813dd9f0662bc7a817c24bfc5a7a07a8240927e1222fc8e58fa81da"
         }
       ]
     },
     {
       "date": "2026-11-10",
-      "title": "컨텐츠 324 · 브라우저가 움직였다고 조회 업무가 끝난 건 아니었음.",
+      "title": "컨텐츠 324 · GPT로 메뉴판 만들 때 예쁘게 해 줘라고 쓰면 다 비슷한 메뉴판만 나옴",
+      "previous_title": "컨텐츠 324 · 브라우저가 움직였다고 조회 업무가 끝난 건 아니었음.",
       "type": "evergreen",
-      "target": "공개 계정 반복 조회를 맡기려는 운영자",
-      "fmt": "실패 상태 기록",
+      "target": "메뉴판과 가격표를 직접 만드는 가게 사장님",
+      "fmt": "디자인 기준 공식",
       "format": "case_thread",
-      "body": "브라우저가 움직였다고 조회 업무가 끝난 건 아니었음.\n\nAsapGuide의 라운지 정리본은\n로컬 AI와 Browser MCP를 연결해\nGemini 계정의 최신 글을 찾는\n시연과 실패 지점을 함께 보여줌.",
+      "editorial_kind": "easy_news",
+      "body": "GPT로 메뉴판 만들 때 예쁘게 해 줘라고 쓰면 다 비슷한 메뉴판만 나옴\n\n스레드에서 노노아카이브라는 분이 올린 방법인데\n예쁘게, 세련되게 같은 말은 다 빼고\n기준 5개만 박으라는 거임\n\n1. 스타일 키워드\n2. 여백 비율\n3. 컬러 비율\n4. 글자 크기 순서\n5. 완성도 기준\n\n가게 메뉴판이랑 가격표용으로 바꾼 프롬프트 저장해두셈",
       "replies": [
-        "1. 구성 입력은 Node.js, LM Studio, Browser MCP였음.\n\n제작자는 LM Studio에서 로컬 모델을 실행하고 확장 프로그램을 연결함. 업무 요청에는 대상 계정, 찾아갈 순서, 확인할 결과를 함께 적었음.",
-        "2. 모델을 고를 때 제작자가 먼저 본 조건은 도구 사용 기능이었음.\n\n진행 순서는 실행 환경 갱신 → 모델 받기 → 새 채팅에서 답변 확인 → Browser MCP 설정 추가임. 채팅 성공과 브라우저 연결을 따로 시험함.",
-        "3. 설정을 저장한 뒤에는 모델 불러오기 → 확장 프로그램 연결 → 대상 사이트와 작업 순서 요청으로 이어짐.\n\n기존 MCP 설정이 있던 제작자는 새 설정만 덮지 않고 함께 유지되도록 합쳤음.",
-        "4. 결과 항목은 연결 여부, 올바른 계정 도착 여부, 맞는 게시물 열기, 요청한 내용 확인으로 나눠야 함.\n\n시연에서는 잘못된 버튼을 누른 뒤 다시 시도해 Gemini 게시물을 열었지만, 최신 글 내용을 정확히 정리한 단계까지는 확인되지 않음.",
-        "5. 제작자는 연결이 일관되지 않아 확장 연결, 모델, 새 채팅을 다시 점검했음.\n\n적용 제안: 오류 메시지, 도착한 페이지, 연 게시물, 추출한 내용, 사람의 확인 상태를 따로 남겨봐. 페이지를 열었다는 기록만으로 완료 처리하지 않는 거임."
+        "1. 스타일 키워드\n\n형용사 대신 스타일 이름을 주는 거임\n\n우리 카페 메뉴판 이미지 만들어 줘.\n스타일은 미니멀, 스위스 타이포그래피, 크라프트지 질감으로 해 줘.",
+        "2. 여백 비율\n\n원글에서도 여백은 10, 20, 30처럼\n숫자로 정확히 주라고 함\n\n메뉴판 바깥 여백은 전체의 15%로 잡고\n메뉴 사이 간격은 글자 높이의 2배로 띄워 줘.",
+        "3. 컬러 비율\n\n메인, 보조, 포인트 색을 비율로 나누는 거\n\n배경은 크림색 70%, 글자는 진한 갈색 25%,\n가격만 주황색 5%로 넣어 줘.",
+        "4. 글자 크기 순서\n\n가게 이름을 제일 크게 쓰고 그다음 메뉴 이름을 크게 써 줘.\n가격은 메뉴 이름보다 작게, 메뉴 설명은 제일 작게 넣어 줘.",
+        "5. 완성도 기준이랑 알아둘 거\n\n마지막 줄엔 이렇게 붙이라고 함\n\n디자인 어워드 수상작 수준의 완성도로 만들어 줘.\n\n급할 땐 초안으로 쓰고\n인쇄용은 다듬거나 디자이너한테 참고 시안으로 넘기라고 함\n메뉴 이름이랑 가격 오타는 꼭 직접 확인하셈"
       ],
-      "link_comment": "업무에 적용할 순서와 확인할 내용을 정리한 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/lIuHf0OpYuE",
+      "link_comment": "메뉴 디자인 기준 5가지 원글\n\nhttps://www.threads.com/@nono_ai_archive/post/DZpBZOgDRe3",
       "sources": [
         {
-          "url": "https://lounge.aimax.ai.kr/worldclass/lIuHf0OpYuE",
-          "title": "반복 조회 업무를 맡기고 싶다면, 내 컴퓨터에서 실행하는 AI 브라우저 자동화부터 살펴보세요",
-          "published_at": null,
-          "collected_at": "2026-11-05T09:00:31.830910+09:00",
-          "verified_at": "2026-11-05T09:07:26.268165+09:00"
+          "url": "https://www.threads.com/@nono_ai_archive/post/DZpBZOgDRe3",
+          "title": "Threads @nono_ai_archive GPT 메뉴 디자인 5가지 기준",
+          "published_at": "2026-06-16T09:00:36+00:00",
+          "collected_at": "2026-11-09T18:52:36+09:00",
+          "verified_at": "2026-11-09T18:52:36+09:00"
         }
       ],
       "main_images": [
         {
-          "src": "/thread-img/auto-drop-maintenance-20261105-090011-2026-11-10-3.jpg",
-          "alt": "AsapGuide의 원본 영상 장면 · 관련 업무 참고 화면, 파트너의 직접 실행 결과 아님",
-          "credit": "AsapGuide · 원본 영상 참고 화면",
-          "source_url": "https://youtu.be/lIuHf0OpYuE",
-          "sha256": "aefbd5979f2f2d79210961fb9a07e2705e863b01dd7d89f34133bf29bea379af"
+          "src": "/thread-img/fp-easy-20261110-E3.png",
+          "alt": "자체 제작 프롬프트 표 (nono_ai_archive 원글 각색) · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "자체 제작 프롬프트 표 (nono_ai_archive 원글 각색)",
+          "source_url": "https://www.threads.com/@nono_ai_archive/post/DZpBZOgDRe3",
+          "sha256": "761d741270c12fb7bfe978d8a9744b5f622042bc282111348a43aeefb1bf9a09"
         }
       ]
     },
     {
       "date": "2026-11-10",
-      "title": "컨텐츠 325 · AI 직원한테 맡길 일부터 한 문장으로 줄여야 함.",
+      "title": "컨텐츠 325 · AI로 쓴 글이 어색하게 읽히는 건 대부분 번역투 때문이라고 함",
+      "previous_title": "컨텐츠 325 · AI 직원한테 맡길 일부터 한 문장으로 줄여야 함.",
       "type": "evergreen",
-      "target": "첫 AI 직원을 만드는 1인 대표",
-      "fmt": "업무 한 문장 설계",
+      "target": "AI로 쓴 홍보글이 어색해서 고민인 사장님",
+      "fmt": "고치기 전후 예시형",
       "format": "case_thread",
-      "body": "AI 직원한테 맡길 일부터 한 문장으로 줄여야 함.\n\n이건 외부 사례가 아니라\n내가 직접 제안하는 업무 방식임.\n매일 손으로 하는 일 하나를 고르고\n입력과 완료 기준을 붙이는 거임.",
+      "editorial_kind": "easy_news",
+      "supplemental": true,
+      "body": "AI로 쓴 글이 어색하게 읽히는 건 대부분 번역투 때문이라고 함\n\n깃허브 별 6,400개 넘은 im-not-ai\nAI가 쓴 한글에서 번역투, 뻔한 관용구,\n기계적인 첫째 둘째 셋째 같은 걸 찾아서\n사람 글처럼 고쳐주는 클로드 스킬임\n\n숫자, 고유명사, 주장은 안 건드리고\n말투랑 리듬만 고치는 게 원칙임\n\n설치법이랑 고쳐주는 예시는 댓글에 적어둠",
       "replies": [
-        "1. 개인 제안: 먼저 ‘언제 시작하는 일인지’와 ‘무엇을 받는지’를 적어봐.\n\n예를 들면 문의가 들어오면 질문 내용과 기존 답변 기준을 받는 식임. 역할 이름보다 실제 입력이 먼저임.",
-        "2. 그다음 해야 할 일, 하지 말아야 할 일, 잘된 예시, 결과물 형식을 붙여.\n\n업무지시서 출력 칸은 사용한 입력, 만든 결과, 건너뛴 항목, 확인이 필요한 내용으로 잡아보는 걸 제안함.",
-        "3. 개인 제안 연결 순서는 기존 작업 한 건 고르기 → 입력 자료 붙이기 → 원하는 결과 예시 보여주기 → 대표 자료로 시험하기임.\n\n한 번에 여러 업무를 넣지 말고 지금 고른 일만 통과시키는 거임.",
-        "4. 결과가 다르면 ‘다시 해’로 끝내지 말고 틀린 칸과 이유를 남겨.\n\n원문에 없는 값은 추정하지 말고 확인 필요로 표시하게 해봐. 이건 성과 사례가 아니라 내가 권하는 첫 업무 설계 방식임."
+        "1. 이렇게 고쳐줌\n\nAI 기술을 통해 효율을 높일 수 있다\n이건 AI로 효율을 높일 수 있다로\n\n~에 의해 생성된\n이건 ~가 만든으로\n\n결론적으로, 이는 시사하는 바가 크다\n이건 아예 지움\n\n이런 걸 10개 분류로 나눠서 잡아냄",
+        "2. 클로드 코드에 까는 법\n\n클로드 코드 창에 이 두 줄 넣으면 됨\n\n/plugin marketplace add epoko77-ai/im-not-ai\n/plugin install humanize-korean@im-not-ai\n\n새 세션 열고 /humanize-korean 치면 켜짐\n코덱스랑 제미나이 CLI도 지원함",
+        "3. 사장님이면 이렇게 시키셈\n\nAI 티 없애줘, 번역투 제거 같은 말로도 바로 켜짐\n\n아래 상세페이지 초안에서 AI 티 나는 표현만 고쳐 줘. 가격이랑 상품 이름은 그대로 둬 줘.\n\n아래 공지문 자연스럽게 윤문해 줘.",
+        "4. 안 건드리는 것\n\n숫자, 날짜, 제품명,\n큰따옴표 안에 든 인용은 손 안 댐\n\n너무 많이 고쳐서 글이 바뀌는 것도 막아둠\n바뀐 비율이 30% 넘으면 경고하고\n50% 넘으면 멈춤",
+        "5. 알아둘 거\n\n웹 채팅창이 아니라\n클로드 코드나 코덱스 같은 도구에 까는 스킬임\n고친 글도 내 평소 말투랑 맞는지\n올리기 전에 한 번 읽어보셈"
       ],
-      "link_comment": "업무에 적용할 순서와 확인할 내용을 정리한 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/pftvnNLzGA4",
+      "link_comment": "깃허브 주소\n\nhttps://github.com/epoko77-ai/im-not-ai",
       "sources": [
         {
-          "url": "https://familypartners.aimax.ai.kr/feed?n=500",
-          "title": "초기 자사 컨텐츠 원문",
+          "url": "https://github.com/epoko77-ai/im-not-ai",
+          "title": "epoko77-ai/im-not-ai (GitHub)",
           "published_at": null,
-          "collected_at": "2026-11-05T09:00:31.830910+09:00",
-          "verified_at": "2026-11-05T09:07:26.596040+09:00"
+          "collected_at": "2026-11-09T18:52:36+09:00",
+          "verified_at": "2026-11-09T18:52:36+09:00"
         }
       ],
       "main_images": [
         {
-          "src": "/thread-img/auto-drop-maintenance-20261105-090011-2026-11-10-4.jpg",
-          "alt": "Eamonn Cottrell의 원본 영상 장면 · 관련 업무 참고 화면, 파트너의 직접 실행 결과 아님",
-          "credit": "Eamonn Cottrell · 원본 영상 참고 화면",
-          "source_url": "https://youtu.be/pftvnNLzGA4",
-          "sha256": "263a34e186afe353de92007349dc61d6e7d398cf056dd8e056f260e6dcf64102"
+          "src": "/thread-img/fp-easy-20261110-E4.png",
+          "alt": "자체 제작 표 (im-not-ai README 예시 인용) · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "자체 제작 표 (im-not-ai README 예시 인용)",
+          "source_url": "https://github.com/epoko77-ai/im-not-ai",
+          "sha256": "246293a39dcf27e21d4f9f4cc79ca5eccd06017c2b4cfa6755d1617e95ac1c58"
         }
-      ],
-      "supplemental": true,
-      "editorial_kind": "original_guidance"
+      ]
     },
     {
       "date": "2026-11-10",
-      "title": "컨텐츠 326 · 내 말투를 원하면 예쁜 프롬프트보다 내 글이 먼저임.",
+      "title": "컨텐츠 326 · 아파트 실거래가부터 택배 조회까지 한국 공개 API 300개 넘게 모아둔 깃허브 있음",
+      "previous_title": "컨텐츠 326 · 내 말투를 원하면 예쁜 프롬프트보다 내 글이 먼저임.",
       "type": "evergreen",
-      "target": "자기 말투로 콘텐츠 초안을 받으려는 대표",
-      "fmt": "원문 묶음 구성",
+      "target": "AI로 우리 가게용 작은 도구를 만들어보려는 사장님",
+      "fmt": "무료 자료 모음 활용법",
       "format": "case_thread",
-      "body": "내 말투를 원하면 예쁜 프롬프트보다 내 글이 먼저임.\n\n이건 외부 사례가 아니라\n내가 직접 제안하는 자료 준비 방식임.\n이미 확인한 글과 고객 질문을 모아\n초안이 읽을 기준부터 만드는 거임.",
+      "editorial_kind": "easy_news",
+      "supplemental": true,
+      "body": "아파트 실거래가부터 택배 조회까지 한국 공개 API 300개 넘게 모아둔 깃허브 있음\n\n깃허브 별 3,400개 넘은 public-apis-4Kr\n정부 공공데이터부터 네이버, 카카오,\n날씨, 택배, 쇼핑까지 분야별로 정리돼 있음\n\nAI한테 이 중 하나 붙여서 만들어 달라고 하면\n우리 가게용 작은 도구가 나옴\n\n사장님이 볼 칸이랑 시키는 법은 아래에 정리함",
       "replies": [
-        "1. 개인 제안: 입력은 내가 승인한 기존 글, 고객 질문, 강의 자료, 아이디어 메모로 잡아봐.\n\n자료마다 그대로 참고할 것, 사실만 쓸 것, 이번 작업에서 뺄 것을 표시함.",
-        "2. 연결 순서는 원문 묶기 → 이번 주제 고르기 → 관련 자료만 읽히기 → 초안 받기 → 원문과 대조하기임.\n\n모든 기록을 한꺼번에 넣기보다 이번 글에 필요한 맥락부터 고르는 방식임.",
-        "3. 받을 결과 칸도 정해둬.\n\n첫 문장, 참고한 원문, 핵심 주장, 확인 못 한 내용, 고칠 말투를 함께 받는 걸 제안함. 출처가 없는 주장은 초안에 남기지 않게 함.",
-        "4. 개인 제안: 초안을 기존 글 하나와 나란히 읽어봐.\n\n내가 안 쓰는 어미와 과한 표현을 표시하고, 고친 문장을 다음 기준에 더함. 말투가 맞는지는 AI 설명이 아니라 실제 원문과 비교해 판단하는 거임."
+        "1. 뭐가 들어 있는지\n\n한국에서 쓸 수 있는 공개 API를 정리한 목록임\n2026년 11월 8일 기준으로 업데이트돼 있고\n정부, 지도, 금융, 교통, 날씨, 부동산 같은\n분야별 표로 나뉘어 있음\nMIT 라이선스라 무료로 보면 됨",
+        "2. 사장님이 먼저 볼 칸\n\n쇼핑 & 이커머스 칸에\n네이버 쇼핑 검색이랑 분야별 검색 트렌드 보는 쇼핑인사이트,\n스마트스토어 판매자용 커머스 API가 있음\n\n배송 & 물류 칸엔 택배 조회\n비즈니스 & 기업 칸엔 사업자등록번호로\n사업자 정보 찾는 API가 있음",
+        "3. 인증 칸 보는 법\n\n표마다 인증 칸이 있음\napiKey는 그 사이트 가입하고 키 받으면 되는 거\nOAuth는 계정 로그인 연결이 필요한 거\nPartnership은 제휴해야 쓸 수 있는 거임\n\n처음이면 apiKey짜리부터 해보셈",
+        "4. AI한테 이렇게 시키면 됨\n\n네이버 쇼핑인사이트 API로 우리 상품 분야 검색 트렌드를 매주 표로 뽑고 싶어. 키 받는 곳부터 순서대로 알려 줘.\n\n택배 조회 API로 송장번호 넣으면 배송 상태 보여주는 간단한 페이지 만들어 줘.",
+        "5. 알아둘 거\n\nAPI 키는 비밀번호랑 같아서\n채팅이나 글에 그대로 붙이면 안 됨\n무료로 쓸 수 있는 양이랑 조건은 API마다 다름\n쓰기 전에 각 사이트 안내를 꼭 확인하셈"
       ],
-      "link_comment": "업무에 적용할 순서와 확인할 내용을 정리한 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/lTNRRcSztu8",
+      "link_comment": "깃허브 주소\n\nhttps://github.com/yybmion/public-apis-4Kr",
       "sources": [
         {
-          "url": "https://familypartners.aimax.ai.kr/feed?n=500",
-          "title": "초기 자사 컨텐츠 원문",
+          "url": "https://github.com/yybmion/public-apis-4Kr",
+          "title": "yybmion/public-apis-4Kr (GitHub)",
           "published_at": null,
-          "collected_at": "2026-11-05T09:00:31.830910+09:00",
-          "verified_at": "2026-11-05T09:07:26.895074+09:00"
+          "collected_at": "2026-11-09T18:52:36+09:00",
+          "verified_at": "2026-11-09T18:52:36+09:00"
+        },
+        {
+          "url": "https://x.com/hmmmmmm1458/status/2118986019966263743",
+          "title": "X @hmmmmmm1458 한국 공개API 깃허브 소개",
+          "published_at": "2026-11-07T08:36:50+00:00",
+          "collected_at": "2026-11-09T18:52:36+09:00",
+          "verified_at": "2026-11-09T18:52:36+09:00"
         }
       ],
       "main_images": [
         {
-          "src": "/thread-img/auto-drop-maintenance-20261105-090011-2026-11-10-5.jpg",
-          "alt": "Max Sturtevant의 원본 영상 장면 · 관련 업무 참고 화면, 파트너의 직접 실행 결과 아님",
-          "credit": "Max Sturtevant · 원본 영상 참고 화면",
-          "source_url": "https://youtu.be/lTNRRcSztu8",
-          "sha256": "ff33cf6507ee2473bc6fa8493ebbceb7f0ba4ddcfb514be06df9377fbb033fd2"
+          "src": "/thread-img/fp-easy-20261110-E5.png",
+          "alt": "yybmion/public-apis-4Kr 깃허브 README 화면 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "yybmion/public-apis-4Kr 깃허브 README 화면",
+          "source_url": "https://github.com/yybmion/public-apis-4Kr",
+          "sha256": "c5bacf524b0d62ef36e2e6f5700718a8e58e29cf583f32c637bf1a47471aeef4"
         }
-      ],
-      "supplemental": true,
-      "editorial_kind": "original_guidance"
+      ]
     },
     {
       "date": "2026-11-11",
