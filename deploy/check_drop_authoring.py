@@ -103,7 +103,10 @@ def review_one(row, review, base, now, structure_only=False):
             host = (urlsplit(source['url']).hostname or '').removeprefix('www.')
             if host in ('reddit.com', 'x.com', 'twitter.com'):
                 date = datetime.fromisoformat(str(source.get('published_at') or '').replace('Z', '+00:00'))
-                if date.tzinfo is None or not now - timedelta(days=json.loads((ROOT / 'config/assets.json').read_text())['_research']['discovery_days']) <= date <= now:
+                # easy_news reuses reaction-proven reference posts (2026-11-09 user decision): the
+                # date must still be evidenced, but only the daily batch needs a recent case.
+                window = timedelta(days=json.loads((ROOT / 'config/assets.json').read_text())['_research']['discovery_days'])
+                if date.tzinfo is None or date > now or (row.get('editorial_kind') != 'easy_news' and date < now - window):
                     errors.append('community_source_not_recent')
                 if not record.get('date_quote') or record['date_quote'] not in snapshot:
                     errors.append('publication_date_evidence_missing')
@@ -172,8 +175,11 @@ def main():
     # supplemental first-party advice has its own explicit editorial review above.
     for day in ([] if a.structure_only or a.existing_sources else sorted({r['date'] for r in changed if not original_guidance(r)})):
         group = [r for r in rows if r['date'] == day]
+        window = timedelta(days=json.loads((ROOT / 'config/assets.json').read_text())['_research']['discovery_days'])
         community = [r for r in group if any((urlsplit(s.get('url', '')).hostname or '').removeprefix('www.')
-                     in ('reddit.com', 'x.com', 'twitter.com') for s in r.get('sources', []))]
+                     in ('reddit.com', 'x.com', 'twitter.com') and s.get('published_at')
+                     and datetime.fromisoformat(str(s['published_at']).replace('Z', '+00:00')) >= now - window
+                     for s in r.get('sources', []))]
         if not any(not review_one(r, reviews.get(digest(r), {}), a.reviews.parent, now) for r in community):
             failed.append({'date': day, 'errors': ['no_verified_recent_community_source_in_daily_batch']})
     print(json.dumps({'changed': len(changed), 'failures': failed}, ensure_ascii=False, indent=2))
