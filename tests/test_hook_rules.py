@@ -25,5 +25,20 @@ class HookRulesTest(unittest.TestCase):
         self.assertFalse(check_day_hooks(day[1:]))
 
 
+class EasyNewsLinkTest(unittest.TestCase):
+    def test_easy_news_accepts_source_link(self):
+        from deploy.lint_drops import check_one
+        cfg = {"by_code": {}, "proper": [], "used_kw_before": set()}
+        d = {"format": "case_thread", "date": "2026-11-14", "type": "ai", "editorial_kind": "easy_news",
+             "body": "한글 파일 AI한테 못 읽혀서 복붙하고 있었으면 이거 보셈\n\n깃허브 도구임",
+             "replies": ["1. 뭘 해주는지\n\n변환해줌", "2. 쓰는 법\n\n한 줄이면 됨"],
+             "link_comment": "깃허브 주소\n\nhttps://github.com/chrisryugj/kordoc",
+             "sources": [{"url": "https://github.com/chrisryugj/kordoc"}]}
+        self.assertNotIn("마지막 댓글에 라운지 활용노트 링크 필요", check_one(d, cfg))
+        self.assertNotIn("마지막 댓글에 원문 링크 필요", check_one(d, cfg))
+        d.pop("editorial_kind")
+        self.assertIn("마지막 댓글에 라운지 활용노트 링크 필요", check_one(d, cfg))
+
+
 if __name__ == "__main__":
     unittest.main()

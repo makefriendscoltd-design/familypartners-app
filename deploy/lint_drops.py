@@ -167,7 +167,11 @@ def check_one(d: dict, cfg: dict) -> list[str]:
         elif any(not isinstance(t, str) or not t.strip() or len(t) > 500 for t in replies):
             bad.append("댓글 내용 없음 또는 500자 초과")
         closing = d.get("link_comment") or ""
-        if len(closing) > 500 or "https://lounge.aimax.ai.kr/worldclass/" not in closing:
+        # 쉬운 소식(도구·강의·기능 소개)은 원문 링크가 독자에게 더 쓸모 있다 (2026-11-09 사용자 결정).
+        if d.get("editorial_kind") == "easy_news":
+            if len(closing) > 500 or not re.search(r"https://\S+", closing):
+                bad.append("마지막 댓글에 원문 링크 필요")
+        elif len(closing) > 500 or "https://lounge.aimax.ai.kr/worldclass/" not in closing:
             bad.append("마지막 댓글에 라운지 활용노트 링크 필요")
         if not d.get("sources"):
             bad.append("사례 원문 출처 필요")
