@@ -72,6 +72,35 @@ def _cleanup_dup_cta_titles(conn) -> int:
     return len(rows)
 
 
+MOVED_EASY_NEWS_20261114 = (
+    "컨텐츠 345 · 한글 파일 AI한테 못 읽혀서 복붙하고 있었으면 이거 보셈",
+    "컨텐츠 346 · 클로드 만든 회사가 직접 올린 AI 강의 무료로 듣고 수료 배지까지 받는 법",
+    "컨텐츠 347 · 노트북LM 이제 제미나이 노트북으로 이름 바뀌었음",
+    "컨텐츠 348 · GPT한테 잘 써줘 한마디만 하면 사장님 글이 다 비슷비슷하게 나옴",
+)
+
+
+def _cleanup_moved_easy_news(conn) -> int:
+    """1회성 정리 — 2026-11-09 에 쉬운 소식 글감 4개를 11/14 로 넣었다가 사용자 요청으로
+    이번 주(11/10~11/13) 기존 글과 교체했다. 11/14 에 남은 행만 지운다. 공개 전이고
+    제출이 붙은 행은 건드리지 않는다. 표식이 남아 다시 돌지 않는다."""
+    mark = "cleanup:moved_easy_news_20261114"
+    if core.get_setting(conn, mark):
+        return 0
+    qs = ",".join("?" * len(MOVED_EASY_NEWS_20261114))
+    rows = conn.execute(
+        f"SELECT id FROM drops WHERE drop_date='2026-11-14' AND title IN ({qs}) "
+        "AND id NOT IN (SELECT drop_id FROM submissions WHERE drop_id IS NOT NULL)",
+        MOVED_EASY_NEWS_20261114).fetchall()
+    for r in rows:
+        conn.execute("DELETE FROM drops WHERE id=?", (r["id"],))
+    conn.commit()
+    core.set_setting(conn, mark, f"{len(rows)}건 삭제")
+    if rows:
+        print(f"[글감큐] 11/14 이동 전 쉬운 소식 {len(rows)}건 정리")
+    return len(rows)
+
+
 def pending(path: Path | None = None) -> int:
     """큐에 있으나 아직 반영되지 않은(표식이 없거나 지문이 다른) 항목 수."""
     try:
@@ -106,6 +135,7 @@ def sync(path: Path | None = None, verbose: bool = True) -> dict:
         conn = db.connect()
         try:
             _cleanup_dup_cta_titles(conn)
+            _cleanup_moved_easy_news(conn)
             for d in items:
                 title = (d.get("title") or "").strip()
                 date = (d.get("date") or "").strip()

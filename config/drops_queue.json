@@ -4462,36 +4462,45 @@
     },
     {
       "date": "2026-11-10",
-      "title": "컨텐츠 321 · N8N 워크플로 하나를 유료 웹앱으로 묶은 제작자가 있음.",
+      "title": "컨텐츠 321 · 한글 파일 AI한테 못 읽혀서 복붙하고 있었으면 이거 보셈",
+      "previous_title": "컨텐츠 321 · N8N 워크플로 하나를 유료 웹앱으로 묶은 제작자가 있음.",
       "type": "ai",
-      "target": "N8N 워크플로를 유료 서비스로 묶으려는 제작자",
-      "fmt": "제품 경계 해부",
+      "target": "한글 서류를 AI로 다루려는 사장님",
+      "fmt": "깃허브 도구 소개",
       "format": "case_thread",
-      "body": "N8N 워크플로 하나를 유료 웹앱으로 묶은 제작자가 있음.\n\n레딧의 autolaunchy는\n가입·결제·사용량 제한을 맡는\nAutolaunchy 베타 구조를 공개함.\n워크플로 실행은 기존 N8N에 남겨둠.",
+      "editorial_kind": "easy_news",
+      "body": "한글 파일 AI한테 못 읽혀서 복붙하고 있었으면 이거 보셈\n\n깃허브 별 2,900개 넘은 kordoc\nHWP, HWPX, PDF, 엑셀, 스캔본까지\nAI가 읽을 수 있는 글로 바꿔줌\n\n지원사업 양식이나 공문처럼\n한글 파일로 오는 서류 많은 사장님한테 쓸만함\n\n설치랑 쓰는 법은 댓글에 적어둠",
       "replies": [
-        "1. 입력은 N8N에서 내보낸 워크플로 .json과 webhook URL임.\n\n작성자는 고객이 채울 항목도 고르게 했고, Autolaunchy가 그 항목으로 입력 폼을 만든다고 설명함.",
-        "2. 작성자가 공개한 연결 순서는 워크플로 업로드 → webhook 연결 → 고객 입력 항목 선택 → 요금제 설정 → 랜딩페이지 공개임.\n\n결제금은 작성자 설명상 제작자의 Stripe 계정으로 바로 들어가고, 실제 워크플로는 기존 N8N에서 계속 실행됨.",
-        "3. 받을 결과도 나눠 봐야 함.\n\n출력 항목은 고객 입력 폼, 무료 구간, 가격, 월별 실행 제한, 체험 조건, 랜딩페이지 테마와 도메인임. 작성자가 말한 제품 바깥 기능을 그대로 풀어쓴 것임.",
-        "4. 이건 아직 베타임.\n\n작성자는 실제 결제까지 이어지는 경로가 작동한다고 했지만, 사용자는 소수라 거친 부분이 있을 거라고 직접 밝혔음. 다른 워크플로에서도 같은 결과가 난다는 근거는 아님.",
-        "5. 적용 제안: 갖고 있는 워크플로 하나로 입력 폼 → webhook 응답 → 실행 결과 → Stripe 결제 귀속을 차례로 기록해봐.\n\n마지막에 붙을 라운지 글은 자동화 범위를 더 읽는 참고 글일 뿐, 이 Reddit 도구나 N8N 워크플로를 받는 자료는 아님."
+        "1. 뭘 해주는 도구인지\n\n한글 문서를 읽고 고치고 새로 쓰는 도구임\nHWP 파일을 마크다운으로 바꾸고\n반대로 마크다운을 HWPX로도 만들어줌\n양식 채우기랑 공문서 검수 기능도 있음\nMIT 라이선스 오픈소스라 무료임",
+        "2. 제일 쉬운 사용법\n\n클로드 데스크톱이나 클로드 코드 쓰는 사람은\n터미널에 이 한 줄만 넣으면 됨\n\nnpx -y kordoc setup\n\n설치된 AI 앱에 알아서 연결되고\n앱 껐다 켜면 바로 쓸 수 있음",
+        "3. 연결한 다음 이렇게 시키면 됨\n\n이 한글 파일 읽고 핵심만 정리해 줘.\n\n이 지원사업 양식에 내 사업 내용 채워서 HWPX로 만들어 줘.\n\n고친 버전이랑 원본 비교해서 바뀐 데 알려 줘.",
+        "4. 변환만 하고 싶을 때\n\nnpx kordoc 문서.hwpx -o 문서.md\n\n이러면 한글 파일이 마크다운으로 바뀜\n그대로 GPT나 제미나이에 붙여넣으면 끝",
+        "5. 알아둘 거\n\nnpx 쓰려면 컴퓨터에 Node.js가 깔려 있어야 함\nAI가 채운 양식은 초안일 뿐이라\n제출 전에 내용은 꼭 직접 확인하셈"
       ],
-      "link_comment": "관련 업무를 더 살펴볼 활용노트.\n레딧 사례의 배포 파일과는 다른 참고 자료임.\n\nhttps://lounge.aimax.ai.kr/worldclass/pftvnNLzGA4",
+      "link_comment": "깃허브 주소\n\nhttps://github.com/chrisryugj/kordoc",
       "sources": [
         {
-          "url": "https://www.reddit.com/r/n8n/comments/1xnw9ic/i_built_a_tool_that_turns_your_n8n_workflow_into/",
-          "title": "I built a tool that turns your n8n workflow into a paid web app. Looking for 20 beta testers",
-          "published_at": "2026-11-04T18:44:17.888Z",
-          "collected_at": "2026-11-05T09:00:31.830910+09:00",
-          "verified_at": "2026-11-05T09:07:24.179222+09:00"
+          "url": "https://github.com/chrisryugj/kordoc",
+          "title": "GitHub - chrisryugj/kordoc",
+          "published_at": null,
+          "collected_at": "2026-11-09T18:32:21+09:00",
+          "verified_at": "2026-11-09T18:32:21+09:00"
+        },
+        {
+          "url": "https://x.com/useaistation/status/2117859378191794552",
+          "title": "wolf X 게시물 (Radar: kordoc #10)",
+          "published_at": "2026-11-04T05:59:58+00:00",
+          "collected_at": "2026-11-09T18:32:21+09:00",
+          "verified_at": "2026-11-09T18:32:21+09:00"
         }
       ],
       "main_images": [
         {
-          "src": "/thread-img/auto-drop-maintenance-20261105-090011-2026-11-10-0.png",
-          "alt": "I built a tool that turns your n8n workflow into a paid web app. Looking for 20 beta testers",
-          "credit": "autolaunchy · Reddit 원문 화면",
-          "source_url": "https://www.reddit.com/r/n8n/comments/1xnw9ic/i_built_a_tool_that_turns_your_n8n_workflow_into/",
-          "sha256": "0ea72437f6f5ffb3e4c21169ca9e5bf2b74e166727daa10c3db8899574288426"
+          "src": "/thread-img/fp-easy-20261110-A.png",
+          "alt": "chrisryugj/kordoc 깃허브 저장소 화면 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "chrisryugj/kordoc 깃허브 저장소 화면",
+          "source_url": "https://github.com/chrisryugj/kordoc",
+          "sha256": "97a1d52f3a6d5f2590e1f09c4117352b44e5c1d2d0c46cb94c563f037e28e227"
         }
       ]
     },
@@ -4779,36 +4788,45 @@
     },
     {
       "date": "2026-11-11",
-      "title": "컨텐츠 330 · 거래처 메일을 요약만 하면 담당자랑 마감일은 또 찾아야 함.",
+      "title": "컨텐츠 330 · 클로드 만든 회사가 직접 올린 AI 강의 무료로 듣고 수료 배지까지 받는 법",
+      "previous_title": "컨텐츠 330 · 거래처 메일을 요약만 하면 담당자랑 마감일은 또 찾아야 함.",
       "type": "evergreen",
-      "target": "프로젝트 이메일 정리",
-      "fmt": "추출 대조형",
+      "target": "클로드를 처음 배우려는 사장님",
+      "fmt": "무료 강의 소개",
       "format": "case_thread",
-      "body": "거래처 메일을 요약만 하면 담당자랑 마감일은 또 찾아야 함.\n\n라운지 정리본의 TechMagicWow 영상은\nGmail 본문을 OpenAI로 분석하고\n프로젝트 관리 항목으로 나눠\nGoogle Sheets 새 행에 넣는 흐름을 다룸.",
+      "editorial_kind": "easy_news",
+      "body": "클로드 만든 회사가 직접 올린 AI 강의 무료로 듣고 수료 배지까지 받는 법\n\nAnthropic 공식 강의 사이트에\n클로드 기초부터 클로드 코드까지\n강의가 20개 올라와 있고\n사이트도 한국어로 나옴\n\n사장님이면 이 순서로 들으셈\n\n1. Claude 101\n2. Claude Cowork 소개\n3. AI Fluency: Framework and foundations\n\n듣는 법이랑 강의별 내용은 댓글에 적어둠",
       "replies": [
-        "1. 입력에서 본문을 먼저 확인함\n\nGmail 수신을 시작점으로 두고 제목, 발신자, 전체 본문을 OpenAI 단계에 넘김.\n\n제작자는 간소화 옵션을 꺼 긴 본문도 전달했음. 사람이 찾은 요청 문장과 날짜가 입력에도 들어왔는지 먼저 대조해야 뒤 단계의 누락 위치를 찾을 수 있음.",
-        "2. 요약 말고 뽑을 칸을 정함\n\n출력 항목은 프로젝트 관련 여부, 프로젝트명, 분류, 요약, 담당자, 마감일, 지연 일수, 영향, 제안 우선순위임.\n\n프롬프트에는 빠진 정보를 만들지 말라는 조건도 넣음. 원문에 있는 담당자·날짜와 AI가 제안한 영향·우선순위는 같은 사실처럼 섞지 않음.",
-        "3. AI 답을 시트 칸으로 바꿈\n\nOpenAI 응답은 JSON 형식의 text라 그대로는 개별 칸에 쓰기 어려웠음.\n\ncode 단계에서 JSON으로 바꾸고 프로젝트명, 담당자, 마감일 같은 값을 분리해 다음 단계로 넘김. 날짜가 없는 email도 시험해 빈값 처리와 계산 결과를 따로 봐야 함.",
-        "4. 관련 메일만 새 행으로 보냄\n\n조건 분기에서 프로젝트 관련 여부를 확인하고 참이면 Google Sheets에 새 행을 더함. 거짓이면 기록하지 않고 끝냄.\n\nGmail 본문 → AI 분류·추출 → code 출력 → sheet 값을 순서대로 대조하면 정보가 달라진 단계를 찾기 쉬움.",
-        "5. 새 행이 곧 진행 관리는 아님\n\n라운지 정리본이 확인한 범위는 새 프로젝트 email마다 행을 추가하는 방식임.\n\n기존 업무 상태를 찾아 고치거나, 한 email의 여러 담당자와 실행 항목을 각각 추적하는 기능은 전사문에서 확인되지 않았음. 모든 email에서 같은 정확도가 난다고 일반화하면 안 됨."
+        "1. 어디서 듣는지\n\nAnthropic Academy 사이트 들어가서\n로그인하면 바로 들을 수 있음\n강의 끝에 퀴즈 하나 풀면 수료 배지 나옴\n\n예전 강의 사이트는 12월 초에 닫힌다고 공지 떠 있음\n주소는 마지막 댓글에 남겨둠",
+        "2. Claude 101\n\n클로드로 평소 업무 보는 법이랑\n핵심 기능 알려주는 입문 강의\n13강에 2시간 반 정도라\n클로드 처음이면 여기서 시작하면 됨",
+        "3. Claude Cowork 소개\n\n내 파일이랑 프로젝트 그대로 가지고\n클로드랑 같이 일하는 법 배우는 실습 강의\n플러그인, 스킬, 파일 작업까지 나옴\n\n공지 보니까 Cowork는 이제 클로드에 합쳐졌음\n배운 건 클로드에서 바로 쓰면 됨",
+        "4. AI Fluency: Framework and foundations\n\nAI한테 뭘 맡기고 어떻게 설명하고\n결과를 어떻게 걸러낼지 다루는 강의\n셋 중에 제일 긴 4시간짜리라\n도구보다 AI 쓰는 기준을 잡고 싶을 때 들으셈",
+        "5. 듣는 요령\n\n한 번에 몰아 듣지 말고\n하루 한 강의씩만 들은 다음\n그날 바로 내 일에 하나 써보셈"
       ],
-      "link_comment": "업무에 적용할 순서와 확인할 내용을 정리한 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/4Y9ffdRRdYM",
+      "link_comment": "Anthropic 공식 강의 목록\n\nhttps://academy.claude.com/courses",
       "sources": [
         {
-          "url": "https://lounge.aimax.ai.kr/worldclass/4Y9ffdRRdYM",
-          "title": "이메일 속 담당자와 마감일, AI로 프로젝트 관리대장에 모으는 방법",
+          "url": "https://academy.claude.com/courses",
+          "title": "Claude Academy 강좌",
           "published_at": null,
-          "collected_at": "2026-11-06T09:00:53.279123+09:00",
-          "verified_at": "2026-11-06T09:09:59.418775+09:00"
+          "collected_at": "2026-11-09T18:32:21+09:00",
+          "verified_at": "2026-11-09T18:32:21+09:00"
+        },
+        {
+          "url": "https://x.com/thepharmwriter/status/2117899074196148669",
+          "title": "ThePharmWriter X 게시물 (academy.claude.com 추천)",
+          "published_at": "2026-11-04T08:37:42+00:00",
+          "collected_at": "2026-11-09T18:32:21+09:00",
+          "verified_at": "2026-11-09T18:32:21+09:00"
         }
       ],
       "main_images": [
         {
-          "src": "/thread-img/auto-drop-maintenance-20261106-090009-2026-11-11-3.jpg",
-          "alt": "TechMagicWow의 원본 영상 장면 · 관련 업무 참고 화면, 파트너의 직접 실행 결과 아님",
-          "credit": "TechMagicWow · 원본 영상 참고 화면",
-          "source_url": "https://youtu.be/4Y9ffdRRdYM",
-          "sha256": "2f34e7371b7775763231892568d621b40ea1071bfb3e67bc7768efc328bb33d0"
+          "src": "/thread-img/fp-easy-20261111-B.png",
+          "alt": "Claude Academy 강좌 목록 화면 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "Claude Academy 강좌 목록 화면",
+          "source_url": "https://academy.claude.com/courses",
+          "sha256": "2bb73ca67dbeac6adae0e0947b970698c0c76ddf87b3f4b4782c550be63ee3d0"
         }
       ]
     },
@@ -4993,36 +5011,45 @@
     },
     {
       "date": "2026-11-12",
-      "title": "컨텐츠 336 · 브라우저 AI가 완료라고 해도 쓸 자료가 없을 수 있음.",
+      "title": "컨텐츠 336 · 노트북LM 이제 제미나이 노트북으로 이름 바뀌었음",
+      "previous_title": "컨텐츠 336 · 브라우저 AI가 완료라고 해도 쓸 자료가 없을 수 있음.",
       "type": "evergreen",
-      "target": "경쟁사 웹 화면을 반복 조사하는 기획자",
-      "fmt": "완료 표시 반증형",
+      "target": "자료 정리를 AI에 맡기려는 사장님",
+      "fmt": "기능 사용법",
       "format": "case_thread",
-      "body": "브라우저 AI가 완료라고 해도 쓸 자료가 없을 수 있음.\n\nSimon Scrapes의 라운지 정리본은\nJev가 화면의 다음 행동을 고르고\nClaude가 목표와 결과물을 대조하는\n웹 조사 구조와 실패 조건을 소개함.",
+      "editorial_kind": "easy_news",
+      "body": "노트북LM 이제 제미나이 노트북으로 이름 바뀌었음\n\n일반 제미나이는 인터넷에서 찾아주고\n제미나이 노트북은 내가 넣은 자료 안에서 찾아줌\n\n그래서 상품 설명서, 업종 뉴스,\n지원사업 공고문 넣어두고 물어보면\n그 안에서 답해줌\n\n사장님이 바로 써먹을 질문은 아래에 정리해둠",
       "replies": [
-        "1. 입력은 웹 화면 자체가 아니라 조작 가능한 항목 목록이었음.\n\n요금 안내 링크, 무료 체험 버튼, 이메일 입력 칸처럼 누르거나 적을 대상을 번호가 붙은 텍스트로 바꿔 Jev에 전달함.",
-        "2. Jev는 클릭·입력·스크롤·대기·완료·진행 불가 중 다음 행동과 대상을 고름.\n\n코드가 행동을 실행하면 새 화면의 항목을 다시 읽고 같은 흐름을 잇는 구조였음.",
-        "3. Claude가 맡은 출력은 목표와 실제 수집 결과의 대조였음.\n\n제작자의 시험에서는 완료 표시와 달리 쓸 수 있는 페이지가 거의 기록되지 않아 별도 검증이 필요했다고 함.",
-        "4. 실패 조건도 구체적이었음.\n\n쿠키 동의 창은 별도 처리 규칙이 필요했고, 페이지 안에 삽입된 결제·가입 양식과 파일 업로드는 해당 구현의 한계로 다뤄짐.",
-        "5. 실무 적용은 작은 범위부터 해보자는 제안임.\n\n대상 페이지, 필요한 화면, 완료 조건을 먼저 적고 화면 하나를 확보한 뒤 실제 요청과 맞는지 대조하는 방식으로 시작해볼 수 있음."
+        "1. 자료 넣는 법\n\n제미나이 노트북 들어가서 새 노트북 만들고\nPDF, 구글 문서, 웹사이트 주소,\n유튜브 링크 같은 걸 넣으면 됨",
+        "2. 업종 뉴스 스크랩북\n\nX에서 공룡선배라는 분이 올린 방법인데\n관심 산업 기사 링크 5~10개를 노트북에 넣고\n기사별 핵심 내용이랑 공통 트렌드 3가지를\n정리해달라고 하는 거임\n\n사장님도 자기 업종 기사로 똑같이 해두면\n매주 업계 흐름을 한 번에 볼 수 있음",
+        "3. 상품 설명서 넣었을 때\n\n이 자료에서 고객이 많이 물어볼 질문 10개랑 답을 뽑아 줘.\n답마다 자료 어디에서 가져왔는지 표시해 줘.",
+        "4. 지원사업 공고문 넣었을 때\n\n이 공고에서 신청 자격, 마감일, 제출 서류만 표로 정리해 줘.\n놓치기 쉬운 조건이 있으면 따로 적어 줘.",
+        "5. 알아둘 거\n\n넣은 자료에 없는 내용은\n답을 못 하거나 틀릴 수 있음\n자료가 옛날 거면 답도 옛날 거라\n가격표나 공고는 최신 걸로 바꿔 넣으셈"
       ],
-      "link_comment": "업무에 적용할 순서와 확인할 내용을 정리한 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/zac3kEUwIlg",
+      "link_comment": "구글 공식 안내\n\nhttps://blog.google/intl/ko-kr/company-news/technology/notebooklm-gemini-notebook/",
       "sources": [
         {
-          "url": "https://lounge.aimax.ai.kr/worldclass/zac3kEUwIlg",
-          "title": "경쟁사 웹 조사에 쓰는 브라우저 AI, 빠른 클릭보다 결과 확인이 먼저입니다",
+          "url": "https://blog.google/intl/ko-kr/company-news/technology/notebooklm-gemini-notebook/",
+          "title": "이제 노트북LM이 제미나이 노트북이라는 새로운 이름으로 찾아옵니다",
           "published_at": null,
-          "collected_at": "2026-11-07T09:00:54.861697+09:00",
-          "verified_at": "2026-11-07T09:04:42.158091+09:00"
+          "collected_at": "2026-11-09T18:32:21+09:00",
+          "verified_at": "2026-11-09T18:32:21+09:00"
+        },
+        {
+          "url": "https://x.com/geminosaurus_/status/2118719902588825846",
+          "title": "공룡선배 X 게시물 (제미나이 노트북 산업 뉴스 스크랩북)",
+          "published_at": "2026-11-06T06:29:58+00:00",
+          "collected_at": "2026-11-09T18:32:21+09:00",
+          "verified_at": "2026-11-09T18:32:21+09:00"
         }
       ],
       "main_images": [
         {
-          "src": "/thread-img/auto-drop-maintenance-20261107-090010-2026-11-12-3.jpg",
-          "alt": "Simon Scrapes의 원본 영상 장면 · 관련 업무 참고 화면, 파트너의 직접 실행 결과 아님",
-          "credit": "Simon Scrapes · 원본 영상 참고 화면",
-          "source_url": "https://youtu.be/zac3kEUwIlg",
-          "sha256": "1e64c4f00b726803a9af68d9bff20eafbd89249bdc183bc54884a794421880fc"
+          "src": "/thread-img/fp-easy-20261112-C.png",
+          "alt": "구글 코리아 블로그 제미나이 노트북 발표 화면 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "구글 코리아 블로그 제미나이 노트북 발표 화면",
+          "source_url": "https://blog.google/intl/ko-kr/company-news/technology/notebooklm-gemini-notebook/",
+          "sha256": "5445cd2463551ffde793bd4a835935be22385c86fde13ec12d85e3b49a01e553"
         }
       ]
     },
@@ -5135,36 +5162,45 @@
     },
     {
       "date": "2026-11-13",
-      "title": "컨텐츠 340 · 행사 캠페인은 배너보다 기획안 빈칸에서 먼저 멈춤.",
+      "title": "컨텐츠 340 · GPT한테 잘 써줘 한마디만 하면 사장님 글이 다 비슷비슷하게 나옴",
+      "previous_title": "컨텐츠 340 · 행사 캠페인은 배너보다 기획안 빈칸에서 먼저 멈춤.",
       "type": "marketing",
-      "target": "행사 캠페인을 여러 채널에 준비하는 대표",
-      "fmt": "병목 추적형",
+      "target": "매일 글을 쓰는 온라인 판매자",
+      "fmt": "프롬프트 모음",
       "format": "case_thread",
-      "body": "행사 캠페인은 배너보다 기획안 빈칸에서 먼저 멈춤.\n\nHustle to AI 라운지 정리본은\n가상 양초 브랜드 자료를 Cowork에 넣고\n노션 기획안→캔바 배너→HubSpot 준비로\n이어가는 캠페인 시연을 소개함.",
+      "editorial_kind": "easy_news",
+      "body": "GPT한테 잘 써줘 한마디만 하면 사장님 글이 다 비슷비슷하게 나옴\n\n매일 쓰는 글 5개\n복붙만 하면 되는 프롬프트로 만들어둠\n\n1. 리뷰 답글\n2. 상세페이지 첫 문장\n3. 공지문\n4. 고객 문의 답변\n5. 인스타 캡션\n\n이미지로도 뽑아놨으니 저장해두셈",
       "replies": [
-        "1. 처음 넣은 자료는 브랜드 설명, 상품 이미지, 배너 작업 지침이었음.\n고객층·상품·전할 메시지를 나눠두고 Cowork가 참고할 프로젝트를 만들었음.\n\n결과를 볼 때도 실제 상품과 메시지가 맞는지 이 자료와 대조함.",
-        "2. Cowork는 행사 시점과 판매 방향을 추가로 물었다고 함.\n그 답을 받아 노션에 행사 방향, 고객층, 제안 내용, 이메일 초안, 채널별 일정을 만들었음.\n\n가상 브랜드 조건은 실제 캠페인에 그대로 가져오면 안 됨.",
-        "3. 기획안에서 일반 텍스트로 잡힌 이메일에는 배너를 만들지 않았음.\n배너가 필요한 이메일만 캔바로 넘겨 시안을 받고, 선택한 안은 직접 수정함.\n\n출력 확인 항목은 문구, 상품 이미지, 행사 내용, 이미지 배치였음.",
-        "4. HubSpot 연결에는 분명한 빈칸이 있었음.\n시연 당시 마케팅 이메일을 직접 만드는 선택지가 없어 문구와 배너를 사람이 옮겨야 했다고 함.\n\nBlotato 게시 연결도 기능 소개였지, 실제 게시 완료 장면은 아니었음.",
-        "5. 라운지 정리본의 시작 제안은 행사 하나만 고르는 것임.\n상품 설명과 기존 이미지를 넣고 캠페인 일정표부터 받은 뒤 조건과 메시지를 확인함.\n\n확인이 끝난 항목만 배너와 게시물 제작으로 넘기는 순서임."
+        "1. 리뷰 답글\n\n아래 리뷰에 사장님 답글 써 줘.\n리뷰에 나온 상품 이름을 한 번은 꼭 넣고\n칭찬이면 짧게, 불만이면 사과하고 해결 방법을 적어 줘.\n세 줄 넘기지 마.",
+        "2. 상세페이지 첫 문장\n\n아래 상품 정보로 상세페이지 첫 문장 10개 써 줘.\n절반은 손님이 겪는 불편으로 시작하고\n절반은 써보면 달라지는 장면으로 시작해 줘.\n최고, 1등 같은 과장 표현은 빼 줘.",
+        "3. 공지문\n\n아래 내용으로 단골 손님한테 보낼 공지 써 줘.\n날짜, 바뀌는 점, 손님이 할 일 순서로\n다섯 줄 안에 끝내 줘.",
+        "4. 고객 문의 답변\n\n아래 문의에 답장 써 줘.\n내가 준 가격표랑 정책 안에서만 답하고\n모르는 건 확인하고 다시 연락드린다고 써 줘.",
+        "5. 인스타 캡션\n\n아래 사진 설명으로 인스타 캡션 3개 써 줘.\n첫 줄은 손님이 멈춰서 볼 문장으로 쓰고\n해시태그는 다섯 개만 달아 줘."
       ],
-      "link_comment": "업무에 적용할 순서와 확인할 내용을 정리한 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/tlHpQ7EBVHk",
+      "link_comment": "클로드로 콘텐츠 기획부터 정리까지 하는 법 정리해둔 노트\n\nhttps://lounge.aimax.ai.kr/worldclass/xEyQub_fDjg",
       "sources": [
         {
-          "url": "https://lounge.aimax.ai.kr/worldclass/tlHpQ7EBVHk",
-          "title": "마케팅 캠페인 기획부터 콘텐츠 제작까지 Cowork로 연결하는 방법",
-          "published_at": null,
-          "collected_at": "2026-11-08T09:00:49.738356+09:00",
-          "verified_at": "2026-11-08T09:05:14.813998+09:00"
+          "url": "https://www.threads.com/@k__j__min/post/Dd3EZW7is0t",
+          "title": "k__j__min Threads 게시물 (GPT 글쓰기 프롬프트 7개)",
+          "published_at": "2026-09-29T06:01:54+00:00",
+          "collected_at": "2026-11-09T18:32:21+09:00",
+          "verified_at": "2026-11-09T18:32:21+09:00"
+        },
+        {
+          "url": "https://x.com/dopamine_crypto/status/2119199466565824535",
+          "title": "도파민 X 게시물 (프롬프트를 대충 던지면 생기는 일)",
+          "published_at": "2026-11-07T22:45:00+00:00",
+          "collected_at": "2026-11-09T18:32:21+09:00",
+          "verified_at": "2026-11-09T18:32:21+09:00"
         }
       ],
       "main_images": [
         {
-          "src": "/thread-img/auto-drop-maintenance-20261108-090008-2026-11-13-1.jpg",
-          "alt": "Hustle to AI의 원본 영상 장면 · 관련 업무 참고 화면, 파트너의 직접 실행 결과 아님",
-          "credit": "Hustle to AI · 원본 영상 참고 화면",
-          "source_url": "https://youtu.be/tlHpQ7EBVHk",
-          "sha256": "0b0032948d1f14fdfc6b0a6fb8372b9a3e88ef401b7eed794a0fd91e0956c03a"
+          "src": "/thread-img/fp-easy-20261113-D.png",
+          "alt": "메이크패밀리 제작 프롬프트 정리 이미지 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "메이크패밀리 제작 프롬프트 정리 이미지",
+          "source_url": "https://www.threads.com/@k__j__min/post/Dd3EZW7is0t",
+          "sha256": "574b6b806d5c17329715366bb8970d6415493d117a486fd85cf9ae9bfde5d238"
         }
       ]
     },
@@ -5311,157 +5347,6 @@
       ],
       "supplemental": true,
       "editorial_kind": "original_guidance"
-    },
-    {
-      "date": "2026-11-14",
-      "title": "컨텐츠 345 · 한글 파일 AI한테 못 읽혀서 복붙하고 있었으면 이거 보셈",
-      "type": "ai",
-      "target": "한글 서류를 AI로 다루려는 사장님",
-      "fmt": "깃허브 도구 소개",
-      "format": "case_thread",
-      "editorial_kind": "easy_news",
-      "body": "한글 파일 AI한테 못 읽혀서 복붙하고 있었으면 이거 보셈\n\n깃허브 별 2,900개 넘은 kordoc\nHWP, HWPX, PDF, 엑셀, 스캔본까지\nAI가 읽을 수 있는 글로 바꿔줌\n\n지원사업 양식이나 공문처럼\n한글 파일로 오는 서류 많은 사장님한테 쓸만함\n\n설치랑 쓰는 법은 댓글에 적어둠",
-      "replies": [
-        "1. 뭘 해주는 도구인지\n\n한글 문서를 읽고 고치고 새로 쓰는 도구임\nHWP 파일을 마크다운으로 바꾸고\n반대로 마크다운을 HWPX로도 만들어줌\n양식 채우기랑 공문서 검수 기능도 있음\nMIT 라이선스 오픈소스라 무료임",
-        "2. 제일 쉬운 사용법\n\n클로드 데스크톱이나 클로드 코드 쓰는 사람은\n터미널에 이 한 줄만 넣으면 됨\n\nnpx -y kordoc setup\n\n설치된 AI 앱에 알아서 연결되고\n앱 껐다 켜면 바로 쓸 수 있음",
-        "3. 연결한 다음 이렇게 시키면 됨\n\n이 한글 파일 읽고 핵심만 정리해 줘.\n\n이 지원사업 양식에 내 사업 내용 채워서 HWPX로 만들어 줘.\n\n고친 버전이랑 원본 비교해서 바뀐 데 알려 줘.",
-        "4. 변환만 하고 싶을 때\n\nnpx kordoc 문서.hwpx -o 문서.md\n\n이러면 한글 파일이 마크다운으로 바뀜\n그대로 GPT나 제미나이에 붙여넣으면 끝",
-        "5. 알아둘 거\n\nnpx 쓰려면 컴퓨터에 Node.js가 깔려 있어야 함\nAI가 채운 양식은 초안일 뿐이라\n제출 전에 내용은 꼭 직접 확인하셈"
-      ],
-      "link_comment": "깃허브 주소\n\nhttps://github.com/chrisryugj/kordoc",
-      "sources": [
-        {
-          "url": "https://github.com/chrisryugj/kordoc",
-          "title": "GitHub - chrisryugj/kordoc",
-          "published_at": null,
-          "collected_at": "2026-11-09T17:41:16+09:00",
-          "verified_at": "2026-11-09T17:41:16+09:00"
-        }
-      ],
-      "main_images": [
-        {
-          "src": "/thread-img/fp-easy-20261114-A.png",
-          "alt": "chrisryugj/kordoc 깃허브 저장소 화면 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
-          "credit": "chrisryugj/kordoc 깃허브 저장소 화면",
-          "source_url": "https://github.com/chrisryugj/kordoc",
-          "sha256": "97a1d52f3a6d5f2590e1f09c4117352b44e5c1d2d0c46cb94c563f037e28e227"
-        }
-      ]
-    },
-    {
-      "date": "2026-11-14",
-      "title": "컨텐츠 346 · 클로드 만든 회사가 직접 올린 AI 강의 무료로 듣고 수료 배지까지 받는 법",
-      "type": "evergreen",
-      "target": "클로드를 처음 배우려는 사장님",
-      "fmt": "무료 강의 소개",
-      "format": "case_thread",
-      "editorial_kind": "easy_news",
-      "body": "클로드 만든 회사가 직접 올린 AI 강의 무료로 듣고 수료 배지까지 받는 법\n\nAnthropic 공식 강의 사이트에\n클로드 기초부터 클로드 코드까지\n강의가 20개 올라와 있고\n사이트도 한국어로 나옴\n\n사장님이면 이 순서로 들으셈\n\n1. Claude 101\n2. Claude Cowork 소개\n3. AI Fluency: Framework and foundations\n\n듣는 법이랑 강의별 내용은 댓글에 적어둠",
-      "replies": [
-        "1. 어디서 듣는지\n\nAnthropic Academy 사이트 들어가서\n로그인하면 바로 들을 수 있음\n강의 끝에 퀴즈 하나 풀면 수료 배지 나옴\n\n예전 강의 사이트는 12월 초에 닫힌다고 공지 떠 있음\n주소는 마지막 댓글에 남겨둠",
-        "2. Claude 101\n\n클로드로 평소 업무 보는 법이랑\n핵심 기능 알려주는 입문 강의\n13강에 2시간 반 정도라\n클로드 처음이면 여기서 시작하면 됨",
-        "3. Claude Cowork 소개\n\n내 파일이랑 프로젝트 그대로 가지고\n클로드랑 같이 일하는 법 배우는 실습 강의\n플러그인, 스킬, 파일 작업까지 나옴\n\n공지 보니까 Cowork는 이제 클로드에 합쳐졌음\n배운 건 클로드에서 바로 쓰면 됨",
-        "4. AI Fluency: Framework and foundations\n\nAI한테 뭘 맡기고 어떻게 설명하고\n결과를 어떻게 걸러낼지 다루는 강의\n셋 중에 제일 긴 4시간짜리라\n도구보다 AI 쓰는 기준을 잡고 싶을 때 들으셈",
-        "5. 듣는 요령\n\n한 번에 몰아 듣지 말고\n하루 한 강의씩만 들은 다음\n그날 바로 내 일에 하나 써보셈"
-      ],
-      "link_comment": "Anthropic 공식 강의 목록\n\nhttps://academy.claude.com/courses",
-      "sources": [
-        {
-          "url": "https://academy.claude.com/courses",
-          "title": "Claude Academy 강좌",
-          "published_at": null,
-          "collected_at": "2026-11-09T17:41:16+09:00",
-          "verified_at": "2026-11-09T17:41:16+09:00"
-        }
-      ],
-      "main_images": [
-        {
-          "src": "/thread-img/fp-easy-20261114-B.png",
-          "alt": "Claude Academy 강좌 목록 화면 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
-          "credit": "Claude Academy 강좌 목록 화면",
-          "source_url": "https://academy.claude.com/courses",
-          "sha256": "2bb73ca67dbeac6adae0e0947b970698c0c76ddf87b3f4b4782c550be63ee3d0"
-        }
-      ]
-    },
-    {
-      "date": "2026-11-14",
-      "title": "컨텐츠 347 · 노트북LM 이제 제미나이 노트북으로 이름 바뀌었음",
-      "type": "evergreen",
-      "target": "자료 정리를 AI에 맡기려는 사장님",
-      "fmt": "기능 사용법",
-      "format": "case_thread",
-      "editorial_kind": "easy_news",
-      "body": "노트북LM 이제 제미나이 노트북으로 이름 바뀌었음\n\n일반 제미나이는 인터넷에서 찾아주고\n제미나이 노트북은 내가 넣은 자료 안에서 찾아줌\n\n그래서 상품 설명서, 업종 뉴스,\n지원사업 공고문 넣어두고 물어보면\n그 안에서 답해줌\n\n사장님이 바로 써먹을 질문은 아래에 정리해둠",
-      "replies": [
-        "1. 자료 넣는 법\n\n제미나이 노트북 들어가서 새 노트북 만들고\nPDF, 구글 문서, 웹사이트 주소,\n유튜브 링크 같은 걸 넣으면 됨",
-        "2. 업종 뉴스 스크랩북\n\nX에서 공룡선배라는 분이 올린 방법인데\n관심 산업 기사 링크 5~10개를 노트북에 넣고\n기사별 핵심 내용이랑 공통 트렌드 3가지를\n정리해달라고 하는 거임\n\n사장님도 자기 업종 기사로 똑같이 해두면\n매주 업계 흐름을 한 번에 볼 수 있음",
-        "3. 상품 설명서 넣었을 때\n\n이 자료에서 고객이 많이 물어볼 질문 10개랑 답을 뽑아 줘.\n답마다 자료 어디에서 가져왔는지 표시해 줘.",
-        "4. 지원사업 공고문 넣었을 때\n\n이 공고에서 신청 자격, 마감일, 제출 서류만 표로 정리해 줘.\n놓치기 쉬운 조건이 있으면 따로 적어 줘.",
-        "5. 알아둘 거\n\n넣은 자료에 없는 내용은\n답을 못 하거나 틀릴 수 있음\n자료가 옛날 거면 답도 옛날 거라\n가격표나 공고는 최신 걸로 바꿔 넣으셈"
-      ],
-      "link_comment": "구글 공식 안내\n\nhttps://blog.google/intl/ko-kr/company-news/technology/notebooklm-gemini-notebook/",
-      "sources": [
-        {
-          "url": "https://blog.google/intl/ko-kr/company-news/technology/notebooklm-gemini-notebook/",
-          "title": "이제 노트북LM이 제미나이 노트북이라는 새로운 이름으로 찾아옵니다",
-          "published_at": null,
-          "collected_at": "2026-11-09T17:41:16+09:00",
-          "verified_at": "2026-11-09T17:41:16+09:00"
-        },
-        {
-          "url": "https://x.com/geminosaurus_/status/2118719902588825846",
-          "title": "공룡선배 X 게시물 (제미나이 노트북 산업 뉴스 스크랩북)",
-          "published_at": "2026-11-06T06:29:58+00:00",
-          "collected_at": "2026-11-09T17:41:16+09:00",
-          "verified_at": "2026-11-09T17:41:16+09:00"
-        }
-      ],
-      "main_images": [
-        {
-          "src": "/thread-img/fp-easy-20261114-C.png",
-          "alt": "구글 코리아 블로그 제미나이 노트북 발표 화면 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
-          "credit": "구글 코리아 블로그 제미나이 노트북 발표 화면",
-          "source_url": "https://blog.google/intl/ko-kr/company-news/technology/notebooklm-gemini-notebook/",
-          "sha256": "5445cd2463551ffde793bd4a835935be22385c86fde13ec12d85e3b49a01e553"
-        }
-      ]
-    },
-    {
-      "date": "2026-11-14",
-      "title": "컨텐츠 348 · GPT한테 잘 써줘 한마디만 하면 사장님 글이 다 비슷비슷하게 나옴",
-      "type": "marketing",
-      "target": "매일 글을 쓰는 온라인 판매자",
-      "fmt": "프롬프트 모음",
-      "format": "case_thread",
-      "editorial_kind": "easy_news",
-      "body": "GPT한테 잘 써줘 한마디만 하면 사장님 글이 다 비슷비슷하게 나옴\n\n매일 쓰는 글 5개\n복붙만 하면 되는 프롬프트로 만들어둠\n\n1. 리뷰 답글\n2. 상세페이지 첫 문장\n3. 공지문\n4. 고객 문의 답변\n5. 인스타 캡션\n\n이미지로도 뽑아놨으니 저장해두셈",
-      "replies": [
-        "1. 리뷰 답글\n\n아래 리뷰에 사장님 답글 써 줘.\n리뷰에 나온 상품 이름을 한 번은 꼭 넣고\n칭찬이면 짧게, 불만이면 사과하고 해결 방법을 적어 줘.\n세 줄 넘기지 마.",
-        "2. 상세페이지 첫 문장\n\n아래 상품 정보로 상세페이지 첫 문장 10개 써 줘.\n절반은 손님이 겪는 불편으로 시작하고\n절반은 써보면 달라지는 장면으로 시작해 줘.\n최고, 1등 같은 과장 표현은 빼 줘.",
-        "3. 공지문\n\n아래 내용으로 단골 손님한테 보낼 공지 써 줘.\n날짜, 바뀌는 점, 손님이 할 일 순서로\n다섯 줄 안에 끝내 줘.",
-        "4. 고객 문의 답변\n\n아래 문의에 답장 써 줘.\n내가 준 가격표랑 정책 안에서만 답하고\n모르는 건 확인하고 다시 연락드린다고 써 줘.",
-        "5. 인스타 캡션\n\n아래 사진 설명으로 인스타 캡션 3개 써 줘.\n첫 줄은 손님이 멈춰서 볼 문장으로 쓰고\n해시태그는 다섯 개만 달아 줘."
-      ],
-      "link_comment": "클로드로 콘텐츠 기획부터 정리까지 하는 법 정리해둔 노트\n\nhttps://lounge.aimax.ai.kr/worldclass/xEyQub_fDjg",
-      "sources": [
-        {
-          "url": "https://www.threads.com/@k__j__min/post/Dd3EZW7is0t",
-          "title": "k__j__min Threads 게시물 (GPT 글쓰기 프롬프트 7개)",
-          "published_at": "2026-09-29T06:01:54+00:00",
-          "collected_at": "2026-11-09T17:41:16+09:00",
-          "verified_at": "2026-11-09T17:41:16+09:00"
-        }
-      ],
-      "main_images": [
-        {
-          "src": "/thread-img/fp-easy-20261114-D.png",
-          "alt": "메이크패밀리 제작 프롬프트 정리 이미지 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
-          "credit": "메이크패밀리 제작 프롬프트 정리 이미지",
-          "source_url": "https://www.threads.com/@k__j__min/post/Dd3EZW7is0t",
-          "sha256": "574b6b806d5c17329715366bb8970d6415493d117a486fd85cf9ae9bfde5d238"
-        }
-      ]
     }
   ],
   "_작성기준": "글감 작성 전 AGENTS.md와 config/brands/makefamily.md의 최신 사용자 기준을 읽는다. 과거 루틴 문구와 충돌하면 최신 사용자 기준을 적용한다."
