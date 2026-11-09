@@ -4707,106 +4707,126 @@
     },
     {
       "date": "2026-11-11",
-      "title": "컨텐츠 327 · N8N 노드 이름 바꿨다가 조용히 빈값이 흘렀다고 함.",
+      "title": "컨텐츠 327 · 클로드에 도구 24개 다 깔 필요 없음 사장님은 4개면 됨",
+      "previous_title": "컨텐츠 327 · N8N 노드 이름 바꿨다가 조용히 빈값이 흘렀다고 함.",
       "type": "ai",
-      "target": "N8N 워크플로 유지보수",
-      "fmt": "고장 추적형",
+      "target": "클로드에 뭘 깔지 고르는 쇼핑몰 사장님",
+      "fmt": "도구 골라주기",
       "format": "case_thread",
-      "body": "N8N 노드 이름 바꿨다가 조용히 빈값이 흘렀다고 함.\n\n레딧의 u/omert-dev는\n이름 참조가 깨진 지점을 찾으려고\n읽기 전용 CLI flownav를 만들었음.\n실행 오류가 안 나는 고장을 겨냥한 사례다.",
+      "editorial_kind": "easy_news",
+      "body": "클로드에 도구 24개 다 깔 필요 없음 사장님은 4개면 됨\n\nX에서 피드노트라는 분이\n클로드에 깔 만한 도구 24개를 정리했는데\n개발용, 법률용, 투자용까지 섞여 있음\n\n그중에 가게나 쇼핑몰 하는 사장님이\n바로 쓸 만한 것만 추려봄\n\n1. marketingskills\n2. frontend-design\n3. doc-skills\n4. notion\n\n뭐 하는 건지랑 까는 법은 댓글에 적어둠",
       "replies": [
-        "1. 이름 변경 뒤 어디가 깨졌나\n\n원작성자는 노드 이름을 바꾼 뒤 아래쪽 expression이 깨졌는데, 실행은 멈추지 않고 빈값으로 흘렀다고 적었음.\n\n편집기의 이름 변경 갱신이 Code node JavaScript까지는 다루지 못하는 듯했고, API나 AI agent가 JSON을 고친 경우엔 그 단계 자체가 없다고 설명함.",
-        "2. 바꾸기 전에 참조부터 뽑음\n\n`flownav affected \"Node\" --rename`에 바꿀 노드 이름을 넣고 확인하면, expression과 Code node에서 그 이름을 참조하는 노드와 parameter를 목록으로 보여준다고 함.\n\n이름 변경 전후에 같은 목록을 대조하는 방식이다.",
-        "3. 점검 결과도 따로 나옴\n\n원작성자 설명상 `flownav check`는 끊어진 참조, 닿지 않는 노드, 빠진 오류 처리를 찾음.\n\n하위 workflow·tool workflow·error workflow 사이의 호출도 지도처럼 연결하고, AI agent에는 전체 JSON 대신 필요한 맥락만 건네는 MCP server도 포함했다고 함.",
-        "4. 배포 검사는 아직 계획 단계임\n\n댓글 작성자 u/Saved_Not_Soft가 배포 전에 빠르게 돌려봤는지 물었음.\n\n원작성자 u/omert-dev는 수동 변경 전에는 `affected --rename`, 배포 단계에는 끊어진 참조가 있으면 `check`가 실패하도록 할 계획이지만 실제 배포 단계에서는 아직 돌리지 않았다고 답함.",
-        "5. 자기 환경 밖에서는 더 확인해야 함\n\n원작성자는 아직 자기 인스턴스에서만 시험했다고 밝혔음.\n\n잘못 읽힌 항목이 나오면 민감한 값을 뺀 export를 GitHub issue에 보내달라고 했으니, 다른 workflow에서도 같은 결과가 난다고 일반화하면 안 됨."
+        "1. marketingskills\n\n카피, 구매 전환, 검색 노출, 이메일, SNS 글까지\n마케팅 일을 잘게 나눠둔 스킬 묶음임\n깃허브에 스킬 폴더만 53개 있고\nMIT 라이선스라 무료임\n\n처음에 product-marketing 스킬로\n내 상품이랑 손님 정보를 정리해두면\n나머지 스킬이 그걸 먼저 읽고 일함",
+        "2. marketingskills 까는 법\n\n클로드 코드 쓰는 사람은 이 두 줄 넣으면 됨\n\n/plugin marketplace add coreyhaines31/marketingskills\n/plugin install marketing-skills\n\n깔고 나서 이렇게 시키면 됨\n\n내 가게 상품이랑 단골 손님 특징을 하나씩 물어보고 마케팅 기본 문서부터 만들어 줘.",
+        "3. frontend-design\n\nAI가 만든 티 나는 디자인을 손봐주는 스킬임\n상세페이지나 이벤트 페이지 시안 뽑을 때\n같이 켜두면 됨",
+        "4. doc-skills랑 notion\n\ndoc-skills는 워드, PDF, 엑셀, PPT 파일을 만들어줌\n견적서나 제안서를 파일로 바로 뽑을 때 쓸만함\n\nnotion은 클로드가 노션 문서랑 DB를\n읽고 쓰게 연결해주는 거임\n주문표나 할 일 목록을 노션에 두는 사장님이면 편함",
+        "5. 까는 순서\n\n피드노트님도 뭐부터 깔지 모르겠으면\nmarketingskills, frontend-design, notion 순서로 깔라고 적어둠\n\n원글 댓글에 24개 깔아놓고 실제로 쓰는 건 2개라는 말도 있음\n이번 주에 쓸 일 있는 거 하나만 먼저 깔고 써보셈"
       ],
-      "link_comment": "관련 업무를 더 살펴볼 활용노트.\n레딧 사례의 배포 파일과는 다른 참고 자료임.\n\nhttps://lounge.aimax.ai.kr/worldclass/U3hkpQzgpoM",
+      "link_comment": "24개 전체 목록 원글\n\nhttps://x.com/feednote_X/status/2119138564172890142",
       "sources": [
         {
-          "url": "https://www.reddit.com/r/n8n/comments/1xoqg5q/i_renamed_an_n8n_node_and_something_downstream/",
-          "title": "I renamed an n8n node and something downstream broke silently, so I built a free tool that lists what references a node by name",
-          "published_at": "2026-11-05T18:35:18.534Z",
-          "collected_at": "2026-11-06T09:00:53.279123+09:00",
-          "verified_at": "2026-11-06T09:09:58.444637+09:00"
+          "url": "https://x.com/feednote_X/status/2119138564172890142",
+          "title": "X @feednote_X 클로드에 꼭 설치해야 하는 24가지 도구",
+          "published_at": "2026-11-07T18:43:00+00:00",
+          "collected_at": "2026-11-09T18:58:53+09:00",
+          "verified_at": "2026-11-09T18:58:53+09:00"
+        },
+        {
+          "url": "https://github.com/coreyhaines31/marketingskills",
+          "title": "coreyhaines31/marketingskills (GitHub)",
+          "published_at": null,
+          "collected_at": "2026-11-09T18:58:53+09:00",
+          "verified_at": "2026-11-09T18:58:53+09:00"
         }
       ],
       "main_images": [
         {
-          "src": "/thread-img/auto-drop-maintenance-20261106-090009-2026-11-11-0.png",
-          "alt": "I renamed an n8n node and something downstream broke silently, so I built a free tool that lists what references a node by name",
-          "credit": "omert-dev · Reddit 원문 화면",
-          "source_url": "https://www.reddit.com/r/n8n/comments/1xoqg5q/i_renamed_an_n8n_node_and_something_downstream/",
-          "sha256": "dff1cd72e486a3c6b4b48385dee2f7ff0abc454f5e30c2bfa09e46a7b3df6ca8"
+          "src": "/thread-img/fp-easy-20261111-E1.png",
+          "alt": "coreyhaines31/marketingskills 깃허브 README 화면 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "coreyhaines31/marketingskills 깃허브 README 화면",
+          "source_url": "https://github.com/coreyhaines31/marketingskills",
+          "sha256": "f758213fd6196044fb36f1394490c845a5b33635cbe9f317c0773855ca2c03d0"
         }
       ]
     },
     {
       "date": "2026-11-11",
-      "title": "컨텐츠 328 · 제안서 초안 맡겼는데 계속 옆에서 설명 중이면 위임이 아님.",
+      "title": "컨텐츠 328 · 유튜브 강의 결제하기 전에 이 무료 스킬 11개부터 보셈",
+      "previous_title": "컨텐츠 328 · 제안서 초안 맡겼는데 계속 옆에서 설명 중이면 위임이 아님.",
       "type": "marketing",
-      "target": "제안서 초안 위임",
-      "fmt": "입출력 위임형",
+      "target": "유튜브로 가게 홍보하려는 사장님",
+      "fmt": "깃허브 저장소 소개",
       "format": "case_thread",
-      "body": "제안서 초안 맡겼는데 계속 옆에서 설명 중이면 위임이 아님.\n\n라운지 정리본 속 Owen은\nLinear 업무를 Claude에 배정하고\n공통 저장소의 사업 정보와 절차를 읽혀\n반복 업무를 하위 작업으로 나눴음.",
+      "editorial_kind": "easy_news",
+      "body": "유튜브 강의 결제하기 전에 이 무료 스킬 11개부터 보셈\n\nX에서 도파민이라는 분이 올린 저장소인데\n이름은 youtube-agent-skill\n\n대본, 제목이랑 썸네일, 편집 목록,\n쇼츠 자르기까지\n유튜브 일을 11개로 쪼개서 클로드한테 맡기는 방식임\n\n깃허브 별 5,200개 넘었고\nMIT 라이선스라 무료임\n\n가게 홍보 채널 굴리는 사장님한테 쓸만함\n까는 법이랑 스킬별 역할은 댓글로 정리함",
       "replies": [
-        "1. 연결은 이름 배정으로 끝나지 않음\n\nOwen의 구성은 Linear 업무를 Claude에 배정하면 webhook이 클라우드의 Claude Code 작업을 실행함.\n\n호출용 HTTP header를 넘기려고 Cloudflare Worker도 중간에 둠. Linear에 AI 이름만 추가하면 같은 흐름이 생기는 구조는 아님.",
-        "2. 고객 등록은 입력과 결과를 같이 적음\n\n입력은 고객명, 프로젝트 정보, 시작 시점, 담당자 email임.\n\nClaude가 Google Drive folder와 Linear project를 만들고 CRM에 고객을 추가한 뒤 환영 email 초안을 남겼다고 정리돼 있음. 완료한 하위 작업과 결과 link도 업무에 기록함.",
-        "3. 제안서는 검토할 초안으로 받음\n\n회의 기록과 제안서 양식을 넣고 고객의 문제, 목표, 작업 범위, 일정, 가격이 맞는지 확인하는 흐름임.\n\n초안에는 현황과 과제, 목표, 범위, 납품 계획, 가격과 결제 정보가 들어갔고, Owen은 사람이 검토하고 고치는 걸 전제로 설명함.",
-        "4. 반복 순서는 문서로 남김\n\nOwen은 맡길 업무 목록을 `index.md`에 모으고, 자세한 절차는 별도 문서와 skill로 관리함.\n\n제안서는 양식 복사 → 고객 정보 입력 → 불필요한 내용 삭제 → 정확성을 확인하고 사람에게 검토를 요청하는 순서로 적어둠.",
-        "5. 실패 이유도 다음 지침에 넣음\n\nLinkedIn 게시물과 infographic 작업에서는 upload 권한이 부족했고 문서 서식도 좋지 않았음.\n\nOwen은 서식 규칙과 상태 갱신 지침을 고쳤음. 다만 평소 게시글은 직접 쓴다고 밝혀, 시연 기능과 실제 선호 방식은 구분해야 함."
+        "1. 까는 법\n\n클로드에 깃허브 주소 붙여넣고\n이렇게 한 줄 시키면 됨\n\n이 저장소 스킬 설치하고 /yt-script 되는지 확인해 줘.\n\n클로드 코드면 플러그인으로도 깔림\n\n/plugin marketplace add Jakeschincariol/youtube-agent-skill\n/plugin install youtube-agent",
+        "2. 깔고 제일 먼저 할 거\n\ntemplates 폴더에 있는 voice.md를 채우는 거임\n내 말투를 적어두는 파일인데\n스킬 11개가 전부 이 파일을 읽음\n\n직접 쓰기 귀찮으면 이렇게 시키셈\n\n내 영상 대본 3개 줄 테니까 이걸로 내 말투 정리해서 voice.md 써 줘.",
+        "3. 사장님이 먼저 써볼 4개\n\n/yt-script\n아이디어 하나로 대본 써줌\n훅 공식 21개로 첫 문장 5개 뽑고 점수까지 매김\n\n/yt-package\n제목이랑 썸네일 문구를 한 세트로 묶어서 검사함\n\n/yt-shorts\n긴 영상 안에 숨어 있는 쇼츠를 찾아주고\n쇼츠마다 첫 줄을 새로 써줌\n\n/yt-comment\n댓글을 4갈래로 나누고 내 말투로 답글 써줌\n고정할 댓글도 골라줌",
+        "4. 나머지 7개\n\n/yt-edit 녹취록 넣으면 빈 구간이랑 다시 찍은 부분을 시간까지 찍어줌\n/yt-retention 시청자가 몇 초에서 나갔는지 찾아줌\n/yt-plan 내가 쓸 수 있는 시간에 맞춰 한 주 계획 짜줌\n/yt-seo 설명란이랑 태그\n/yt-chapters 챕터 만들기\n/yt-viral 내 분야에서 잘 되는 영상 찾기\n/yt-audit 채널 전체 보고 고칠 거 딱 하나만 알려줌",
+        "5. 알아둘 거\n\n이 스킬은 글만 써주고 업로드는 안 함\n올리는 건 직접 해야 함\n\n만든 사람도 훅 점수는 참고용이지\n조회수 예측은 아니라고 적어둠\n찍는 것도 결국 사람 몫임"
       ],
-      "link_comment": "업무에 적용할 순서와 확인할 내용을 정리한 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/pZkMTrKb8_4",
+      "link_comment": "깃허브 주소\n\nhttps://github.com/Jakeschincariol/youtube-agent-skill",
       "sources": [
         {
-          "url": "https://lounge.aimax.ai.kr/worldclass/pZkMTrKb8_4",
-          "title": "고객 등록부터 제안서 초안까지, AI에게 반복 업무를 맡기는 방법",
+          "url": "https://github.com/Jakeschincariol/youtube-agent-skill",
+          "title": "Jakeschincariol/youtube-agent-skill (GitHub)",
           "published_at": null,
-          "collected_at": "2026-11-06T09:00:53.279123+09:00",
-          "verified_at": "2026-11-06T09:09:58.821190+09:00"
+          "collected_at": "2026-11-09T18:58:53+09:00",
+          "verified_at": "2026-11-09T18:58:53+09:00"
+        },
+        {
+          "url": "https://x.com/dopamine_crypto/status/2118644566987526434",
+          "title": "X @dopamine_crypto youtube-agent-skill 소개",
+          "published_at": "2026-11-06T10:00:01+00:00",
+          "collected_at": "2026-11-09T18:58:53+09:00",
+          "verified_at": "2026-11-09T18:58:53+09:00"
         }
       ],
       "main_images": [
         {
-          "src": "/thread-img/auto-drop-maintenance-20261106-090009-2026-11-11-1.jpg",
-          "alt": "Owain Lewis의 원본 영상 장면 · 관련 업무 참고 화면, 파트너의 직접 실행 결과 아님",
-          "credit": "Owain Lewis · 원본 영상 참고 화면",
-          "source_url": "https://youtu.be/pZkMTrKb8_4",
-          "sha256": "92e217aa1c15a773a61f659f86e59538ea3ec254c7bed8fde694e48eb4ee5582"
+          "src": "/thread-img/fp-easy-20261111-E2.png",
+          "alt": "Jakeschincariol/youtube-agent-skill 깃허브 README 화면 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "Jakeschincariol/youtube-agent-skill 깃허브 README 화면",
+          "source_url": "https://github.com/Jakeschincariol/youtube-agent-skill",
+          "sha256": "fbe15f594ce46b0572d7e6edad7ddec8751be2423100691560dd9ecf912e8ff7"
         }
       ]
     },
     {
       "date": "2026-11-11",
-      "title": "컨텐츠 329 · 환불 문의까지 AI에 주려면 조회와 기록부터 갈라야 함.",
+      "title": "컨텐츠 329 · 클로드한테 매일 같은 설명 붙여넣고 있으면 스킬로 만들어두셈",
+      "previous_title": "컨텐츠 329 · 환불 문의까지 AI에 주려면 조회와 기록부터 갈라야 함.",
       "type": "evergreen",
-      "target": "고객 응대 권한 설계",
-      "fmt": "승인 경계형",
+      "target": "AI한테 매일 같은 설명을 반복하는 사장님",
+      "fmt": "따라 하는 3단계",
       "format": "case_thread",
-      "body": "환불 문의까지 AI에 주려면 조회와 기록부터 갈라야 함.\n\n라운지 정리본의 제작자는\nN8N에 Gemini·Gmail·주문 시트를 연결하고\n조회는 AI가, 환불 기록은\n담당자 승인 뒤에 움직이게 만들었음.",
+      "editorial_kind": "easy_news",
+      "body": "클로드한테 매일 같은 설명 붙여넣고 있으면 스킬로 만들어두셈\n\nX에서 루샨이라는 분이\n클로드 코드랑 코덱스에서\n나만의 스킬 만드는 법을 길게 정리해뒀음\n\n스킬은 AI가 필요할 때 꺼내 보는\n업무 매뉴얼 같은 거임\n폴더 하나에 SKILL.md 파일 하나가 전부라\n코딩 몰라도 만들 수 있음\n\n말로 만드는 순서는 아래 댓글에 이어서 씀",
       "replies": [
-        "1. 시트부터 읽기와 쓰기로 나눔\n\n주문 시트 입력칸은 주문번호, 고객, 상품, 상태, 배송일, 배송지, 결제금액임.\n\n환불 시트 출력칸은 날짜, 주문번호, 금액, 사유, 상태로 구성함. 주문 원본을 고치는 기능은 주지 않고 환불 시트에 행을 더하는 도구만 승인 뒤에 붙였음.",
-        "2. 조회가 맞은 뒤 기억을 연결함\n\n채팅 입력 → AI agent → Gemini → 주문 조회 도구 순서로 붙이고, 주문번호가 정확한 행을 찾는지 먼저 봄.\n\n그다음 같은 채팅의 대화 기억을 연결함. 새 채팅에서는 주문번호를 다시 물었으니, 기억 범위가 모든 고객 대화로 이어진다고 보면 안 됨.",
-        "3. 승인 메일엔 판단값이 보여야 함\n\n환불 요청이 오면 주문을 조회한 뒤 Gmail 승인 단계에서 멈춤.\n\n메일에는 주문번호, 금액, 사유가 보여야 하고, 승인 뒤에만 환불 시트에 기록함. 이 시연이 확인한 건 환불 기록이며 실제 결제 수단으로 돈을 돌려주는 과정은 나오지 않음.",
-        "4. 거절 뒤 종료 규칙도 필요했음\n\n초기에는 담당자가 거절한 뒤 승인 메일이 다시 왔음. 제작자는 재요청하지 말고 고객에게 승인하지 못했다고 안내하도록 규칙을 추가함.\n\n승인 뒤에도 AI가 대기 중이라고 답한 문제가 남아, 도구가 돌려준 상태와 고객 안내를 맞추도록 고쳤음.",
-        "5. 정상 조회만 보고 끝내지 않음\n\n제작자는 배송 상태, 구매 상품, 없는 주문번호, 단순 인사, 규칙을 무시하라는 요구를 새 채팅에서 각각 시험함.\n\n승인과 거절도 나눠 실행하고 mail·실행 기록·시트 변화를 확인한 뒤 고객 안내까지 대조했음. 글로 적은 규칙만으로 완전히 잠긴다고 설명하진 않았음."
+        "1. 언제 만드는지\n\n원글에 클로드 코드 만든 보리스 체르니 팁이 나옴\n하루에 1번 넘게 하는 일이면 스킬로 만들라고 함\n\n사장님이면 리뷰 답글,\n상품 등록 글, 주간 매출 정리 같은 게 딱 그럼",
+        "2. 말로 만드는 3단계\n\n1. 평소처럼 일을 시킴\n2. 결과가 마음에 들 때까지 고침\n3. 마음에 들면 이렇게 한 줄 넣음\n\n방금 한 방식을 스킬로 만들어 줘.\n\n그러면 .claude/skills 폴더 안에\n스킬 이름으로 된 폴더랑 SKILL.md가 생김\n코덱스도 같은 말로 만들어짐",
+        "3. 부르는 법 두 가지\n\n하나는 입력창에 /스킬이름 치고\n뒤에 주제를 붙이는 거임\n\n다른 하나는 그냥 평소처럼 말하는 거\n클로드가 알아서 맞는 스킬을 꺼내 씀\n\n/skills 치면 깔린 스킬 목록이 나옴",
+        "4. 알아서 꺼내 쓰게 하려면\n\n클로드는 스킬 고를 때\ndescription 한 줄만 봄\n그래서 뭘 하는지랑\n내가 실제로 하는 말을 넣어야 함\n\n리뷰답글 스킬 description을 무슨 일을 하는지 한 문장이랑 내가 실제로 쓰는 말(리뷰 답글, 후기 답장) 넣어서 고쳐 줘.",
+        "5. 어디에 둘지\n\n처음엔 지금 작업 폴더에 만들고 다듬으셈\n망쳐도 그 폴더만 영향받음\n\n며칠 써보고 괜찮으면\n이 스킬을 ~/.claude/skills로 옮겨 줘.\n한 줄이면 모든 폴더에서 쓸 수 있음"
       ],
-      "link_comment": "업무에 적용할 순서와 확인할 내용을 정리한 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/U3hkpQzgpoM",
+      "link_comment": "루샨님 원글 전체\n\nhttps://x.com/lucian__03/status/2118355886351786326",
       "sources": [
         {
-          "url": "https://lounge.aimax.ai.kr/worldclass/U3hkpQzgpoM",
-          "title": "주문 문의는 AI가 답하고 환불은 사람이 승인하는 고객 응대 자동화",
-          "published_at": null,
-          "collected_at": "2026-11-06T09:00:53.279123+09:00",
-          "verified_at": "2026-11-06T09:09:59.123126+09:00"
+          "url": "https://x.com/lucian__03/status/2118355886351786326",
+          "title": "X @lucian__03 스킬의 정석 (자동화 SKILL 만들기)",
+          "published_at": "2026-11-05T14:52:55+00:00",
+          "collected_at": "2026-11-09T18:58:53+09:00",
+          "verified_at": "2026-11-09T18:58:53+09:00"
         }
       ],
       "main_images": [
         {
-          "src": "/thread-img/auto-drop-maintenance-20261106-090009-2026-11-11-2.jpg",
-          "alt": "AI Automation Simplified for Business Growth의 원본 영상 장면 · 관련 업무 참고 화면, 파트너의 직접 실행 결과 아님",
-          "credit": "AI Automation Simplified for Business Growth · 원본 영상 참고 화면",
-          "source_url": "https://youtu.be/U3hkpQzgpoM",
-          "sha256": "504151690291e2ea4d88fb367d5e674ea575d9f0d8020a4b9a2dc0c972382d3c"
+          "src": "/thread-img/fp-easy-20261111-E3.png",
+          "alt": "자체 제작 프롬프트 표 (루샨 lucian X 글 각색) · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "자체 제작 프롬프트 표 (루샨 lucian X 글 각색)",
+          "source_url": "https://x.com/lucian__03/status/2118355886351786326",
+          "sha256": "d1e25ca9e058fae14faaf06f32b4eda6943516aec1ec6a39520cdd576689c39c"
         }
       ]
     },
@@ -4856,77 +4876,85 @@
     },
     {
       "date": "2026-11-11",
-      "title": "컨텐츠 331 · AI 직원한테 업무 맡기기 전에 반려 기준부터 적으세요.",
+      "title": "컨텐츠 331 · AI로 쓴 홍보글 티 나게 만드는 문장 9가지 고치는 법",
+      "previous_title": "컨텐츠 331 · AI 직원한테 업무 맡기기 전에 반려 기준부터 적으세요.",
       "type": "evergreen",
-      "target": "업무지시서 반려 기준",
-      "fmt": "금지 출력계약형",
+      "target": "AI로 상세페이지나 공지를 쓰는 사장님",
+      "fmt": "고칠 문장 체크표",
       "format": "case_thread",
-      "body": "AI 직원한테 업무 맡기기 전에 반려 기준부터 적으세요.\n\n이건 외부 성공 사례가 아니라\n내가 직접 제안하는 개인 가이드임.\n잘된 결과만 보여주지 말고\n돌려보낼 조건까지 업무지시서에 넣자는 얘기임.",
+      "editorial_kind": "easy_news",
+      "supplemental": true,
+      "body": "AI로 쓴 홍보글 티 나게 만드는 문장 9가지 고치는 법\n\n스레드에서 conbowl이라는 분이\nAI 글에서 꼭 고쳐야 할 특징을 9가지로 정리했음\n이것만 고쳐도 AI 티가 덜 난다는 거임\n\n상세페이지, 공지, 블로그 글을\nAI로 뽑는 사장님한테 딱 맞음\n\n9가지를 네 묶음으로 나눠서\n한 번에 고치는 프롬프트까지 댓글에 붙여둠",
       "replies": [
-        "1. 맡길 일을 한 문장으로 줄여봄\n\n내 제안은 역할과 업무를 먼저 붙이는 거임.\n\n예를 들면 역할은 자료조사, 업무는 지난 고객 질문에서 반복 주제 찾기라고 적음. 입력 자료 이름과 읽을 범위를 적고 못 찾은 값은 비워두라고 표시해보셈.",
-        "2. 하지 말아야 할 일도 입력임\n\n내가 권하는 금지 조건은 출처 없는 숫자 만들기, 고객 의도 추측하기, 검토 전 발송하기처럼 바로 확인되는 문장임.\n\n자료를 못 읽었을 때 멈출지, 질문할지, 빈칸으로 둘지도 함께 정해두면 반려 이유가 선명해짐.",
-        "3. 결과물 칸을 먼저 고정함\n\n개인 가이드로 제안하는 출력칸은 원문 질문, 묶은 주제, 답변 초안, 확인할 근거, 사람 검토 상태임.\n\n'잘 정리해줘' 대신 어떤 칸이 비면 미완료인지 적어두면 받은 결과에서 어디를 볼지 바로 알 수 있음.",
-        "4. 통과 예시와 반려 예시를 같이 줌\n\n통과 예시는 원문을 유지하고 근거 위치가 붙은 결과, 반려 예시는 근거 없이 의미를 보탠 결과로 잡아봄.\n\n예시마다 맞는 이유와 틀린 이유를 짧게 달아, 문장 모양뿐 아니라 판단 기준도 입력으로 줘보셈.",
-        "5. 작은 업무로 먼저 돌려봄\n\n지금 가진 고객 질문 묶음 하나를 넣고 출력칸이 모두 채워졌는지 확인해보셈.\n\n빠진 값, 금지 조건 위반, 검토할 문장을 기록한 뒤 업무지시서만 고쳐 다시 맡기는 순서가 좋음. 이건 결과를 보장하는 방식이 아니라 내가 권하는 시험 절차임."
+        "1. 괜히 비교하는 문장\n\n마케팅은 단순히 알리는 일이 아니라\n고객 마음을 이해하는 일입니다\n\n이런 단순히 A가 아니라 B 문장이랑\nA보다 B에 가깝습니다 문장이 대표적임\n\n하고 싶은 말만 바로 쓰면 됨\n마케팅은 고객 마음을 이해하는 일입니다\n이걸로 충분함",
+        "2. 누가 뭘 하는지 안 보이는 문장\n\n고객 반응을 함께 봅니다\n고객 반응을 분석하고 콘텐츠를 개선합니다\n\n누가, 뭘 보고, 뭘 하는지가 빠져 있음\n최근 게시물 저장 수를 비교해서\n반응 좋았던 주제를 정리한다처럼\n실제 행동을 적어야 알맹이가 생김",
+        "3. 멋 부린 단어\n\n정서의 결을 살립니다\n여운의 농도를 높입니다\n\n이런 추상 표현이랑\n판단 기준, 운영 관점 같은 딱딱한 합성어도\n읽는 사람이 해석을 해야 함\n실제로 뭘 하는지 풀어 쓰면 됨",
+        "4. 끝맺음 버릇\n\n기준은 분명합니다 같은 마무리 선언\n판단 기준, 운영 방식, 핵심 메시지처럼 셋씩 나열하기\n앞에서 말한 적 없는 그 기준, 이를 통해\n\n전부 새로 주는 정보가 없음\n빼거나 구체적인 행동이랑 근거로 바꾸셈",
+        "5. 한 번에 고치는 프롬프트\n\nconbowl님 정리를 사장님용으로 바꿔봄\n\n아래 글에서 단순히 A가 아니라 B 문장, 누가 뭘 하는지 빠진 문장, 뜻이 흐린 꾸밈말, 마지막에 붙인 정리 문장을 찾아서 고쳐 줘.\n고친 문장마다 원래 문장도 같이 보여 줘."
       ],
-      "link_comment": "업무에 적용할 순서와 확인할 내용을 정리한 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/pZkMTrKb8_4",
+      "link_comment": "conbowl님 원글\n\nhttps://www.threads.com/@conbowl/post/DeuHa2BkzjF",
       "sources": [
         {
-          "url": "https://familypartners.aimax.ai.kr/feed?n=500",
-          "title": "초기 자사 컨텐츠 원문",
-          "published_at": null,
-          "collected_at": "2026-11-06T09:00:53.279123+09:00",
-          "verified_at": "2026-11-06T09:09:59.679683+09:00"
+          "url": "https://www.threads.com/@conbowl/post/DeuHa2BkzjF",
+          "title": "Threads @conbowl AI 글에서 반드시 고쳐야할 9가지 특징",
+          "published_at": "2026-10-20T15:06:25+00:00",
+          "collected_at": "2026-11-09T18:58:53+09:00",
+          "verified_at": "2026-11-09T18:58:53+09:00"
         }
       ],
       "main_images": [
         {
-          "src": "/thread-img/auto-drop-maintenance-20261106-090009-2026-11-11-4.jpg",
-          "alt": "Owain Lewis의 원본 영상 장면 · 관련 업무 참고 화면, 파트너의 직접 실행 결과 아님",
-          "credit": "Owain Lewis · 원본 영상 참고 화면",
-          "source_url": "https://youtu.be/pZkMTrKb8_4",
-          "sha256": "92e217aa1c15a773a61f659f86e59538ea3ec254c7bed8fde694e48eb4ee5582"
+          "src": "/thread-img/fp-easy-20261111-E4.png",
+          "alt": "자체 제작 표 (conbowl 스레드 글 각색) · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "자체 제작 표 (conbowl 스레드 글 각색)",
+          "source_url": "https://www.threads.com/@conbowl/post/DeuHa2BkzjF",
+          "sha256": "822e6f6e7e0a7b7476b42128f419ff7bb2959efe1aea8862d39b759b66e90068"
         }
-      ],
-      "supplemental": true,
-      "editorial_kind": "original_guidance"
+      ]
     },
     {
       "date": "2026-11-11",
-      "title": "컨텐츠 332 · AI 초안이 틀렸을 때 문장만 고치면 다음에도 또 틀림.",
+      "title": "컨텐츠 332 · 매일 같은 사이트 들어가서 복사 붙여넣기 하는 일 클로드한테 넘기는 법",
+      "previous_title": "컨텐츠 332 · AI 초안이 틀렸을 때 문장만 고치면 다음에도 또 틀림.",
       "type": "evergreen",
-      "target": "콘텐츠 초안 피드백",
-      "fmt": "반려 기록형",
+      "target": "매일 같은 사이트에서 정보 옮겨 적는 사장님",
+      "fmt": "오픈소스 연결법",
       "format": "case_thread",
-      "body": "AI 초안이 틀렸을 때 문장만 고치면 다음에도 또 틀림.\n\n이것도 외부 사례가 아니라\n내가 직접 제안하는 개인 가이드임.\n수정본만 남기지 말고\n틀린 이유와 다음 확인값을 같이 기록해보자.",
+      "editorial_kind": "easy_news",
+      "supplemental": true,
+      "body": "매일 같은 사이트 들어가서 복사 붙여넣기 하는 일 클로드한테 넘기는 법\n\nStagehand라는 오픈소스가 있는데\n브라우저를 사람 말로 움직이게 해주는 도구임\n클릭해 줘, 이 표 뽑아 줘 같은 말로 시키면 됨\n\n사이트 화면이 바뀌어도\n알아서 다시 찾아서 누름\n\n깃허브 별 2만 5천 개 넘었고\nMIT 라이선스라 무료임\n\n클로드 코드에 붙이는 법은 댓글에 있음",
       "replies": [
-        "1. 비교할 자료를 같이 놓음\n\n내 제안은 원문, AI 초안, 사람이 고친 최종본을 같은 묶음에 두는 거임.\n\n콘텐츠라면 원문 주장, 대상 독자, 금지 표현도 입력에 붙임. 그래야 문장 취향 문제와 사실이 달라진 문제를 따로 볼 수 있음.",
-        "2. 피드백 칸을 고정함\n\n개인 가이드로 제안하는 기록칸은 틀린 위치, 근거 원문, 틀린 이유, 고칠 문장, 다음 확인값임.\n\n'별로임'으로 끝내지 말고 출처가 빠짐, 대상이 바뀜, 말투가 딱딱함처럼 다시 확인할 기준을 남겨보셈.",
-        "3. 원문부터 역순으로 대조함\n\n먼저 최종본의 주장마다 원문 위치를 찾고, 다음으로 AI 초안과 달라진 부분을 표시함. 마지막에 말투만 손본 부분을 나눔.\n\n출력은 사실 수정, 구조 수정, 말투 수정으로 갈라 받자는 제안임. 서로 다른 문제를 한 문장 피드백에 섞지 않는 게 핵심.",
-        "4. 상태도 말로 끝내지 않음\n\n내가 권하는 상태는 검토 통과, 다시 작성, 자료 부족임.\n\n다시 작성이면 반려 사유를 남기고 다음 실행에서 확인할 값을 붙임. 자료 부족이면 AI가 채우지 말고 사람에게 필요한 원문을 요청하게 해보셈.",
-        "5. 최근 초안 하나로 시작함\n\n최근 고친 콘텐츠 하나를 골라 원문과 최종본 사이에서 바뀐 이유를 적어보자.\n\n그 기록을 다음 업무 입력에 붙이고 같은 오류가 다시 나오는지 확인함. 좋아질 거라고 약속하는 방법이 아니라, 무엇이 반복됐는지 남기는 내 시험 방식임."
+        "1. 뭘 해주는지\n\n크게 세 가지임\nact는 클릭이랑 입력\nobserve는 화면에서 버튼이나 칸 찾기\nextract는 페이지에서 원하는 정보 뽑기\n\n개발자들이 쓰던 Playwright랑\n명령 이름이 같아서\n클로드 코드나 코덱스가 바로 알아듣고 씀",
+        "2. 클로드 코드에 붙이는 법\n\n터미널에 이 두 줄 넣으면 됨\n\nnpm install -g browse\nnpx skills add browserbase/stagehand --skill browse\n\n내 컴퓨터에서 쓰면 AI 키나 유료 계정 없이 된다고 적혀 있음\n컴퓨터에 크롬은 깔려 있어야 함",
+        "3. 깔고 이렇게 시키면 됨\n\n경쟁 쇼핑몰 이 상품 페이지 열어서 가격이랑 배송비만 표로 정리해 줘.\n\n이 지원사업 공고 목록 페이지에서 제목이랑 마감일만 뽑아 줘.\n\n우리 쇼핑몰 상품 페이지 다 열어보고 품절 표시된 상품만 알려 줘.",
+        "4. 알아둘 거\n\nX에서 돈벌고영이라는 분이 이 도구 소개하면서\n인스타, 스레드, X 같은 소통 자동화는\n봇으로 걸려서 계정 정지될 수 있다고 적어둠\n\n남의 사이트 정보 모을 땐\n그 사이트 이용약관도 한 번 확인하셈"
       ],
-      "link_comment": "업무에 적용할 순서와 확인할 내용을 정리한 노트.\n\nhttps://lounge.aimax.ai.kr/worldclass/4Y9ffdRRdYM",
+      "link_comment": "깃허브 주소\n\nhttps://github.com/browserbase/stagehand",
       "sources": [
         {
-          "url": "https://familypartners.aimax.ai.kr/feed?n=500",
-          "title": "초기 자사 컨텐츠 원문",
+          "url": "https://github.com/browserbase/stagehand",
+          "title": "browserbase/stagehand (GitHub)",
           "published_at": null,
-          "collected_at": "2026-11-06T09:00:53.279123+09:00",
-          "verified_at": "2026-11-06T09:09:59.948860+09:00"
+          "collected_at": "2026-11-09T18:58:53+09:00",
+          "verified_at": "2026-11-09T18:58:53+09:00"
+        },
+        {
+          "url": "https://x.com/db_goyoung/status/2102286567171932342",
+          "title": "X @db_goyoung Stagehand v4 소개 타래(작성자 첫 답글)",
+          "published_at": "2026-09-22T06:39:10+00:00",
+          "collected_at": "2026-11-09T18:58:53+09:00",
+          "verified_at": "2026-11-09T18:58:53+09:00"
         }
       ],
       "main_images": [
         {
-          "src": "/thread-img/auto-drop-maintenance-20261106-090009-2026-11-11-5.jpg",
-          "alt": "TechMagicWow의 원본 영상 장면 · 관련 업무 참고 화면, 파트너의 직접 실행 결과 아님",
-          "credit": "TechMagicWow · 원본 영상 참고 화면",
-          "source_url": "https://youtu.be/4Y9ffdRRdYM",
-          "sha256": "2f34e7371b7775763231892568d621b40ea1071bfb3e67bc7768efc328bb33d0"
+          "src": "/thread-img/fp-easy-20261111-E5.png",
+          "alt": "Stagehand 공식 홈페이지(stagehand.dev) 화면 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "Stagehand 공식 홈페이지(stagehand.dev) 화면",
+          "source_url": "https://www.stagehand.dev/",
+          "sha256": "6db7638baaccb8ca5b4357cef208fbd867029579f27c28baef07fd4438b4c7e6"
         }
-      ],
-      "supplemental": true,
-      "editorial_kind": "original_guidance"
+      ]
     },
     {
       "date": "2026-11-12",
