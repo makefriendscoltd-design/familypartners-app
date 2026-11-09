@@ -22,7 +22,7 @@ from http.client import HTTPMessage
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, quote, urlparse
 
-from . import thread_copy, activity, core, db, dropqueue, gemini, messages, onboard, ppurio, products, watchdog, video_library, cardnews_library
+from . import thread_copy, activity, core, db, dropqueue, gemini, messages, onboard, ppurio, products, watchdog, video_library, cardnews_library, perf_library
 
 LIB_DIR = db.ROOT / "assets" / "library"
 GUIDE_DIR = db.ROOT / "assets" / "guide"
@@ -326,6 +326,7 @@ def quick_actions() -> str:
         f"<form method=post action=/op/submit>{_ipt('who','이름/@핸들',True)}"
         f"{_ipt('url','게시물 링크',True,True)}<button>② 제출 입력(출석)</button></form>"
         "<p class=empty style='margin-top:10px'>"
+        "<a class=lk href=/op/perf>📈 글감 성과</a> · "
         "<a class=lk href=/reminders>✉ 보낼 메시지(리마인더)</a> · "
         "<a class=lk href=/enforce>⚠️ 경고 집행</a> · "
         "<a class=lk href=/onboard>📋 온보딩 키트</a> · "
@@ -2013,7 +2014,7 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(data)
 
     def do_POST(self):
-        if video_library.handle(self) or cardnews_library.handle(self):
+        if video_library.handle(self) or cardnews_library.handle(self) or perf_library.handle(self):
             return
         u = urlparse(self.path)
         ctype = self.headers.get("Content-Type", "")
@@ -2346,7 +2347,7 @@ class Handler(BaseHTTPRequestHandler):
             self.send_error(405)
 
     def do_GET(self):
-        if video_library.handle(self) or cardnews_library.handle(self):
+        if video_library.handle(self) or cardnews_library.handle(self) or perf_library.handle(self):
             return
         u = urlparse(self.path)
         qs = parse_qs(u.query)

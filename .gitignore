@@ -26,3 +26,6 @@ nohup.out
 
 # 원본 영상은 인증된 다운로드 경로로만 제공
 data/private_videos/
+
+# 성과 수집기 의존성
+deploy/perf_collector/node_modules/

@@ -323,6 +323,12 @@ SUB_PERF_COLS = (
     ("comments", "INTEGER"),
     ("leads", "INTEGER"),
     ("perf_at", "TEXT"),
+    # 스레드 공개 반응 수 (deploy/perf_collector 가 수집). comments = 답글 수.
+    ("likes", "INTEGER"),
+    ("reposts", "INTEGER"),
+    ("quotes", "INTEGER"),
+    ("shares", "INTEGER"),
+    ("perf_error", "TEXT"),
 )
 
 
