@@ -72,7 +72,7 @@ class PerfHTTPTest(unittest.TestCase):
         self.assertEqual(st, 200)
         html = page.decode()
         self.assertIn('글감A', html)
-        self.assertIn('<b>10</b>', html)  # median of totals 16 and 4
+        self.assertIn('<b>9</b>', html)  # median of totals 14 and 4 (replies excluded)
 
     def test_admin_page_requires_admin_and_bad_input_rejected(self):
         self.assertEqual(self.req('GET', '/op/perf')[0], 403)

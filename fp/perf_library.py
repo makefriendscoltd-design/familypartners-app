@@ -64,7 +64,8 @@ def save(conn, results):
 
 
 def _total(r):
-    return sum((r[k] or 0) for k in ("likes", "comments", "reposts", "quotes", "shares"))
+    # 답글은 뺀다: 우리 글은 작성자 본인이 대댓글 2개+링크 댓글을 달아 답글 수가 반응이 아니다.
+    return sum((r[k] or 0) for k in ("likes", "reposts", "quotes", "shares"))
 
 
 def _median(xs):
@@ -106,7 +107,7 @@ def admin_page(conn):
     rep = report(conn)
     last = rep["last"] or "아직 없음"
     head = (f"<div class=card><h2>글감별 반응 순위 (최근 60일)</h2>"
-            f"<p class=meta>반응 = 좋아요+답글+리포스트+인용+공유. 스레드 조회수는 작성자만 볼 수 있어서 공개 반응으로 비교함. "
+            f"<p class=meta>반응 = 좋아요+리포스트+인용+공유. 답글은 파트너 본인 대댓글이 섞여서 뺌. 스레드 조회수는 작성자만 볼 수 있어서 공개 반응으로 비교함. "
             f"순위는 중앙값(가운데 값) 기준 — 팔로워 많은 파트너 한 명 때문에 튀는 걸 줄이려고.</p>"
             f"<p>제출 글 {rep['rows']}개 · 측정됨 {rep['measured']}개 · 측정 실패 {rep['errors']}개 · 마지막 수집 {esc(str(last))}</p></div>")
     trs = "".join(

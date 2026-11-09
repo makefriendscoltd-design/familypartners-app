@@ -35,7 +35,15 @@ export function findPost(obj, code) {
            quotes: i.quote_count ?? 0, shares: i.reshare_count ?? 0 };
 }
 
+async function resolveShare(page, url) {
+  // threads.com/share/XXXX 공유 링크는 열면 /@user/post/CODE 로 넘어간다.
+  try { await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 }); } catch {}
+  for (let i = 0; i < 10 && !/\/post\//.test(page.url()); i++) await new Promise(r => setTimeout(r, 500));
+  return page.url();
+}
+
 async function measure(page, url) {
+  if (/\/share\//.test(url)) url = await resolveShare(page, url);
   const m = url.match(/\/post\/([A-Za-z0-9_-]+)/);
   if (!m) return { error: 'not_a_post_url' };
   const code = m[1];
