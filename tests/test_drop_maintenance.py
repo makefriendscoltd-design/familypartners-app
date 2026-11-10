@@ -30,15 +30,19 @@ class BufferContracts(unittest.TestCase):
   self.assertEqual(m.literal_quote('hello\nworld','hello\nworld'),'hello\nworld')
   with self.assertRaises(RuntimeError):m.literal_quote('hello changed world','hello\nworld')
  def test_today_is_not_skipped(self):
+  for mode in ('four_plus_two','easy_news'):
+   q={'drops':[]};r=m.gaps(q,datetime.date(2026,11,3),mode=mode)
+   self.assertEqual(r[0]['day'],'2026-11-03');self.assertEqual(r[-1]['day'],'2026-11-08')
   q={'drops':[]};r=m.gaps(q,datetime.date(2026,11,3))
   self.assertEqual(r[0]['day'],'2026-11-03');self.assertEqual(r[-1]['day'],'2026-11-08')
  def test_partial_day_is_flagged_instead_of_replaced(self):
-  r=m.gaps({'drops':[{'date':'2026-11-03'}]},datetime.date(2026,11,3))
+  r=m.gaps({'drops':[{'date':'2026-11-03'}]},datetime.date(2026,11,3),mode='four_plus_two')
   self.assertTrue(r[0]['partial']);self.assertEqual(r[0]['regular'],1)
  def test_six_wrong_kind_posts_do_not_count_as_full(self):
   q={'drops':[{'date':'2026-11-03'} for _ in range(6)]}
-  self.assertEqual(m.gaps(q,datetime.date(2026,11,3))[0]['guidance'],0)
+  self.assertEqual(m.gaps(q,datetime.date(2026,11,3),mode='four_plus_two')[0]['guidance'],0)
  def test_four_cases_and_two_proposals_cover_today(self):
   q={'drops':[{'date':'2026-11-03'} for _ in range(4)]+[{'date':'2026-11-03','supplemental':True,'editorial_kind':'original_guidance'} for _ in range(2)]}
-  self.assertEqual(m.gaps(q,datetime.date(2026,11,3))[0]['day'],'2026-11-04')
+  self.assertEqual(m.gaps(q,datetime.date(2026,11,3),mode='four_plus_two')[0]['day'],'2026-11-04')
+  self.assertEqual(m.gaps(q,datetime.date(2026,11,3),mode='easy_news')[0]['day'],'2026-11-04')
 if __name__=='__main__':unittest.main()

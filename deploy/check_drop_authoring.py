@@ -139,6 +139,7 @@ def main():
     p.add_argument('--reviews', type=Path)
     p.add_argument('--structure-only', action='store_true', help='Prove unchanged ordered text and sources; still require humanize review')
     p.add_argument('--existing-sources', action='store_true', help='Rewrite existing cases with unchanged source records; original and humanize evidence still required')
+    p.add_argument('--queue', type=Path, help='Candidate queue file to check instead of config/drops_queue.json')
     a = p.parse_args()
     env = environment()
     print(json.dumps(env, ensure_ascii=False, indent=2))
@@ -152,7 +153,7 @@ def main():
     originals = json.loads(proc.stdout)['drops']
     old_rows = {(r['date'], r['title']): r for r in originals}
     old = {digest(r) for r in originals}
-    rows = json.loads((ROOT / 'config/drops_queue.json').read_text())['drops']
+    rows = json.loads((a.queue or ROOT / 'config/drops_queue.json').read_text())['drops']
     changed = [r for r in rows if digest(r) not in old]
     if not changed:
         print('No changed copy; no new editorial review claimed')

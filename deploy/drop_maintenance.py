@@ -23,7 +23,14 @@ def save(path,value):
     path=Path(path);path.parent.mkdir(parents=True,exist_ok=True)
     tmp=path.with_name(path.name+'.tmp');tmp.write_text(json.dumps(value,ensure_ascii=False,indent=2)+'\n');tmp.replace(path)
 def run(args,**kw):return subprocess.run(args,cwd=ROOT,text=True,capture_output=True,check=True,**kw)
-def git(*args,env=None,input=None):return run(['git',*args],env=env,input=input).stdout.strip()
+def git(*args,env=None,input=None):
+    # 원격 받기·올리기는 인터넷이 잠깐 끊기면 실패한다(2026-11-09 09:17 fetch exit 128, 같은 아침 다른 잡도 URLError). 3번까지 다시 해 본다
+    tries=3 if args and args[0] in ('fetch','pull','push','ls-remote') else 1
+    for i in range(tries):
+        try:return run(['git',*args],env=env,input=input).stdout.strip()
+        except subprocess.CalledProcessError:
+            if i==tries-1:raise
+            time.sleep(20*(i+1))
 def remote_snapshot():
     code='''import json,sqlite3,hashlib,subprocess
 from pathlib import Path
@@ -32,12 +39,19 @@ rows=[dict(x) for x in c.execute('SELECT * FROM drops')]
 print(json.dumps({'head':subprocess.check_output(['git','-c','safe.directory='+str(r),'-C',str(r),'rev-parse','HEAD'],text=True).strip(),'queue':json.loads((r/'config/drops_queue.json').read_text()),'hashes':{str(x['id']):hashlib.sha256(json.dumps(x,sort_keys=True).encode()).hexdigest() for x in rows},'rows':rows,'originals':[x for x in rows if x['title'] in ['컨텐츠 '+str(i) for i in range(1,31)]]},ensure_ascii=False))
 ''' % CFG['remote_directory']
     return json.loads(run(['ssh','-o','BatchMode=yes','-o','ConnectTimeout=15',CFG['remote_host'],'python3 -'],input=code,timeout=45).stdout)
-def gaps(queue,today=None):
+MODE=CFG.get('mode','four_plus_two')
+def gaps(queue,today=None,mode=None):
+    """Days needing authoring. easy_news: 6+ rows of any kind is a complete day
+    (old 4+2 days and easy_news days both count); 0<rows<6 is partial."""
+    mode=mode or MODE
     today=today or dt.datetime.now(KST).date();out=[]
     for i in range(CFG['future_days']+1):
         day=(today+dt.timedelta(days=i)).isoformat();a=[r for r in queue['drops'] if r['date']==day]
         regular=sum(not r.get('supplemental') for r in a);guidance=sum(bool(r.get('supplemental')) and r.get('editorial_kind')=='original_guidance' for r in a)
-        if regular!=CFG['regular_per_day'] or guidance!=CFG['guidance_per_day']:
+        if mode=='easy_news':
+            if len(a)<CFG['easy_news']['per_day']:
+                out.append({'day':day,'count':len(a),'regular':regular,'guidance':guidance,'partial':bool(a)})
+        elif regular!=CFG['regular_per_day'] or guidance!=CFG['guidance_per_day']:
             out.append({'day':day,'regular':regular,'guidance':guidance,'partial':bool(a)})
     return out
 class Copy(html.parser.HTMLParser):
@@ -267,50 +281,86 @@ def deploy(w,base,before,candidate,rows,paths):
     if rows[0]['date']<=today:
         run([tracker,'emit','--source-system','familypartners','--channel','web','--stage','sent','--status','success','--campaign','partner-drop-maintenance','--count','6','--evidence-path',str(w/'production-verification.json'),'--dedupe-key','fp-maintenance-'+commit])
     return report
+def author_and_build_easy(w,pack,queue,resume=False):
+    """easy_news: model drafts, controller builds; one rewrite with the failure reasons."""
+    from deploy import easy_news_pipeline as easy
+    feedback=None
+    for attempt in (1,2):
+        out=w/('model-output.json' if attempt==1 else 'model-output-retry.json')
+        if resume and attempt==1 and out.exists():posts=json.loads(out.read_text())['posts']
+        else:posts=easy.author(w,pack,out,feedback)
+        try:return easy.build(w,pack,posts,queue)
+        except easy.BuildError as e:
+            save(w/f'build-errors-{attempt}.json',e.errors)
+            if attempt==2:raise RuntimeError('easy_news_build_failed_after_rewrite; see '+str(w/'build-errors-2.json'))
+            feedback={'previous_output':str(out),'errors':e.errors}
 def main():
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--check',action='store_true');p.add_argument('--run',action='store_true');p.add_argument('--max-days',type=int,default=6);p.add_argument('--discovery',type=Path);p.add_argument('--resume-run',type=Path);a=p.parse_args()
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--check',action='store_true');p.add_argument('--run',action='store_true');p.add_argument('--max-days',type=int,default=6);p.add_argument('--discovery',type=Path);p.add_argument('--resume-run',type=Path)
+    p.add_argument('--dry-run',action='store_true',help='Stop right before deploy; keep candidate.json and preview.md in the run folder')
+    a=p.parse_args()
     q=json.loads((ROOT/'config/drops_queue.json').read_text())
     if a.check or not a.run:
-        print(json.dumps({'checked_at':stamp(),'gaps':gaps(q)},ensure_ascii=False));return 0
+        print(json.dumps({'checked_at':stamp(),'mode':MODE,'gaps':gaps(q)},ensure_ascii=False));return 0
     STATE.mkdir(parents=True,exist_ok=True)
-    with (STATE/'run.lock').open('w') as lock:
+    # A dry run never deploys, so it must not block or overwrite the scheduled job's lock/status.
+    status_file=STATE/('status-dry-run.json' if a.dry_run else 'status.json')
+    with (STATE/('dry-run.lock' if a.dry_run else 'run.lock')).open('w') as lock:
         try:fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
         except BlockingIOError:print('maintenance_already_running');return 0
-        report={'status':'running','started_at':stamp(),'completed_days':[]}
-        save(STATE/'status.json',report)
+        report={'status':'running','mode':MODE,'dry_run':a.dry_run,'started_at':stamp(),'completed_days':[]}
+        save(status_file,report)
         try:
+            dry_queue=None
             for n in range(a.max_days):
-                git('fetch','origin','main');base=git('rev-parse','origin/main');before=remote_snapshot()
-                if before['head']!=base:raise RuntimeError('wait_for_pending_deployment')
-                queue=before['queue']
-                if json.loads((ROOT/'config/drops_queue.json').read_text())!=queue:raise RuntimeError('local_and_production_queue_differ')
+                if dry_queue is None:
+                    git('fetch','origin','main');base=git('rev-parse','origin/main');before=remote_snapshot()
+                    if before['head']!=base:raise RuntimeError('wait_for_pending_deployment')
+                    queue=before['queue']
+                    if json.loads((ROOT/'config/drops_queue.json').read_text())!=queue:raise RuntimeError('local_and_production_queue_differ')
+                else:
+                    # Dry run: continue on top of the previous (undeployed) candidate.
+                    queue=dry_queue;before=dict(before,queue=queue)
                 missing=gaps(queue)
                 if not missing:break
                 gap=missing[0]
                 if gap['partial']:raise RuntimeError('partial_day_needs_review; existing_rows_preserved')
-                run_id='drop-maintenance-'+dt.datetime.now(KST).strftime('%Y%m%d-%H%M%S')+'-'+gap['day']
-                w=a.resume_run.resolve() if a.resume_run and n==0 else ROOT/'_workspace'/run_id
-                if a.resume_run and n==0:
+                run_id='drop-maintenance-'+('dry-' if a.dry_run else '')+dt.datetime.now(KST).strftime('%Y%m%d-%H%M%S')+'-'+gap['day']
+                resume=bool(a.resume_run and n==0)
+                w=a.resume_run.resolve() if resume else ROOT/'_workspace'/run_id
+                if resume:
                     prior=json.loads((w/'production-before.json').read_text())
                     if prior['hashes']!=before['hashes'] or prior['queue']!=queue:raise RuntimeError('resume_baseline_changed')
                 else:
                     w.mkdir(parents=True,exist_ok=False);save(w/'production-before.json',before);save(w/'queue-before.json',queue)
-                report.update(phase='collecting',day=gap['day'],run_directory=str(w));save(STATE/'status.json',report);print(json.dumps(report,ensure_ascii=False),flush=True)
-                pack=text_snapshots(w,json.loads((w/'source-pack.json').read_text())) if a.resume_run and n==0 and (w/'source-pack.json').exists() else source_pack(w,gap['day'],queue,before,a.discovery if n==0 else None)
-                report['phase']='authoring';save(STATE/'status.json',report);print('authoring '+gap['day'],flush=True)
-                if a.resume_run and n==0 and ((w/'reviewed-output.json').exists() or (w/'model-output.json').exists()):
-                    output=w/'reviewed-output.json'
-                    if not output.exists():output=w/'model-output.json'
-                    posts=json.loads(output.read_text())['posts']
-                else:posts=author(w,pack)
-                report['phase']='validating';save(STATE/'status.json',report)
-                candidate,rows,paths=build(w,pack,posts,queue)
+                report.update(phase='collecting',day=gap['day'],run_directory=str(w));save(status_file,report);print(json.dumps(report,ensure_ascii=False),flush=True)
+                if MODE=='easy_news':
+                    from deploy import easy_news_pipeline as easy
+                    pack=json.loads((w/'source-pack.json').read_text()) if resume and (w/'source-pack.json').exists() else easy.source_pack(w,gap['day'],queue,a.discovery if n==0 else None)
+                    report['phase']='authoring';save(status_file,report);print('authoring '+gap['day'],flush=True)
+                    candidate,rows,paths=author_and_build_easy(w,pack,queue,resume)
+                    report['phase']='validating';save(status_file,report)
+                else:
+                    pack=text_snapshots(w,json.loads((w/'source-pack.json').read_text())) if resume and (w/'source-pack.json').exists() else source_pack(w,gap['day'],queue,before,a.discovery if n==0 else None)
+                    report['phase']='authoring';save(status_file,report);print('authoring '+gap['day'],flush=True)
+                    if resume and ((w/'reviewed-output.json').exists() or (w/'model-output.json').exists()):
+                        output=w/'reviewed-output.json'
+                        if not output.exists():output=w/'model-output.json'
+                        posts=json.loads(output.read_text())['posts']
+                    else:posts=author(w,pack)
+                    report['phase']='validating';save(status_file,report)
+                    candidate,rows,paths=build(w,pack,posts,queue)
                 runtime_check(w,queue,candidate,rows,paths)
-                report['phase']='deploying';save(STATE/'status.json',report)
+                if a.dry_run:
+                    from deploy import easy_news_pipeline as easy
+                    preview=easy.write_preview(w,rows)
+                    result={'day':rows[0]['date'],'dry_run':True,'candidate':str(w/'candidate.json'),'preview':str(preview),'new_posts':len(rows)}
+                    report['completed_days'].append(result);save(status_file,report);print(json.dumps(result,ensure_ascii=False),flush=True)
+                    dry_queue=candidate;continue
+                report['phase']='deploying';save(status_file,report)
                 result=deploy(w,base,before,candidate,rows,paths)
-                report['completed_days'].append(result);save(STATE/'status.json',report);print(json.dumps(result,ensure_ascii=False),flush=True)
-            report.update(status='succeeded',phase='complete',finished_at=stamp(),remaining_gaps=gaps(json.loads((ROOT/'config/drops_queue.json').read_text())))
-            save(STATE/'status.json',report);print(json.dumps(report,ensure_ascii=False),flush=True);return 0
+                report['completed_days'].append(result);save(status_file,report);print(json.dumps(result,ensure_ascii=False),flush=True)
+            report.update(status='succeeded',phase='complete',finished_at=stamp(),remaining_gaps=gaps(dry_queue if dry_queue is not None else json.loads((ROOT/'config/drops_queue.json').read_text())))
+            save(status_file,report);print(json.dumps(report,ensure_ascii=False),flush=True);return 0
         except Exception as e:
-            report.update(status='failed',finished_at=stamp(),error=str(e));save(STATE/'status.json',report);print(json.dumps(report,ensure_ascii=False),file=sys.stderr,flush=True);return 1
+            report.update(status='failed',finished_at=stamp(),error=str(e));save(status_file,report);print(json.dumps(report,ensure_ascii=False),file=sys.stderr,flush=True);return 1
 if __name__=='__main__':raise SystemExit(main())

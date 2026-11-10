@@ -1,11 +1,18 @@
 {
   "schema_version": 1,
+  "mode": "easy_news",
   "timezone": "Asia/Seoul",
   "future_days": 5,
   "regular_per_day": 4,
   "guidance_per_day": 2,
-  "reply_count": {"min": 4, "max": 5},
-  "hours": [9, 21],
+  "reply_count": {
+    "min": 4,
+    "max": 5
+  },
+  "hours": [
+    9,
+    21
+  ],
   "minutes": 0,
   "state_directory": "/Users/apple/.local/share/familypartners-drop-maintenance",
   "agent_runner": "/Users/apple/orca/projects/loopguard/bin/agent-run",
@@ -15,5 +22,40 @@
   "source_assets": "/Users/apple/.local/share/ai-overseas-note/assets",
   "remote_host": "oracle-direct",
   "remote_directory": "/home/ubuntu/familypartners",
-  "public_base": "https://familypartners.aimax.ai.kr"
+  "public_base": "https://familypartners.aimax.ai.kr",
+  "easy_news": {
+    "per_day": 6,
+    "regular_types": [
+      "ai",
+      "marketing",
+      "evergreen",
+      "evergreen"
+    ],
+    "supplemental_count": 2,
+    "reply_count": {
+      "min": 4,
+      "max": 5
+    },
+    "max_line_chars": 20,
+    "keywords": [
+      "프롬프트",
+      "클로드 스킬",
+      "깃허브",
+      "무료 강의",
+      "제미나이",
+      "GPT 사용법",
+      "노트북LM",
+      "챗GPT 꿀팁",
+      "클로드 코드",
+      "AI 자동화"
+    ],
+    "max_queries": 10,
+    "days": 7,
+    "min_faves": 100,
+    "search_scrolls": 2,
+    "wait_seconds": 10,
+    "snapshot_limit": 16,
+    "min_candidates": 8,
+    "playwright_module": "/Users/apple/orca/projects/familypartners/deploy/perf_collector/node_modules/playwright-core/index.mjs"
+  }
 }
