@@ -70,7 +70,7 @@ class RoomsHubTest(base.VideoHTTPTest):
         for room in ('✍️', '글감방', '🎬', '영상방', '🗂', '카드뉴스방'):
             self.assertIn(room, page)
         self.assertIn("href='/cardnews?t=token-a'", page)
-        self.assertIn('오늘 0/3편 받음', page)
+        self.assertIn('오늘 0/1편 받음', page)
         self.assertNotIn('id=partner-videos', page)             # 미리보기 대신 방 버튼
         feed = self.request('GET', '/feed?t=token-a')[2].decode()
         self.assertNotIn('id=partner-videos', feed); self.assertNotIn('id=partner-cardnews', feed)

@@ -92,8 +92,9 @@ class VideoHTTPTest(unittest.TestCase):
         for i in range(4):
             status,_,body=self.upload(self.blob+bytes([i]));self.assertEqual(status,201);vid=json.loads(body)['id'];ids.append(vid)
             self.assertEqual(self.publish(vid)[0],303)
-        for vid,who in zip(ids[:3],'aab'):
-            self.assertEqual(self.claim(vid,who)[0],303)
+        with patch.object(v,'DAILY_VIDEO_LIMIT',3):  # 디스크 정리 검증용으로 한 계정이 여러 편 받은 상태를 만든다
+            for vid,who in zip(ids[:3],'aab'):
+                self.assertEqual(self.claim(vid,who)[0],303)
         c=db.connect()
         try:
             # ids[0] claimed 40 days ago, ids[1] 20 days ago, ids[2] yesterday, ids[3] unclaimed
