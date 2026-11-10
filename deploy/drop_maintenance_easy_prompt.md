@@ -28,6 +28,9 @@ discount promotions, events, or student-only perks. At most 2 posts from the sam
 Keep the original's purpose: only add the scene where 사장님 would use it for that same
 purpose. Never twist a tool into a different use (e.g. a study/exam tool turned into
 customer service practice is forbidden).
+Skip developer-only tools that need existing coding skills to be useful (e.g. a
+Three.js/SDK/framework library). A non-developer 사장님 must be able to install or
+open it by following your replies (one command, a website, an app, or a prompt).
 
 Order: posts 1-4 must have types ai, marketing, evergreen, evergreen (any order);
 posts 5-6 are type evergreen. Within posts 1-4, `target` (구체적인 독자) and `fmt`
