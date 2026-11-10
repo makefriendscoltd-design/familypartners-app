@@ -78,6 +78,8 @@ def source_pack(w: Path, day: str, queue: dict, discovery=None) -> dict:
         xtext = xfile.read_text()
         src = {'key': c['key'], 'url': c['url'], 'published_at': c['published_at'], 'date_quote': c['datetime'],
                'file': str(xfile.relative_to(w)), 'reactions': c.get('reactions', {}),
+               'handle': c.get('handle') or c['url'].split('/')[3].lower(),
+               'category_hint': c.get('category_hint'), 'has_prompts': c.get('has_prompts', False),
                'evidence_anchors': anchor_map(xtext, 'x'), 'external': None}
         if c.get('external'):
             efile = target / c['external']['file']
@@ -138,6 +140,14 @@ def is_question(body):
     return first_paragraph(body).rstrip().endswith('?')
 
 
+IMPERATIVE_NOT = re.compile(r'(마셈|마세요|마라|지 마|지마|말 것|말기)[.!]?$')
+
+
+def is_imperative_hook(body):
+    """'~하지 마셈' style hooks read as advice, not news (user feedback 2026-11-10)."""
+    return bool(IMPERATIVE_NOT.search(' '.join(first_paragraph(body).split('\n')).rstrip()))
+
+
 def text_errors(i, p):
     """Mechanical brief rules that lint_drops does not cover."""
     errs = []
@@ -188,6 +198,11 @@ def precheck(pack, posts):
         ext = s.get('external')
         if ext and p['link_evidence_anchor'] not in ext['evidence_anchors']:
             errs.append(f'post {i + 1}: 바깥 링크가 있는 소재는 link_evidence_anchor 를 그 원문 앵커(e...)에서 골라야 함')
+        want = s.get('category_hint')
+        if p['category'] != want:
+            errs.append(f'post {i + 1}: category {p["category"]} 가 소재 유형 {want} 와 다름 (a 깃허브·도구, b 공식 기능·무료 강의, c 복붙 프롬프트 모음)')
+        if p['category'] == 'c' and not s.get('has_prompts'):
+            errs.append(f'post {i + 1}: 프롬프트 모음(c)인데 원문에 복붙 프롬프트가 없음 — 조언 글은 쓰지 말 것')
         if not ext and not p.get('card_rows'):
             errs.append(f'post {i + 1}: 바깥 링크 없는 소재는 이미지 카드(card_title/card_sub/card_rows 3~6개) 필요')
         if p['original_read'] is not True or p['six_checks_passed'] is not True:
@@ -203,6 +218,16 @@ def precheck(pack, posts):
             errs.append(f'앞 {len(reg)}개 글의 {field} 가 겹침: {vals}')
     if sum(p['fmt'] == '리스트형' for p in posts) > 0:
         errs.append("fmt 에 '리스트형' 쓰지 말 것")
+    handles = {}
+    for p in posts:
+        h = pack['sources'].get(p['source_key'], {}).get('handle')
+        handles[h] = handles.get(h, 0) + 1
+    over = [h for h, n in handles.items() if n > EASY.get('max_per_handle_per_day', 2)]
+    if over:
+        errs.append(f'같은 계정 출처 하루 {EASY.get("max_per_handle_per_day", 2)}개 초과: {over}')
+    imp = sum(is_imperative_hook(p['body']) for p in posts)
+    if imp > EASY.get('max_imperative_hooks', 1):
+        errs.append(f'"~마셈/~지 마" 명령형 첫 줄 {imp}개 (하루 최대 {EASY.get("max_imperative_hooks", 1)}개) — 결과·손해·대상 지정·"~하는 법"·"이거 보셈"으로')
     q = sum(is_question(p['body']) for p in posts)
     if q > 1:
         errs.append(f'질문형 첫 줄 {q}개 (하루 최대 1개)')
@@ -256,7 +281,7 @@ def image_for(w, pack, posts, tag):
             continue
         if r['kind'] == 'shot':
             ext = s['external']
-            where = ext['title'].split(':', 1)[0].strip() if ext['kind'] == 'github' else (ext['title'] or ext['url'])[:60]
+            where = ext['title'].split(':', 1)[0].strip() if ext['kind'] == 'github' else re.sub(r'\s*\([^)]*$', '', (ext['title'] or ext['url'])[:60]).strip()
             credit = f'{where} 원문 화면'
             source_url = ext['url']
         else:

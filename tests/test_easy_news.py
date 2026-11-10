@@ -13,7 +13,7 @@ D = datetime.date(2026, 11, 13)
 
 
 def post(**kw):
-    p = {'source_key': 'x-1', 'type': 'ai', 'target': '혼자 가게 하는 사장님', 'fmt': '깃허브 스킬 소개',
+    p = {'source_key': 'x-1', 'category': 'a', 'type': 'ai', 'target': '혼자 가게 하는 사장님', 'fmt': '깃허브 스킬 소개',
          'body': '긴 글 맡길 때\n써줘 한 번이면 손해임\n\n클로드 스킬 하나로\n자료 찾기부터\n검토까지 순서대로 함\n\n쓰는 법은 댓글에 적어둠',
          'replies': ['1. 설치\n\n클로드에서\n스킬을 추가하면 됨'] * 4, 'link_intro': '깃허브 원문',
          'before_body': '', 'before_replies': [], 'evidence_anchor': 'x001', 'link_evidence_anchor': 'e001',
@@ -23,7 +23,7 @@ def post(**kw):
     return p
 
 
-SRC = {'key': 'x-1', 'url': 'https://x.com/a/status/1', 'published_at': '2026-11-08T01:02:03+00:00',
+SRC = {'key': 'x-1', 'url': 'https://x.com/a/status/1', 'handle': 'a', 'category_hint': 'a', 'has_prompts': False, 'published_at': '2026-11-08T01:02:03+00:00',
        'date_quote': '2026-11-08T01:02:03.000Z', 'file': 'discovery/snap/x-1.txt',
        'evidence_anchors': {'x001': '클로드 스킬로 긴 글을 순서대로'},
        'external': {'url': 'https://github.com/o/r', 'kind': 'github', 'title': 'GitHub - o/r: desc',
@@ -123,7 +123,7 @@ class Collector(unittest.TestCase):
 
 class Precheck(unittest.TestCase):
     def pack(self):
-        return {'sources': {f'x-{i}': dict(SRC, key=f'x-{i}') for i in range(6)}}
+        return {'sources': {f'x-{i}': dict(SRC, key=f'x-{i}', handle=f'h{i}') for i in range(6)}}
 
     def posts(self):
         types = ['ai', 'marketing', 'evergreen', 'evergreen', 'evergreen', 'evergreen']
@@ -146,6 +146,33 @@ class Precheck(unittest.TestCase):
         ps = self.posts(); ps[1]['source_key'] = 'x-0'; ps[0]['type'] = 'evergreen'
         errs = '\n'.join(easy.precheck(self.pack(), ps))
         self.assertIn('source_key 가 겹침', errs); self.assertIn('type 구성', errs)
+
+
+class HookAndSourceMix(unittest.TestCase):
+    def test_imperative_hooks_limited_and_handles_capped(self):
+        pk = Precheck().pack(); ps = Precheck().posts()
+        for k in ('x-0', 'x-1', 'x-2'):
+            pk['sources'][k]['handle'] = 'same'
+        ps[0]['body'] = '잘된 글 찾느라\n계정마다 넘기지 마셈\n\n내용\n\n댓글에 있음'
+        ps[1]['body'] = '화면 시안 하나만\n받고 고르지 마셈\n\n내용\n\n댓글에 있음'
+        errs = '\n'.join(easy.precheck(pk, ps))
+        self.assertIn('명령형 첫 줄 2개', errs); self.assertIn('같은 계정 출처', errs)
+
+    def test_advice_post_cannot_claim_prompt_collection(self):
+        pk = Precheck().pack(); ps = Precheck().posts()
+        pk['sources']['x-0'].update(external=None, category_hint='c', has_prompts=False)
+        ps[0].update(category='c', card_rows=[{'label': 'a', 'text': 'b'}])
+        self.assertIn('조언 글', '\n'.join(easy.precheck(pk, ps)))
+
+    def test_promo_filter_and_prompt_detection(self):
+        from deploy import easy_news_collect as c
+        cfg = json.loads((ROOT / 'config/drop_maintenance.json').read_text())['easy_news']
+        self.assertTrue(c.promo_reason('', 'https://goo.gle/hanbat', cfg))
+        self.assertTrue(c.promo_reason('', 'https://gemini.google/students/', cfg))
+        self.assertTrue(c.promo_reason('학생 요금제 1년 무료', '', cfg))
+        self.assertIsNone(c.promo_reason('스킬 공유함', 'https://github.com/o/r', cfg))
+        self.assertTrue(c.has_prompts('프롬프트\n상품 설명을 써 줘.\n후기 답글을 정리해줘'))
+        self.assertFalse(c.has_prompts('엑셀은 버리지 마라. 기록이 중요함'))
 
 
 if __name__ == '__main__':

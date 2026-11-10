@@ -1,16 +1,128 @@
 {
-  "type": "object", "additionalProperties": false,
-  "required": ["posts"], "properties": {"posts": {"type": "array", "items": {
-    "type": "object", "additionalProperties": false,
-    "required": ["source_key","type","target","fmt","body","replies","link_intro","before_body","before_replies","evidence_anchor","link_evidence_anchor","card_title","card_sub","card_rows","original_read","six_checks_passed","humanize_summary","editorial_note"],
-    "properties": {
-      "source_key":{"type":"string"},"type":{"type":"string","enum":["ai","marketing","evergreen"]},"target":{"type":"string"},"fmt":{"type":"string"},
-      "body":{"type":"string"},"replies":{"type":"array","items":{"type":"string"}},"link_intro":{"type":"string"},
-      "before_body":{"type":"string"},"before_replies":{"type":"array","items":{"type":"string"}},
-      "evidence_anchor":{"type":"string"},"link_evidence_anchor":{"type":"string"},
-      "card_title":{"type":"string"},"card_sub":{"type":"string"},
-      "card_rows":{"type":"array","items":{"type":"object","additionalProperties":false,"required":["label","text"],"properties":{"label":{"type":"string"},"text":{"type":"string"}}}},
-      "original_read":{"type":"boolean"},"six_checks_passed":{"type":"boolean"},"humanize_summary":{"type":"string"},"editorial_note":{"type":"string"}
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "posts"
+  ],
+  "properties": {
+    "posts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "source_key",
+          "category",
+          "type",
+          "target",
+          "fmt",
+          "body",
+          "replies",
+          "link_intro",
+          "before_body",
+          "before_replies",
+          "evidence_anchor",
+          "link_evidence_anchor",
+          "card_title",
+          "card_sub",
+          "card_rows",
+          "original_read",
+          "six_checks_passed",
+          "humanize_summary",
+          "editorial_note"
+        ],
+        "properties": {
+          "source_key": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "ai",
+              "marketing",
+              "evergreen"
+            ]
+          },
+          "target": {
+            "type": "string"
+          },
+          "fmt": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "replies": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "link_intro": {
+            "type": "string"
+          },
+          "before_body": {
+            "type": "string"
+          },
+          "before_replies": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "evidence_anchor": {
+            "type": "string"
+          },
+          "link_evidence_anchor": {
+            "type": "string"
+          },
+          "card_title": {
+            "type": "string"
+          },
+          "card_sub": {
+            "type": "string"
+          },
+          "card_rows": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "label",
+                "text"
+              ],
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "text": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "original_read": {
+            "type": "boolean"
+          },
+          "six_checks_passed": {
+            "type": "boolean"
+          },
+          "humanize_summary": {
+            "type": "string"
+          },
+          "editorial_note": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "a",
+              "b",
+              "c"
+            ]
+          }
+        }
+      }
     }
-  }}}
+  }
 }

@@ -89,11 +89,37 @@ def clean_url(url: str) -> str:
 
 
 def resolve(url: str) -> str:
-    if urlsplit(url).hostname != 't.co':
+    """Follow every redirect (t.co, then goo.gle/bit.ly ...) so filters see the real original."""
+    host = urlsplit(url).hostname or ''
+    if host != 't.co' and host not in SHORTENERS:
         return clean_url(url)
-    p = subprocess.run(['curl', '-s', '-o', '/dev/null', '-w', '%{redirect_url}', '--max-time', '15', url],
-                       text=True, capture_output=True)
-    return clean_url(p.stdout.strip()) if p.stdout.strip().startswith('https://') else ''
+    p = subprocess.run(['curl', '-sL', '-o', '/dev/null', '-w', '%{url_effective}', '--max-redirs', '8',
+                        '--max-time', '25', url], text=True, capture_output=True)
+    final = p.stdout.strip()
+    return clean_url(final) if final.startswith('https://') and (urlsplit(final).hostname or '') != 't.co' else ''
+
+
+SHORTENERS = {'goo.gle', 'bit.ly', 'buff.ly', 'han.gl', 'me2.do', 'tinyurl.com', 'lnkd.in', 'ow.ly', 'url.kr', 'vo.la'}
+PROMPT_LINE = re.compile(r'(해\s?줘|해주세요|해 주세요|줘)[.!]?\s*$|^\s*(prompt|프롬프트)\s*[:：]?', re.I | re.M)
+
+
+def has_prompts(text: str) -> bool:
+    """Copy-paste prompt collection: says 프롬프트/prompt and contains request sentences."""
+    if re.search(r'프롬프트\s*(모음|공유|정리)|프롬프트\s*[:：]|prompt\s*[:：]', text, re.I):
+        return True
+    return bool(re.search(r'프롬프트|prompt', text, re.I)) and len(PROMPT_LINE.findall(text)) >= 2
+
+
+def promo_reason(text: str, url: str, cfg: dict) -> str | None:
+    h = (urlsplit(url).hostname or '').removeprefix('www.')
+    if any(h == x or h.endswith('.' + x) for x in cfg.get('exclude_hosts', [])):
+        return 'promo_host_' + h
+    if any(pat in url for pat in cfg.get('exclude_url_patterns', [])):
+        return 'promo_url'
+    for word in cfg.get('exclude_text_patterns', []):
+        if word in text:
+            return 'promo_text_' + word
+    return None
 
 
 def is_internal(url: str) -> bool:
@@ -218,8 +244,21 @@ def collect(out: Path, queue: dict, cfg: dict, now: dt.datetime | None = None) -
         raise CollectError('x_search_returned_nothing')
     ranked = sorted(found.values(), key=lambda r: -r['reactions'].get('like', 0))
     candidates = []
-    for r in ranked[:cfg['snapshot_limit']]:
+    per_handle: dict[str, int] = {}
+    attempts = 0
+    for r in ranked:
+        if len(candidates) >= cfg.get('max_candidates', 20) or attempts >= cfg['snapshot_limit']:
+            break
         key = 'x-' + r['url'].rsplit('/', 1)[1]
+        handle = STATUS.match(r['url']).group(1).lower()
+        why = promo_reason(r['search_text'], '', cfg)
+        if why:  # cheap pre-filter on the search card before opening the post
+            log['excluded'].append({'url': r['url'], 'reason': why})
+            continue
+        if per_handle.get(handle, 0) >= cfg.get('max_per_handle', 3):
+            log['excluded'].append({'url': r['url'], 'reason': 'handle_limit'})
+            continue
+        attempts += 1
         try:
             post = snapshot_post(r['url'], cfg)
         except CollectError as e:
@@ -228,9 +267,21 @@ def collect(out: Path, queue: dict, cfg: dict, now: dt.datetime | None = None) -
         (snap / f'{key}.txt').write_text(post['text'], encoding='utf-8')
         external = None
         for raw in post['raw_links']:
-            link = resolve(raw)
+            # t.co hides the real short link, so check the first hop and the final URL.
+            hop = raw if urlsplit(raw).hostname != 't.co' else subprocess.run(
+                ['curl', '-s', '-o', '/dev/null', '-w', '%{redirect_url}', '--max-time', '15', raw],
+                text=True, capture_output=True).stdout.strip()
+            why = promo_reason('', hop, cfg)
+            if why:
+                external = {'url': hop, 'error': why}
+                break
+            link = resolve(hop or raw)
             if not link or is_internal(link):
                 continue
+            why = promo_reason('', link, cfg)
+            if why:
+                external = {'url': link, 'error': why}
+                break
             if link.rstrip('/') in used:
                 external = {'url': link, 'error': 'already_in_queue'}
                 break
@@ -249,7 +300,19 @@ def collect(out: Path, queue: dict, cfg: dict, now: dt.datetime | None = None) -
         if external and external.get('error'):
             log['excluded'].append({'url': r['url'], 'reason': 'external_' + external['error'], 'external': external['url']})
             continue
-        candidates.append({'key': key, 'url': r['url'], 'datetime': post['datetime'],
+        why = promo_reason(post['text'], '', cfg)
+        if why:
+            log['excluded'].append({'url': r['url'], 'reason': why})
+            continue
+        prompts = has_prompts(post['text'])
+        if not external and not prompts:
+            # Opinion/advice posts without an original or copy-paste prompts are not easy news.
+            log['excluded'].append({'url': r['url'], 'reason': 'no_original_link_or_prompts'})
+            continue
+        category = ('a' if external['kind'] == 'github' else 'b') if external else 'c'
+        per_handle[handle] = per_handle.get(handle, 0) + 1
+        candidates.append({'key': key, 'url': r['url'], 'handle': handle, 'category_hint': category,
+                           'has_prompts': prompts, 'datetime': post['datetime'],
                            'published_at': post['datetime'].replace('.000Z', '+00:00').replace('Z', '+00:00'),
                            'reactions': r['reactions'], 'keyword': r['keyword'],
                            'file': f'snap/{key}.txt', 'external': external})

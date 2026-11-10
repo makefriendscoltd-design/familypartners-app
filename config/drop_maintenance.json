@@ -38,24 +38,56 @@
     },
     "max_line_chars": 20,
     "keywords": [
-      "프롬프트",
-      "클로드 스킬",
       "깃허브",
+      "스킬 공유",
+      "프롬프트 모음",
+      "무료 공개",
+      "오픈소스",
+      "클로드 스킬",
+      "프롬프트",
       "무료 강의",
-      "제미나이",
-      "GPT 사용법",
-      "노트북LM",
-      "챗GPT 꿀팁",
       "클로드 코드",
+      "제미나이",
+      "노트북LM",
+      "GPT 사용법",
       "AI 자동화"
     ],
-    "max_queries": 10,
+    "max_queries": 13,
     "days": 7,
-    "min_faves": 100,
+    "min_faves": 200,
     "search_scrolls": 2,
     "wait_seconds": 10,
-    "snapshot_limit": 16,
+    "snapshot_limit": 50,
     "min_candidates": 8,
-    "playwright_module": "/Users/apple/orca/projects/familypartners/deploy/perf_collector/node_modules/playwright-core/index.mjs"
+    "playwright_module": "/Users/apple/orca/projects/familypartners/deploy/perf_collector/node_modules/playwright-core/index.mjs",
+    "max_candidates": 20,
+    "max_per_handle": 3,
+    "max_per_handle_per_day": 2,
+    "exclude_hosts": [
+      "goo.gle",
+      "one.google.com",
+      "store.google.com"
+    ],
+    "exclude_url_patterns": [
+      "/students",
+      "utm_campaign=microsite",
+      "/pricing",
+      "/promo",
+      "/event"
+    ],
+    "exclude_text_patterns": [
+      "학생 요금제",
+      "요금제",
+      "할인",
+      "프로모션",
+      "이벤트",
+      "쿠폰",
+      "추첨",
+      "앰배서더",
+      "대학생 주목",
+      "무료 체험",
+      "구독료"
+    ],
+    "max_imperative_hooks": 1
   }
 }
