@@ -44,14 +44,24 @@ call out who it is for. Good references from posts that got reactions:
   "폰으로 찍은 상품 사진 / 스튜디오 컷으로 바꾸는 법"
   "클로드 도구 24개 다 깔 필요 없음 / 사장님은 4개면 됨"
   "클로드한테 매일 같은 설명 / 붙여넣고 있으면 스킬로 만드셈"
-Use result / loss / target call-out / "~하는 법" / "이거 보셈". At most ONE of the six
+Hooks must make people stop: call out who must see it ("~하는 사장님 필독",
+"~결제하기 전에 필독"), hit money/time loss ("매달 ~ 내고 있으면"), or make them curious
+with a concrete number from the source. No exaggeration beyond the source.
+Also allowed: result / "~하는 법" / "이거 보셈". At most ONE of the six
 first lines may be a "~마셈 / ~지 마" prohibition. Name the concrete thing (tool name,
 what it does) so the reader knows immediately what they get.
 
 ## Format (same as examples)
 body:
-  첫 줄 후킹 (한 줄, 길면 20자 이하 두 줄) / 빈 줄 / 3~8줄 소개 (번호 목차 가능) /
-  빈 줄 / "댓글에 적어둠" 류 마무리 한 줄.
+  짧게. 후킹 1~2줄 / 빈 줄 / 뭔지 1~2줄 / 빈 줄 / "댓글에 정리함" 류 마무리 한 줄.
+  빈 줄 빼고 최대 6줄, 줄바꿈 빼고 100자 이하. 설명·목차·사용법은 전부 댓글로.
+  예)
+    한글 파일 복붙하는 사장님 필독
+
+    HWP, PDF를 AI가 읽게
+    바꿔주는 무료 도구 있음
+
+    설치는 한 줄, 댓글에 정리함
 replies: 4-5 items. Each starts with "1. <짧은 제목>" style numbering, blank line,
   then content: real steps, what to type, what comes out, what to check. Prompt
   examples are copy-paste sentences that end with "~해 줘." and use (괄호) for
@@ -69,7 +79,7 @@ link_intro: one short line (20자 이하, no URL) introducing the original link,
 - No emoji, no arrows (→ etc.), no middle dot (·), no ※, no ✅❌, also inside prompts.
   Separate with numbers, blank lines and line breaks.
 - No line may start with "[".
-- Body max 300 characters excluding newlines and max 16 non-empty lines.
+- Body max 100 characters excluding newlines and max 6 non-empty lines.
   Each reply max 500 characters.
 - No URLs or domains anywhere in body, replies or link_intro.
 - First line: result, loss, target call-out, "~하는 법", "이거 보셈" style. Never start

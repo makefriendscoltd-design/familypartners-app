@@ -190,6 +190,9 @@ def check_one(d: dict, cfg: dict) -> list[str]:
 # 쉬운 소식 글 (2026-11-10 사용자 정정): 폰 화면에서 자동 줄바꿈이 생기지 않게 한 줄 20자 이하,
 # "X에서 OO라는 분이 올린" 같은 출처 인물·반응 소개 금지. 출처는 링크 댓글과 sources에만 둔다.
 EASY_MAX_LINE = 20
+# 2026-11-10 사용자 정정: 본문이 길고 후킹이 약함. 레퍼런스 본문은 2~5줄, 50~120자.
+EASY_MAX_BODY_LINES = 6
+EASY_MAX_BODY_CHARS = 100
 EASY_SOURCE_PERSON = re.compile(
     r"(X에서|엑스에서|스레드에서|트위터에서|라는 분|라는 계정|분이 (올린|소개|정리)|"
     r"좋아요 [\d.]+만|조회수 [\d.]+만|소개해서 퍼졌)")
@@ -205,6 +208,9 @@ def check_easy_news_text(d: dict) -> list[str]:
             if len(line) > (32 if line.isascii() else EASY_MAX_LINE):  # 영문은 폭이 좁다
                 out.append(f"쉬운 소식 한 줄 {EASY_MAX_LINE}자 초과: {line[:24]}")
                 break
+    body_lines = [l for l in (d.get("body") or "").split("\n") if l.strip()]
+    if len(body_lines) > EASY_MAX_BODY_LINES or len("".join(body_lines)) > EASY_MAX_BODY_CHARS:
+        out.append(f"쉬운 소식 본문은 {EASY_MAX_BODY_LINES}줄·{EASY_MAX_BODY_CHARS}자 이하 — 설명은 댓글로")
     if any(EASY_SOURCE_PERSON.search(p) for p in parts):
         out.append("쉬운 소식에 출처 인물·반응 소개 문장 — 방법만 바로 쓰기")
     return out
