@@ -47,7 +47,9 @@ call out who it is for. Good references from posts that got reactions:
 Hooks must make people stop: call out who must see it ("~하는 사장님 필독",
 "~결제하기 전에 필독"), hit money/time loss ("매달 ~ 내고 있으면"), or make them curious
 with a concrete number from the source. No exaggeration beyond the source.
-Also allowed: result / "~하는 법" / "이거 보셈". At most ONE of the six
+Also allowed: result / "~하는 법" / "이거 보셈".
+Vary hook shapes within the day: the same ending ("보셈", "필독", "~하는 법") at most 2 of 6.
+Do not template "~하는 사장님 <도구명> 보셈" repeatedly. At most ONE of the six
 first lines may be a "~마셈 / ~지 마" prohibition. Name the concrete thing (tool name,
 what it does) so the reader knows immediately what they get.
 

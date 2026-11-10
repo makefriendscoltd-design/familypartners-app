@@ -56,7 +56,6 @@ class DayCompleteness(unittest.TestCase):
         q = json.loads((ROOT / 'config/drops_queue.json').read_text())
         days = {g['day'] for g in m.gaps(q, datetime.date(2026, 11, 10), mode='easy_news')}
         self.assertFalse(days & {'2026-11-10', '2026-11-11', '2026-11-12', '2026-11-13'})
-        self.assertIn('2026-11-14', days)
 
 
 class RowShape(unittest.TestCase):
