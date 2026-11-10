@@ -5452,6 +5452,258 @@
           "sha256": "7a16de9f7538ab359e7028b794f446308af7e0c5a516c975146db3b877427017"
         }
       ]
+    },
+    {
+      "date": "2026-11-14",
+      "title": "컨텐츠 345 · AI 직원 여럿 쓰는 사장님 AI Office 보셈",
+      "type": "ai",
+      "target": "AI 직원 여럿 쓰는 1인 대표",
+      "fmt": "무료 앱 소개",
+      "format": "case_thread",
+      "editorial_kind": "easy_news",
+      "body": "AI 직원 여럿 쓰는 사장님\nAI Office 보셈\n\nClaude와 GPT 직원을\n한 사무실에 모으는 앱임\n\n설치부터 댓글에 정리함",
+      "replies": [
+        "1. 뭐가 다른지\n\nClaude와 GPT를\n직원별로 고를 수 있음\n단체방에서 @이름으로\n일을 맡기면 됨\n큰 일은 팀장이 나눠서\n계획부터 올려줌\n결과는 업무 보고로\n모아서 확인하게 됨",
+        "2. 설치 조건\n\n맥은 M1 이후만 됨\n윈도우는 시험판임\nClaude나 GPT 계정\n하나만 로그인하면 됨\nAPI 키는 필요 없음\n무료지만 베타라서\n화면이 바뀔 수 있음",
+        "3. 처음 쓰는 순서\n\n공식 페이지에서\n내 컴퓨터용 앱을 받으셈\n직원 역할과 AI를 고르고\n단체방에서 이렇게 시키셈\n\n@(이름) 이번 주\n뉴스레터 초안 써 줘.",
+        "4. 결재함 보는 법\n\n파일 변경과 명령 실행은\n결재함에 먼저 뜸\n내용 보고 승인하거나\n거절하면 됨\n화면 클릭과 입력도\n승인 뒤에만 움직임\n마음에 안 들면\n작업 전으로 되돌리셈",
+        "5. 꼭 확인할 점\n\n맥 설치 때 경고가 뜸\n앱이 아직 서명 안 됐음\n사용량은 로그인한\nClaude나 GPT 계정에서\n그대로 차감됨\n화면 제어는 필요한\n직원에게만 켜두셈"
+      ],
+      "link_comment": "공식 안내 페이지\n\nhttps://engchoon.github.io/ai-office/",
+      "sources": [
+        {
+          "url": "https://x.com/doodi_dev/status/2118527542986473974",
+          "title": "X 글: AI 직원 여럿 쓰는 사장님 AI Office 보셈",
+          "published_at": "2026-11-06T02:15:01+00:00",
+          "collected_at": "2026-11-10T13:06:35.196334+09:00",
+          "verified_at": "2026-11-10T13:16:14+09:00"
+        },
+        {
+          "url": "https://engchoon.github.io/ai-office/",
+          "title": "AI Office — An AI office where you hire Claude and GPT staff together",
+          "published_at": null,
+          "collected_at": "2026-11-10T13:06:35.196334+09:00",
+          "verified_at": "2026-11-10T13:16:14+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/fp-easy-20261114-1.png",
+          "alt": "AI Office — An AI office where you hire Claude and GPT staff 원문 화면 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "AI Office — An AI office where you hire Claude and GPT staff 원문 화면",
+          "source_url": "https://engchoon.github.io/ai-office/",
+          "sha256": "feed23be26c677ccf98390dbc9dbca8862f630cf769c62579806f0bd6aaaea8d"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-14",
+      "title": "컨텐츠 346 · 경쟁 계정 넘기는 판매자 SNS 조사 스킬 보셈",
+      "type": "marketing",
+      "target": "경쟁 계정 조사하는 판매자",
+      "fmt": "SNS 조사 스킬",
+      "format": "case_thread",
+      "editorial_kind": "easy_news",
+      "body": "경쟁 계정 넘기는 판매자\nSNS 조사 스킬 보셈\n\n잘된 글과 댓글을 캐는\n클로드용 스킬 묶음임\n\n설치와 질문 댓글에 둠",
+      "replies": [
+        "1. 뭘 찾아주는지\n\n계정 평소 반응보다\n튀는 게시물을 골라냄\n댓글에 나온 질문과\n불만도 따로 모아줌\n경쟁 계정 비교와\n광고 분석도 들어 있음",
+        "2. 설치하는 법\n\n아래 한 줄 실행하면 됨\n\nnpx skills add ScrapeCreators/social-media-research-skills\n\n설치 뒤에는\nAPI 키가 꼭 필요함\n제작사에서 받아 넣으셈",
+        "3. 잘된 글 찾기\n\n(경쟁 계정)에서\n평소보다 반응이 튄\n게시물을 찾아 줘.\n게시물마다 반복되는\n후킹과 형식을\n표로 묶어 줘.",
+        "4. 댓글 캐기\n\n(게시물) 댓글에서\n질문, 불만, 구매 의도를\n각각 묶어 줘.\n원문 표현은 보존하고\n콘텐츠 주제와\n상품 힌트를 정리해 줘.",
+        "5. 결과 확인\n\n공개 데이터만 다룸\n게시물과 댓글 출처가\n함께 붙었는지 보셈\n계정 자체 평소 반응과\n비교했는지도 확인하셈\n사적인 데이터까지\n된다고 기대하면 안 됨"
+      ],
+      "link_comment": "깃허브 원문\n\nhttps://github.com/ScrapeCreators/social-media-research-skills",
+      "sources": [
+        {
+          "url": "https://x.com/dopamine_crypto/status/2117806538282909968",
+          "title": "X 글: 경쟁 계정 넘기는 판매자 SNS 조사 스킬 보셈",
+          "published_at": "2026-11-04T02:30:00+00:00",
+          "collected_at": "2026-11-10T13:06:35.196334+09:00",
+          "verified_at": "2026-11-10T13:16:14+09:00"
+        },
+        {
+          "url": "https://github.com/ScrapeCreators/social-media-research-skills",
+          "title": "GitHub - ScrapeCreators/social-media-research-skills: AI agent skills for social media research. Outlier posts, comment ",
+          "published_at": null,
+          "collected_at": "2026-11-10T13:06:35.196334+09:00",
+          "verified_at": "2026-11-10T13:16:14+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/fp-easy-20261114-2.png",
+          "alt": "GitHub - ScrapeCreators/social-media-research-skills 원문 화면 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "GitHub - ScrapeCreators/social-media-research-skills 원문 화면",
+          "source_url": "https://github.com/ScrapeCreators/social-media-research-skills",
+          "sha256": "edb59f47a4f040180d1494a4b3c839da4ed08df1c88e0d749e27094f5e297c4a"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-14",
+      "title": "컨텐츠 347 · 피그마 켰다가 막힌 사장님 7분 강의부터 보셈",
+      "type": "evergreen",
+      "target": "피그마 처음 여는 사장님",
+      "fmt": "7분 입문 강의",
+      "format": "case_thread",
+      "editorial_kind": "easy_news",
+      "body": "피그마 켰다가 막힌 사장님\n7분 강의부터 보셈\n\n파일 열기부터 공유까지\n한 번에 훑는 무료 영상임\n\n볼 순서 댓글에 적어둠",
+      "replies": [
+        "1. 처음 1분\n\n0분 32초부터\n파일 여는 법이 나옴\n0분 38초엔\n파일 종류 6개를 보고\n1분 1초부터\n화면과 툴바를 훑음",
+        "2. 화면 만드는 구간\n\n1분 45초부터\n도형을 만들어봄\n색, 테두리, 효과는\n1분 56초부터임\n2분 15초엔 프레임\n2분 31초엔 그룹과\n차이를 확인하면 됨",
+        "3. 자동 정렬 구간\n\n3분 10초부터\n오토레이아웃을 배움\n3분 18초엔\n직접 적용하는 법이 나옴\n4분 5초부터는\n컴포넌트를 다룸",
+        "4. 내보내고 공유하기\n\n4분 35초부터\n화면 연결과 움직임\n5분 1초엔 내보내기\n5분 15초부터\n협업과 파일 공유를 다룸\n영상 옆에 피그마 켜고\n같이 눌러보면 됨"
+      ],
+      "link_comment": "무료 강의 원문\n\nhttps://youtu.be/_HkE6iIPf7g",
+      "sources": [
+        {
+          "url": "https://x.com/0629lan/status/2118268237469397196",
+          "title": "X 글: 피그마 켰다가 막힌 사장님 7분 강의부터 보셈",
+          "published_at": "2026-11-05T09:04:37+00:00",
+          "collected_at": "2026-11-10T13:06:35.196334+09:00",
+          "verified_at": "2026-11-10T13:16:14+09:00"
+        },
+        {
+          "url": "https://youtu.be/_HkE6iIPf7g",
+          "title": "Figma Basics A-Z: 7-Minute Crash Course for Beginners (Free Tool, Industry-Standard Skills) #Figm...",
+          "published_at": null,
+          "collected_at": "2026-11-10T13:06:35.196334+09:00",
+          "verified_at": "2026-11-10T13:16:14+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/fp-easy-20261114-3.png",
+          "alt": "Figma Basics A-Z: 7-Minute Crash Course for Beginners 원문 화면 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "Figma Basics A-Z: 7-Minute Crash Course for Beginners 원문 화면",
+          "source_url": "https://youtu.be/_HkE6iIPf7g",
+          "sha256": "f57641aaa77ee3cab9bdf3e3d9ff6ab6ce44c2a131cf922543b3a8fea024a634"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-14",
+      "title": "컨텐츠 348 · 정부지원 찾는 사장님 필독",
+      "type": "evergreen",
+      "target": "공공정보 자주 찾는 대표",
+      "fmt": "한국형 스킬 모음",
+      "format": "case_thread",
+      "editorial_kind": "easy_news",
+      "body": "정부지원 찾는 사장님 필독\n\n한국 생활용 스킬 134개\n클로드와 코덱스에 붙음\n\n사업용 4개 댓글에 골라둠",
+      "replies": [
+        "1. 한꺼번에 깔기\n\n아래 한 줄 실행하면 됨\n\nnpx --yes skills add NomaDamas/k-skill --all -g\n\nNode 18 이상과\nnpx가 기본으로 필요함\n처음엔 전체보다\n쓸 것만 골라도 됨",
+        "2. 사업자 확인\n\n국세청 사업자 상태와\n등록정보 진위를 확인함\n거래 전 확인할\n(사업자번호)의\n사업자 상태와\n등록정보 진위를\n확인해 줘.",
+        "3. 정부지원 찾기\n\nK-Startup과 기업마당\n여러 공개 공고를 모아\n적합성을 보수적으로 봄\n(사업 분야)와\n(지역), (사업 단계)에\n맞는 공고를 찾아 줘.\n마감과 공식 링크도\n같이 정리해 줘.",
+        "4. 광고비 확인\n\n네이버 검색광고의\n노출수와 클릭수\n광고비와 전환수를 봄\n읽기 전용으로 돌아감\n(기간) 성과를\n캠페인별로 비교해 줘.",
+        "5. 알아둘 점\n\n일부 스킬은 프록시로\n공개 API를 조회함\n분석 통계는 끌 수 있음\n설치 전에 필요한\n권한과 입력값을 보셈\n공개정보 조회라도\n대량 수집은 하면 안 됨"
+      ],
+      "link_comment": "깃허브 원문\n\nhttps://github.com/NomaDamas/k-skill",
+      "sources": [
+        {
+          "url": "https://x.com/hmmmmmm1458/status/2119339356255371367",
+          "title": "X 글: 정부지원 찾는 사장님 필독",
+          "published_at": "2026-11-08T08:00:52+00:00",
+          "collected_at": "2026-11-10T13:06:35.196334+09:00",
+          "verified_at": "2026-11-10T13:16:14+09:00"
+        },
+        {
+          "url": "https://github.com/NomaDamas/k-skill",
+          "title": "GitHub - NomaDamas/k-skill: 한국인을 위한 스킬 모음집 - 에이전트를 한국인으로",
+          "published_at": null,
+          "collected_at": "2026-11-10T13:06:35.196334+09:00",
+          "verified_at": "2026-11-10T13:16:14+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/fp-easy-20261114-4.png",
+          "alt": "GitHub - NomaDamas/k-skill 원문 화면 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "GitHub - NomaDamas/k-skill 원문 화면",
+          "source_url": "https://github.com/NomaDamas/k-skill",
+          "sha256": "66d784ecbface12bcc055e3df9c38165c649a663c17a3f066353225896771305"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-14",
+      "title": "컨텐츠 349 · 손그림 영상 필요한 사장님 anidoodle 보셈",
+      "type": "evergreen",
+      "target": "손그림 홍보 영상이 필요한 사장님",
+      "fmt": "영상 스킬 설치",
+      "format": "case_thread",
+      "editorial_kind": "easy_news",
+      "supplemental": true,
+      "body": "손그림 영상 필요한 사장님\nanidoodle 보셈\n\n32가지 화풍으로 그림과\n그리는 영상까지 만듦\n\n설치와 주문 댓글에 둠",
+      "replies": [
+        "1. 뭘 만들 수 있나\n\n그림과 그리는 과정을\n같은 소스에서 뽑아냄\n볼펜, 크레용, 수묵화\n픽셀아트도 고를 수 있음\nPNG, MP4, GIF로\n내보낼 수 있음",
+        "2. 클로드에 설치\n\n아래 두 줄을 넣으셈\n\n/plugin marketplace add alexgreensh/anidoodle\n/plugin install anidoodle@alexgreensh-anidoodle\n\n설치 뒤에는\n말로 시키면 됨",
+        "3. 첫 그림 주문\n\n(상품)을 주인공으로\n(화풍)의 세로형\n홍보 그림을 만들어 줘.\n배경은 (장소)로 하고\n브랜드색 (색상)을\n두 군데만 써 줘.",
+        "4. 움직이는 영상\n\n방금 만든 그림이\n선부터 완성되는\n세로 영상을 만들어 줘.\n마지막 화면에는\n(상품명)을 넣고\nGIF와 MP4로 뽑아 줘.",
+        "5. 설치 전 확인\n\n정지 그림은 브라우저\n움직이는 건 ffmpeg도 필요함\nNode 20 이상이어야 함\n코덱스에서도 쓸 수 있지만\n플러그인 화면에서\n따로 설치해야 함"
+      ],
+      "link_comment": "깃허브 원문\n\nhttps://github.com/alexgreensh/anidoodle",
+      "sources": [
+        {
+          "url": "https://x.com/doodi_dev/status/2117802763744682255",
+          "title": "X 글: 손그림 영상 필요한 사장님 anidoodle 보셈",
+          "published_at": "2026-11-04T02:15:00+00:00",
+          "collected_at": "2026-11-10T13:06:35.196334+09:00",
+          "verified_at": "2026-11-10T13:16:14+09:00"
+        },
+        {
+          "url": "https://github.com/alexgreensh/anidoodle",
+          "title": "GitHub - alexgreensh/anidoodle: Art and animation, written as code. Illustrations, loops, interactive web art, launch-vi",
+          "published_at": null,
+          "collected_at": "2026-11-10T13:06:35.196334+09:00",
+          "verified_at": "2026-11-10T13:16:14+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/fp-easy-20261114-5.png",
+          "alt": "GitHub - alexgreensh/anidoodle 원문 화면 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "GitHub - alexgreensh/anidoodle 원문 화면",
+          "source_url": "https://github.com/alexgreensh/anidoodle",
+          "sha256": "2be92a7cb093795098bce8d826f381580f81803ea0ed81a341ca4147058d498a"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-14",
+      "title": "컨텐츠 350 · 캐릭터 춤 영상 만드는 법",
+      "type": "evergreen",
+      "target": "AI 캐릭터 쇼츠 만드는 사장님",
+      "fmt": "댄스 영상 프롬프트",
+      "format": "case_thread",
+      "editorial_kind": "easy_news",
+      "supplemental": true,
+      "body": "캐릭터 춤 영상 만드는 법\n\n첫 장면과 동작을 나눠\n8초 세로 영상으로 만듦\n\n복붙 프롬프트 댓글에 둠",
+      "replies": [
+        "1. 첫 장면 만들기\n\n(캐릭터 사진)을\n참고 이미지로 넣고\n9:16 세로 전신으로\n첫 장면을 만들어 줘.\n맑은 하늘 아래\n(장소)에 서 있게 하고\n의상은 (색상) 체크로\n맞춰 줘.",
+        "2. 카메라 고정\n\n방금 만든 이미지를\n첫 프레임으로 넣으셈\n카메라는 낮은 각도의\n전신 고정 화면으로\n유지해 줘.\n발은 제자리에 두고\n몸 전체가 나오게 해 줘.",
+        "3. 0초부터 2.5초\n\n0초부터 2.5초까지\n허리를 박자에 맞춰\n가볍게 흔들어 줘.\n오른손은 내리고\n왼손으로 브이 포즈를\n만들어 줘.",
+        "4. 2.5초부터 6초\n\n2.5초부터 6초까지\n발은 고정하고\n골반을 좌우로\n가볍게 움직여 줘.\n두 손은 허리 앞에서\n바깥과 안쪽으로\n번갈아 흔들어 줘.",
+        "5. 6초부터 8초\n\n6초부터 8초까지\n왼손으로 어깨 옆\n머리카락을 만져 줘.\n오른손은 허리에 두고\n앞의 손동작을\n한 번 더 반복해 줘.\n완성 뒤 음악은\n비트에 맞춰 넣으셈"
+      ],
+      "link_comment": "원문 프롬프트\n\nhttps://x.com/noahvisualsx/status/2119346637331931550",
+      "sources": [
+        {
+          "url": "https://x.com/noahvisualsx/status/2119346637331931550",
+          "title": "X 글: 캐릭터 춤 영상 만드는 법",
+          "published_at": "2026-11-08T08:29:48+00:00",
+          "collected_at": "2026-11-10T13:06:35.196334+09:00",
+          "verified_at": "2026-11-10T13:16:14+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/fp-easy-20261114-6.png",
+          "alt": "메이크패밀리 제작 프롬프트 정리 이미지 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "메이크패밀리 제작 프롬프트 정리 이미지",
+          "source_url": "https://x.com/noahvisualsx/status/2119346637331931550",
+          "sha256": "2e2c872dcc94c4073f83cd6fe211ddacd11d8fc95854b3d6d6d41f9781e16936"
+        }
+      ]
     }
   ],
   "_작성기준": "글감 작성 전 AGENTS.md와 config/brands/makefamily.md의 최신 사용자 기준을 읽는다. 과거 루틴 문구와 충돌하면 최신 사용자 기준을 적용한다."
