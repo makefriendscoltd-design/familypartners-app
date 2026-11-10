@@ -5704,6 +5704,266 @@
           "sha256": "2e2c872dcc94c4073f83cd6fe211ddacd11d8fc95854b3d6d6d41f9781e16936"
         }
       ]
+    },
+    {
+      "date": "2026-11-15",
+      "title": "컨텐츠 351 · 긴 일 반만 끝내는 클로드 필독",
+      "type": "ai",
+      "target": "긴 작업을 AI에 맡기는 사장님",
+      "fmt": "깃허브 스킬 소개",
+      "format": "case_thread",
+      "editorial_kind": "easy_news",
+      "body": "긴 일 반만 끝내는 클로드 필독\n\nunlazy는 통과 기준을\n먼저 세우는 검사 스킬임\n\n설치부터 댓글에 정리함",
+      "replies": [
+        "1. 어떤 스킬\n\n긴 작업의 통과 기준을\n먼저 적게 만드는 스킬임\n검사를 다시 돌린 뒤\n근거만 완료로 보고함",
+        "2. 설치하는 법\n\n클로드나 코덱스에서\n아래 한 줄 실행하셈\n\nnpx skills add Leonxlnx/unlazy\n\n설치 뒤 스킬 이름을\n부르면 됨",
+        "3. 처음 시킬 일\n\n(작업)을 단계로 나누고\n각 단계의 통과 기준을\n먼저 만든 뒤 진행해 줘.\n\n(결과물)에서 빠진 항목도\n다시 검사해 줘.",
+        "4. 잘 맞는 일\n\n시장조사와 긴 문서처럼\n빠뜨려도 티 안 나는 일에\n붙이면 됨\n짧은 질문에는\n굳이 쓸 필요 없음",
+        "5. 확인할 점\n\n검사 명령을 실행하기 전\n내용부터 읽으셈\n승인은 격리가 아님\n완료 문장보다\n통과 근거가 있는지 보셈"
+      ],
+      "link_comment": "깃허브 원문\n\nhttps://github.com/Leonxlnx/unlazy",
+      "sources": [
+        {
+          "url": "https://x.com/dopamine_crypto/status/2117478124182991017",
+          "title": "X 글: 긴 일 반만 끝내는 클로드 필독",
+          "published_at": "2026-11-03T04:45:00+00:00",
+          "collected_at": "2026-11-10T13:53:20.309204+09:00",
+          "verified_at": "2026-11-10T14:03:08+09:00"
+        },
+        {
+          "url": "https://github.com/Leonxlnx/unlazy",
+          "title": "GitHub - Leonxlnx/unlazy: Anti-laziness skill for AI agents. Core: the Depth Tree method, which splits a task N layers d",
+          "published_at": null,
+          "collected_at": "2026-11-10T13:53:20.309204+09:00",
+          "verified_at": "2026-11-10T14:03:08+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/fp-easy-20261115-1.png",
+          "alt": "GitHub - Leonxlnx/unlazy 원문 화면 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "GitHub - Leonxlnx/unlazy 원문 화면",
+          "source_url": "https://github.com/Leonxlnx/unlazy",
+          "sha256": "e3f718819c2408ee5398ecc2b915c80edb23945dbfe0212439287fcc187c29d3"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-15",
+      "title": "컨텐츠 352 · 잘된 숏폼 구조 뜯는 법",
+      "type": "marketing",
+      "target": "숏폼을 분석하는 판매자",
+      "fmt": "영상 분석 도구",
+      "format": "case_thread",
+      "editorial_kind": "easy_news",
+      "body": "잘된 숏폼 구조 뜯는 법\n\nrea-video가 컷과 자막\n소리까지 나눠서 보여줌\n\n설치와 결과 댓글에 둠",
+      "replies": [
+        "1. 뭘 나누는지\n\n영상을 컷 단위로 나눔\n실사와 AI, 코드 장면을\n각각 판정해 줌\n자막 시간과 색,\n컷 속도와 소리도 정리함",
+        "2. 설치하는 순서\n\n클로드나 코덱스에\n이렇게 요청하면 됨\n\nrea-video를 설치하고\n(영상 파일)을 컷별로\n분석해 줘.\n\nffmpeg와\nPython 3.10 이상이\n필요함",
+        "3. 결과로 받는 것\n\n한 줄 요약과 제작 계획,\n컷별 보고서가 나옴\n보고서에는 장면과 근거,\n카메라와 조명,\n자막과 소리가 들어감",
+        "4. 어디에 쓰는지\n\n(상품 영상)을 보고\n촬영, AI, 코드로 나눠\n다시 만들 계획을\n정리해 줘.\n\n가게 방문 영상과\n제품 시연도 분석됨",
+        "5. 꼭 지킬 점\n\nrea-video는\n영상 완성 도구가 아님\n분석과 제작 계획을 줌\n남의 영상과 음악 대신\n쓸 권리 있는 소스를\n준비하셈"
+      ],
+      "link_comment": "깃허브 원문\n\nhttps://github.com/JuneYaooo/rea-video",
+      "sources": [
+        {
+          "url": "https://x.com/hmmmmmm1458/status/2119267365900984759",
+          "title": "X 글: 잘된 숏폼 구조 뜯는 법",
+          "published_at": "2026-11-08T03:14:48+00:00",
+          "collected_at": "2026-11-10T13:53:20.309204+09:00",
+          "verified_at": "2026-11-10T14:03:08+09:00"
+        },
+        {
+          "url": "https://github.com/JuneYaooo/rea-video",
+          "title": "GitHub - JuneYaooo/rea-video: Reverse-engineer any video, shot by shot: filmed, AI-generated or coded, and how to remake",
+          "published_at": null,
+          "collected_at": "2026-11-10T13:53:20.309204+09:00",
+          "verified_at": "2026-11-10T14:03:08+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/fp-easy-20261115-2.png",
+          "alt": "GitHub - JuneYaooo/rea-video 원문 화면 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "GitHub - JuneYaooo/rea-video 원문 화면",
+          "source_url": "https://github.com/JuneYaooo/rea-video",
+          "sha256": "34201a4d083586c53e1b3f11633392388a7dc0cf2cad596a7e03e3b6f3a71c50"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-15",
+      "title": "컨텐츠 353 · AI 답변 그대로 쓰기 전 필독",
+      "type": "evergreen",
+      "target": "AI 답변을 검토하는 1인 대표",
+      "fmt": "검토 스킬 사용법",
+      "format": "case_thread",
+      "editorial_kind": "easy_news",
+      "body": "AI 답변 그대로 쓰기 전 필독\n\ndiscernment-nudge가\n의심할 질문을 골라줌\n\n쓰는 순서 댓글에 적어둠",
+      "replies": [
+        "1. 뭘 해주는지\n\n초안과 계획을 읽고\n확인할 질문을 골라줌\n정답을 대신 고치기보다\n가정과 근거를\n다시 보게 만드는 스킬임",
+        "2. 준비하는 순서\n\n스킬북 설치 요청을\n클로드 코드에 붙이셈\n지원 계정이면\n스킬 설정에서\n패키지를 추가하면 됨\n설치 뒤 이름을\n인식하는지 확인하셈",
+        "3. 초안 넣는 말\n\ndiscernment-nudge\n스킬을 사용해서\n(계획)의 가정과 근거를\n확인할 질문으로\n구체적으로 골라 줘.",
+        "4. 결과 확인\n\n질문이 초안 안 숫자와\n가정에 붙었는지 보셈\n막연한 주의만 나오면\n(원문)과 (사용 목적)을\n함께 넣어 다시 봐 줘.",
+        "5. 미검증 범위\n\n안내 페이지에도\n실제 설치와 실행은\n미검증이라고 적혀 있음\n중요한 결론은\n원문과 숫자로 대조하셈"
+      ],
+      "link_comment": "스킬 안내 페이지\n\nhttps://www.getskillbook.com/skills/claude-discernment-nudge/",
+      "sources": [
+        {
+          "url": "https://x.com/BBBang9900/status/2118584164710769006",
+          "title": "X 글: AI 답변 그대로 쓰기 전 필독",
+          "published_at": "2026-11-06T06:00:00+00:00",
+          "collected_at": "2026-11-10T13:53:20.309204+09:00",
+          "verified_at": "2026-11-10T14:03:08+09:00"
+        },
+        {
+          "url": "https://www.getskillbook.com/skills/claude-discernment-nudge/",
+          "title": "AI 답변에서 다시 확인할 점 찾기 — 스킬북",
+          "published_at": null,
+          "collected_at": "2026-11-10T13:53:20.309204+09:00",
+          "verified_at": "2026-11-10T14:03:08+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/fp-easy-20261115-3.png",
+          "alt": "AI 답변에서 다시 확인할 점 찾기 — 스킬북 원문 화면 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "AI 답변에서 다시 확인할 점 찾기 — 스킬북 원문 화면",
+          "source_url": "https://www.getskillbook.com/skills/claude-discernment-nudge/",
+          "sha256": "3c927e5d4324c1a36b0a7cd8f4ff124658d3b8c2a79cbe1bfd59e8cae7138426"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-15",
+      "title": "컨텐츠 354 · 눈 화장 자료 만드는 법",
+      "type": "evergreen",
+      "target": "뷰티 콘텐츠 만드는 사장님",
+      "fmt": "메이크업 자료",
+      "format": "case_thread",
+      "editorial_kind": "easy_news",
+      "body": "눈 화장 자료 만드는 법\n\n제미나이에 눈 사진 넣고\n선 위치까지 받는 자료임\n\n복붙 순서 댓글에 둠",
+      "replies": [
+        "1. 먼저 넣을 것\n\n정면 눈 사진을 넣으셈\n각도와 조명이 다르면\n판단도 달라질 수 있음\n안 보이는 특징은\n추측하지 말라고 적으셈",
+        "2. 눈 모양 분석\n\n(눈 사진)을 보고\n눈 비율과 눈꼬리 방향을\n관찰한 특징만으로\n분석해 줘.",
+        "3. 화장 방향 고르기\n\n(원하는 효과)에 맞는\n뒷트임 메이크업을\n1순위와 대안으로 나눠\n추천해 줘.",
+        "4. 그리는 순서 받기\n\n(초보 여부)에 맞춰\n윗아이라인과 삼각존을\n그릴 위치, 제품, 색,\n수정법까지 설명해 줘.",
+        "5. 마지막 확인\n\n눈 모양을 단점처럼\n평가하지 않는지 보셈\n실측처럼 단정하면 안 됨\n수술이 아니라\n뒷트임 메이크업으로\n표시됐는지 확인하셈"
+      ],
+      "link_comment": "무료 노션 원문\n\nhttps://app.notion.com/p/1-1-40f60197288d80e7bc09f5fe81b3fd97",
+      "sources": [
+        {
+          "url": "https://x.com/bake_prompt/status/2118293042428027293",
+          "title": "X 글: 눈 화장 자료 만드는 법",
+          "published_at": "2026-11-05T10:43:11+00:00",
+          "collected_at": "2026-11-10T13:53:20.309204+09:00",
+          "verified_at": "2026-11-10T14:03:08+09:00"
+        },
+        {
+          "url": "https://app.notion.com/p/1-1-40f60197288d80e7bc09f5fe81b3fd97",
+          "title": "Notion | Where teams and agents work together",
+          "published_at": null,
+          "collected_at": "2026-11-10T13:53:20.309204+09:00",
+          "verified_at": "2026-11-10T14:03:08+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/fp-easy-20261115-4.png",
+          "alt": "Notion | Where teams and agents work together 원문 화면 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "Notion | Where teams and agents work together 원문 화면",
+          "source_url": "https://app.notion.com/p/1-1-40f60197288d80e7bc09f5fe81b3fd97",
+          "sha256": "a3cc4d642e1aa1098d4fe80dcdf68c08cda77ce6b3331e5927e2bc0075ca47ed"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-15",
+      "title": "컨텐츠 355 · 앱 반복 입력하는 사장님 Phone Harness 보셈",
+      "type": "evergreen",
+      "target": "앱 반복 입력하는 1인 대표",
+      "fmt": "스마트폰 자동화",
+      "format": "case_thread",
+      "editorial_kind": "easy_news",
+      "supplemental": true,
+      "body": "앱 반복 입력하는 사장님\nPhone Harness 보셈\n\nAI가 폰을 보고 누르고\n글자까지 입력하는 도구임\n\n연결 조건 댓글에 정리함",
+      "replies": [
+        "1. 뭘 하는 도구\n\n폰 화면을 읽고 누르고\n글자를 입력하고 넘김\n폰에 앱을 따로\n깔지 않아도 됨\n아이폰과 안드로이드를\n각기 다른 방식으로 연결함",
+        "2. 설치 요청하기\n\n클로드나 코덱스에\n이렇게 요청하셈\n\nPhone Harness를\n설치하고 (내 휴대폰)을\n연결하는 순서를\n안내해 줘.",
+        "3. 아이폰 조건\n\n맥은 macOS 15 이상,\n폰은 iOS 18 이상임\n아이폰 미러링을\n먼저 연결해야 함\n접근성과 화면 기록\n권한도 필요함",
+        "4. 안드로이드 조건\n\n맥과 윈도우,\n리눅스에서 연결됨\nadb와 USB 디버깅이\n필요함\n폰 연결은 사용자가\n직접 해야 함",
+        "5. 안 되는 동작\n\n글자는 읽지만\n이름 없는 아이콘은\n화면을 볼 수 있는\n모델이 필요함\n멀티터치와 카메라,\nFace ID는 지원 안 됨"
+      ],
+      "link_comment": "깃허브 원문\n\nhttps://github.com/phone-harness/phone-harness",
+      "sources": [
+        {
+          "url": "https://x.com/lucian__03/status/2119419482321916012",
+          "title": "X 글: 앱 반복 입력하는 사장님 Phone Harness 보셈",
+          "published_at": "2026-11-08T13:19:16+00:00",
+          "collected_at": "2026-11-10T13:53:20.309204+09:00",
+          "verified_at": "2026-11-10T14:03:08+09:00"
+        },
+        {
+          "url": "https://github.com/phone-harness/phone-harness",
+          "title": "GitHub - phone-harness/phone-harness: let your agent control your phone",
+          "published_at": null,
+          "collected_at": "2026-11-10T13:53:20.309204+09:00",
+          "verified_at": "2026-11-10T14:03:08+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/fp-easy-20261115-5.png",
+          "alt": "GitHub - phone-harness/phone-harness 원문 화면 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "GitHub - phone-harness/phone-harness 원문 화면",
+          "source_url": "https://github.com/phone-harness/phone-harness",
+          "sha256": "c6363c157628429daab0674c85dba3cd22188af070fe1520d01076eac926b12d"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-15",
+      "title": "컨텐츠 356 · 랜딩페이지 AI 티 줄이는 스킬",
+      "type": "evergreen",
+      "target": "웹 계산기 만드는 1인 사업자",
+      "fmt": "웹 화면 스킬",
+      "format": "case_thread",
+      "editorial_kind": "easy_news",
+      "supplemental": true,
+      "body": "랜딩페이지 AI 티 줄이는 스킬\n\nweb-artifacts-builder\n복잡한 웹 화면을 만들어줌\n\n설치와 순서 댓글에 정리함",
+      "replies": [
+        "1. 어디에 맞는지\n\n클로드 대화에 띄울\n복잡한 화면용 스킬임\n페이지 이동이나\n상태 변화가 있을 때 씀\nHTML 한 장짜리용은\n아니라고 적혀 있음",
+        "2. 설치하는 순서\n\n클로드 코드에\n아래 두 줄을 넣으셈\n\n/plugin marketplace add anthropics/skills\n\n/plugin install example-skills@anthropic-agent-skills\n\n설치 뒤 스킬 이름을\n말해서 시작하면 됨",
+        "3. 계산기 시키기\n\nweb-artifacts-builder\n스킬을 사용해서\n(계산기 종류)를 만들고\n입력값과 결과가 바뀌는\n화면으로 구성해 줘.",
+        "4. 만들어지는 파일\n\n초기화 뒤 React\n프로젝트가 생김\n묶음 실행이 끝나면\nbundle.html 하나가 나옴\n프로젝트 맨 위에\nindex.html이 있어야 함",
+        "5. 피하는 디자인\n\n가운데 정렬 남발과\n보라색 그라데이션,\n같은 둥근 모서리,\nInter 반복을 피하게 함\n최종 파일 하나를\n클로드에 띄우면 됨"
+      ],
+      "link_comment": "깃허브 원문\n\nhttps://github.com/anthropics/skills/tree/main/skills/web-artifacts-builder",
+      "sources": [
+        {
+          "url": "https://x.com/dopamine_crypto/status/2118316147091136895",
+          "title": "X 글: 랜딩페이지 AI 티 줄이는 스킬",
+          "published_at": "2026-11-05T12:15:00+00:00",
+          "collected_at": "2026-11-10T13:53:20.309204+09:00",
+          "verified_at": "2026-11-10T14:03:08+09:00"
+        },
+        {
+          "url": "https://github.com/anthropics/skills/tree/main/skills/web-artifacts-builder",
+          "title": "GitHub - anthropics/skills: Public repository for Agent Skills",
+          "published_at": null,
+          "collected_at": "2026-11-10T13:53:20.309204+09:00",
+          "verified_at": "2026-11-10T14:03:08+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/fp-easy-20261115-6.png",
+          "alt": "GitHub - anthropics/skills 원문 화면 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "GitHub - anthropics/skills 원문 화면",
+          "source_url": "https://github.com/anthropics/skills/tree/main/skills/web-artifacts-builder",
+          "sha256": "3902b60bf8d6253f60b8ea04c2c33b098276f3a656dde1ade8cd5a211c61da3a"
+        }
+      ]
     }
   ],
   "_작성기준": "글감 작성 전 AGENTS.md와 config/brands/makefamily.md의 최신 사용자 기준을 읽는다. 과거 루틴 문구와 충돌하면 최신 사용자 기준을 적용한다."
