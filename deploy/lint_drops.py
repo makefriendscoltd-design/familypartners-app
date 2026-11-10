@@ -171,6 +171,7 @@ def check_one(d: dict, cfg: dict) -> list[str]:
         if d.get("editorial_kind") == "easy_news":
             if len(closing) > 500 or not re.search(r"https://\S+", closing):
                 bad.append("마지막 댓글에 원문 링크 필요")
+            bad.extend(check_easy_news_text(d))
         elif len(closing) > 500 or "https://lounge.aimax.ai.kr/worldclass/" not in closing:
             bad.append("마지막 댓글에 라운지 활용노트 링크 필요")
         if not d.get("sources"):
@@ -184,6 +185,29 @@ def check_one(d: dict, cfg: dict) -> list[str]:
     if (d.get("date") or "") >= HOOK_RULES_FROM:
         bad += check_hook(d)
     return bad
+
+
+# 쉬운 소식 글 (2026-11-10 사용자 정정): 폰 화면에서 자동 줄바꿈이 생기지 않게 한 줄 20자 이하,
+# "X에서 OO라는 분이 올린" 같은 출처 인물·반응 소개 금지. 출처는 링크 댓글과 sources에만 둔다.
+EASY_MAX_LINE = 20
+EASY_SOURCE_PERSON = re.compile(
+    r"(X에서|엑스에서|스레드에서|트위터에서|라는 분|라는 계정|분이 (올린|소개|정리)|"
+    r"좋아요 [\d.]+만|조회수 [\d.]+만|소개해서 퍼졌)")
+
+
+def check_easy_news_text(d: dict) -> list[str]:
+    out = []
+    parts = [d.get("body") or ""] + list(d.get("replies") or []) + [d.get("link_comment") or ""]
+    for part in parts:
+        for line in part.split("\n"):
+            if line.startswith(("https://", "npx ", "npm ", "git ", "pip ", "/")):  # 복붙할 명령어 줄은 끊지 않는다
+                continue
+            if len(line) > (32 if line.isascii() else EASY_MAX_LINE):  # 영문은 폭이 좁다
+                out.append(f"쉬운 소식 한 줄 {EASY_MAX_LINE}자 초과: {line[:24]}")
+                break
+    if any(EASY_SOURCE_PERSON.search(p) for p in parts):
+        out.append("쉬운 소식에 출처 인물·반응 소개 문장 — 방법만 바로 쓰기")
+    return out
 
 
 def check_hook(d: dict) -> list[str]:

@@ -39,6 +39,16 @@ class EasyNewsLinkTest(unittest.TestCase):
         d.pop("editorial_kind")
         self.assertIn("마지막 댓글에 라운지 활용노트 링크 필요", check_one(d, cfg))
 
+    def test_easy_news_line_and_source_person(self):
+        from deploy.lint_drops import check_easy_news_text
+        ok = {"body": "한글 파일 못 읽히면\n이거 보셈", "replies": ["1. 쓰는 법\n\nnpx -y kordoc setup 한 줄이면 됨"],
+              "link_comment": "깃허브 주소\n\nhttps://github.com/chrisryugj/kordoc"}
+        self.assertEqual(check_easy_news_text(ok), [])
+        long = {**ok, "body": "한글 파일 AI한테 못 읽혀서 복붙하고 있었으면 이거 보셈"}
+        self.assertTrue(any("20자" in m for m in check_easy_news_text(long)))
+        who = {**ok, "replies": ["X에서 도파민이라는\n분이 올린 스킬임"]}
+        self.assertTrue(any("출처 인물" in m for m in check_easy_news_text(who)))
+
 
 if __name__ == "__main__":
     unittest.main()
