@@ -5964,6 +5964,259 @@
           "sha256": "3902b60bf8d6253f60b8ea04c2c33b098276f3a656dde1ade8cd5a211c61da3a"
         }
       ]
+    },
+    {
+      "date": "2026-11-16",
+      "title": "컨텐츠 357 · 채용 공고 여러 장 보는 사장님 제미나이에 통째로 넣으셈",
+      "type": "ai",
+      "target": "채용 공고 보는 1인 대표",
+      "fmt": "공고 분석법",
+      "format": "case_thread",
+      "editorial_kind": "easy_news",
+      "body": "채용 공고 여러 장 보는 사장님\n제미나이에 통째로 넣으셈\n\n실제 업무와 필수 조건을\n나눠 보는 무료 레시피임\n\n질문 순서 댓글에 적어둠",
+      "replies": [
+        "1. 공고부터 넣기\n\n관심 있는 채용 공고를\n제미나이에 붙여넣으셈\n실제 업무와 핵심 역량,\n확인할 조건을 물으면 됨",
+        "2. 첫 질문\n\n(채용 공고)에서\n하루나 한 주에 맡을 일과\n핵심 역량 3가지를\n쉽게 설명해 줘.\n\n필수요건과 우대사항도\n나눠 줘.",
+        "3. 경험 맞추기\n\n(채용 공고)와\n(내 경험)을 비교해서\n잘 맞는 경험 3가지와\n행동, 결과, 배운 점을\n골라 줘.\n\n없는 경험은\n만들지 않게 해 줘.",
+        "4. 준비 순서\n\n(마감일)을 기준으로\n오늘 할 일과 이번 주 일,\n시간이 필요한 일을\n우선순위대로 정리해 줘.\n\n완성 기준도 붙여 줘.",
+        "5. 마지막 확인\n\n지원 조건과 마감일은\n공고 원문에서 확인하셈\nAI가 만든 사실은 없는지\n내 경험과 다시 맞춰보셈"
+      ],
+      "link_comment": "공고 분석 원문\n\nhttps://app.notion.com/p/3e96d6d608118049aa32d5e355334158",
+      "sources": [
+        {
+          "url": "https://x.com/jamjam_cook/status/2117859997187211677",
+          "title": "X 글: 채용 공고 여러 장 보는 사장님 제미나이에 통째로 넣으셈",
+          "published_at": "2026-11-04T06:02:25+00:00",
+          "collected_at": "2026-11-11T09:21:56.673360+09:00",
+          "verified_at": "2026-11-11T09:32:14+09:00"
+        },
+        {
+          "url": "https://app.notion.com/p/3e96d6d608118049aa32d5e355334158",
+          "title": "Notion | Where teams and agents work together",
+          "published_at": null,
+          "collected_at": "2026-11-11T09:21:56.673360+09:00",
+          "verified_at": "2026-11-11T09:32:14+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/fp-easy-20261116-1.png",
+          "alt": "Notion | Where teams and agents work together 원문 화면 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "Notion | Where teams and agents work together 원문 화면",
+          "source_url": "https://app.notion.com/p/3e96d6d608118049aa32d5e355334158",
+          "sha256": "b54615452bf47a69828d44d4c3b5b35735f6cc1c55bc3bfd3ea5d979dd8cbf78"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-16",
+      "title": "컨텐츠 358 · 야식 메뉴 홍보컷 만드는 법",
+      "type": "marketing",
+      "target": "간식 메뉴 홍보하는 판매자",
+      "fmt": "이미지 프롬프트",
+      "format": "case_thread",
+      "editorial_kind": "easy_news",
+      "body": "야식 메뉴 홍보컷 만드는 법\n\nPixAI용 간식 캐릭터\n밤 편의점 프롬프트임\n\n복붙 문장 댓글에 둠",
+      "replies": [
+        "1. 장면 만들기\n\n늦은 밤 편의점 창가에\n(캐릭터)가 후드티를 입고\n(간식)을 두 손으로 들고\n먹는 장면을 그려 줘.",
+        "2. 빛 넣기\n\n형광등과 푸른 밤빛이\n섞인 조용한 분위기로\n그려 줘.",
+        "3. 구도 잡기\n\n위에서 본 상반신 구도로\n캐릭터와 간식이\n함께 보이게 그려 줘.",
+        "4. 화풍 정하기\n\n회화풍 애니 삽화와\n필름 입자 느낌으로\n표현해 줘.",
+        "5. 음료로 바꾸기\n\n(간식)을 먹는 장면을\n(음료)를 두 손으로 들고\n마시는 장면으로 바꿔 줘.\n\n손과 컵이 겹치는지\n마지막에 확인하셈"
+      ],
+      "link_comment": "프롬프트 원문\n\nhttps://x.com/bad_sajang/status/2117979871490289947",
+      "sources": [
+        {
+          "url": "https://x.com/bad_sajang/status/2117979871490289947",
+          "title": "X 글: 야식 메뉴 홍보컷 만드는 법",
+          "published_at": "2026-11-04T13:58:46+00:00",
+          "collected_at": "2026-11-11T09:21:56.673360+09:00",
+          "verified_at": "2026-11-11T09:32:14+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/fp-easy-20261116-2.png",
+          "alt": "메이크패밀리 제작 프롬프트 정리 이미지 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "메이크패밀리 제작 프롬프트 정리 이미지",
+          "source_url": "https://x.com/bad_sajang/status/2117979871490289947",
+          "sha256": "6bc7a8e47de518efc56867507279cd89b1a5b5932cc4512a3210f6cecada9f14"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-16",
+      "title": "컨텐츠 359 · AI 봇 서버비 내기 전 필독",
+      "type": "evergreen",
+      "target": "AI 봇을 운영하는 사장님",
+      "fmt": "무료 서버 설정",
+      "format": "case_thread",
+      "editorial_kind": "easy_news",
+      "body": "AI 봇 서버비 내기 전 필독\n\n오라클 상시 무료 서버에\nOpenBot을 올릴 수 있음\n\n설정 순서 댓글에 정리함",
+      "replies": [
+        "1. 무료 범위\n\nArm 24GB 메모리와\n블록 저장 200GB가\n상시 무료 범위에 있음\n한도는 공식 안내에서\n다시 확인하셈",
+        "2. 서버 만들기\n\n오라클 계정을 만든 뒤\n상시 무료 Arm 서버를\n선택해서 시작하면 됨\n지역별 용량이 있는지도\n만들기 전에 확인하셈",
+        "3. 설치 전 확인\n\nOpenBot 공식 문서에서\n지원하는 우분투 버전과\nArm 지원 여부,\n설치 명령을 먼저 보셈\n변경 항목도 읽어두셈",
+        "4. 계정 연결\n\n설치 뒤 로그인하셈\n\nopenbot login\n\n서버 이름을 정하고\n메일 코드는 직접 넣으셈\n같은 메일로 앱에\n로그인하면 연결됨",
+        "5. 비용 확인\n\n상시 무료 한도만\n선택됐는지 확인하셈\n유료 전환 항목이 보이면\n만들기 전에 멈추고\n예상 비용부터 보셈"
+      ],
+      "link_comment": "오라클 공식 안내\n\nhttps://www.oracle.com/kr/cloud/free/",
+      "sources": [
+        {
+          "url": "https://x.com/ounce_online/status/2119459860878401952",
+          "title": "X 글: AI 봇 서버비 내기 전 필독",
+          "published_at": "2026-11-08T15:59:43+00:00",
+          "collected_at": "2026-11-11T09:21:56.673360+09:00",
+          "verified_at": "2026-11-11T09:32:14+09:00"
+        },
+        {
+          "url": "https://www.oracle.com/kr/cloud/free/",
+          "title": "클라우드 서비스 무료 이용",
+          "published_at": null,
+          "collected_at": "2026-11-11T09:21:56.673360+09:00",
+          "verified_at": "2026-11-11T09:32:14+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/fp-easy-20261116-3.png",
+          "alt": "클라우드 서비스 무료 이용 원문 화면 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "클라우드 서비스 무료 이용 원문 화면",
+          "source_url": "https://www.oracle.com/kr/cloud/free/",
+          "sha256": "4cfecb2c3d9424f5811b36f32d6cebd201c6af4aab9c5f8fdc907ce2dd7cc050"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-16",
+      "title": "컨텐츠 360 · 지원서 하나에 주말 쓰는 중? ai-job-search 보셈",
+      "type": "evergreen",
+      "target": "재취업 준비하는 1인 대표",
+      "fmt": "깃허브 구직 도구",
+      "format": "case_thread",
+      "editorial_kind": "easy_news",
+      "body": "지원서 하나에 주말 쓰는 중?\nai-job-search 보셈\n\n공고 평가부터 면접까지\n클로드로 잇는 도구임\n\n설치 전 조건 댓글에 둠",
+      "replies": [
+        "1. 여섯 단계\n\n프로필을 만든 뒤\n공고 수집과 순위 정리,\n지원서와 면접 준비,\n결과 기록까지 이어짐\n핵심 명령은 여섯 개임",
+        "2. 먼저 필요한 것\n\n클로드 코드와\nPython 3.10 이상,\nBun과 LaTeX가 필요함\n하나라도 낯설면\n설정 안내부터 읽으셈",
+        "3. 시작하는 순서\n\n깃허브 원문을 열고\n비공개 저장소로 복사하셈\n내려받은 폴더에서\n설치 안내를 순서대로\n확인하고 진행하셈",
+        "4. 쓰는 순서\n\n/setup\n\n/scrape\n\n/rank\n\n/apply (공고 본문)\n\n/interview",
+        "5. 개인정보 확인\n\n공개 포크에는 이름과\n경력 자료를 넣지 마셈\n개인 구직용은 비공개\n저장소로 만들고\n설정 파일을 채우셈"
+      ],
+      "link_comment": "깃허브 원문\n\nhttps://github.com/ai-job-search-dev/ai-job-search",
+      "sources": [
+        {
+          "url": "https://x.com/dopamine_crypto/status/2119346689240862861",
+          "title": "X 글: 지원서 하나에 주말 쓰는 중? ai-job-search 보셈",
+          "published_at": "2026-11-08T08:30:00+00:00",
+          "collected_at": "2026-11-11T09:21:56.673360+09:00",
+          "verified_at": "2026-11-11T09:32:14+09:00"
+        },
+        {
+          "url": "https://github.com/ai-job-search-dev/ai-job-search",
+          "title": "GitHub - ai-job-search-dev/ai-job-search: The job search that runs on your machine. AI job application framework built o",
+          "published_at": null,
+          "collected_at": "2026-11-11T09:21:56.673360+09:00",
+          "verified_at": "2026-11-11T09:32:14+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/fp-easy-20261116-4.png",
+          "alt": "GitHub - ai-job-search-dev/ai-job-search 원문 화면 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "GitHub - ai-job-search-dev/ai-job-search 원문 화면",
+          "source_url": "https://github.com/ai-job-search-dev/ai-job-search",
+          "sha256": "0fa0e556901f180fd8df299a3cac37d68e63a5dd0595b6667a7bfa4b76df0cea"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-16",
+      "title": "컨텐츠 361 · 웹툰 포트폴리오 준비 필독 합격작과 불합격작 같이 보셈",
+      "type": "evergreen",
+      "target": "웹툰 포트폴리오 준비 작가",
+      "fmt": "합격작 비교 자료",
+      "format": "case_thread",
+      "editorial_kind": "easy_news",
+      "supplemental": true,
+      "body": "웹툰 포트폴리오 준비 필독\n합격작과 불합격작 같이 보셈\n\n청강대 준비 과정과\n실제 면접 복기 자료임\n\n볼 순서 댓글에 정리함",
+      "replies": [
+        "1. 무료 작품\n\n공모전 최우수상을 받은\n첫 웹툰은 무료 공개임\n먼저 이야기 흐름과\n작품 구성을 살펴보셈",
+        "2. 같이 볼 자료\n\n작년 정시 포트폴리오와\n올해 합격 포트폴리오를\n함께 둔 자료임\n두 구성의 차이를 보셈",
+        "3. 제작 과정\n\n입시 준비 과정과\n작년 작업의 아쉬운 점,\n올해 수작업 과정과\n사용 재료까지 담겨 있음",
+        "4. 면접 준비\n\n실제 면접 질문과\n답변 복기가 들어 있음\n드로잉 테스트 주제도\n같이 확인하면 됨",
+        "5. 이용 범위\n\n무료 작품부터 확인하셈\n유료 본문과 포트폴리오,\n첨부 이미지는\n개인 열람용임\n복제와 재배포는 금지임"
+      ],
+      "link_comment": "합격 후기 원문\n\nhttps://posty.pe/p3pu4d4b",
+      "sources": [
+        {
+          "url": "https://x.com/harang125282/status/2119659517134971114",
+          "title": "X 글: 웹툰 포트폴리오 준비 필독 합격작과 불합격작 같이 보셈",
+          "published_at": "2026-11-09T05:13:04+00:00",
+          "collected_at": "2026-11-11T09:21:56.673360+09:00",
+          "verified_at": "2026-11-11T09:32:14+09:00"
+        },
+        {
+          "url": "https://posty.pe/p3pu4d4b",
+          "title": "2027 청강대 웹툰만화콘텐츠전공 면접전형 수시 1차 최초합 포트폴리오, 면접 후기",
+          "published_at": null,
+          "collected_at": "2026-11-11T09:21:56.673360+09:00",
+          "verified_at": "2026-11-11T09:32:14+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/fp-easy-20261116-5.png",
+          "alt": "2027 청강대 웹툰만화콘텐츠전공 면접전형 수시 1차 최초합 포트폴리오, 면접 후기 원문 화면 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "2027 청강대 웹툰만화콘텐츠전공 면접전형 수시 1차 최초합 포트폴리오, 면접 후기 원문 화면",
+          "source_url": "https://posty.pe/p3pu4d4b",
+          "sha256": "355e93fe03a289d458128e48ab63553443fc7d7fa2d9194164245bfc28c62018"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-16",
+      "title": "컨텐츠 362 · AI 과제물 티부터 줄이셈",
+      "type": "evergreen",
+      "target": "대학 공부 병행하는 사장님",
+      "fmt": "보고서 프롬프트",
+      "format": "case_thread",
+      "editorial_kind": "easy_news",
+      "supplemental": true,
+      "body": "AI 과제물 티부터 줄이셈\n\n문체와 출처 검토까지\n묶은 보고서 프롬프트임\n\n입력칸 댓글에 정리함",
+      "replies": [
+        "1. 먼저 빼는 것\n\n궁극적으로 같은 연결어,\n뜬금없는 대조 표현,\n해석 없는 수치 나열을\n줄이게 만든 가이드임",
+        "2. 글 구조\n\n과제 지침이 없으면\n서론, 본론, 결론으로\n쓰게 하면 됨\n결론에는 본문에 없던\n새 주장을 넣지 않게 함",
+        "3. 자료 쓰는 법\n\n논문과 공공기관 자료,\n기업 공식 보고서를\n먼저 쓰게 하면 됨\n사실과 해석은 나누고\n없는 출처는 만들지 마셈",
+        "4. 입력할 말\n\n(과제 주제)와\n(요구사항)을 반영해\n(분량)으로 작성해 줘.\n\n(자료) 밖의 사실은\n만들지 않게 해 줘.\n자료가 부족하면\n확인할 점을 정리해 줘.",
+        "5. 마지막 검토\n\n서론의 질문과 결론이\n이어지는지 확인하셈\n문단마다 핵심이 있는지,\n출처가 맞는지도\n다시 검사하게 하셈"
+      ],
+      "link_comment": "보고서 가이드 원문\n\nhttps://app.notion.com/p/412b37274c558070a052f8e2fcbd8606?source=copy_link",
+      "sources": [
+        {
+          "url": "https://x.com/hahagemmini/status/2119328401936789924",
+          "title": "X 글: AI 과제물 티부터 줄이셈",
+          "published_at": "2026-11-08T07:17:20+00:00",
+          "collected_at": "2026-11-11T09:21:56.673360+09:00",
+          "verified_at": "2026-11-11T09:32:14+09:00"
+        },
+        {
+          "url": "https://app.notion.com/p/412b37274c558070a052f8e2fcbd8606?source=copy_link",
+          "title": "Notion | Where teams and agents work together",
+          "published_at": null,
+          "collected_at": "2026-11-11T09:21:56.673360+09:00",
+          "verified_at": "2026-11-11T09:32:14+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/fp-easy-20261116-6.png",
+          "alt": "Notion | Where teams and agents work together 원문 화면 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "Notion | Where teams and agents work together 원문 화면",
+          "source_url": "https://app.notion.com/p/412b37274c558070a052f8e2fcbd8606?source=copy_link",
+          "sha256": "180b80b7430e9647429c428f5e93889e77f63781ca9c095db95b317fc0eec67a"
+        }
+      ]
     }
   ],
   "_작성기준": "글감 작성 전 AGENTS.md와 config/brands/makefamily.md의 최신 사용자 기준을 읽는다. 과거 루틴 문구와 충돌하면 최신 사용자 기준을 적용한다."
