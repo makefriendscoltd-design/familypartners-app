@@ -29,10 +29,23 @@ class CardnewsTest(base.VideoHTTPTest):
         token, name, cookie = ('token-a', '테스트가', self.a) if who == 'a' else ('token-b', '테스트나', self.b)
         return self.request('POST', '/cardnews/claim', urlencode(dict(id=did, name=name, t=token, csrf=v.csrf(token))), cookie)
 
+    def test_old_templates_retired_but_claimed_ones_stay_downloadable(self):
+        # 2026-11-13 디자인 교체: 옛 7종은 새로 못 올리고, 안 받은 옛 묶음은 목록에서 빠진다. 받은 사람은 계속 받는다.
+        self.assertEqual(self.request('POST', '/op/cardnews/upload', b'PK' + b'0' * 40, self.admin,
+                                      {'X-CSRF-Token': v.csrf('admin'), 'X-Deck-Title': 'x', 'X-Template': '01-gradient'})[0], 400)
+        old_free = self.up('08-poster', 'old1'); old_got = self.up('09-editorial', 'old2'); new = self.up('10-grunge', 'new1')
+        self.assertEqual(self.claim_deck(old_got, 'a')[0], 303)
+        c = db.connect(); c.execute("UPDATE cardnews_decks SET template='01-gradient' WHERE id IN (?,?)", (old_free, old_got)); c.commit(); c.close()
+        page = self.request('GET', '/cardnews', cookie=self.b)[2].decode()
+        self.assertNotIn(f"data-deck='{old_free}'", page); self.assertIn(f"data-deck='{new}'", page)
+        self.assertEqual(self.claim_deck(old_free, 'b')[0], 409)
+        self.assertEqual(self.claim_deck(old_got, 'a')[0], 303)
+        self.assertEqual(self.request('GET', f'/cardnews/file/{old_got}', cookie=self.a)[0], 200)
+
     def test_open_gallery_daily_two_and_zip_download(self):
         self.assertEqual(self.request('POST', '/op/cardnews/upload', b'not a zip at all 123456789', self.admin,
-                                      {'X-CSRF-Token': v.csrf('admin'), 'X-Deck-Title': 'x', 'X-Template': '01-gradient'})[0], 400)
-        a1 = self.up('01-gradient', 'a1'); a2 = self.up('02-shortcut', 'a2'); b1 = self.up('05-hero', 'b1'); a3 = self.up('03-negative', 'a3')
+                                      {'X-CSRF-Token': v.csrf('admin'), 'X-Deck-Title': 'x', 'X-Template': '08-poster'})[0], 400)
+        a1 = self.up('08-poster', 'a1'); a2 = self.up('09-editorial', 'a2'); b1 = self.up('10-grunge', 'b1'); a3 = self.up('08-poster', 'a3')
         page = self.request('GET', '/cardnews', cookie=self.a)[2].decode()
         self.assertIn('img.deck-cover{aspect-ratio:1/1', page)    # 정사각형 표지가 잘리지 않게
         for did in (a1, a2, b1, a3):                                   # 디자인 상관없이 전부 보인다
@@ -70,7 +83,7 @@ class RoomsHubTest(base.VideoHTTPTest):
         for room in ('✍️', '글감방', '🎬', '영상방', '🗂', '카드뉴스방'):
             self.assertIn(room, page)
         self.assertIn("href='/cardnews?t=token-a'", page)
-        self.assertIn('오늘 0/1편 받음', page)
+        self.assertIn('오늘 0/2편 받음', page)
         self.assertNotIn('id=partner-videos', page)             # 미리보기 대신 방 버튼
         feed = self.request('GET', '/feed?t=token-a')[2].decode()
         self.assertNotIn('id=partner-videos', feed); self.assertNotIn('id=partner-cardnews', feed)

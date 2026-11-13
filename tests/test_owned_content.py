@@ -16,7 +16,7 @@ class OwnedContentTest(unittest.TestCase):
 
     def seed(self):
         vid=json.loads(self.upload()[2])['id'];self.publish(vid);self.assertEqual(self.claim(vid,'a')[0],303)
-        did=self.up('01-gradient','mine');self.assertEqual(self.claim_deck(did,'a')[0],303)
+        did=self.up('08-poster','mine');self.assertEqual(self.claim_deck(did,'a')[0],303)
         other=json.loads(self.upload(self.blob+b'other')[2])['id'];self.publish(other);self.claim(other,'b')
         c=db.connect();c.execute('UPDATE exclusive_videos SET title=? WHERE id=?',('다른 사람 비밀 영상',other));c.execute('UPDATE cardnews_decks SET caption=? WHERE id=?',('카드뉴스 전용 캡션',did));c.commit();c.close()
         return vid,did,other
