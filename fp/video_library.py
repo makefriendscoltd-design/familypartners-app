@@ -20,7 +20,7 @@ from . import core, db, video_cafe
 MAX_VIDEO_BYTES = 512 * 1024 * 1024
 CHUNK = 1024 * 1024
 PARTNER_COOKIE = 'fp_video_partner'
-DAILY_VIDEO_LIMIT = 1  # 2026-11-10 사용자 결정: 계정당 하루 1편
+DAILY_VIDEO_LIMIT = 2  # 2026-11-13 사용자 결정: 계정당 하루 2편
 VISIBLE_TARGET = 30  # 자정마다 받을 수 있는 영상이 이 수가 되도록 대기열에서 채운다.
 AVAILABLE_SQL = 'published=1 AND claimed_at IS NULL AND claimed_by IS NULL'
 # Disk guard: when the video disk passes PURGE_START_PCT, delete originals that partners
