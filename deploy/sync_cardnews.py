@@ -33,7 +33,9 @@ def caption(content):
 def thumbnail(png):
     from PIL import Image
     buf = io.BytesIO()
-    Image.open(png).convert('RGB').resize((540, 540)).save(buf, 'JPEG', quality=85)
+    from PIL import ImageOps
+    # 4:5 카드도 찌그러뜨리지 않고 위쪽 기준 정사각형으로 자른다
+    ImageOps.fit(Image.open(png).convert('RGB'), (540, 540), centering=(0.5, 0.0)).save(buf, 'JPEG', quality=85)
     return buf.getvalue()
 
 
@@ -45,9 +47,17 @@ def upload_deck(api, deck_dir, template, content, record):
         record.update(id=existing['id'], sha256=sha, status='uploaded')
         return 'already_uploaded'
     if not existing:
-        existing = api.upload('/op/cardnews/upload', bundle, {
-            'Content-Type': 'application/zip', 'X-Template': template,
-            'X-Deck-Title': quote(content['slides'][0]['f']['title'].replace('\n', ' '))})
+        try:
+            existing = api.upload('/op/cardnews/upload', bundle, {
+                'Content-Type': 'application/zip', 'X-Template': template,
+                'X-Deck-Title': quote(content['slides'][0]['f']['title'].replace('\n', ' ')),
+                # 서버가 같은 원본의 새 디자인 묶음이 이미 있으면 409 로 거부한다 (2026-11-14 주제당 1묶음)
+                'X-Source-Url': quote(content.get('source_url') or '', safe='')})
+        except RuntimeError as exc:
+            if str(exc) == 'http_409':
+                record.update(sha256=sha, status='duplicate', checked_at=time.time())
+                return 'duplicate'
+            raise
     did = existing['id']
     thumb = thumbnail(deck_dir / template / 'png' / '01.png')
     api.request('POST', f'/op/cardnews/thumbnail/{did}', thumb, {'Content-Type': 'image/jpeg'})
@@ -77,7 +87,7 @@ def run(config, state_path):
             template = template.removesuffix('.zip')
             key = f'{deck_dir.name}/{template}'
             record = state['items'].setdefault(key, {})
-            if record.get('status') == 'uploaded':
+            if record.get('status') in ('uploaded', 'duplicate'):
                 continue
             try:
                 status = upload_deck(api, deck_dir, template, content, record)
