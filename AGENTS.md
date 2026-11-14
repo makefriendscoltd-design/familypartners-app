@@ -29,3 +29,10 @@
 ## 2026-11-09 첫 줄 후킹 기준
 
 반응 실측 근거로 리스트형 본문을 허용하고, 사례/제안 구분 문장은 본문이 아니라 대댓글에 둔다. 상세는 `config/brands/makefamily.md`의 2026-11-09 절. 2026-11-14 이후 글감은 `lint_drops.py check_hook`이 불합격 처리한다.
+
+## 2026-11-14 파트너 카드뉴스 운영 고정 (사용자 확정)
+
+- 파트너스 페이지 카드뉴스는 `08-poster`·`09-editorial`·`10-grunge` 3종만 쓴다(`fp/cardnews_library.py` `CURRENT_TEMPLATES`). 블루(`11-hf-blue`)나 다른 새 템플릿은 사용자 승인 없이 이 목록에 넣지 않는다.
+- 같은 주제(같은 원본)를 여러 디자인으로 올리지 않는다. 주제 하나 = 묶음 하나다.
+- 제작·업로드 담당은 navercafe `카드뉴스/engine`의 매일 잡(`com.aimax.cardnews-daily`)과 이를 맡은 세션 하나다. 다른 세션이 별도 스크립트(`hf_shorts/tools/cardnews_register.py` 등)로 카드뉴스를 올리거나 `decks/`·업로드 상태 파일을 고치지 않는다.
+- 옛 7종 미수령 묶음은 영구 삭제했다(4,005개). 받아간 묶음은 받은 사람의 재다운로드를 위해 남긴다. `/op/cardnews/purge-retired` 등 삭제 경로는 사용자 승인 없이 부르지 않는다.

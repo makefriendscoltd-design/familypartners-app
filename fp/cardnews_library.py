@@ -270,14 +270,12 @@ def dashboard_card(token=None, admin=False, limit=8):
 def admin_listing(h, conn):
     from .server import esc
     rows = conn.execute('SELECT * FROM cardnews_decks ORDER BY id DESC LIMIT 300').fetchall()
-    assigned = conn.execute('SELECT t.template, p.name FROM partner_card_templates t JOIN partners p ON p.id=t.partner_id '
-                            'ORDER BY t.template').fetchall()
-    body = "<div class=card><h2>파트너별 카드뉴스 디자인</h2><ul>"
-    for t, label in TEMPLATES.items():
-        names = ', '.join(esc(r['name']) for r in assigned if r['template'] == t) or '—'
-        left = sum(1 for r in rows if r['template'] == t and not r['claimed_at'] and r['published'])
-        body += f"<li><b>{t}</b> {esc(label)} · 남은 묶음 {left}개 · {names}</li>"
-    live = [r for r in rows if r['published'] and not r['claimed_at']]
+    # 2026-11-14: 파트너별 디자인 고정(9/29 폐지)·옛 7종·블루는 더 이상 보여주지 않는다. 파트너 화면과 같은 기준(AVAILABLE)만 센다.
+    live = conn.execute(f'SELECT * FROM cardnews_decks WHERE {AVAILABLE} ORDER BY id DESC').fetchall()
+    body = "<div class=card><h2>파트너에게 보이는 카드뉴스 디자인</h2><ul>"
+    for t in CURRENT_TEMPLATES:
+        left = sum(1 for r in live if r['template'] == t)
+        body += f"<li><b>{t}</b> {esc(TEMPLATES[t])} · 받을 수 있는 묶음 {left}개</li>"
     body += ("</ul></div>" + vl.GALLERY_STYLE + DECK_STYLE + f"<section class=card><h2>지금 파트너에게 보이는 카드뉴스 {len(live)}개</h2>"
              "<div class=video-grid>" + ''.join(card(r) for r in live) + "</div></section>")
     body += "<div class=card><h2>카드뉴스 배포 내역</h2>"
