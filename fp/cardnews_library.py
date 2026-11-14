@@ -287,6 +287,34 @@ def admin_listing(h, conn):
     vl.page(h, '카드뉴스 배포 관리', body + '</div>', admin=True)
 
 
+RETIRED_TEMPLATES = ('01-gradient', '02-shortcut', '03-negative', '04-photojournal', '05-hero', '06-landscape', '07-typeplay')
+RETIRED_UNCLAIMED = ('template IN (' + ','.join(f"'{t}'" for t in RETIRED_TEMPLATES) + ') AND claimed_at IS NULL AND claimed_by IS NULL')
+
+
+def purge_retired(conn, expect=None):
+    """2026-11-14 사용자 결정: 아무도 안 받은 옛 7종 묶음을 영구 삭제한다. 받아간 묶음은 남긴다.
+    expect 가 없으면 개수만 돌려준다. 개수가 expect 와 다르면 아무것도 지우지 않는다."""
+    rows = conn.execute(f'SELECT id,file_key,size FROM cardnews_decks WHERE {RETIRED_UNCLAIMED}').fetchall()
+    if expect is None:
+        return {'count': len(rows), 'bytes': sum(r['size'] or 0 for r in rows), 'deleted': 0}
+    if len(rows) != expect:
+        raise LookupError(f'삭제 대상이 {len(rows)}개라 요청한 {expect}개와 달라요.')
+    ids = [r['id'] for r in rows]
+    for i in range(0, len(ids), 500):
+        part = ids[i:i + 500]
+        conn.execute(f'DELETE FROM cardnews_decks WHERE id IN ({",".join("?" * len(part))}) AND {RETIRED_UNCLAIMED}', part)
+    conn.commit()
+    root, freed, files = storage_dir(), 0, 0
+    for r in rows:
+        key = r['file_key'] or ''
+        if not re.fullmatch(r'[a-f0-9]{32}\.zip', key):
+            continue
+        for path in (root / key, root / (key[:-4] + '.jpg')):
+            if path.is_file() and not path.is_symlink():
+                freed += path.stat().st_size; path.unlink(); files += 1
+    return {'count': len(rows), 'deleted': len(ids), 'files_removed': files, 'bytes_freed': freed}
+
+
 def storage_stats(conn):
     return {'available': conn.execute(f'SELECT COUNT(*) AS n FROM cardnews_decks WHERE {AVAILABLE}').fetchone()['n'],
             'by_template': {r['template']: r['n'] for r in conn.execute(
@@ -304,7 +332,7 @@ def handle(h):
         sync = vl.sync_authorized(h)
         h._video_sync_ok = sync
         if u.path.startswith('/op/cardnews'):
-            sync_route = u.path in ('/op/cardnews/sync-status', '/op/cardnews/upload', '/op/cardnews/publish') or bool(
+            sync_route = u.path in ('/op/cardnews/sync-status', '/op/cardnews/upload', '/op/cardnews/publish', '/op/cardnews/purge-retired') or bool(
                 re.fullmatch(r'/op/cardnews/(thumbnail|caption|source)/\d+', u.path))
             if not (admin or (sync and sync_route)):
                 vl.response(h, '관리자 로그인이 필요해요.', 403); return True
@@ -325,6 +353,12 @@ def handle(h):
                 conn.execute('UPDATE cardnews_decks SET published=? WHERE id=? AND claimed_at IS NULL', (value, int(f['id'])))
                 conn.commit()
                 vl.json_response(h, {'ok': True})
+            elif h.command == 'POST' and u.path == '/op/cardnews/purge-retired':
+                f = vl.fields(h); vl.checked_csrf(h, f, 'admin')
+                try:
+                    vl.json_response(h, purge_retired(conn, int(f['expect']) if f.get('expect') else None))
+                except LookupError as exc:
+                    vl.json_response(h, {'error': str(exc)}, 409)
             elif h.command == 'POST' and u.path == '/op/cardnews/upload':
                 upload(h, conn)
             elif h.command == 'POST' and re.fullmatch(r'/op/cardnews/thumbnail/\d+', u.path):

@@ -55,6 +55,23 @@ class CardnewsTest(base.VideoHTTPTest):
             self.assertFalse(cn.valid_source_url(unsafe))
         self.assertFalse(v.valid_source_url(source))
 
+    def test_purge_retired_unclaimed_only(self):
+        free_old = self.up('08-poster', 'p1'); got_old = self.up('08-poster', 'p2'); keep_new = self.up('09-editorial', 'p3')
+        self.assertEqual(self.claim_deck(got_old, 'a')[0], 303)
+        c = db.connect(); c.execute("UPDATE cardnews_decks SET template='03-negative' WHERE id IN (?,?)", (free_old, got_old)); c.commit()
+        key = cn.get_deck(c, free_old)['file_key']; c.close()
+        self.assertTrue((cn.storage_dir() / key).is_file())
+        h = {'X-CSRF-Token': v.csrf('admin')}
+        dry = json.loads(self.request('POST', '/op/cardnews/purge-retired', urlencode(dict(dry=1)), self.admin, h)[2])
+        self.assertEqual((dry['count'], dry['deleted']), (1, 0))
+        self.assertEqual(self.request('POST', '/op/cardnews/purge-retired', urlencode(dict(expect=5)), self.admin, h)[0], 409)
+        done = json.loads(self.request('POST', '/op/cardnews/purge-retired', urlencode(dict(expect=1)), self.admin, h)[2])
+        self.assertEqual(done['deleted'], 1)
+        c = db.connect()
+        self.assertIsNone(cn.get_deck(c, free_old)); self.assertIsNotNone(cn.get_deck(c, got_old)); self.assertIsNotNone(cn.get_deck(c, keep_new)); c.close()
+        self.assertFalse((cn.storage_dir() / key).exists())
+        self.assertEqual(self.request('GET', f'/cardnews/file/{got_old}', cookie=self.a)[0], 200)
+
     def test_old_templates_retired_but_claimed_ones_stay_downloadable(self):
         # 2026-11-13 디자인 교체: 옛 7종은 새로 못 올리고, 안 받은 옛 묶음은 목록에서 빠진다. 받은 사람은 계속 받는다.
         self.assertEqual(self.request('POST', '/op/cardnews/upload', b'PK' + b'0' * 40, self.admin,
