@@ -29,6 +29,29 @@ class CardnewsTest(base.VideoHTTPTest):
         token, name, cookie = ('token-a', '테스트가', self.a) if who == 'a' else ('token-b', '테스트나', self.b)
         return self.request('POST', '/cardnews/claim', urlencode(dict(id=did, name=name, t=token, csrf=v.csrf(token))), cookie)
 
+    def test_hf_existing_cards_and_instagram_source(self):
+        did = self.up('11-hf-blue', 'hf-source-cards')
+        c = db.connect()
+        sha = cn.get_deck(c, did)['sha256']
+        c.close()
+        source = 'https://www.instagram.com/reel/DfIuvawOTza/'
+        headers = {'X-CSRF-Token': v.csrf('admin')}
+        status, _, body = self.request('POST', f'/op/cardnews/source/{did}',
+                                      urlencode(dict(sha256=sha, source_url=source)), self.admin, headers)
+        self.assertEqual(status, 200, body)
+        status = json.loads(self.request('GET', '/op/cardnews/sync-status', cookie=self.admin)[2])
+        row = next(r for r in status['decks'] if r['id'] == did)
+        self.assertEqual(row['source_url'], source)
+        self.assertIn(f"data-deck='{did}'", self.request('GET', '/cardnews', cookie=self.a)[2].decode())
+        self.assertEqual(self.claim_deck(did, 'a')[0], 303)
+        status, _, body = self.request('GET', f'/cardnews/file/{did}', cookie=self.a)
+        self.assertEqual(status, 200)
+        self.assertEqual(len(zipfile.ZipFile(io.BytesIO(body)).namelist()), 10)
+        for unsafe in ('http://www.instagram.com/reel/abc/', 'https://www.instagram.com.evil.test/reel/abc/',
+                       'https://www.instagram.com/accounts/login/', 'https://www.instagram.com/reel/abc/?token=x'):
+            self.assertFalse(cn.valid_source_url(unsafe))
+        self.assertFalse(v.valid_source_url(source))
+
     def test_old_templates_retired_but_claimed_ones_stay_downloadable(self):
         # 2026-11-13 디자인 교체: 옛 7종은 새로 못 올리고, 안 받은 옛 묶음은 목록에서 빠진다. 받은 사람은 계속 받는다.
         self.assertEqual(self.request('POST', '/op/cardnews/upload', b'PK' + b'0' * 40, self.admin,
