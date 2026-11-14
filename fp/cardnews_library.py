@@ -37,7 +37,8 @@ TEMPLATES = {
 # 2026-11-13 사용자 결정: 디자인 교체. 새 템플릿만 받을 수 있게 하고, 아직 안 받은 옛 7종은 목록에서 뺀다.
 # 기록·파일은 지우지 않는다(되돌리려면 이 목록에 옛 이름을 다시 넣는다). 이미 받은 묶음은 받은 사람이 계속 다시 받는다.
 # 2026-11-14: 사용자가 지정한 HF 세션의 검수된 블루 카드도 원본 그대로 배포한다.
-CURRENT_TEMPLATES = ('08-poster', '09-editorial', '10-grunge', '11-hf-blue')
+# 2026-11-14 사용자 결정: 블루(11-hf-blue)는 파트너스 페이지에 올리지 않는다. 기록·파일은 보존.
+CURRENT_TEMPLATES = ('08-poster', '09-editorial', '10-grunge')
 AVAILABLE = ('published=1 AND claimed_at IS NULL AND claimed_by IS NULL AND template IN ('
              + ','.join(f"'{t}'" for t in CURRENT_TEMPLATES) + ')')
 # 영상 썸네일은 세로(9:12) 틀이라 정사각형 카드 표지는 양옆이 잘린다 — 카드뉴스는 1:1 로 보인다.

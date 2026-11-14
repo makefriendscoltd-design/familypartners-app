@@ -30,7 +30,10 @@ class CardnewsTest(base.VideoHTTPTest):
         return self.request('POST', '/cardnews/claim', urlencode(dict(id=did, name=name, t=token, csrf=v.csrf(token))), cookie)
 
     def test_hf_existing_cards_and_instagram_source(self):
-        did = self.up('11-hf-blue', 'hf-source-cards')
+        # 2026-11-14: 블루 템플릿은 파트너스 페이지에 안 올린다. 인스타 릴스 출처 지원은 유지.
+        self.assertEqual(self.request('POST', '/op/cardnews/upload', b'PK' + b'0' * 40, self.admin,
+                                      {'X-CSRF-Token': v.csrf('admin'), 'X-Deck-Title': 'x', 'X-Template': '11-hf-blue'})[0], 400)
+        did = self.up('08-poster', 'hf-source-cards')
         c = db.connect()
         sha = cn.get_deck(c, did)['sha256']
         c.close()
