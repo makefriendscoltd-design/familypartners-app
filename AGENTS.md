@@ -34,5 +34,5 @@
 
 - 파트너스 페이지 카드뉴스는 `08-poster`·`09-editorial`·`10-grunge` 3종만 쓴다(`fp/cardnews_library.py` `CURRENT_TEMPLATES`). 블루(`11-hf-blue`)나 다른 새 템플릿은 사용자 승인 없이 이 목록에 넣지 않는다.
 - 같은 주제(같은 원본)를 여러 디자인으로 올리지 않는다. 주제 하나 = 묶음 하나다.
-- 제작·업로드 담당은 navercafe `카드뉴스/engine`의 매일 잡(`com.aimax.cardnews-daily`)과 이를 맡은 세션 하나다. 다른 세션이 별도 스크립트(`hf_shorts/tools/cardnews_register.py` 등)로 카드뉴스를 올리거나 `decks/`·업로드 상태 파일을 고치지 않는다.
+- 운영 흐름(2026-11-14 사용자 확정): 사용자가 숏폼 세션에 매일 인스타그램 링크를 주면, 그 세션이 숏폼과 카드뉴스를 만든다. 카드뉴스는 navercafe `카드뉴스/engine`(`build_deck.py` → 3종 순환, 주제당 1묶음)으로 만들고 `daily_decks.upload_pending`(= `deploy/sync_cardnews.py`)으로 파트너스 페이지에 올린다. 유튜브 원본은 매일 잡(`com.aimax.cardnews-daily`)이 같은 엔진으로 처리한다. 이 두 경로 외의 별도 스크립트로 파트너스에 올리지 않고, 템플릿을 고르는 순서를 일부러 한 디자인으로 몰지 않는다.
 - 옛 7종 미수령 묶음은 영구 삭제했다(4,005개). 받아간 묶음은 받은 사람의 재다운로드를 위해 남긴다. `/op/cardnews/purge-retired` 등 삭제 경로는 사용자 승인 없이 부르지 않는다.
