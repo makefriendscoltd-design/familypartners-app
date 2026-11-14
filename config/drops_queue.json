@@ -6737,6 +6737,251 @@
           "sha256": "a72b2d19d59fac79c83a1053a06af36dbb8c7c4113b7328dd143446a063cf740"
         }
       ]
+    },
+    {
+      "date": "2026-11-19",
+      "title": "컨텐츠 375 · 인스타 다음 글 막혔으면 피드 캡처부터 넣으셈",
+      "type": "ai",
+      "target": "인스타 피드 막힌 사장님",
+      "fmt": "무료 프롬프트 저장소",
+      "format": "case_thread",
+      "editorial_kind": "easy_news",
+      "body": "인스타 다음 글 막혔으면\n피드 캡처부터 넣으셈\n\n색감과 소재를 읽어서\n다음 게시물까지 정리함\n\n제미나이 사용법 댓글에 둠",
+      "replies": [
+        "1. 저장소 열기\n\n프롬프트 저장소에서\n인스타 피드 항목을 찾으셈\n피드 캡처를 준비하면 됨",
+        "2. 피드 넣기\n\n최근 피드 캡처를 넣고\n(인스타 피드)의\n색감과 소재와 배치를\n읽고 첫인상을 정리해 줘.",
+        "3. 다음 글 받기\n\n(내 가게)의 분위기와\n이어 올릴 게시물 아이디어를\n후보별 이유까지 정리해 줘.",
+        "4. 맞춤형 만들기\n\n지금 상황에 맞게\n프롬프트도 바꿀 수 있음\n(이번 목표)에 맞춰\n질문 순서와 출력 형식을\n다시 작성해 줘.",
+        "5. 결과 대조\n\n첫인상이 실제 피드와\n맞는지 먼저 대조하셈\n다음 글 아이디어는\n가게 주제에 맞게 고르셈"
+      ],
+      "link_comment": "무료 프롬프트 저장소\n\nhttps://gemini-campus-guide.vercel.app/",
+      "sources": [
+        {
+          "url": "https://x.com/gemissalmuk/status/2120913982857023853",
+          "title": "X 글: 인스타 다음 글 막혔으면 피드 캡처부터 넣으셈",
+          "published_at": "2026-11-12T16:17:52+00:00",
+          "collected_at": "2026-11-14T09:20:41.873083+09:00",
+          "verified_at": "2026-11-14T09:33:05+09:00"
+        },
+        {
+          "url": "https://gemini-campus-guide.vercel.app/",
+          "title": "프롬프트 저장소 | GSA team",
+          "published_at": null,
+          "collected_at": "2026-11-14T09:20:41.873083+09:00",
+          "verified_at": "2026-11-14T09:33:05+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/fp-easy-20261119-1.png",
+          "alt": "프롬프트 저장소 | GSA team 원문 화면 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "프롬프트 저장소 | GSA team 원문 화면",
+          "source_url": "https://gemini-campus-guide.vercel.app/",
+          "sha256": "5f0b06eed3b776bf8b2f0cc6ac8545b29635067f7afff74268dcb1c98f9ebdbd"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-19",
+      "title": "컨텐츠 376 · 귤 홍보 캐릭터 만드는 법",
+      "type": "marketing",
+      "target": "겨울 과일 파는 사장님",
+      "fmt": "캐릭터 프롬프트",
+      "format": "case_thread",
+      "editorial_kind": "easy_news",
+      "body": "귤 홍보 캐릭터 만드는 법\n\n머리 위엔 귤 하나\n주변엔 껍질을 흩어둠\nPixAI에 넣으면 됨\n\n구도는 댓글에 정리함",
+      "replies": [
+        "1. 캐릭터 앉히기\n\n(내 캐릭터)가\n바닥에 양반다리로\n앉아 있게 그려 줘.",
+        "2. 귤 동작 넣기\n\n한 손엔 깐 귤을 들고\n귤 한 조각을 입으로\n가져가는 모습으로 그려 줘.",
+        "3. 포인트 더하기\n\n볼은 살짝 부풀리고\n머리 위엔 통귤 하나를\n올린 모습으로 그려 줘.",
+        "4. 주변 채우기\n\n캐릭터 주변에 생귤과\n구부러진 귤껍질을\n바닥에 흩어 배치해 줘.",
+        "5. 구도 확인\n\n몸은 사선 옆모습으로\n앉은 눈높이보다 낮게\n중간 전신 구도로 잡아 줘."
+      ],
+      "link_comment": "영어 원문 프롬프트\n\nhttps://x.com/bad_sajang/status/2120179619290890331",
+      "sources": [
+        {
+          "url": "https://x.com/bad_sajang/status/2120179619290890331",
+          "title": "X 글: 귤 홍보 캐릭터 만드는 법",
+          "published_at": "2026-11-10T15:39:46+00:00",
+          "collected_at": "2026-11-14T09:20:41.873083+09:00",
+          "verified_at": "2026-11-14T09:33:05+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/fp-easy-20261119-2.png",
+          "alt": "메이크패밀리 제작 프롬프트 정리 이미지 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "메이크패밀리 제작 프롬프트 정리 이미지",
+          "source_url": "https://x.com/bad_sajang/status/2120179619290890331",
+          "sha256": "c5d3b5c3f4ecac695a94e00640a6d3b47baa3cf7b50398a08a5646d640132f11"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-19",
+      "title": "컨텐츠 377 · 클로드 기록 뒤지는 사장님 claude-mem 색인부터 보셈",
+      "type": "evergreen",
+      "target": "클로드 기록 찾는 사장님",
+      "fmt": "깃허브 검색 도구",
+      "format": "case_thread",
+      "editorial_kind": "easy_news",
+      "body": "클로드 기록 뒤지는 사장님\nclaude-mem 색인부터 보셈\n\n시간순을 확인한 뒤\n필요한 상세만 불러옴\n\n설치와 검색 댓글에 둠",
+      "replies": [
+        "1. 준비 확인\n\nNode 20.19 이상과\n지원 에이전트가 필요함\n클로드 코드 최신판도 됨",
+        "2. 한 줄 설치\n\nnpx claude-mem install\n\n설치기가 쓸 에이전트를\n직접 고르게 됨",
+        "3. 첫 기록 만들기\n\n첫 세션부터 작업을 모으고\n두 번째 세션에서 기억이\n자동으로 나타나게 됨",
+        "4. 기록 찾기\n\n먼저 색인에서 찾고\n시간순 맥락을 확인한 뒤\n필요한 상세만 불러오셈",
+        "5. 저장 설정 확인\n\n기억은 내 컴퓨터의\n전용 폴더에 저장됨\n클라우드 동기화는\n직접 켤 때만 작동함"
+      ],
+      "link_comment": "claude-mem 깃허브\n\nhttps://github.com/thedotmack/claude-mem",
+      "sources": [
+        {
+          "url": "https://x.com/yozm_it/status/2118928933718823055",
+          "title": "X 글: 클로드 기록 뒤지는 사장님 claude-mem 색인부터 보셈",
+          "published_at": "2026-11-07T04:50:00+00:00",
+          "collected_at": "2026-11-14T09:20:41.873083+09:00",
+          "verified_at": "2026-11-14T09:33:05+09:00"
+        },
+        {
+          "url": "https://github.com/thedotmack/claude-mem",
+          "title": "GitHub - thedotmack/claude-mem: Persistent Context Across Sessions for Every Agent –  Captures everything your agent doe",
+          "published_at": null,
+          "collected_at": "2026-11-14T09:20:41.873083+09:00",
+          "verified_at": "2026-11-14T09:33:05+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/fp-easy-20261119-3.png",
+          "alt": "GitHub - thedotmack/claude-mem 원문 화면 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "GitHub - thedotmack/claude-mem 원문 화면",
+          "source_url": "https://github.com/thedotmack/claude-mem",
+          "sha256": "c0c2f20fe4ce289ae8a7aa0b42072ede58d471cc84e98c7f14e21d2e1acb458b"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-19",
+      "title": "컨텐츠 378 · 생각 꼬이는 사장님 필독",
+      "type": "evergreen",
+      "target": "혼자 고민 정리하는 사장님",
+      "fmt": "감정 정리 프롬프트",
+      "format": "case_thread",
+      "editorial_kind": "easy_news",
+      "body": "생각 꼬이는 사장님 필독\n\n제미나이한테 위로보다\n감정과 현실부터 정리하게 함\n\n복붙 문장 댓글에 둠",
+      "replies": [
+        "1. 역할 넣기\n\n너는 내 이야기를 듣는\n차분하고 현실적인\n상담 파트너로 답해 줘.",
+        "2. 위로만 막기\n\n무조건 위로만 하지 말고\n내 감정이 생긴 이유를\n차분하게 정리해 줘.",
+        "3. 상황 연결하기\n\n(지금 고민)을 읽고\n내가 왜 이렇게 느끼는지\n상황과 연결해 정리해 줘.",
+        "4. 답변 확인\n\n답을 받은 뒤\n내가 말한 사실과\n다르게 적힌 부분을 찾아\n그 부분만 다시 고치셈"
+      ],
+      "link_comment": "제미나이 원문 타래\n\nhttps://x.com/GemGemgirls/status/2119077410012594589",
+      "sources": [
+        {
+          "url": "https://x.com/GemGemgirls/status/2119077410012594589",
+          "title": "X 글: 생각 꼬이는 사장님 필독",
+          "published_at": "2026-11-07T14:39:59+00:00",
+          "collected_at": "2026-11-14T09:20:41.873083+09:00",
+          "verified_at": "2026-11-14T09:33:05+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/fp-easy-20261119-4.png",
+          "alt": "메이크패밀리 제작 프롬프트 정리 이미지 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "메이크패밀리 제작 프롬프트 정리 이미지",
+          "source_url": "https://x.com/GemGemgirls/status/2119077410012594589",
+          "sha256": "273fcca6af1f865ce48435b5ea6ce591fc69fa5725bbbf05eb765921da9f61e8"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-19",
+      "title": "컨텐츠 379 · 취업 고민하는 사장님 필독",
+      "type": "evergreen",
+      "target": "취업 고민하는 1인 사장님",
+      "fmt": "직무 분석 기능",
+      "format": "case_thread",
+      "editorial_kind": "easy_news",
+      "supplemental": true,
+      "body": "취업 고민하는 사장님 필독\n\n제미나이 대화와 이력서로\n맞는 직무와 약점을 찾음\n\n분석 순서 댓글에 둠",
+      "replies": [
+        "1. 자료 붙이기\n\n제미나이가 볼 수 있는\n지난 대화와 이력서를 넣으셈\n빠진 경험은 직접 더 적으셈",
+        "2. 강점 나누기\n\n내가 잘하는 일과\n좋아하는 일을 나누고\n근거 경험까지 찾아 줘.",
+        "3. 직무 후보 받기\n\n내 성향과 강점에 맞는\n직무 다섯 개를 고르고\n추천 이유를 설명해 줘.",
+        "4. 안 맞는 일 보기\n\n잘 맞지 않을 직무\n세 개와 이유를 적고\n부족한 역량도 알려 줘.",
+        "5. 결과 확인\n\n직무 점수는 참고용\n추정치인지 확인하셈\n없는 경험이 섞였으면\n다시 질문하게 하셈"
+      ],
+      "link_comment": "제미나이 공식 페이지\n\nhttps://gemini.google.com/",
+      "sources": [
+        {
+          "url": "https://x.com/9bnTa1mtiWchUQ3/status/2121161434965151882",
+          "title": "X 글: 취업 고민하는 사장님 필독",
+          "published_at": "2026-11-13T08:41:10+00:00",
+          "collected_at": "2026-11-14T09:20:41.873083+09:00",
+          "verified_at": "2026-11-14T09:33:05+09:00"
+        },
+        {
+          "url": "https://gemini.google.com/",
+          "title": "‎Google Gemini",
+          "published_at": null,
+          "collected_at": "2026-11-14T09:20:41.873083+09:00",
+          "verified_at": "2026-11-14T09:33:05+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/fp-easy-20261119-5.png",
+          "alt": "‎Google Gemini 원문 화면 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "‎Google Gemini 원문 화면",
+          "source_url": "https://gemini.google.com/",
+          "sha256": "5d4b3b7640b4e1f4b839be5962a64c238c441da0628e9f4c51d2938c155b6feb"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-19",
+      "title": "컨텐츠 380 · 그록봇 링크만 쌓였으면 피클에 먼저 넣어보셈",
+      "type": "evergreen",
+      "target": "봇 템플릿 쓰는 사장님",
+      "fmt": "템플릿 분석법",
+      "format": "case_thread",
+      "editorial_kind": "easy_news",
+      "supplemental": true,
+      "body": "그록봇 링크만 쌓였으면\n피클에 먼저 넣어보셈\n\n프롬프트와 예외 규칙을\n분석해 실행안으로 바꿈\n\n쓰는 순서 댓글에 둠",
+      "replies": [
+        "1. 템플릿 고르기\n\nGrok Bot에서\n내 일과 비슷한 템플릿을\n하나 골라 링크를 복사하셈",
+        "2. 피클에 보내기\n\n링크를 피클에 넣고\n이 템플릿의 프롬프트와\n핵심 규칙을 분석해 줘.",
+        "3. 예외까지 받기\n\n작동 조건과 예외 처리를\n빠뜨리지 말고\n항목별로 정리해 줘.",
+        "4. 실행 방식 고르기\n\n분석 결과를 피클의\n스케줄과 브라우저 기능에\n어떻게 붙일지 정리해 줘.",
+        "5. 결과 확인\n\n원본 템플릿의 목적과\n출력 방식이 그대로인지\n실행 전에 대조하셈"
+      ],
+      "link_comment": "Grok Bot 공식 페이지\n\nhttps://x.ai/",
+      "sources": [
+        {
+          "url": "https://x.com/AventusXcom/status/2120350642044899652",
+          "title": "X 글: 그록봇 링크만 쌓였으면 피클에 먼저 넣어보셈",
+          "published_at": "2026-11-11T02:59:21+00:00",
+          "collected_at": "2026-11-14T09:20:41.873083+09:00",
+          "verified_at": "2026-11-14T09:33:05+09:00"
+        },
+        {
+          "url": "https://x.ai/",
+          "title": "SpaceXSI",
+          "published_at": null,
+          "collected_at": "2026-11-14T09:20:41.873083+09:00",
+          "verified_at": "2026-11-14T09:33:05+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/fp-easy-20261119-6.png",
+          "alt": "메이크패밀리 제작 프롬프트 정리 이미지 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "메이크패밀리 제작 프롬프트 정리 이미지",
+          "source_url": "https://x.ai/",
+          "sha256": "50756c30085ad41a0f8202907db78716a02fa80b215c7a6e833e1d73a9e67f87"
+        }
+      ]
     }
   ],
   "_작성기준": "글감 작성 전 AGENTS.md와 config/brands/makefamily.md의 최신 사용자 기준을 읽는다. 과거 루틴 문구와 충돌하면 최신 사용자 기준을 적용한다."
