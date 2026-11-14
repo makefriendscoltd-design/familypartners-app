@@ -55,6 +55,23 @@ class CardnewsTest(base.VideoHTTPTest):
             self.assertFalse(cn.valid_source_url(unsafe))
         self.assertFalse(v.valid_source_url(source))
 
+    def test_same_source_only_once(self):
+        h = {'X-CSRF-Token': v.csrf('admin')}
+        src = 'https://www.youtube.com/watch?v=ABCDEFGHIJK'
+        first = self.up('08-poster', 's1')
+        c = db.connect(); sha1 = cn.get_deck(c, first)['sha256']; c.close()
+        self.assertEqual(self.request('POST', f'/op/cardnews/source/{first}', urlencode(dict(sha256=sha1, source_url=src)), self.admin, h)[0], 200)
+        # 출처를 미리 알려주면 업로드 자체를 거부
+        status, _, body = self.request('POST', '/op/cardnews/upload', deck_zip('s2'), self.admin,
+                                       dict(h, **{'X-Deck-Title': quote('x'), 'X-Template': '09-editorial', 'X-Source-Url': quote(src + '/')}))
+        self.assertEqual(status, 409, body); self.assertEqual(json.loads(body)['duplicate_of'], first)
+        # 출처를 나중에 붙이면 거부하고 그 묶음은 목록에서 내린다
+        late = self.up('10-grunge', 's3')
+        c = db.connect(); sha3 = cn.get_deck(c, late)['sha256']; c.close()
+        self.assertEqual(self.request('POST', f'/op/cardnews/source/{late}', urlencode(dict(sha256=sha3, source_url=src)), self.admin, h)[0], 409)
+        page = self.request('GET', '/cardnews', cookie=self.a)[2].decode()
+        self.assertIn(f"data-deck='{first}'", page); self.assertNotIn(f"data-deck='{late}'", page)
+
     def test_purge_retired_unclaimed_only(self):
         free_old = self.up('08-poster', 'p1'); got_old = self.up('08-poster', 'p2'); keep_new = self.up('09-editorial', 'p3')
         self.assertEqual(self.claim_deck(got_old, 'a')[0], 303)

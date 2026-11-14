@@ -133,6 +133,17 @@ def claim(conn, did, token, name):
         raise
 
 
+def duplicate_source(conn, url, exclude_id=None):
+    """2026-11-14 사용자 결정: 같은 원본(주제)은 새 디자인 묶음 하나만. 받아간 것까지 포함해 이미 있으면 그 id."""
+    url = (url or '').strip().rstrip('/')
+    if not url:
+        return None
+    marks = ','.join('?' * len(CURRENT_TEMPLATES))
+    row = conn.execute(f"SELECT id FROM cardnews_decks WHERE RTRIM(source_url,'/')=? AND template IN ({marks}) AND id<>? LIMIT 1",
+                       (url, *CURRENT_TEMPLATES, exclude_id or -1)).fetchone()
+    return row['id'] if row else None
+
+
 def upload(h, conn):
     vl.checked_csrf(h, {}, 'admin')
     n = int(h.headers.get('Content-Length', '0'))
@@ -142,6 +153,9 @@ def upload(h, conn):
         return vl.json_response(h, {'error': '파일 크기를 확인해 주세요.'}, 413)
     if not title or len(title) > 120 or template not in CURRENT_TEMPLATES:
         return vl.json_response(h, {'error': '제목과 템플릿을 확인해 주세요.'}, 400)
+    dup = duplicate_source(conn, unquote(h.headers.get('X-Source-Url', '')))
+    if dup:
+        return vl.json_response(h, {'error': '같은 원본의 카드뉴스가 이미 있어요.', 'duplicate_of': dup}, 409)
     root = storage_dir()
     root.mkdir(parents=True, exist_ok=True, mode=0o700)
     key = secrets.token_hex(16) + '.zip'
@@ -375,6 +389,13 @@ def handle(h):
                     url = f.get('source_url', '').strip()
                     if url and not valid_source_url(url):
                         raise ValueError('source url')
+                    dup = duplicate_source(conn, url, did)
+                    if dup:
+                        # 출처를 늦게 붙여 중복이 드러난 묶음은 파트너에게 안 보이게 내린다(기록은 남김).
+                        conn.execute('UPDATE cardnews_decks SET published=0 WHERE id=? AND claimed_at IS NULL', (did,))
+                        conn.commit()
+                        vl.json_response(h, {'error': '같은 원본의 카드뉴스가 이미 있어요.', 'duplicate_of': dup}, 409)
+                        return True
                     conn.execute('UPDATE cardnews_decks SET source_url=? WHERE id=?', (url or None, did))
                 conn.commit()
                 vl.json_response(h, {'ok': True, 'id': did})
