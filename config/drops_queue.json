@@ -7235,6 +7235,259 @@
           "sha256": "3e6535a23f76885e8a3a05c6f1e085312e6d9d07185e990dcf382e6f5d32a30f"
         }
       ]
+    },
+    {
+      "date": "2026-11-21",
+      "title": "컨텐츠 387 · 자료 던지면 지식 지도로 정리되는 클로드 스킬임",
+      "type": "ai",
+      "target": "자료만 쌓는 사장님",
+      "fmt": "깃허브 스킬 소개",
+      "format": "case_thread",
+      "editorial_kind": "easy_news",
+      "body": "자료 던지면 지식 지도로\n정리되는 클로드 스킬임\n\n옵시디언 속 연결 화면이\n첨부 사진에 나온 결과임\n\n설치 순서 댓글에 둠",
+      "replies": [
+        "1. 준비하기\n\n클로드 코드와\nPython 3.11 이상\n옵시디언을 준비하셈\n화면은 옵시디언이 맡음",
+        "2. 플러그인 넣기\n\n깃허브 설치칸에서\n마켓 추가 명령과\n설치 명령을 넣으셈\n끝나면 폴더에서\n클로드 코드를 켜셈",
+        "3. 금고 만들기\n\n/claude-obsidian:wiki\n원하는 폴더에서 실행하셈\n미리보기를 먼저 확인하셈\n기존 금고도 그대로 씀",
+        "4. 자료 연결하기\n\n자료를 inbox에 넣고\n/claude-obsidian:wiki-ingest\n연결 노트로 바꾸셈\n원본은 그대로 남음",
+        "5. 묻고 점검하기\n\n/claude-obsidian:wiki-query\n내 자료에서 답을 찾음\n/claude-obsidian:wiki-lint\n끊긴 링크와 빈틈을 찾음"
+      ],
+      "link_comment": "깃허브 원문\n\nhttps://github.com/AgriciDaniel/claude-obsidian",
+      "sources": [
+        {
+          "url": "https://x.com/dopamine_crypto/status/2121872077619667225",
+          "title": "X 글: 자료 던지면 지식 지도로 정리되는 클로드 스킬임",
+          "published_at": "2026-11-15T07:45:00+00:00",
+          "collected_at": "2026-11-16T13:11:13.431849+09:00",
+          "verified_at": "2026-11-16T13:25:27+09:00"
+        },
+        {
+          "url": "https://github.com/AgriciDaniel/claude-obsidian",
+          "title": "GitHub - AgriciDaniel/claude-obsidian: Self-organizing AI second brain for Obsidian + Claude Code. Drop any source and C",
+          "published_at": null,
+          "collected_at": "2026-11-16T13:11:13.431849+09:00",
+          "verified_at": "2026-11-16T13:25:27+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/fp-easy-20261121-1.jpg",
+          "alt": "@dopamine_crypto X 원글 이미지 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "@dopamine_crypto X 원글 이미지",
+          "source_url": "https://x.com/dopamine_crypto/status/2121872077619667225",
+          "sha256": "a0eed3f403c7d1f6caae188edbf05cead2f5b7ec4cbae85be4d929eb156f9ca3"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-21",
+      "title": "컨텐츠 388 · 한 달 만에 구독자 6천 수익화까지 간 프롬프트",
+      "type": "marketing",
+      "target": "숏폼 키우는 사장님",
+      "fmt": "무료 프롬프트 자료",
+      "format": "case_thread",
+      "editorial_kind": "easy_news",
+      "body": "한 달 만에 구독자 6천\n수익화까지 간 프롬프트\n\n아기 고양이 3마리가\n같은 춤을 추는 영상임\n\n준비 순서 댓글에 둠",
+      "replies": [
+        "1. 춤 영상 고르기\n\n고정 카메라의 1~2인\n커버 영상을 고르셈\n14초 이하로 자르고\n팔다리 잘림을 확인하셈",
+        "2. 시작 이미지 만들기\n\n흰 배경 캐릭터 시트를\nGPT Image에 넣으셈\n고양이는 뒷발로 세우고\n화면 키의 약 17%로\n30~45도 틀어 두셈",
+        "3. 뎁스 줄이기\n\n춤 영상에서 움직임만\n흑백 뎁스로 뽑으셈\n시작 이미지의 고양이와\n크기와 위치를 맞추셈",
+        "4. 시댄스에 넣기\n\n시작 이미지와 뎁스를\n시댄스 2.0에 넣으셈\n받은 영상 문장을 붙이고\n길이도 뎁스와 맞추셈\nfast, 720p, 9:16\n오디오 생성은 끄셈",
+        "5. 박자와 오류 보기\n\n원곡 시작점을 맞추고\n끝 0.4초만\n페이드아웃 넣으셈\n앞발 모양과 마릿수를\n프레임마다 확인하셈"
+      ],
+      "link_comment": "공식 프롬프트 페이지\n\nhttps://sphereai.work/prompts/cat_dance/",
+      "sources": [
+        {
+          "url": "https://x.com/unjeon_auto/status/2121961843426304419",
+          "title": "X 글: 한 달 만에 구독자 6천 수익화까지 간 프롬프트",
+          "published_at": "2026-11-15T13:41:42+00:00",
+          "collected_at": "2026-11-16T13:11:13.431849+09:00",
+          "verified_at": "2026-11-16T13:25:27+09:00"
+        },
+        {
+          "url": "https://sphereai.work/prompts/cat_dance/",
+          "title": "에이티즈 드립 KPOP 고양이 댄스 프롬프트 | 스킬봇",
+          "published_at": null,
+          "collected_at": "2026-11-16T13:11:13.431849+09:00",
+          "verified_at": "2026-11-16T13:25:27+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/fp-easy-20261121-2.png",
+          "alt": "에이티즈 드립 KPOP 고양이 댄스 프롬프트 | 스킬봇 원문 화면 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "에이티즈 드립 KPOP 고양이 댄스 프롬프트 | 스킬봇 원문 화면",
+          "source_url": "https://sphereai.work/prompts/cat_dance/",
+          "sha256": "1181902a3cc96f5617e39e43f51e4bfdcc7292c74fd327275a18eecaf32c9598"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-21",
+      "title": "컨텐츠 389 · 상품컷 분위기 바꾸는 법",
+      "type": "evergreen",
+      "target": "상품컷 만드는 사장님",
+      "fmt": "조명 용어 모음",
+      "format": "case_thread",
+      "editorial_kind": "easy_news",
+      "body": "상품컷 분위기 바꾸는 법\n\n같은 제품도 조명 용어로\n결과가 달라진 사진임\n\n4가지 문장 댓글에 둠",
+      "replies": [
+        "1. 소프트박스\n\n(상품) 연출컷을\nSOFTBOX LIGHT로\n만들어 줘.",
+        "2. 로우키\n\n(상품) 연출컷을\nLOW KEY 조명으로\n만들어 줘.",
+        "3. 빛 슬래시\n\n(상품) 연출컷에\nPROJECTED LIGHT SLASH\n조명을 써 줘.",
+        "4. 스누트\n\n(상품) 연출컷에\nSNOOT SPOTLIGHT를\n써 줘.",
+        "5. 결과 비교\n\n같은 제품에\n조명 용어만 바꿔 넣고\n4장 결과를 비교하셈\n추상어만 쓰지 마셈"
+      ],
+      "link_comment": "공식 용어 페이지\n\nhttps://fromsequence.net/cut.html?cat=light",
+      "sources": [
+        {
+          "url": "https://x.com/crtvst_sojeong/status/2121433063800639527",
+          "title": "X 글: 상품컷 분위기 바꾸는 법",
+          "published_at": "2026-11-14T02:40:31+00:00",
+          "collected_at": "2026-11-16T13:11:13.431849+09:00",
+          "verified_at": "2026-11-16T13:25:27+09:00"
+        },
+        {
+          "url": "https://fromsequence.net/cut.html?cat=light",
+          "title": "CUT: 제품 연출컷 기법 · From Sequence",
+          "published_at": null,
+          "collected_at": "2026-11-16T13:11:13.431849+09:00",
+          "verified_at": "2026-11-16T13:25:27+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/fp-easy-20261121-3.jpg",
+          "alt": "@crtvst_sojeong X 원글 이미지 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "@crtvst_sojeong X 원글 이미지",
+          "source_url": "https://x.com/crtvst_sojeong/status/2121433063800639527",
+          "sha256": "df1678d3674e8bb0c81615e89b4782f21b33618c924fb0fd4830b903d43eccab"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-21",
+      "title": "컨텐츠 390 · 앱 기획서 혼자 보는 사장님",
+      "type": "evergreen",
+      "target": "앱 기획서 혼자 보는 사장님",
+      "fmt": "문서 검토 스킬",
+      "format": "case_thread",
+      "editorial_kind": "easy_news",
+      "body": "앱 기획서 혼자 보는 사장님\n\nEGM은 대화 기억 없는\n검토자가 구멍 찾는 그림임\n\n60초 리뷰 댓글에 둠",
+      "replies": [
+        "1. 코끼리 역할\n\n프로젝트 맥락과\n앞선 결정을 들고\n설계 초안을 만드는 쪽임",
+        "2. 금붕어 역할\n\n앞선 대화는 받지 않고\n문서와 참고 자료만 읽음\n빠진 전제와 위험을 찾음",
+        "3. 사람이 고르기\n\n고칠 항목만 고르고\n포기할 조건을 직접 정하셈\n구현 전 승인도 사람이 함\n테스트를 대신하진 않음",
+        "4. EGM 설치하기\n\n클로드 코드에서\n마켓 추가 명령과\n설치 명령을 넣으셈\n끝나면 새 세션을 여셈",
+        "5. 문서 경로 넣기\n\n기존 설계 문서나\nREADME와 PR 계획을\n하나 고르셈\n/egm:egm-review (문서경로)"
+      ],
+      "link_comment": "깃허브 원문\n\nhttps://github.com/google/elephant-goldfish-model",
+      "sources": [
+        {
+          "url": "https://x.com/dopamine_crypto/status/2121917375809249698",
+          "title": "X 글: 앱 기획서 혼자 보는 사장님",
+          "published_at": "2026-11-15T10:45:00+00:00",
+          "collected_at": "2026-11-16T13:11:13.431849+09:00",
+          "verified_at": "2026-11-16T13:25:27+09:00"
+        },
+        {
+          "url": "https://github.com/google/elephant-goldfish-model",
+          "title": "GitHub - google/elephant-goldfish-model: Open-source plugin for designing and reviewing software with agents",
+          "published_at": null,
+          "collected_at": "2026-11-16T13:11:13.431849+09:00",
+          "verified_at": "2026-11-16T13:25:27+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/fp-easy-20261121-4.jpg",
+          "alt": "@dopamine_crypto X 원글 이미지 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "@dopamine_crypto X 원글 이미지",
+          "source_url": "https://x.com/dopamine_crypto/status/2121917375809249698",
+          "sha256": "2b71c5aec28a677fe9536cf7208f30929c9a13d4b782b889546dac9817110e73"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-21",
+      "title": "컨텐츠 391 · 새 100만 마리 97초 렌더 vork가 만든 3D 장면임",
+      "type": "evergreen",
+      "target": "3D 영상 필요한 사장님",
+      "fmt": "3D 엔진 사용법",
+      "format": "case_thread",
+      "editorial_kind": "easy_news",
+      "supplemental": true,
+      "body": "새 100만 마리 97초 렌더\nvork가 만든 3D 장면임\n\nAI가 장면을 고치며\n다시 렌더하는 엔진임\n\n시작 순서 댓글에 둠",
+      "replies": [
+        "1. 엔진 방식 보기\n\nAI가 장면 전체를\n코드로 쓰는 3D 엔진임\n재질과 카메라와 빛도\n직접 장면에 넣음",
+        "2. 시작 폴더 만들기\n\n깃허브 릴리스에서\n운영체제 파일을 받으셈\n설치 뒤 아래를 실행하셈\nvork init my-shot\nvork help",
+        "3. 미리보기 고치기\n\n미리보기를 렌더하고\n결과 이미지를 보셈\n카메라와 조명을 먼저\n고쳐서 다시 렌더해 줘.",
+        "4. 97초 조건 보기\n\nNVIDIA L4 한 장에서\n1080p 192프레임을\n97초에 렌더한 사례임\n초기 준비와 예열은\n97초에서 제외됨\n블렌더 시간은 추정치임",
+        "5. 기기 조건 보기\n\n맥은 Apple Silicon과\nmacOS 15 이상이 필요함\n렌더 전 vork setup을\n먼저 끝내야 함\n연구 프리뷰 동안 무료임"
+      ],
+      "link_comment": "깃허브 원문\n\nhttps://github.com/voyager-so/vork",
+      "sources": [
+        {
+          "url": "https://x.com/doodi_dev/status/2120339478523076673",
+          "title": "X 글: 새 100만 마리 97초 렌더 vork가 만든 3D 장면임",
+          "published_at": "2026-11-11T02:15:00+00:00",
+          "collected_at": "2026-11-16T13:11:13.431849+09:00",
+          "verified_at": "2026-11-16T13:25:27+09:00"
+        },
+        {
+          "url": "https://github.com/voyager-so/vork",
+          "title": "GitHub - voyager-so/vork: Headless 3D and VFX engine for agents. Research preview.",
+          "published_at": null,
+          "collected_at": "2026-11-16T13:11:13.431849+09:00",
+          "verified_at": "2026-11-16T13:25:27+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/fp-easy-20261121-5.jpg",
+          "alt": "@doodi_dev X 원글 이미지 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "@doodi_dev X 원글 이미지",
+          "source_url": "https://x.com/doodi_dev/status/2120339478523076673",
+          "sha256": "193d73dfa9e666072df0e8b5c69ac8aea02c26bcab13ed7d4cef4ab77ec756ab"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-21",
+      "title": "컨텐츠 392 · 분홍 토끼 캐릭터 만드는 법",
+      "type": "evergreen",
+      "target": "캐릭터 이미지 만드는 사장님",
+      "fmt": "프롬프트 모음",
+      "format": "case_thread",
+      "editorial_kind": "easy_news",
+      "supplemental": true,
+      "body": "분홍 토끼 캐릭터 만드는 법\n\n새틴 의상과 무릎 자세가\n사진 4장처럼 맞춰짐\n\n문장 순서 댓글에 둠",
+      "replies": [
+        "1. 색과 소재\n\n(캐릭터)에게 파스텔\n분홍 새틴 의상을\n입혀 줘.",
+        "2. 상의와 하의\n\n(캐릭터)에게\n어깨가 드러난\n크롭 상의와 반바지에\n흰 레이스 테두리와\n분홍 리본 가터를 넣어 줘.",
+        "3. 토끼 장식\n\n(캐릭터)에게\n흰 허벅지 스타킹과\n큰 분홍 토끼 귀\n리본 초커와 은색 방울\n복슬한 꼬리를 달아 줘.",
+        "4. 무릎 자세\n\n(캐릭터)가 바닥에\n무릎을 꿇고 상체를 세워\n무릎 사이는 살짝 벌리고\n손은 허벅지나 바닥에\n가볍게 놓게 해 줘.",
+        "5. 시선과 구도\n\n턱을 살짝 들고\n도발적이고 자신 있게\n위쪽을 바라보며\n어깨 힘을 뺀 전신으로\n그려 줘."
+      ],
+      "link_comment": "영어 원문 타래\n\nhttps://x.com/ooosom_/status/2121495923155173537",
+      "sources": [
+        {
+          "url": "https://x.com/ooosom_/status/2121495923155173537",
+          "title": "X 글: 분홍 토끼 캐릭터 만드는 법",
+          "published_at": "2026-11-14T06:50:18+00:00",
+          "collected_at": "2026-11-16T13:11:13.431849+09:00",
+          "verified_at": "2026-11-16T13:25:27+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/fp-easy-20261121-6.jpg",
+          "alt": "@ooosom_ X 원글 이미지 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "@ooosom_ X 원글 이미지",
+          "source_url": "https://x.com/ooosom_/status/2121495923155173537",
+          "sha256": "8334fa4c291aa387cb8fed63966056ee6393c6da4ef6b164fa6906a5a9045dd5"
+        }
+      ]
     }
   ],
   "_작성기준": "글감 작성 전 AGENTS.md와 config/brands/makefamily.md의 최신 사용자 기준을 읽는다. 과거 루틴 문구와 충돌하면 최신 사용자 기준을 적용한다."
