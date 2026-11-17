@@ -7488,6 +7488,259 @@
           "sha256": "8334fa4c291aa387cb8fed63966056ee6393c6da4ef6b164fa6906a5a9045dd5"
         }
       ]
+    },
+    {
+      "date": "2026-11-22",
+      "title": "컨텐츠 393 · 발표 질문 겁나면 제미나이로 먼저 뽑으셈",
+      "type": "ai",
+      "target": "발표 질문 겁나는 사장님",
+      "fmt": "질문 대비 프롬프트",
+      "format": "case_thread",
+      "editorial_kind": "easy_news",
+      "body": "발표 질문 겁나면\n제미나이로 먼저 뽑으셈\n\n대본 허점과 예상 질문이\n첨부 4장처럼 정리됨\n\n복사 순서 댓글에 둠",
+      "replies": [
+        "1. 문장 복사\n\n프롬프트 저장소에서\n발표 직전 악마의 대변인\n문장을 복사하셈",
+        "2. 세 칸 채우기\n\n(발표 주제)와\n(듣는 사람)을 넣고\n(발표 대본)의 허점과\n예상 질문을 정리해 줘.",
+        "3. 제미나이 설정\n\n제미나이 사고 수준을\n높음으로 고르셈\n대본과 문장을\n같이 붙이면 됨",
+        "4. 결과 먼저 보기\n\n논리적 허점과\n날카로운 질문이 나옴\n방어 답변도 같이 받음",
+        "5. 답변 맞춰 보기\n\n질문마다 답을 말해 보고\n막힌 대목을 대본에서\n다시 고치면 됨"
+      ],
+      "link_comment": "무료 프롬프트 원문\n\nhttps://gemini-campus-guide.vercel.app/?tab=playground",
+      "sources": [
+        {
+          "url": "https://x.com/gemissalmuk/status/2121559824756539468",
+          "title": "X 글: 발표 질문 겁나면 제미나이로 먼저 뽑으셈",
+          "published_at": "2026-11-14T11:04:13+00:00",
+          "collected_at": "2026-11-17T09:21:06.623497+09:00",
+          "verified_at": "2026-11-17T09:39:06+09:00"
+        },
+        {
+          "url": "https://gemini-campus-guide.vercel.app/?tab=playground",
+          "title": "프롬프트 저장소 | GSA team",
+          "published_at": null,
+          "collected_at": "2026-11-17T09:21:06.623497+09:00",
+          "verified_at": "2026-11-17T09:39:06+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/fp-easy-20261122-1.jpg",
+          "alt": "@gemissalmuk X 원글 이미지 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "@gemissalmuk X 원글 이미지",
+          "source_url": "https://x.com/gemissalmuk/status/2121559824756539468",
+          "sha256": "d91ded917e55a544321e4473e3146dd62461747bdef87ab55a9444dff82a5709"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-22",
+      "title": "컨텐츠 394 · 사진 톤 4개로 바뀜",
+      "type": "marketing",
+      "target": "상품 사진 만드는 사장님",
+      "fmt": "카메라 용어 모음",
+      "format": "case_thread",
+      "editorial_kind": "easy_news",
+      "body": "사진 톤 4개로 바뀜\n\n카메라 이름만 바꾸면\n명암, 컬러, 톤이 달라짐\n\n첨부 4장이 그 차이임\n문장 4개 댓글에 둠",
+      "replies": [
+        "1. 일회용 필름\n\n(상품) 사진을\nDISPOSABLE FILM CAMERA\n톤을 살려 표현해 줘.",
+        "2. 인스턴트 필름\n\n(상품) 사진을\nINSTANT FILM\n질감으로 완성해 줘.",
+        "3. 35밀리 필름\n\n(상품) 사진을\n35MM FILM\n색감으로 연출해 줘.",
+        "4. CCD 디카\n\n(상품) 사진을\nCCD DIGITAL CAMERA\n느낌으로 보정해 줘.",
+        "5. 네 장 비교\n\n같은 (상품) 사진에\n카메라 이름만 바꾸셈\n명암, 컬러, 톤을\n나란히 비교하면 됨"
+      ],
+      "link_comment": "공식 카메라 용어\n\nhttps://fromsequence.net/cut?cat=lens",
+      "sources": [
+        {
+          "url": "https://x.com/crtvst_sojeong/status/2122320860099019083",
+          "title": "X 글: 사진 톤 4개로 바뀜",
+          "published_at": "2026-11-16T13:28:18+00:00",
+          "collected_at": "2026-11-17T09:21:06.623497+09:00",
+          "verified_at": "2026-11-17T09:39:06+09:00"
+        },
+        {
+          "url": "https://fromsequence.net/cut?cat=lens",
+          "title": "CUT: 제품 연출컷 기법 · From Sequence",
+          "published_at": null,
+          "collected_at": "2026-11-17T09:21:06.623497+09:00",
+          "verified_at": "2026-11-17T09:39:06+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/fp-easy-20261122-2.jpg",
+          "alt": "@crtvst_sojeong X 원글 이미지 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "@crtvst_sojeong X 원글 이미지",
+          "source_url": "https://x.com/crtvst_sojeong/status/2122320860099019083",
+          "sha256": "99a397b3ffb70e9eaaa281853eea2533f390efac1a33d6321322e0fcac282def"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-22",
+      "title": "컨텐츠 395 · 비싼 AI는 계획만 맡김",
+      "type": "evergreen",
+      "target": "AI 코딩 맡기는 사장님",
+      "fmt": "깃허브 스킬 소개",
+      "format": "case_thread",
+      "editorial_kind": "easy_news",
+      "body": "비싼 AI는 계획만 맡김\n\nimprove가 코드 점검 후\n싼 AI용 계획서를 씀\n\n첨부 화면이 그 구조임\n설치는 댓글에 둠",
+      "replies": [
+        "1. 스킬 설치\n\nnpx skills add shadcn/improve\nAgent Skills를 지원하는\n에이전트에서 쓰면 됨",
+        "2. 전체 점검\n\n/improve\n저장소를 훑은 뒤\n문제 목록 표를 내줌\n빠르게 보려면\n/improve quick",
+        "3. 계획 고르기\n\n원하는 번호를 고르고\nplan 1, 3 and 5\n라고 입력하셈\nplans 폴더에\n계획서가 하나씩 생김",
+        "4. 싼 모델로 실행\n\n/improve execute 001\n별도 작업 폴더에서\n계획대로 구현함\n비싼 모델이 검토하고\n합치기는 직접 정함",
+        "5. 다음 회차 정리\n\n/improve reconcile\n완료된 계획을 확인하고\n막히거나 바뀐 계획도\n다시 정리함"
+      ],
+      "link_comment": "깃허브 원문\n\nhttps://github.com/shadcn/improve",
+      "sources": [
+        {
+          "url": "https://x.com/doodi_dev/status/2121456841767235997",
+          "title": "X 글: 비싼 AI는 계획만 맡김",
+          "published_at": "2026-11-14T04:15:00+00:00",
+          "collected_at": "2026-11-17T09:21:06.623497+09:00",
+          "verified_at": "2026-11-17T09:39:06+09:00"
+        },
+        {
+          "url": "https://github.com/shadcn/improve",
+          "title": "GitHub - shadcn/improve: Use your most capable model to audit your codebase and write plans for cheaper models to execut",
+          "published_at": null,
+          "collected_at": "2026-11-17T09:21:06.623497+09:00",
+          "verified_at": "2026-11-17T09:39:06+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/fp-easy-20261122-3.jpg",
+          "alt": "@doodi_dev X 원글 이미지 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "@doodi_dev X 원글 이미지",
+          "source_url": "https://x.com/doodi_dev/status/2121456841767235997",
+          "sha256": "e70fa6f8aac118940ef514128b24a4bd378b447c64af32fe3eb47c957b6e606b"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-22",
+      "title": "컨텐츠 396 · 남녀 캐릭터 둘 다 누아르 의상으로 나옴",
+      "type": "evergreen",
+      "target": "캐릭터 굿즈 만드는 사장님",
+      "fmt": "누아르 프롬프트",
+      "format": "case_thread",
+      "editorial_kind": "easy_news",
+      "body": "남녀 캐릭터 둘 다\n누아르 의상으로 나옴\n\n검은 시폰과 하네스가\n첨부 4장의 핵심임\n\n문장 순서 댓글에 둠",
+      "replies": [
+        "1. 화풍 잡기\n\n(성인 캐릭터)를\n정교한 애니 삽화와\n우아한 누아르 분위기로\n표현해 줘.",
+        "2. 의상 얹기\n\n(성인 캐릭터)에게\n검은 시폰 로브와\n얇은 가죽 하네스를\n가슴과 허리에 두르고\n은색 버클까지 더해 줘.",
+        "3. 자세 잡기\n\n(성인 캐릭터)를\n침대 가장자리에 앉혀\n한쪽 다리는 뻗고\n다른 쪽은 굽게 해 줘.",
+        "4. 배경 만들기\n\n(성인 캐릭터) 뒤를\n진홍색 벨벳 커튼과\n짙은 마호가니 가구,\n금빛 침대 조명이 있는\n빈티지 호텔로 표현해 줘.",
+        "5. 빛과 구도\n\n붉은 역광과\n영화 같은 그림자를 쓰고\n(성인 캐릭터)를\n4분의 3 구도로 표현해 줘."
+      ],
+      "link_comment": "영어 원문 타래\n\nhttps://x.com/Milkyway000103/status/2122306661742432409",
+      "sources": [
+        {
+          "url": "https://x.com/Milkyway000103/status/2122306661742432409",
+          "title": "X 글: 남녀 캐릭터 둘 다 누아르 의상으로 나옴",
+          "published_at": "2026-11-16T12:31:53+00:00",
+          "collected_at": "2026-11-17T09:21:06.623497+09:00",
+          "verified_at": "2026-11-17T09:39:06+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/fp-easy-20261122-4.jpg",
+          "alt": "@milkyway000103 X 원글 이미지 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "@milkyway000103 X 원글 이미지",
+          "source_url": "https://x.com/Milkyway000103/status/2122306661742432409",
+          "sha256": "cadd1afcfe19c914a0805f4c4231d655d95647487f5a8d6c52c09723254cb121"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-22",
+      "title": "컨텐츠 397 · 강의 노트가 문제지 됨",
+      "type": "evergreen",
+      "target": "자격증 공부하는 사장님",
+      "fmt": "예상문제 만들기",
+      "format": "case_thread",
+      "editorial_kind": "easy_news",
+      "supplemental": true,
+      "body": "강의 노트가 문제지 됨\n\n연습문제 10개와\n채점 기준까지 나옴\n\n첨부 4장이 그 과정임\n붙이는 순서 댓글에 둠",
+      "replies": [
+        "1. 문장 복사\n\n강의 노트로 예상문제\n만들기 문장을 복사하셈",
+        "2. 자료 넣기\n\n제미나이에서\n노트북LM 카테고리를\n만든 뒤 강의 노트와\n시험 범위를 넣으셈",
+        "3. 사고 수준 높이기\n\n사고 수준을 높음으로\n고른 뒤 복사한 문장을\n같이 붙이면 됨",
+        "4. 문제 방식 정하기\n\n(시험 범위) 안에서\n연습문제 10개를 만들고\n정답은 내가 요청할 때\n공개해 줘.",
+        "5. 답안 점검\n\n문제별 배점과\n필수 개념, 채점 기준을\n내 답안과 비교하셈\n빠진 논리와 복습 순서도\n같이 확인하면 됨"
+      ],
+      "link_comment": "무료 프롬프트 원문\n\nhttps://gemini-campus-guide.vercel.app/prompts/exam?from=%2F",
+      "sources": [
+        {
+          "url": "https://x.com/gemissalmuk/status/2122300113649561872",
+          "title": "X 글: 강의 노트가 문제지 됨",
+          "published_at": "2026-11-16T12:05:52+00:00",
+          "collected_at": "2026-11-17T09:21:06.623497+09:00",
+          "verified_at": "2026-11-17T09:39:06+09:00"
+        },
+        {
+          "url": "https://gemini-campus-guide.vercel.app/prompts/exam?from=%2F",
+          "title": "프롬프트 저장소 | GSA team",
+          "published_at": null,
+          "collected_at": "2026-11-17T09:21:06.623497+09:00",
+          "verified_at": "2026-11-17T09:39:06+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/fp-easy-20261122-5.jpg",
+          "alt": "@gemissalmuk X 원글 이미지 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "@gemissalmuk X 원글 이미지",
+          "source_url": "https://x.com/gemissalmuk/status/2122300113649561872",
+          "sha256": "48c6d35f4d3e37074aa9f7ee9545a2762cb9bb215eb9b25b005b8a84acadb93f"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-22",
+      "title": "컨텐츠 398 · 제품 옆면 20%만 색으로 물들이는 법",
+      "type": "evergreen",
+      "target": "홍보컷 밋밋한 사장님",
+      "fmt": "조명 공식 사용법",
+      "format": "case_thread",
+      "editorial_kind": "easy_news",
+      "supplemental": true,
+      "body": "제품 옆면 20%만\n색으로 물들이는 법\n\n나머지는 흰빛으로 둔\n첨부 3장의 조명임\n\n세팅은 댓글에 둠",
+      "replies": [
+        "1. 빛 범위 잡기\n\n한쪽에서 색 필름 빛을\n스치듯 비추셈\n제품 옆면 20%만\n색을 남기면 됨",
+        "2. 조명 두 개 놓기\n\n왼쪽 컬러 젤 한 개\n정면 흰 소프트 한 개\n젤은 은은하게 두고\n형광빛은 피하셈",
+        "3. 배경과 각도\n\n짙은 단색 배경에\n아래 옅은 그림자를 둠\n85mm와 눈높이로\n맞추면 됨",
+        "4. 색 조합 고르기\n\n차콜과 레드\n블루와 그린을 섞거나\n배경색에서 하나\n뽑아 쓰면 됨",
+        "5. 문장 붙이기\n\n(상품) 사진의\n왼쪽 옆면 20%만\n(색상)으로 물들이고\n나머지는 흰빛으로\n남겨 연출해 줘."
+      ],
+      "link_comment": "공식 조명 페이지\n\nhttps://fromsequence.net/cuts/more-one-side-gel",
+      "sources": [
+        {
+          "url": "https://x.com/crtvst_sojeong/status/2121899304126460071",
+          "title": "X 글: 제품 옆면 20%만 색으로 물들이는 법",
+          "published_at": "2026-11-15T09:33:11+00:00",
+          "collected_at": "2026-11-17T09:21:06.623497+09:00",
+          "verified_at": "2026-11-17T09:39:06+09:00"
+        },
+        {
+          "url": "https://fromsequence.net/cuts/more-one-side-gel",
+          "title": "측면 컬러 조명 Side colour light — 제품 촬영 조명과 AI 프롬프트 | From Sequence",
+          "published_at": null,
+          "collected_at": "2026-11-17T09:21:06.623497+09:00",
+          "verified_at": "2026-11-17T09:39:06+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/fp-easy-20261122-6.jpg",
+          "alt": "@crtvst_sojeong X 원글 이미지 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "@crtvst_sojeong X 원글 이미지",
+          "source_url": "https://x.com/crtvst_sojeong/status/2121899304126460071",
+          "sha256": "2639a720afe1438171fe6c4b5ca879b210286f6c40536a6e1bf19c1e74a771ac"
+        }
+      ]
     }
   ],
   "_작성기준": "글감 작성 전 AGENTS.md와 config/brands/makefamily.md의 최신 사용자 기준을 읽는다. 과거 루틴 문구와 충돌하면 최신 사용자 기준을 적용한다."
