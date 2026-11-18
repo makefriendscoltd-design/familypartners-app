@@ -7741,6 +7741,258 @@
           "sha256": "2639a720afe1438171fe6c4b5ca879b210286f6c40536a6e1bf19c1e74a771ac"
         }
       ]
+    },
+    {
+      "date": "2026-11-23",
+      "title": "컨텐츠 399 · 클로드 코드로 시안 3개 나옴",
+      "type": "ai",
+      "target": "예약 페이지 만드는 사장님",
+      "fmt": "깃허브 스킬 소개",
+      "format": "case_thread",
+      "editorial_kind": "easy_news",
+      "body": "클로드 코드로 시안 3개 나옴\n\noil-ui 스킬을 붙이면\n서체와 색이 다른 시안을\n한 화면에 나란히 보여줌\n\n설치와 순서 댓글에 둠",
+      "replies": [
+        "1. 스킬 설치\n\nnpx skills add oil-oil/oil-ui\n클로드 코드에서 쓰면 됨\n설정은 따로 필요 없음\nPro가 이미 있으면\n둘 중 하나만 쓰셈",
+        "2. 제품부터 정하기\n\n(예약 서비스)의\n비슷한 서비스 2개나\n3개 스타일을 먼저 보고\n쓸 방향을 정리해 줘.",
+        "3. 말을 결정으로\n\n(예약 페이지)를\n고급스럽게 바꾸되\n서체, 여백, 색 비율을\n구체적으로 정해 줘.",
+        "4. 시안 비교하기\n\n(예약 페이지)의\n서체, 색, 구성이 다른\n시안 3개를 만들고\n한 페이지에 나란히\n비교해 줘.",
+        "5. 고르고 확인하기\n\n마음에 드는 시안을\n하나 고른 뒤\n(바꿀 점)을 말해 다듬으셈\n끝나면 데스크톱과\n모바일 화면을 확인함"
+      ],
+      "link_comment": "깃허브 원문\n\nhttps://github.com/oil-oil/oil-ui",
+      "sources": [
+        {
+          "url": "https://x.com/aeng_kkang/status/2121486788971614256",
+          "title": "X 글: 클로드 코드로 시안 3개 나옴",
+          "published_at": "2026-11-14T06:14:00+00:00",
+          "collected_at": "2026-11-18T09:21:10.441354+09:00",
+          "verified_at": "2026-11-18T09:37:29+09:00"
+        },
+        {
+          "url": "https://github.com/oil-oil/oil-ui",
+          "title": "GitHub - oil-oil/oil-ui: UI design skill for Claude Code, Codex and other AI agents: explore distinct directions, compar",
+          "published_at": null,
+          "collected_at": "2026-11-18T09:21:10.441354+09:00",
+          "verified_at": "2026-11-18T09:37:29+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/fp-easy-20261123-1.png",
+          "alt": "GitHub - oil-oil/oil-ui 원문 화면 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "GitHub - oil-oil/oil-ui 원문 화면",
+          "source_url": "https://github.com/oil-oil/oil-ui",
+          "sha256": "924c1d4b83a035a6ffb49f6a56253d3a882962c208621246dda162e5544c10b7"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-23",
+      "title": "컨텐츠 400 · 실사 광고 샷 스킬 2개면 됨",
+      "type": "marketing",
+      "target": "상품 광고 만드는 사장님",
+      "fmt": "무료 영상 스킬",
+      "format": "case_thread",
+      "editorial_kind": "easy_news",
+      "body": "실사 광고 샷 스킬 2개면 됨\n\n첨부컷 같은 실사 광고를\n조명과 앵글로 잘게 나눔\n연기 지시도 따로 뽑힘\n\n받는 순서 댓글에 둠",
+      "replies": [
+        "1. 두 스킬 받기\n\n공식 글에서\nSeedance Prompt Writer\n파일을 먼저 받고\nActing Director\n파일도 같이 받으셈\n클로드나 ChatGPT에\n파일을 넣으면 됨\n힉스필드 연결 없이도\n프롬프트만 뽑을 수 있음",
+        "2. 샷으로 나누기\n\n(상품 광고) 아이디어를\n조명, 카메라 앵글,\n액션이 담긴 샷으로\n초 단위로 나눠 줘.",
+        "3. 끝 상태 고정\n\n(상품)의 각 샷에\n시작 위치와 액션,\nEND STATE를 적어서\n다음 샷과 이어지게\n정리해 줘.",
+        "4. 연기 지시하기\n\n(인물)의 목표와 상황,\n해야 할 일을 넣어서\n눈, 얼굴, 움직임으로\n연기를 지시해 줘.",
+        "5. 영상 전에 확인\n\n흑백 스토리보드에서\n앵글과 액션을 먼저 봄\n인물, 장소, 소품도\n참조 이미지로 맞춘 뒤\n영상으로 넘기면 됨"
+      ],
+      "link_comment": "힉스필드 원문\n\nhttps://higgsfield.ai/@adilinthewildtempo/blogs/make-a-realistic-ai-commercial-without-wasting-credits",
+      "sources": [
+        {
+          "url": "https://x.com/VibeEverything/status/2122656898281590897",
+          "title": "X 글: 실사 광고 샷 스킬 2개면 됨",
+          "published_at": "2026-11-17T11:43:36+00:00",
+          "collected_at": "2026-11-18T09:21:10.441354+09:00",
+          "verified_at": "2026-11-18T09:37:29+09:00"
+        },
+        {
+          "url": "https://higgsfield.ai/@adilinthewildtempo/blogs/make-a-realistic-ai-commercial-without-wasting-credits",
+          "title": "Make a Realistic AI Commercial Without Wasting Credits",
+          "published_at": null,
+          "collected_at": "2026-11-18T09:21:10.441354+09:00",
+          "verified_at": "2026-11-18T09:37:29+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/fp-easy-20261123-2.jpg",
+          "alt": "@vibeeverything X 원글 이미지 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "@vibeeverything X 원글 이미지",
+          "source_url": "https://x.com/VibeEverything/status/2122656898281590897",
+          "sha256": "b0e00ae2c49d846dad32341a3c09cbfb8b556dd01b63a02d24a6aa2ed89efbf8"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-23",
+      "title": "컨텐츠 401 · 인강 결제 전 무료 강좌 2곳 보셈",
+      "type": "evergreen",
+      "target": "인강비 아끼는 사장님",
+      "fmt": "무료 강의 안내",
+      "format": "case_thread",
+      "editorial_kind": "easy_news",
+      "body": "인강 결제 전 무료 강좌 2곳 보셈\n\n대학생 아니어도\n외국어와 디지털 강좌를\n온라인으로 찾아볼 수 있음\n\n두 곳 차이 댓글에 둠",
+      "replies": [
+        "1. 지식부터 보기\n\n경기평생학습포털\nGSEEK 지식에서\n온라인학습을 고르면 됨",
+        "2. 지식 분야 고르기\n\n외국어, 컴퓨터 활용,\n자격증, 취업부터 보고\n재테크, 인문학, 취미도\n필요한 분야로 고르셈",
+        "3. 서울 포털 보기\n\n서울평생학습포털\n서울런4050에선\n직무역량, 디지털 활용,\n어학, 자격증 강좌를\n차례로 찾아보면 됨",
+        "4. 지역과 로그인\n\n지역 밖에서도 들을 수\n있는 무료 강좌가 있음\n일부는 로그인 없이 됨\n수강 이력 관리엔\n가입이 필요할 수 있음",
+        "5. 결제 전에 확인\n\n필요한 분야를 검색한 뒤\n온라인 강좌부터 보셈\n로그인과 가입 조건은\n강좌마다 확인하면 됨"
+      ],
+      "link_comment": "공식 강의 페이지\n\nhttps://www.gseek.kr/",
+      "sources": [
+        {
+          "url": "https://x.com/9bnTa1mtiWchUQ3/status/2122556951620133154",
+          "title": "X 글: 인강 결제 전 무료 강좌 2곳 보셈",
+          "published_at": "2026-11-17T05:06:27+00:00",
+          "collected_at": "2026-11-18T09:21:10.441354+09:00",
+          "verified_at": "2026-11-18T09:37:29+09:00"
+        },
+        {
+          "url": "https://www.gseek.kr/",
+          "title": "경기도평생학습포털 지식(GSEEK)",
+          "published_at": null,
+          "collected_at": "2026-11-18T09:21:10.441354+09:00",
+          "verified_at": "2026-11-18T09:37:29+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/fp-easy-20261123-3.png",
+          "alt": "경기도평생학습포털 지식(GSEEK) 원문 화면 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "경기도평생학습포털 지식(GSEEK) 원문 화면",
+          "source_url": "https://www.gseek.kr/",
+          "sha256": "017fd33f666b8410c967df4d30f6dee9e4678918782297e325410a9cdf2f9937"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-23",
+      "title": "컨텐츠 402 · 프롬프트 네 칸으로 만드는 법",
+      "type": "evergreen",
+      "target": "프롬프트 막히는 사장님",
+      "fmt": "프롬프트 빌더",
+      "format": "case_thread",
+      "editorial_kind": "easy_news",
+      "body": "프롬프트 네 칸으로 만드는 법\n\n첨부 4장처럼\n역할, 맥락, 작업, 형식만\n채우면 문장이 완성됨\n\n칸별 예시 댓글에 둠",
+      "replies": [
+        "1. 유형 고르기\n\n과제 유형을 누르면\n예시가 먼저 채워짐\n직접 고친 칸은 남으니\n내 업무로 바꾸면 됨",
+        "2. 역할과 맥락\n\n역할 칸엔 누가 답할지\n맥락 칸엔 내 상황과\n가진 자료를 한 줄씩 쓰셈",
+        "3. 작업과 형식\n\n작업 칸엔 정확한 할 일\n형식 칸엔 결과 모양과\n지킬 조건을 한 줄씩 쓰셈",
+        "4. 완성문 복사\n\n네 칸을 채우면\n세부 지침이 붙고\n완성된 프롬프트가 나옴\n복사해서 AI에 넣으면 됨\n입력은 이 기기에만 저장됨",
+        "5. 순서 나누기\n\n(상품 소개 글)의\n목차를 먼저 만들고\n확인 뒤 개요와 본문을\n차례로 작성해 줘.\n자료를 붙일 땐\n구분선으로 나누면 됨"
+      ],
+      "link_comment": "기능 원문 페이지\n\nhttps://gemini-campus-guide.vercel.app/tools/prompt-builder",
+      "sources": [
+        {
+          "url": "https://x.com/gemissalmuk/status/2122645472091484422",
+          "title": "X 글: 프롬프트 네 칸으로 만드는 법",
+          "published_at": "2026-11-17T10:58:12+00:00",
+          "collected_at": "2026-11-18T09:21:10.441354+09:00",
+          "verified_at": "2026-11-18T09:37:29+09:00"
+        },
+        {
+          "url": "https://gemini-campus-guide.vercel.app/tools/prompt-builder",
+          "title": "프롬프트 저장소 | GSA team",
+          "published_at": null,
+          "collected_at": "2026-11-18T09:21:10.441354+09:00",
+          "verified_at": "2026-11-18T09:37:29+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/fp-easy-20261123-4.jpg",
+          "alt": "@gemissalmuk X 원글 이미지 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "@gemissalmuk X 원글 이미지",
+          "source_url": "https://x.com/gemissalmuk/status/2122645472091484422",
+          "sha256": "c34ff0c8035955a0e7e4253df5766b07f2b488a5677a8d010ba8260dee57a254"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-23",
+      "title": "컨텐츠 403 · 아침 20분 전화 영어가 됨",
+      "type": "evergreen",
+      "target": "영어 통화 연습할 사장님",
+      "fmt": "전화 영어 프롬프트",
+      "format": "case_thread",
+      "editorial_kind": "easy_news",
+      "supplemental": true,
+      "body": "아침 20분 전화 영어가 됨\n\n피클에 한 문장 넣으면\n모닝콜부터 교정과 복습이\n한 번에 이어짐\n\n복사본 댓글에 나눠 둠",
+      "replies": [
+        "1. 시간과 톤\n\n(평일) 아침 (6시)에\n전화해 (20분) 동안\n처음부터 영어로\n밝게 진행해 줘.",
+        "2. 대화와 교정\n\n가볍게 안부를 묻고\n(관심 주제)를 질문해 줘.\n내 말이 끝날 때까지 듣고\n더 자연스러운 영어로\n고쳐서 들려 줘.\n내가 따라 말한 뒤\n다음 질문으로 넘어가 줘.",
+        "3. 끝나기 3분 전\n\n(3분) 전엔 오늘 일정과\n계획을 영어로 물은 뒤\n영어로 마무리해 줘.",
+        "4. 통화 뒤 복습\n\n통화가 끝나면\n오늘 새로 익힌 단어와\n따라 한 표현만 골라\n채팅으로 정리해 줘."
+      ],
+      "link_comment": "원문 프롬프트\n\nhttps://x.com/10Billionaire_A/status/2122688698215235994",
+      "sources": [
+        {
+          "url": "https://x.com/10Billionaire_A/status/2122688698215235994",
+          "title": "X 글: 아침 20분 전화 영어가 됨",
+          "published_at": "2026-11-17T13:49:57+00:00",
+          "collected_at": "2026-11-18T09:21:10.441354+09:00",
+          "verified_at": "2026-11-18T09:37:29+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/fp-easy-20261123-5.png",
+          "alt": "메이크패밀리 제작 프롬프트 정리 이미지 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "메이크패밀리 제작 프롬프트 정리 이미지",
+          "source_url": "https://x.com/10Billionaire_A/status/2122688698215235994",
+          "sha256": "f0aa5264321205a590ba492873c27500abd1a8b61877e03ca560590df73a8765"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-23",
+      "title": "컨텐츠 404 · 99% 벤치 찍은 ARTEMIS임",
+      "type": "evergreen",
+      "target": "안드로이드 앱 만든 사장님",
+      "fmt": "앱 점검 도구",
+      "format": "case_thread",
+      "editorial_kind": "easy_news",
+      "supplemental": true,
+      "body": "99% 벤치 찍은 ARTEMIS임\n\n첨부 화면처럼 폰을 보며\n앱 점검을 말로 돌리고\n로그와 화면도 남겨줌\n\n설치 전 준비 댓글에 둠",
+      "replies": [
+        "1. 폰 준비\n\n안드로이드 폰에서\nUSB 디버깅을 켜거나\n에뮬레이터를 연결하셈",
+        "2. 저장소 시작\n\n깃허브 원문 저장소를\n받아 폴더로 들어간 뒤\n./start.sh\n실행하면 됨\n필요한 도구도 설치함",
+        "3. 클로드 연결\n\n설정 중 클로드 코드나 Codex를\n골라 MCP를 연결하셈\n그다음 채팅에서\n폰 점검을 말로 시키면 됨",
+        "4. 점검 문장\n\n(앱 이름)을 열고\n(로그인 화면)에서\n테스트 계정으로 들어가\n예상 못 한 팝업을 찾고\n마지막 화면을 저장해 줘.",
+        "5. 결과 확인\n\n실행 뒤 화면 캡처와\n로그, 최종 보고서가 나옴\n99%는 AndroidWorld의\n100개 넘는 과제 결과임\n내 앱은 직접 확인하셈"
+      ],
+      "link_comment": "깃허브 원문\n\nhttps://github.com/google/artemis",
+      "sources": [
+        {
+          "url": "https://x.com/dopamine_crypto/status/2122359049274683638",
+          "title": "X 글: 99% 벤치 찍은 ARTEMIS임",
+          "published_at": "2026-11-16T16:00:03+00:00",
+          "collected_at": "2026-11-18T09:21:10.441354+09:00",
+          "verified_at": "2026-11-18T09:37:29+09:00"
+        },
+        {
+          "url": "https://github.com/google/artemis",
+          "title": "GitHub - google/artemis: ARTEMIS turns natural-language instructions into reliable Android automation. It automates end-",
+          "published_at": null,
+          "collected_at": "2026-11-18T09:21:10.441354+09:00",
+          "verified_at": "2026-11-18T09:37:29+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/fp-easy-20261123-6.jpg",
+          "alt": "@dopamine_crypto X 원글 이미지 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "@dopamine_crypto X 원글 이미지",
+          "source_url": "https://x.com/dopamine_crypto/status/2122359049274683638",
+          "sha256": "2fbdb2d6e055a3cda08b9896d8f074499500ecfa1b848ab465ff01747d6d7b52"
+        }
+      ]
     }
   ],
   "_작성기준": "글감 작성 전 AGENTS.md와 config/brands/makefamily.md의 최신 사용자 기준을 읽는다. 과거 루틴 문구와 충돌하면 최신 사용자 기준을 적용한다."
