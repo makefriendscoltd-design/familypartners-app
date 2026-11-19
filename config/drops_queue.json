@@ -7993,6 +7993,258 @@
           "sha256": "2fbdb2d6e055a3cda08b9896d8f074499500ecfa1b848ab465ff01747d6d7b52"
         }
       ]
+    },
+    {
+      "date": "2026-11-24",
+      "title": "컨텐츠 405 · 클로드 디자인으로 화면 맞추는 법",
+      "type": "ai",
+      "target": "브랜드 화면 맞추는 사장님",
+      "fmt": "기능 사용법",
+      "format": "case_thread",
+      "editorial_kind": "easy_news",
+      "body": "클로드 디자인으로 화면 맞추는 법\n\n마스코트 6가지 상태와\n밤낮 비교가 움직이는 화면임\n\n순서는 댓글에 정리함",
+      "replies": [
+        "1. 디자인 열기\n\n클로드 새 채팅에서\n/\n메뉴의 Design을 고름\n입력창에 /design이 뜸",
+        "2. 준비물 세 가지\n\n참고 화면 한 장\n서비스 한 줄 소개\n원하는 느낌과 움직임\n세 가지를 먼저 모음",
+        "3. 화면 규칙 만들기\n\n(브랜드) 참고 화면으로\n디자인 시스템을 만들고\n(원하는 움직임)을\n복제하지 말고\n독창적으로 구성해 줘.",
+        "4. 결과 항목 확인\n\nDesign System 카드와\n오른쪽 화면이 뜨는지 봄\nOverview와 Colors,\nTypography를 확인함\nComponents도 함께 봄",
+        "5. 로고와 폰트 교체\n\nTypography에서\nUpload font를 누름\n로고는 채팅에 첨부함\n(로고와 폰트)로\n기본값을 교체해 줘.\n화면이 같으면 새로고침함"
+      ],
+      "link_comment": "첨부 결과 사이트\n\nhttps://lucianlabs.dev/",
+      "sources": [
+        {
+          "url": "https://x.com/lucian__03/status/2122610525867831563",
+          "title": "X 글: 클로드 디자인으로 화면 맞추는 법",
+          "published_at": "2026-11-17T08:39:20+00:00",
+          "collected_at": "2026-11-19T09:22:02.369929+09:00",
+          "verified_at": "2026-11-19T09:40:02+09:00"
+        },
+        {
+          "url": "https://lucianlabs.dev/",
+          "title": "lucianLabs — AI와 일하며 만든 도구와 기록",
+          "published_at": null,
+          "collected_at": "2026-11-19T09:22:02.369929+09:00",
+          "verified_at": "2026-11-19T09:40:02+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/fp-easy-20261124-1.jpg",
+          "alt": "@lucian__03 X 원글 이미지 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "@lucian__03 X 원글 이미지",
+          "source_url": "https://x.com/lucian__03/status/2122610525867831563",
+          "sha256": "2d5d158b97b7d62454499adea0c1df137a9023bcca47f59e51e06ee82039a919"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-24",
+      "title": "컨텐츠 406 · 부정행위 이미지는 여자 기부 이미지는 남자였음",
+      "type": "marketing",
+      "target": "AI 광고컷 만드는 사장님",
+      "fmt": "편향 점검 프롬프트",
+      "format": "case_thread",
+      "editorial_kind": "easy_news",
+      "body": "부정행위 이미지는 여자\n기부 이미지는 남자였음\n\nGPT와 제미나이에\n같은 방식으로 물은 화면임\n\n점검 문장은 댓글에 둠",
+      "replies": [
+        "1. 부정 장면 먼저\n\n(부정적 행동)을 하는\n사람을 이미지로\n생성해 줘.\n성별은 따로 적지 않음",
+        "2. 선택 이유 묻기\n\n왜 (성별)의 인물로\n설정했는지 근거를\n설명해 줘.",
+        "3. 긍정 장면 묻기\n\n(긍정적 행동)을 하는\n사람을 이미지로\n생성해 줘.",
+        "4. 두 결과 비교\n\nGPT와 제미나이에서\n같은 문장을 각각 돌림\n선택된 성별과 설명을\n나란히 적어 비교함"
+      ],
+      "link_comment": "한국어 원문 타래\n\nhttps://x.com/minseo__S2/status/2122561845274063212",
+      "sources": [
+        {
+          "url": "https://x.com/minseo__S2/status/2122561845274063212",
+          "title": "X 글: 부정행위 이미지는 여자 기부 이미지는 남자였음",
+          "published_at": "2026-11-17T05:25:53+00:00",
+          "collected_at": "2026-11-19T09:22:02.369929+09:00",
+          "verified_at": "2026-11-19T09:40:02+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/fp-easy-20261124-2.jpg",
+          "alt": "@minseo__s2 X 원글 이미지 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "@minseo__s2 X 원글 이미지",
+          "source_url": "https://x.com/minseo__S2/status/2122561845274063212",
+          "sha256": "3b6d7775d93973dade61daccbd5ddd801ae64e6667c56e2e06fd36fe046bb281"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-24",
+      "title": "컨텐츠 407 · 컴활 필기 1주 남은 사장님",
+      "type": "evergreen",
+      "target": "컴활 필기 보는 사장님",
+      "fmt": "시험 플랜 자료",
+      "format": "case_thread",
+      "editorial_kind": "easy_news",
+      "body": "컴활 필기 1주 남은 사장님\n\n제미나이 프롬프트로\n취약점과 오답, 복습까지 뽑음\n\n복사 순서는 댓글에 둠",
+      "replies": [
+        "1. 프롬프트 복사\n\n저장소에서 컴활 필기\n프롬프트 복사하기를 누름",
+        "2. 제미나이에 붙이기\n\n노트북LM 카테고리를\n새로 만든 뒤 붙여넣음\n사고 수준은 높음으로 둠",
+        "3. 남은 기간 넣기\n\n(시험까지 남은 기간)에\n맞춰 컴활 필기\n공부 순서를 정리해 줘.",
+        "4. 취약점까지 보기\n\n(취약한 과목) 중심으로\n문제 풀이와 오답 해설,\n복습 우선순위를\n정리해 줘.",
+        "5. 결과에서 확인\n\n남은 기간과 공부 플랜,\n취약 부분과 문제 풀이,\n오답 해설과 복습 순서가\n모두 있는지 확인함"
+      ],
+      "link_comment": "컴활 프롬프트 원문\n\nhttps://gemini-campus-guide.vercel.app/prompts/comput",
+      "sources": [
+        {
+          "url": "https://x.com/gemissalmuk/status/2121235574514499681",
+          "title": "X 글: 컴활 필기 1주 남은 사장님",
+          "published_at": "2026-11-13T13:35:46+00:00",
+          "collected_at": "2026-11-19T09:22:02.369929+09:00",
+          "verified_at": "2026-11-19T09:40:02+09:00"
+        },
+        {
+          "url": "https://gemini-campus-guide.vercel.app/prompts/comput",
+          "title": "프롬프트 저장소 | GSA team",
+          "published_at": null,
+          "collected_at": "2026-11-19T09:22:02.369929+09:00",
+          "verified_at": "2026-11-19T09:40:02+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/fp-easy-20261124-3.jpg",
+          "alt": "@gemissalmuk X 원글 이미지 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "@gemissalmuk X 원글 이미지",
+          "source_url": "https://x.com/gemissalmuk/status/2121235574514499681",
+          "sha256": "fc22fbac72215888f23a75b740f091b39d2cb2d15b329473c96971306835ac21"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-24",
+      "title": "컨텐츠 408 · 아이폰 앱을 AI가 누름 토스 확인과 당근 글쓰기도",
+      "type": "evergreen",
+      "target": "아이폰 반복업무 맡길 사장님",
+      "fmt": "깃허브 도구 설치",
+      "format": "case_thread",
+      "editorial_kind": "easy_news",
+      "body": "아이폰 앱을 AI가 누름\n토스 확인과 당근 글쓰기도\n\niphone-cli는\n테스트 앱 없이 화면을 읽음\n\n조건은 댓글에 정리함",
+      "replies": [
+        "1. 기기 조건 확인\n\n실제 아이폰이 필요함\niOS 27 이상만 됨\n맥이나 윈도에서 씀",
+        "2. 설치 맡기기\n\n클로드나 Codex에\n깃허브 원문을 주고\n이 도구를 설치한 뒤\niphone-cli 초기 설정을\n진행해 줘.",
+        "3. 처음 연결하기\n\nUSB로 아이폰을 잇고\n아이폰에서 신뢰를 누름\niph setup\n화면 안내를 따라 함\n잠금도 풀어둠",
+        "4. 화면 읽기 확인\n\niph read --human\n앱 화면 요소가 나오면\n연결된 상태임\n스크린샷 대신\n접근성 트리를 읽음",
+        "5. 무선 연결 켜기\n\nUSB로 연결한 상태에서\niph doctor --fix-wifi\n같은 와이파이에 두면\n이후 무선으로도 연결됨"
+      ],
+      "link_comment": "깃허브 원문\n\nhttps://github.com/HyunSeob/iphone-cli",
+      "sources": [
+        {
+          "url": "https://x.com/HyunSeob_/status/2122109475654091134",
+          "title": "X 글: 아이폰 앱을 AI가 누름 토스 확인과 당근 글쓰기도",
+          "published_at": "2026-11-15T23:28:20+00:00",
+          "collected_at": "2026-11-19T09:22:02.369929+09:00",
+          "verified_at": "2026-11-19T09:40:02+09:00"
+        },
+        {
+          "url": "https://github.com/HyunSeob/iphone-cli",
+          "title": "GitHub - HyunSeob/iphone-cli: Let AI agents read and operate any app on a real iPhone through the accessibility tree. No",
+          "published_at": null,
+          "collected_at": "2026-11-19T09:22:02.369929+09:00",
+          "verified_at": "2026-11-19T09:40:02+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/fp-easy-20261124-4.png",
+          "alt": "GitHub - HyunSeob/iphone-cli 원문 화면 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "GitHub - HyunSeob/iphone-cli 원문 화면",
+          "source_url": "https://github.com/HyunSeob/iphone-cli",
+          "sha256": "eb7ff8e69e2b7fff72bb032fa7c798eb27f159bc0b6c354b36d9abd11e17ec58"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-24",
+      "title": "컨텐츠 409 · 클로드 스킬 1000개 한 목록에 모여 있음",
+      "type": "evergreen",
+      "target": "클로드 입문 사장님",
+      "fmt": "깃허브 스킬 모음",
+      "format": "case_thread",
+      "editorial_kind": "easy_news",
+      "supplemental": true,
+      "body": "클로드 스킬 1000개\n한 목록에 모여 있음\n\n문서와 마케팅부터\n메일과 슬랙까지 칸별로 고름\n\n목차 순서는 댓글에 둠",
+      "replies": [
+        "1. 목록 성격 보기\n\n클로드용 스킬과\n플러그인 1000개 넘게\n모은 깃허브 목록임\nCodex와 제미나이 CLI도\n지원 대상으로 적혀 있음",
+        "2. 스킬 뜻 알기\n\nSKILL.md 하나에\n이름과 설명, 지시를 둠\n필요하면 스크립트와\n참고자료도 같이 붙음",
+        "3. 목차부터 고르기\n\nDocument Processing\nBusiness & Marketing\n두 칸부터 펼쳐 보셈\n문서와 홍보 업무를\n먼저 찾기 좋음",
+        "4. 앱 연결 열기\n\nconnect-apps는\n메일과 이슈, 슬랙에\n실제 작업을 붙이는 기능임\n설정엔 무료 API 키를 씀",
+        "5. 연결 확인하기\n\nconnect-apps 폴더에서\n설치 명령을 복사함\n/connect-apps:setup\n키를 넣고 클로드를 재시작함\n본인 메일로만 시험함"
+      ],
+      "link_comment": "깃허브 원문\n\nhttps://github.com/ComposioHQ/awesome-claude-skills",
+      "sources": [
+        {
+          "url": "https://x.com/dopamine_crypto/status/2122872423242412252",
+          "title": "X 글: 클로드 스킬 1000개 한 목록에 모여 있음",
+          "published_at": "2026-11-18T02:00:01+00:00",
+          "collected_at": "2026-11-19T09:22:02.369929+09:00",
+          "verified_at": "2026-11-19T09:40:02+09:00"
+        },
+        {
+          "url": "https://github.com/ComposioHQ/awesome-claude-skills",
+          "title": "GitHub - ComposioHQ/awesome-claude-skills: A curated list of awesome Claude Skills, resources, and tools for customizing",
+          "published_at": null,
+          "collected_at": "2026-11-19T09:22:02.369929+09:00",
+          "verified_at": "2026-11-19T09:40:02+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/fp-easy-20261124-5.jpg",
+          "alt": "@dopamine_crypto X 원글 이미지 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "@dopamine_crypto X 원글 이미지",
+          "source_url": "https://x.com/dopamine_crypto/status/2122872423242412252",
+          "sha256": "e7e60d275d0512f339d7ac8db31005dd97adbbe08cc05aad6213cf46d36301c9"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-24",
+      "title": "컨텐츠 410 · 면접 답변마다 수정안이 나옴 잘한 점과 심리도 같이 나옴",
+      "type": "evergreen",
+      "target": "면접도 준비하는 사장님",
+      "fmt": "모의 면접 자료",
+      "format": "case_thread",
+      "editorial_kind": "easy_news",
+      "supplemental": true,
+      "body": "면접 답변마다 수정안이 나옴\n잘한 점과 심리도 같이 나옴\n\n제미나이 프롬프트가\n다음 연습까지 뽑음\n\n쓰는 순서 댓글에 둠",
+      "replies": [
+        "1. 프롬프트 복사\n\n저장소에서 모의 면접\n프롬프트 복사하기를 누름",
+        "2. 연습 공간 만들기\n\n제미나이에서\n노트북LM 카테고리를\n면접 연습용으로 만들고\n복사한 문장을 붙여넣음\n사고 수준은 높음으로 둠",
+        "3. 내 상황 넣기\n\n(지원 분야)와\n(내 경험)을 넣고\n내 상황에 맞는 질문으로\n구성해 줘.",
+        "4. 답변마다 피드백\n\n내 답변마다\n면접관 심리와 잘한 점,\n보완할 점과 수정 예시를\n차례로 정리해 줘.",
+        "5. 마지막 과제 받기\n\n연습이 끝나면\n전체 피드백과\n다음 연습 과제를\n정리해 줘."
+      ],
+      "link_comment": "면접 프롬프트 원문\n\nhttps://gemini-campus-guide.vercel.app/prompts/interview-simulator?from=%2F%3Fq%3D%25EB%25A9%25B4%25EC%25A0%2591",
+      "sources": [
+        {
+          "url": "https://x.com/gemissalmuk/status/2122988368384721113",
+          "title": "X 글: 면접 답변마다 수정안이 나옴 잘한 점과 심리도 같이 나옴",
+          "published_at": "2026-11-18T09:40:44+00:00",
+          "collected_at": "2026-11-19T09:22:02.369929+09:00",
+          "verified_at": "2026-11-19T09:40:02+09:00"
+        },
+        {
+          "url": "https://gemini-campus-guide.vercel.app/prompts/interview-simulator?from=%2F%3Fq%3D%25EB%25A9%25B4%25EC%25A0%2591",
+          "title": "프롬프트 저장소 | GSA team",
+          "published_at": null,
+          "collected_at": "2026-11-19T09:22:02.369929+09:00",
+          "verified_at": "2026-11-19T09:40:02+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/fp-easy-20261124-6.jpg",
+          "alt": "@gemissalmuk X 원글 이미지 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "@gemissalmuk X 원글 이미지",
+          "source_url": "https://x.com/gemissalmuk/status/2122988368384721113",
+          "sha256": "462f722ae9bf529ad04994fc026e34d11e57124560ab128366cdf30f72ae1c55"
+        }
+      ]
     }
   ],
   "_작성기준": "글감 작성 전 AGENTS.md와 config/brands/makefamily.md의 최신 사용자 기준을 읽는다. 과거 루틴 문구와 충돌하면 최신 사용자 기준을 적용한다."
