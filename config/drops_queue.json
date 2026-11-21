@@ -8504,6 +8504,259 @@
           "sha256": "4605ea96d24e4fc114131908cce461ad6b64680e965e6d24e8891f3067cebf84"
         }
       ]
+    },
+    {
+      "date": "2026-11-26",
+      "title": "컨텐츠 417 · 게임 캐릭터 벽에 끼면 Ludo로 범위부터 보셈",
+      "type": "ai",
+      "target": "AI 게임 만드는 사장님",
+      "fmt": "게임 에셋 점검",
+      "format": "case_thread",
+      "editorial_kind": "easy_news",
+      "body": "게임 캐릭터 벽에 끼면\nLudo로 범위부터 보셈\n\n기준점과 충돌 범위가\n숫자로 뜨는 도구임\n\n클로드 연결은 댓글에 둠",
+      "replies": [
+        "1. 먼저 연결하기\n\n클로드에 스킬을 넣음\n\nnpx skills add Ludo-AI/ludo-cli\n\n설치 뒤 캐릭터 그림의\n기준점과 발 위치,\n충돌 상자를 숫자로 봄\n(캐릭터 그림)의\n충돌 범위를 확인해 줘.",
+        "2. 시트 자르기\n\n스프라이트시트를\n프레임별 PNG로 자름\n프레임 크기도 맞춤\n(스프라이트시트)를\n프레임별로 자르고\n크기를 맞춰 줘.",
+        "3. 효과음 확인\n\n효과음 길이와 음량,\n무음과 반복 틈을 봄\nWAV와 MP3를 읽음\n(효과음 파일)의\n길이와 음량, 반복 틈을\n확인해 줘.",
+        "4. 빠진 파일 찾기\n\n에셋 폴더를 훑고\n빠진 파일을 표시함\nPhaser용 로더도 만듦\n(에셋 폴더)에서\n빠진 파일을 찾아 줘.",
+        "5. 결과와 무료 범위\n\n결과는 Godot과\nUnity, Phaser용으로\n바로 저장할 수 있음\nToolbox는 계정 없이\n로컬에서 무료로 돎\n새 그림 생성은 유료임"
+      ],
+      "link_comment": "깃허브 원문\n\nhttps://github.com/Ludo-AI/ludo-cli",
+      "sources": [
+        {
+          "url": "https://x.com/JungkwanDean/status/2123572623343022541",
+          "title": "X 글: 게임 캐릭터 벽에 끼면 Ludo로 범위부터 보셈",
+          "published_at": "2026-11-20T00:22:22+00:00",
+          "collected_at": "2026-11-21T09:21:48.158682+09:00",
+          "verified_at": "2026-11-21T09:36:20+09:00"
+        },
+        {
+          "url": "https://github.com/Ludo-AI/ludo-cli",
+          "title": "GitHub - Ludo-AI/ludo-cli: Ludo AI CLI for humans and coding agents: generate game sprites, animations, 3D models, video",
+          "published_at": null,
+          "collected_at": "2026-11-21T09:21:48.158682+09:00",
+          "verified_at": "2026-11-21T09:36:20+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/fp-easy-20261126-1.png",
+          "alt": "GitHub - Ludo-AI/ludo-cli 원문 화면 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "GitHub - Ludo-AI/ludo-cli 원문 화면",
+          "source_url": "https://github.com/Ludo-AI/ludo-cli",
+          "sha256": "4f13815ceb26ad73984a9cd3b7115d0d28ee605ffb0abfbe0378f265f05c5c82"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-26",
+      "title": "컨텐츠 418 · 영상 음향 만드는 사장님 도구 4개 한 번에 봄",
+      "type": "marketing",
+      "target": "영상 음향 만드는 사장님",
+      "fmt": "오디오 도구 비교",
+      "format": "case_thread",
+      "editorial_kind": "easy_news",
+      "body": "영상 음향 만드는 사장님\n도구 4개 한 번에 봄\n\n음악과 효과음, 자막까지\n한 장에 모인 화면임\n\n차이는 댓글에 정리함",
+      "replies": [
+        "1. Soundbox와 Mirli\n\n음악과 효과음,\nTTS와 보이스 클론을\n내 컴퓨터에서 만듦\n계정과 크레딧 없이\n오프라인으로도 됨\n(상품 영상)에 쓸\n문 닫는 효과음을\n3초로 만들어 줘.",
+        "2. Voice Clone Podcast\n\n목소리를 복제해\n팟캐스트와 오디오북,\n내레이션을 만듦\n어떤 LLM이든 됨\n(대본)을 내 목소리로\n내레이션 파일로 만들어 줘.",
+        "3. Clipwise\n\n영상을 받아 자막을 달고\n얼굴을 따라 잘라냄\n쇼츠로도 나눠 줌\n로컬에서 돌아가며\nAPI 키가 필요 없음\n(영상)에 자막을 달고\n쇼츠로 나눠 줘.",
+        "4. Awesome LLM Apps\n\n음악 생성과 팟캐스트,\n음성 에이전트 모음임\n프롬프트를 넣으면\nMP3까지 뽑아 줌\nClaude와 Gemini,\nGPT에서 쓸 수 있음\n(주제) 음악을 만들고\nMP3로 저장해 줘.",
+        "5. 첫 도구 설치\n\n운영체제용 설치파일을\n고른 뒤 Mirli를 켬\n서명되지 않은 빌드라\n첫 실행 확인이 뜸\nSFX에 재질과 동작,\n공간을 적고 생성함\n모델을 받기 전에\n라이선스를 확인함"
+      ],
+      "link_comment": "첫 도구 깃허브\n\nhttps://github.com/HamSanders/soundbox",
+      "sources": [
+        {
+          "url": "https://x.com/BBBang9900/status/2123582098816803132",
+          "title": "X 글: 영상 음향 만드는 사장님 도구 4개 한 번에 봄",
+          "published_at": "2026-11-20T01:00:01+00:00",
+          "collected_at": "2026-11-21T09:21:48.158682+09:00",
+          "verified_at": "2026-11-21T09:36:20+09:00"
+        },
+        {
+          "url": "https://github.com/HamSanders/soundbox",
+          "title": "GitHub - HamSanders/soundbox: Free, open-source, local alternative to ElevenLabs and Suno. AI sound effects, music with ",
+          "published_at": null,
+          "collected_at": "2026-11-21T09:21:48.158682+09:00",
+          "verified_at": "2026-11-21T09:36:20+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/fp-easy-20261126-2.png",
+          "alt": "GitHub - HamSanders/soundbox 원문 화면 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "GitHub - HamSanders/soundbox 원문 화면",
+          "source_url": "https://github.com/HamSanders/soundbox",
+          "sha256": "715d01b83aa71d22b8b8a172b7e942fb3055ddcedd6dac2f17edcbee70ad2512"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-26",
+      "title": "컨텐츠 419 · CMU 강의 6개 무료로 봄",
+      "type": "evergreen",
+      "target": "AI 기초 배우는 사장님",
+      "fmt": "무료 강의 안내",
+      "format": "case_thread",
+      "editorial_kind": "easy_news",
+      "body": "CMU 강의 6개 무료로 봄\n\nAI 에이전트와\n머신러닝 과목이\n화면 두 장에 모여 있음\n\n보는 순서는 댓글에 둠",
+      "replies": [
+        "1. 계산 기초부터\n\n첫 과목은\nPrinciples of Computing\n다음은 Generative AI임\n강의 제목을 눌러\n유튜브 재생목록을 봄\n(강의)의 핵심 개념을\n한국어로 정리해 줘.",
+        "2. AI 에이전트\n\nAI Agents 과목에서\n에이전트 수업을 봄\n실제 교실 강의를\n편집한 영상임\n(AI Agents) 강의의\n핵심과 예시를\n쉽게 정리해 줘.",
+        "3. 운영 과정 보기\n\nMachine Learning in Production\n과목을 고름\n강의 재생목록에서\n회차별 영상을 봄\n(강의)의 회차별 핵심을\n목차로 정리해 줘.",
+        "4. 설계와 시스템\n\nSoftware Architectures\n다음 순서로\nMachine Learning Systems\n과목이 이어짐\n(강의 두 개)의 차이를\n과목명 기준으로\n비교해 줘.",
+        "5. 지금 볼 것\n\n현재는 유튜브 강의가\n무료로 공개돼 있음\n자기주도형 과정과\nAI 튜터는 예정임\n당장은 강의만 골라 봄"
+      ],
+      "link_comment": "CMU 공식 강의\n\nhttps://www.cs.cmu.edu/learn/",
+      "sources": [
+        {
+          "url": "https://x.com/lucas_flatwhite/status/2123060761912324235",
+          "title": "X 글: CMU 강의 6개 무료로 봄",
+          "published_at": "2026-11-18T14:28:24+00:00",
+          "collected_at": "2026-11-21T09:21:48.158682+09:00",
+          "verified_at": "2026-11-21T09:36:20+09:00"
+        },
+        {
+          "url": "https://www.cs.cmu.edu/learn/",
+          "title": "CS Learn",
+          "published_at": null,
+          "collected_at": "2026-11-21T09:21:48.158682+09:00",
+          "verified_at": "2026-11-21T09:36:20+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/fp-easy-20261126-3.jpg",
+          "alt": "@lucas_flatwhite X 원글 이미지 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "@lucas_flatwhite X 원글 이미지",
+          "source_url": "https://x.com/lucas_flatwhite/status/2123060761912324235",
+          "sha256": "576eb014821ca2db17df7b2ddec7989b7de65d1de76afa50805e6fc8aeaff2d1"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-26",
+      "title": "컨텐츠 420 · 토익 매일 10문제씩 제미나이가 내줌",
+      "type": "evergreen",
+      "target": "토익 다시 보는 사장님",
+      "fmt": "퀴즈 프롬프트",
+      "format": "case_thread",
+      "editorial_kind": "easy_news",
+      "body": "토익 매일 10문제씩\n제미나이가 내줌\n\n오답과 취약 유형까지\n두 장에 정리된 화면임\n\n프롬프트는 댓글에 둠",
+      "replies": [
+        "1. 시작 점수 넣기\n\n너는 10년 경력의\n토익 강사임.\n내 현재 점수는 (점수),\n목표는 (점수)임.\n내 수준을 먼저 확인해 줘.",
+        "2. 하루 10문제\n\nLC와 RC 문제를\n매일 10개 내 줘.\n기출을 복제하지 말고\n새 문제로 만들어 줘.\n한 번에 한 문제씩 내고\n내 답 뒤 다음으로\n넘어가 줘.",
+        "3. 정답 숨기기\n\n내가 답을 고르기 전엔\n정답과 해설을 숨겨 줘.\n답한 뒤 정답 여부와\n해설, 핵심 단어,\n문법을 알려 줘.",
+        "4. 오답 반복\n\n틀린 문제를 오답노트로\n정리해 줘.\n같은 유형의 복습 문제를\n새로 만들어 줘.\n10문제 뒤 정답률과\n취약 유형을 분석해 줘.",
+        "5. LC 처리\n\n음성 생성이 되면\n영어 음성을 들려 줘.\n안 되면 듣기 대본을 쓰고\n연습 문제라고 밝혀 줘.\n매주 누적 오답으로\n복습 퀴즈를 내 줘."
+      ],
+      "link_comment": "원문 프롬프트\n\nhttps://x.com/9bnTa1mtiWchUQ3/status/2121671880654614767",
+      "sources": [
+        {
+          "url": "https://x.com/9bnTa1mtiWchUQ3/status/2121671880654614767",
+          "title": "X 글: 토익 매일 10문제씩 제미나이가 내줌",
+          "published_at": "2026-11-14T18:29:29+00:00",
+          "collected_at": "2026-11-21T09:21:48.158682+09:00",
+          "verified_at": "2026-11-21T09:36:20+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/fp-easy-20261126-4.jpg",
+          "alt": "@9bnta1mtiwchuq3 X 원글 이미지 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "@9bnta1mtiwchuq3 X 원글 이미지",
+          "source_url": "https://x.com/9bnTa1mtiWchUQ3/status/2121671880654614767",
+          "sha256": "bdb0eea95dfec435d77e3fb6c996643b1991abfa66629789cdf0fbd7a9240dcf"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-26",
+      "title": "컨텐츠 421 · 스킬 4개 중 1개가 구멍",
+      "type": "evergreen",
+      "target": "깃허브 스킬 까는 사장님",
+      "fmt": "설치 전 검사법",
+      "format": "case_thread",
+      "editorial_kind": "easy_news",
+      "supplemental": true,
+      "body": "스킬 4개 중 1개가 구멍\n\n5.2%는 악성 의도였음\nSkillSpector 점수가\n화면 한 장에 뜸\n\n검사 순서는 댓글에 둠",
+      "replies": [
+        "1. 설치 전에 넣기\n\n검사할 스킬의\n깃 저장소나 주소,\nzip과 폴더, 파일을 넣음\n(스킬 폴더)를\n설치 전에 검사해 줘.",
+        "2. 위험 패턴 찾기\n\n17개 분류에서\n위험 패턴 71개를 찾음\n숨은 명령과\n데이터 반출,\n권한 상승과 기억 오염을 봄\n(스킬)의 위험 패턴을\n분류별로 표시해 줘.",
+        "3. 두 단계 검사\n\n먼저 코드를 빠르게 훑음\n원하면 AI가\n명령의 의미까지 따져봄\n(스킬)을 먼저\n코드 기준으로 훑고\n의미까지 다시 검사해 줘.",
+        "4. OSV 조회\n\n알려진 취약점은\nOSV에서 실시간 조회함\n인터넷이 없으면\n오프라인으로 넘어감\n공식 OSV Scanner는\n폴더도 재귀 검사함",
+        "5. 결과 읽기\n\n위험도는 0부터 100점\n터미널과 JSON,\n마크다운과 SARIF로\n보고서를 뽑을 수 있음\n설치 전 점수와\n탐지 항목을 같이 봄"
+      ],
+      "link_comment": "OSV 공식 페이지\n\nhttps://osv.dev/",
+      "sources": [
+        {
+          "url": "https://x.com/dopamine_crypto/status/2122132544372023335",
+          "title": "X 글: 스킬 4개 중 1개가 구멍",
+          "published_at": "2026-11-16T01:00:00+00:00",
+          "collected_at": "2026-11-21T09:21:48.158682+09:00",
+          "verified_at": "2026-11-21T09:36:20+09:00"
+        },
+        {
+          "url": "https://osv.dev/",
+          "title": "OSV - Open Source Vulnerabilities",
+          "published_at": null,
+          "collected_at": "2026-11-21T09:21:48.158682+09:00",
+          "verified_at": "2026-11-21T09:36:20+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/fp-easy-20261126-5.jpg",
+          "alt": "@dopamine_crypto X 원글 이미지 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "@dopamine_crypto X 원글 이미지",
+          "source_url": "https://x.com/dopamine_crypto/status/2122132544372023335",
+          "sha256": "74b42a00f7470e64ca1f9cff63d53b6aeb0e248ad061a1de4c88d9c38120daba"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-26",
+      "title": "컨텐츠 422 · 그록 4.8 늦어진 이유",
+      "type": "evergreen",
+      "target": "그록 업데이트 기다리는 사장님",
+      "fmt": "모델 변경 소식",
+      "format": "case_thread",
+      "editorial_kind": "easy_news",
+      "supplemental": true,
+      "body": "그록 4.8 늦어진 이유\n\n6개월에서 8개월 동안\n학습과 추론 스택을\n다시 짠 결과임\n\n바뀐 범위는 댓글에 둠",
+      "replies": [
+        "1. 전부 다시 짜기\n\n학습과 강화학습,\n추론 스택 전체를\n바닥부터 다시 짰음\n공개 설명 기준 기간은\n6개월에서 8개월이었음",
+        "2. 오픈소스 빼기\n\nJAX와 SGLang을\n기존 스택에서 뺐음\n주로 C를 쓰고\n일부 C++로 다시 짰음",
+        "3. 일정이 밀린 이유\n\n전체 재작성에\n추가 시간이 들었음\n그록 4.8은\n약 6주 늦어졌음",
+        "4. 아직 검증 전\n\n공개된 코드가 없고\n독립 벤치마크도 없음\n속도와 성능 우위는\n새 모델로 확인해야 함",
+        "5. 빠진 정보 보기\n\n모델 카드와 가격,\nAPI 목록이 아직 없음\n평가 결과도\n회사 밖에서 검증 안 됨\n공개 뒤 실제 성능을 봄"
+      ],
+      "link_comment": "영어 원문 기사\n\nhttps://www.martincid.com/technology-sv/tech-ai/elon-musk-grok-4-8-c-cpp-rewrite-delay/",
+      "sources": [
+        {
+          "url": "https://x.com/nick88886666/status/2123206534897496383",
+          "title": "X 글: 그록 4.8 늦어진 이유",
+          "published_at": "2026-11-19T00:07:39+00:00",
+          "collected_at": "2026-11-21T09:21:48.158682+09:00",
+          "verified_at": "2026-11-21T09:36:20+09:00"
+        },
+        {
+          "url": "https://www.martincid.com/technology-sv/tech-ai/elon-musk-grok-4-8-c-cpp-rewrite-delay/",
+          "title": "Elon Musk says a from-scratch C/C++ rewrite is why Grok 4.8 ran late",
+          "published_at": null,
+          "collected_at": "2026-11-21T09:21:48.158682+09:00",
+          "verified_at": "2026-11-21T09:36:20+09:00"
+        }
+      ],
+      "main_images": [
+        {
+          "src": "/thread-img/fp-easy-20261126-6.png",
+          "alt": "Elon Musk says a from-scratch C/C++ rewrite is why Grok 4.8 원문 화면 · 원본 참고 화면, 파트너의 직접 실행 결과 아님",
+          "credit": "Elon Musk says a from-scratch C/C++ rewrite is why Grok 4.8 원문 화면",
+          "source_url": "https://www.martincid.com/technology-sv/tech-ai/elon-musk-grok-4-8-c-cpp-rewrite-delay/",
+          "sha256": "4f120fae6f4cf1508aaa5ff37f221b199667dd9f325994a901cc058164e70e94"
+        }
+      ]
     }
   ],
   "_작성기준": "글감 작성 전 AGENTS.md와 config/brands/makefamily.md의 최신 사용자 기준을 읽는다. 과거 루틴 문구와 충돌하면 최신 사용자 기준을 적용한다."
